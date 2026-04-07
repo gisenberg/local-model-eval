@@ -1,0 +1,82 @@
+[
+  {
+    "model": "nvidia/nemotron-3-nano-4b",
+    "mode": "thinking ON",
+    "tokens_per_second": 129.1,
+    "total_tokens": 648,
+    "elapsed_s": 5.0,
+    "thinking_chars": 270,
+    "content_chars": 2401,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "nvidia/nemotron-3-nano-4b",
+    "mode": "thinking OFF",
+    "tokens_per_second": 111.7,
+    "total_tokens": 475,
+    "elapsed_s": 4.3,
+    "thinking_chars": 491,
+    "content_chars": 1630,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "qwen/qwen3.5-9b",
+    "mode": "thinking ON",
+    "tokens_per_second": 83.3,
+    "total_tokens": 649,
+    "elapsed_s": 7.8,
+    "thinking_chars": 964,
+    "content_chars": 1657,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "qwen/qwen3.5-9b",
+    "mode": "thinking OFF",
+    "tokens_per_second": 97.2,
+    "total_tokens": 1330,
+    "elapsed_s": 13.7,
+    "thinking_chars": 3219,
+    "content_chars": 2023,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "nvidia/nemotron-3-nano",
+    "mode": "thinking ON",
+    "tokens_per_second": 126.8,
+    "total_tokens": 1009,
+    "elapsed_s": 8.0,
+    "thinking_chars": 581,
+    "content_chars": 3559,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "nvidia/nemotron-3-nano",
+    "mode": "thinking OFF",
+    "tokens_per_second": 114.7,
+    "total_tokens": 703,
+    "elapsed_s": 6.1,
+    "thinking_chars": 303,
+    "content_chars": 2713,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "qwen/qwen3.5-35b-a3b",
+    "mode": "thinking ON",
+    "tokens_per_second": 106.1,
+    "total_tokens": 634,
+    "elapsed_s": 6.0,
+    "thinking_chars": 688,
+    "content_chars": 2061,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "qwen/qwen3.5-35b-a3b",
+    "mode": "thinking OFF",
+    "tokens_per_second": 126.3,
+    "total_tokens": 1109,
+    "elapsed_s": 8.8,
+    "thinking_chars": 2546,
+    "content_chars": 2034,
+    "finish_reason": "stop"
+  }
+]
