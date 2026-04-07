@@ -12,7 +12,7 @@
     }
   },
   "finish_reason": "stop",
-  "elapsed_s": 141.75,
+  "elapsed_s": 134.99,
   "tokens": 6861,
-  "tok_per_sec": 48.4
+  "tok_per_sec": 50.8
 }

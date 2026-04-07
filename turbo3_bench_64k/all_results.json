@@ -3,41 +3,41 @@
     "model": "Qwen 3.5 35B-A3B Q4_K_M",
     "model_key": "qwen35b-a3b-q4km",
     "native_ctx": 262144,
-    "vram_mb": 24198,
+    "vram_mb": 31466,
     "kv_config": "turbo3",
     "context_length": 98304,
     "max_tokens": 65536,
     "benchmarks": {
       "expression_evaluator": {
-        "tok_per_sec": 173.5,
-        "tokens": 7239,
-        "elapsed_s": 41.73,
+        "tok_per_sec": 98.7,
+        "tokens": 4084,
+        "elapsed_s": 41.38,
         "finish_reason": "stop",
-        "thinking_chars": 19693,
-        "content_chars": 8072,
-        "tests_passed": 0,
-        "tests_failed": 5,
+        "thinking_chars": 7958,
+        "content_chars": 6066,
+        "tests_passed": 4,
+        "tests_failed": 1,
         "tests_errors": 0,
         "tests_expected": 5
       },
       "astar": {
-        "tok_per_sec": 154.7,
-        "tokens": 24289,
-        "elapsed_s": 157.04,
-        "finish_reason": "length",
-        "thinking_chars": 84813,
-        "content_chars": 0,
-        "tests_passed": 0,
-        "tests_failed": 0,
+        "tok_per_sec": 125.7,
+        "tokens": 4281,
+        "elapsed_s": 34.06,
+        "finish_reason": "stop",
+        "thinking_chars": 6346,
+        "content_chars": 6709,
+        "tests_passed": 1,
+        "tests_failed": 5,
         "tests_errors": 0,
         "tests_expected": 6
       },
       "lru_cache": {
-        "tok_per_sec": 157.2,
-        "tokens": 24257,
-        "elapsed_s": 154.28,
+        "tok_per_sec": 118.4,
+        "tokens": 24239,
+        "elapsed_s": 204.77,
         "finish_reason": "length",
-        "thinking_chars": 81123,
+        "thinking_chars": 62286,
         "content_chars": 0,
         "tests_passed": 0,
         "tests_failed": 0,
@@ -46,29 +46,29 @@
       }
     },
     "throughput": {
-      "tokens_per_second": 186.77,
-      "token_count": 1464,
-      "ttft_s": 2.302,
-      "total_s": 10.14,
-      "thinking_tokens": 795,
-      "content_tokens": 669
+      "tokens_per_second": 22.41,
+      "token_count": 2045,
+      "ttft_s": 6.227,
+      "total_s": 97.47,
+      "thinking_tokens": 2045,
+      "content_tokens": 0
     }
   },
   {
     "model": "Gemma 4 26B-A4B Q6_K",
     "model_key": "gemma4-26b-a4b-q6k",
     "native_ctx": 262144,
-    "vram_mb": 25879,
+    "vram_mb": 31813,
     "kv_config": "turbo3",
     "context_length": 98304,
     "max_tokens": 65536,
     "benchmarks": {
       "expression_evaluator": {
-        "tok_per_sec": 132.0,
-        "tokens": 24390,
-        "elapsed_s": 184.76,
+        "tok_per_sec": 109.0,
+        "tokens": 65536,
+        "elapsed_s": 601.19,
         "finish_reason": "length",
-        "thinking_chars": 55921,
+        "thinking_chars": 133968,
         "content_chars": 0,
         "tests_passed": 0,
         "tests_failed": 0,
@@ -76,9 +76,9 @@
         "tests_expected": 5
       },
       "astar": {
-        "tok_per_sec": 136.5,
+        "tok_per_sec": 106.3,
         "tokens": 5110,
-        "elapsed_s": 37.42,
+        "elapsed_s": 48.06,
         "finish_reason": "stop",
         "thinking_chars": 9136,
         "content_chars": 6558,
@@ -88,172 +88,167 @@
         "tests_expected": 6
       },
       "lru_cache": {
-        "error": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))"
+        "tok_per_sec": 80.7,
+        "tokens": 65536,
+        "elapsed_s": 812.32,
+        "finish_reason": "length",
+        "thinking_chars": 207598,
+        "content_chars": 0,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
       }
     },
     "throughput": {
-      "tokens_per_second": 147.36,
-      "token_count": 1878,
-      "ttft_s": 2.224,
-      "total_s": 14.968,
-      "thinking_tokens": 877,
-      "content_tokens": 1001
+      "error": "(\"Connection broken: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)\", ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))"
     }
   },
   {
     "model": "Gemma 4 26B-A4B Q4_K_M",
     "model_key": "gemma4-26b-a4b-q4km",
     "native_ctx": 262144,
-    "vram_mb": 31466,
+    "vram_mb": 22691,
     "kv_config": "turbo3",
     "context_length": 98304,
     "max_tokens": 65536,
     "benchmarks": {
       "expression_evaluator": {
-        "tok_per_sec": 102.0,
-        "tokens": 4485,
-        "elapsed_s": 43.97,
+        "tok_per_sec": 19.3,
+        "tokens": 2720,
+        "elapsed_s": 140.88,
         "finish_reason": "stop",
-        "thinking_chars": 8926,
-        "content_chars": 7487,
+        "thinking_chars": 2636,
+        "content_chars": 7418,
         "tests_passed": 4,
         "tests_failed": 1,
         "tests_errors": 0,
         "tests_expected": 5
       },
       "astar": {
-        "tok_per_sec": 125.7,
-        "tokens": 6724,
-        "elapsed_s": 53.51,
+        "tok_per_sec": 19.7,
+        "tokens": 2944,
+        "elapsed_s": 149.33,
         "finish_reason": "stop",
-        "thinking_chars": 4870,
-        "content_chars": 17051,
+        "thinking_chars": 3102,
+        "content_chars": 6039,
         "tests_passed": 0,
         "tests_failed": 0,
         "tests_errors": 2,
         "tests_expected": 6
       },
       "lru_cache": {
-        "tok_per_sec": 81.5,
-        "tokens": 24239,
-        "elapsed_s": 297.38,
-        "finish_reason": "length",
-        "thinking_chars": 73693,
-        "content_chars": 0,
-        "tests_passed": 0,
-        "tests_failed": 0,
-        "tests_errors": 0,
-        "tests_expected": 6
+        "error": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))"
       }
     },
     "throughput": {
-      "tokens_per_second": 22.35,
-      "token_count": 2039,
-      "ttft_s": 5.919,
-      "total_s": 97.167,
-      "thinking_tokens": 1200,
-      "content_tokens": 839
+      "tokens_per_second": 31.04,
+      "token_count": 2044,
+      "ttft_s": 9.145,
+      "total_s": 75.003,
+      "thinking_tokens": 1007,
+      "content_tokens": 1037
     }
   },
   {
     "model": "Gemma 4 31B-IT Q4_K_M",
     "model_key": "gemma4-31b-q4km",
     "native_ctx": 262144,
-    "vram_mb": 25580,
+    "vram_mb": 31620,
     "kv_config": "turbo3",
     "context_length": 49152,
     "max_tokens": 32768,
     "benchmarks": {
       "expression_evaluator": {
-        "tok_per_sec": 113.2,
-        "tokens": 32768,
-        "elapsed_s": 289.35,
-        "finish_reason": "length",
-        "thinking_chars": 71828,
-        "content_chars": 0,
-        "tests_passed": 0,
-        "tests_failed": 0,
+        "tok_per_sec": 39.4,
+        "tokens": 7675,
+        "elapsed_s": 194.81,
+        "finish_reason": "stop",
+        "thinking_chars": 21771,
+        "content_chars": 9641,
+        "tests_passed": 3,
+        "tests_failed": 2,
         "tests_errors": 0,
         "tests_expected": 5
       },
       "astar": {
-        "error": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))"
-      },
-      "lru_cache": {
-        "tok_per_sec": 24.3,
-        "tokens": 10316,
-        "elapsed_s": 425.18,
+        "tok_per_sec": 42.7,
+        "tokens": 8383,
+        "elapsed_s": 196.51,
         "finish_reason": "stop",
-        "thinking_chars": 28515,
-        "content_chars": 5978,
+        "thinking_chars": 22198,
+        "content_chars": 8137,
         "tests_passed": 6,
         "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 40.0,
+        "tokens": 15502,
+        "elapsed_s": 387.17,
+        "finish_reason": "stop",
+        "thinking_chars": 54846,
+        "content_chars": 8705,
+        "tests_passed": 4,
+        "tests_failed": 2,
         "tests_errors": 0,
         "tests_expected": 6
       }
     },
     "throughput": {
-      "tokens_per_second": 149.27,
-      "token_count": 1878,
-      "ttft_s": 592.741,
-      "total_s": 605.322,
-      "thinking_tokens": 877,
-      "content_tokens": 1001
+      "tokens_per_second": 46.49,
+      "token_count": 2048,
+      "ttft_s": 2.351,
+      "total_s": 46.399,
+      "thinking_tokens": 2048,
+      "content_tokens": 0
     }
   },
   {
     "model": "Qwopus 3.5 27B-v3 Q6_K",
     "model_key": "qwopus-27b-q6k",
     "native_ctx": 262144,
-    "vram_mb": 31620,
+    "vram_mb": 31574,
     "kv_config": "turbo3",
     "context_length": 98304,
     "max_tokens": 65536,
     "benchmarks": {
       "expression_evaluator": {
-        "tok_per_sec": 43.1,
-        "tokens": 7017,
-        "elapsed_s": 162.76,
-        "finish_reason": "stop",
-        "thinking_chars": 17772,
-        "content_chars": 10871,
-        "tests_passed": 4,
-        "tests_failed": 1,
-        "tests_errors": 0,
-        "tests_expected": 5
+        "error": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))"
       },
       "astar": {
-        "tok_per_sec": 38.7,
-        "tokens": 9372,
-        "elapsed_s": 242.45,
+        "tok_per_sec": 47.1,
+        "tokens": 11172,
+        "elapsed_s": 237.19,
         "finish_reason": "stop",
-        "thinking_chars": 25340,
-        "content_chars": 8337,
+        "thinking_chars": 31462,
+        "content_chars": 8074,
         "tests_passed": 6,
         "tests_failed": 0,
         "tests_errors": 0,
         "tests_expected": 6
       },
       "lru_cache": {
-        "tok_per_sec": 25.5,
-        "tokens": 24257,
-        "elapsed_s": 953.04,
-        "finish_reason": "length",
-        "thinking_chars": 96098,
-        "content_chars": 0,
-        "tests_passed": 0,
+        "tok_per_sec": 48.4,
+        "tokens": 6861,
+        "elapsed_s": 141.75,
+        "finish_reason": "stop",
+        "thinking_chars": 18366,
+        "content_chars": 9190,
+        "tests_passed": 6,
         "tests_failed": 0,
         "tests_errors": 0,
         "tests_expected": 6
       }
     },
     "throughput": {
-      "tokens_per_second": 46.46,
-      "token_count": 2048,
-      "ttft_s": 2.338,
-      "total_s": 46.416,
-      "thinking_tokens": 2048,
-      "content_tokens": 0
+      "tokens_per_second": 14.45,
+      "token_count": 2046,
+      "ttft_s": 41.555,
+      "total_s": 183.111,
+      "thinking_tokens": 1431,
+      "content_tokens": 615
     }
   }
 ]
