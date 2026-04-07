@@ -1,0 +1,277 @@
+[
+  {
+    "model": "Qwen 3.5 35B-A3B Q4_K_M",
+    "model_key": "qwen35b-a3b-q4km",
+    "native_ctx": 262144,
+    "vram_mb": 23386,
+    "kv_config": "turbo3",
+    "context_length": 32768,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 174.7,
+        "tokens": 7239,
+        "elapsed_s": 41.44,
+        "finish_reason": "stop",
+        "thinking_chars": 19693,
+        "content_chars": 8072,
+        "tests_passed": 0,
+        "tests_failed": 5,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 170.3,
+        "tokens": 16384,
+        "elapsed_s": 96.2,
+        "finish_reason": "length",
+        "thinking_chars": 57456,
+        "content_chars": 0,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 170.4,
+        "tokens": 16384,
+        "elapsed_s": 96.13,
+        "finish_reason": "length",
+        "thinking_chars": 55735,
+        "content_chars": 0,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 172.05,
+      "token_count": 1464,
+      "ttft_s": 2.343,
+      "total_s": 10.852,
+      "thinking_tokens": 795,
+      "content_tokens": 669
+    }
+  },
+  {
+    "model": "Gemma 4 26B-A4B Q6_K",
+    "model_key": "gemma4-26b-a4b-q6k",
+    "native_ctx": 262144,
+    "vram_mb": 25048,
+    "kv_config": "turbo3",
+    "context_length": 32768,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 136.9,
+        "tokens": 16384,
+        "elapsed_s": 119.71,
+        "finish_reason": "length",
+        "thinking_chars": 40485,
+        "content_chars": 0,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 141.5,
+        "tokens": 5532,
+        "elapsed_s": 39.09,
+        "finish_reason": "stop",
+        "thinking_chars": 10555,
+        "content_chars": 6421,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 2,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 141.3,
+        "tokens": 7300,
+        "elapsed_s": 51.65,
+        "finish_reason": "stop",
+        "thinking_chars": 17731,
+        "content_chars": 5859,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 149.47,
+      "token_count": 1849,
+      "ttft_s": 2.288,
+      "total_s": 14.658,
+      "thinking_tokens": 877,
+      "content_tokens": 972
+    }
+  },
+  {
+    "model": "Gemma 4 26B-A4B Q4_K_M",
+    "model_key": "gemma4-26b-a4b-q4km",
+    "native_ctx": 262144,
+    "vram_mb": 19529,
+    "kv_config": "turbo3",
+    "context_length": 32768,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 149.6,
+        "tokens": 4424,
+        "elapsed_s": 29.58,
+        "finish_reason": "stop",
+        "thinking_chars": 8566,
+        "content_chars": 7515,
+        "tests_passed": 4,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 149.2,
+        "tokens": 4286,
+        "elapsed_s": 28.72,
+        "finish_reason": "stop",
+        "thinking_chars": 6536,
+        "content_chars": 6902,
+        "tests_passed": 3,
+        "tests_failed": 4,
+        "tests_errors": 0,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 147.8,
+        "tokens": 16384,
+        "elapsed_s": 110.85,
+        "finish_reason": "length",
+        "thinking_chars": 44909,
+        "content_chars": 0,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 164.21,
+      "token_count": 2044,
+      "ttft_s": 2.391,
+      "total_s": 14.838,
+      "thinking_tokens": 1539,
+      "content_tokens": 505
+    }
+  },
+  {
+    "model": "Gemma 4 31B-IT Q4_K_M",
+    "model_key": "gemma4-31b-q4km",
+    "native_ctx": 262144,
+    "vram_mb": 21883,
+    "kv_config": "turbo3",
+    "context_length": 32768,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 51.8,
+        "tokens": 2619,
+        "elapsed_s": 50.52,
+        "finish_reason": "stop",
+        "thinking_chars": 2636,
+        "content_chars": 7157,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 51.6,
+        "tokens": 2754,
+        "elapsed_s": 53.35,
+        "finish_reason": "stop",
+        "thinking_chars": 3102,
+        "content_chars": 5272,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_errors": 2,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 49.9,
+        "tokens": 9516,
+        "elapsed_s": 190.73,
+        "finish_reason": "stop",
+        "thinking_chars": 25569,
+        "content_chars": 6175,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 55.09,
+      "token_count": 2045,
+      "ttft_s": 2.281,
+      "total_s": 39.403,
+      "thinking_tokens": 2045,
+      "content_tokens": 0
+    }
+  },
+  {
+    "model": "Qwopus 3.5 27B-v3 Q6_K",
+    "model_key": "qwopus-27b-q6k",
+    "native_ctx": 262144,
+    "vram_mb": 24311,
+    "kv_config": "turbo3",
+    "context_length": 32768,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 49.1,
+        "tokens": 11570,
+        "elapsed_s": 235.86,
+        "finish_reason": "stop",
+        "thinking_chars": 36340,
+        "content_chars": 8869,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 48.6,
+        "tokens": 11172,
+        "elapsed_s": 229.75,
+        "finish_reason": "stop",
+        "thinking_chars": 31462,
+        "content_chars": 8074,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 49.2,
+        "tokens": 6861,
+        "elapsed_s": 139.32,
+        "finish_reason": "stop",
+        "thinking_chars": 18366,
+        "content_chars": 9190,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 52.15,
+      "token_count": 2046,
+      "ttft_s": 2.379,
+      "total_s": 41.616,
+      "thinking_tokens": 1431,
+      "content_tokens": 615
+    }
+  },
+  {
+    "model": "Qwopus 3.5 27B-v3 TQ3_4S",
+    "model_key": "qwopus-27b-tq3",
+    "error": "server start timeout"
+  }
+]
