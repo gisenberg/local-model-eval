@@ -4,18 +4,20 @@ Tested April 2026 on RTX 5090 32GB. Models tested via both LM Studio (f16 KV) an
 
 ## Tier List
 
-| Tier | Model | Quant | Backend | KV Config | Weights | VRAM (32K) | Tok/s | TTFT | Expr Eval (5) | A* Path (6+) | LRU Cache (6) | Total | Notes |
+| Tier | Model | Quant | Backend | KV Config | Thinking | VRAM (32K) | Tok/s | TTFT | Expr Eval (5) | A* Path (6+) | LRU Cache (6) | Total | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **S** | gemma-4-26b-a4b | Q6_K | TurboQuant | turbo4/turbo4 | ~22 GB | 25,162 MB | 146.5 | 2.42s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Best overall. turbo4 KV + reasoning budget. |
-| **S** | qwen3.5-35b-a3b | Q4_K_M | LM Studio | f16/f16 | 22.1 GB | -- | 92.9 | 2.39s | 5/5 | 8/8 | 6/6 | **19/19 (100%)** | LM Studio only. Regresses on llama-server. |
-| **A** | qwopus-3.5-27b-v3 | Q6_K | TurboQuant | turbo3/turbo3 | ~22 GB | 24,035 MB | 52.9 | 2.23s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Heavy thinker. Reliable on turbo3. |
-| **A** | gemma-4-26b-a4b | Q6_K | LM Studio | f16/f16 | ~20 GB | -- | 161.9 | 2.43s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Best speed/quality on LM Studio. |
-| **B** | gemma-4-26b-a4b | Q4_K_M | TurboQuant | turbo4/turbo4 | ~16 GB | 19,555 MB | 155.6 | 2.29s | 0/5 | 7/7 | 6/6 | **13/17 (76%)** | Lowest VRAM. ExprEval had import errors. |
-| **B** | qwen3.5-9b | Q8_0 | LM Studio | f16/f16 | 10.4 GB | -- | 113.2 | 2.20s | 5/5 | 6/7 | 4/6 | **15/18 (83%)** | Good for light tasks. LM Studio only. |
-| **C** | gemma-4-31b-it | Q4_K_M | TurboQuant | turbo3/turbo3 | ~18 GB | 21,499 MB | 54.0 | 2.34s | 4/5 | 0/6 | 0/6 | **4/17 (24%)** | Dense arch. Needs turbo3 but struggles. |
-| **C** | qwen3.5-35b-a3b | Q4_K_M | TurboQuant | q8_0/q8_0 | ~20 GB | 23,715 MB | 196.7 | 2.38s | 0/5 | 6/7 | 0/6 | **6/17 (35%)** | Fastest throughput. Inconsistent quality. |
-| **D** | nemotron-3-nano | Q4_K_M | LM Studio | f16/f16 | 24.5 GB | -- | 78.4 | 4.22s | 0/5 | 3/7 | 0/6 | **3/18 (17%)** | Broken test files. |
-| **F** | nemotron-3-nano-4b | Q8_0 | LM Studio | f16/f16 | 4.2 GB | -- | 209.8 | 2.65s | 0/5 | -- | -- | -- | Non-functional code. |
+| **S** | gemma-4-26b-a4b | Q6_K | TurboQuant | turbo4/turbo4 | off | 25,636 MB | 142.2 | 2.32s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Best overall. Fast (12-15s/bench). |
+| **S** | gemma-4-26b-a4b | Q6_K | TurboQuant | turbo4/turbo4 | on | 25,162 MB | 146.5 | 2.42s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Thinking on also perfect with reasoning budget. |
+| **S** | gemma-4-31b-it | Q4_K_M | TurboQuant | turbo4/turbo4 | off | 22,293 MB | 53.3 | 2.20s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Dense arch. Was D-tier with thinking on. |
+| **S** | qwen3.5-35b-a3b | Q4_K_M | LM Studio | f16/f16 | on | -- | 92.9 | 2.39s | 5/5 | 8/8 | 6/6 | **19/19 (100%)** | LM Studio only. Regresses on llama-server. |
+| **A** | gemma-4-26b-a4b | Q4_K_M | TurboQuant | turbo4/turbo4 | off | 20,046 MB | 156.1 | 2.31s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Lowest VRAM (20 GB). One LRU edge case. |
+| **A** | qwopus-3.5-27b-v3 | Q6_K | TurboQuant | turbo4/turbo4 | off | 24,549 MB | 51.7 | 2.38s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Embeds reasoning in content even with -rea off. |
+| **A** | qwopus-3.5-27b-v3 | Q6_K | TurboQuant | turbo3/turbo3 | on | 24,035 MB | 52.9 | 2.23s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Heavy thinker. Reliable on turbo3. |
+| **A** | gemma-4-26b-a4b | Q6_K | LM Studio | f16/f16 | on | -- | 161.9 | 2.43s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Best speed/quality on LM Studio. |
+| **B** | qwen3.5-9b | Q8_0 | LM Studio | f16/f16 | on | -- | 113.2 | 2.20s | 5/5 | 6/7 | 4/6 | **15/18 (83%)** | Good for light tasks. LM Studio only. |
+| **C** | qwen3.5-35b-a3b | Q4_K_M | TurboQuant | turbo4/turbo4 | off | 23,910 MB | 188.1 | 2.31s | 4/5 | 7/7 | 0/6 | **11/17 (65%)** | Fastest. LRU consistently fails (Q4_K_M sensitivity). |
+| **D** | nemotron-3-nano | Q4_K_M | LM Studio | f16/f16 | on | -- | 78.4 | 4.22s | 0/5 | 3/7 | 0/6 | **3/18 (17%)** | Broken test files. |
+| **F** | nemotron-3-nano-4b | Q8_0 | LM Studio | f16/f16 | on | -- | 209.8 | 2.65s | 0/5 | -- | -- | -- | Non-functional code. |
 
 ## What Changed with TurboQuant
 

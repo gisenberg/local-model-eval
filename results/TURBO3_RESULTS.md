@@ -4,11 +4,21 @@ Tested April 2026 on RTX 5090 32 GB. TurboQuant fork of llama.cpp (`feature/turb
 
 ## TL;DR
 
-TurboQuant KV cache quantization enables larger context windows by compressing the KV cache 3-4x, but **the KV quant type must be matched to the model architecture**. Using turbo3 blindly on all models causes severe quality regressions on thinking/reasoning models. With per-model optimal settings, we achieve S-tier quality (100%) while unlocking full context windows.
+**turbo4 KV + thinking off (`-rea off`) is the optimal configuration.** Three models scored 100% (17/17) — including Gemma 31B which previously maxed out at 10/17. turbo4 provides 3.8x KV compression with only +0.23% PPL impact, and disabling thinking eliminates the reasoning loop failures that plagued turbo3.
 
-## Optimal Settings (Recommended)
+turboquant_plus documents that **Q4_K_M weights + symmetric turbo is the risky combination** — Q6_K weights consistently outperform Q4_K_M under KV quantization because higher weight precision gives the attention mechanism headroom to absorb KV noise.
 
-Per-model KV configs based on architecture analysis and community best practices:
+## Best Results: turbo4 + Thinking Off (Recommended)
+
+| Tier | Model | Quant | KV Config | Thinking | VRAM (32K) | Tok/s | TTFT | Expr Eval (5) | A* Path (6) | LRU Cache (6) | Total | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **S** | gemma-4-26b-a4b | Q6_K | turbo4/turbo4 | off | 25,636 MB | 142.2 | 2.32s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Perfect. Fastest S-tier at 121-124 tok/s gen. |
+| **S** | gemma-4-31b-it | Q4_K_M | turbo4/turbo4 | off | 22,293 MB | 53.3 | 2.20s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Transformed from D-tier. Dense arch works with turbo4. |
+| **A** | gemma-4-26b-a4b | Q4_K_M | turbo4/turbo4 | off | 20,046 MB | 156.1 | 2.31s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Lowest VRAM. One LRU lazy-cleanup edge case. |
+| **A** | qwopus-3.5-27b-v3 | Q6_K | turbo4/turbo4 | off | 24,549 MB | 51.7 | 2.38s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Reliable. Embeds reasoning in content even with -rea off. |
+| **C** | qwen3.5-35b-a3b | Q4_K_M | turbo4/turbo4 | off | 23,910 MB | 188.1 | 2.31s | 4/5 | 7/7 | 0/6 | **11/17 (65%)** | Fast but LRU consistently fails. Q4_K_M sensitivity. |
+
+## Previous Best: turbo4 + Thinking On (with reasoning budget)
 
 | Tier | Model | Quant | KV Config | VRAM (32K) | Tok/s | TTFT | Expr Eval (5) | A* Path (6) | LRU Cache (6) | Total | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -16,9 +26,47 @@ Per-model KV configs based on architecture analysis and community best practices
 | **A** | qwopus-3.5-27b-v3 | Q6_K | turbo3/turbo3 | 24,035 MB | 52.9 | 2.23s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Heavy thinker but reliable. Handles turbo3 well. |
 | **B** | gemma-4-26b-a4b | Q4_K_M | turbo4/turbo4 | 19,555 MB | 155.6 | 2.29s | 0/5 | 7/7 | 6/6 | **13/17 (76%)** | Fast, lowest VRAM. ExprEval had import errors. |
 | **C** | qwen3.5-35b-a3b | Q4_K_M | q8_0/q8_0 | 23,715 MB | 196.7 | 2.38s | 0/5 | 6/7 | 0/6 | **6/17 (35%)** | Fastest throughput but inconsistent code. |
-| **D** | gemma-4-31b-it | Q4_K_M | turbo3/turbo3 | 21,499 MB | 54.0 | 2.34s | 4/5 | 0/6 | 0/6 | **4/17 (24%)** | Dense arch is slow. A* has persistent import errors. |
+| **D** | gemma-4-31b-it | Q4_K_M | turbo3/turbo3 | 21,499 MB | 54.0 | 2.34s | 4/5 | 0/6 | 0/6 | **4/17 (24%)** | Dense arch needed turbo3. Struggles with thinking on. |
 
 Reasoning budget flags: `--reasoning-budget 12288` for Gemma 26B models, `--reasoning-budget 16384` for Gemma 31B, unrestricted for Qwen and Qwopus.
+
+## Thinking Off vs Thinking On (turbo4 KV)
+
+| Model | turbo4 + thinking ON | turbo4 + thinking OFF | Delta |
+|---|---|---|---|
+| Gemma 26B Q6_K | 17/17 (100%) | **17/17 (100%)** | Same — both perfect |
+| Gemma 31B Q4_K_M | 4/17 (24%) | **17/17 (100%)** | **+13 tests** |
+| Gemma 26B Q4_K_M | 13/17 (76%) | **16/17 (94%)** | +3 tests |
+| Qwopus 27B Q6_K | 16/17 (94%) | **16/17 (94%)** | Same |
+| Qwen 35B Q4_K_M | 6/17 (35%) | **11/17 (65%)** | +5 tests |
+
+Thinking off is equal or better for every model. The Gemma 31B result is transformative — from D-tier to S-tier.
+
+## turboquant_plus Findings
+
+The [turboquant_plus](https://github.com/TheTom/turboquant_plus) research suite documents validated configurations and quality tradeoffs:
+
+### Q4_K_M Weight Sensitivity (Critical)
+
+Q4_K_M weights + symmetric turbo KV is the documented risky combination. Smaller models (7B) can see catastrophic PPL (3556x). Larger models tolerate it better but show reduced quality vs Q6_K/Q8_0 weights. Our results confirm this:
+
+| Weight Quant | turbo4 + no-think | Notes |
+|---|---|---|
+| Q6_K | 17/17 (100%) | Consistently perfect |
+| Q4_K_M | 11-16/17 (65-94%) | Model-dependent, always worse than Q6_K |
+
+### Recommended Configs (from turboquant_plus)
+
+| Scenario | Config | Notes |
+|---|---|---|
+| Safe default | `-ctk q8_0 -ctv turbo4 -fa on` | Asymmetric — **GPU offload broken**, CPU only |
+| Quality-critical (code) | `-ctk turbo4 -ctv turbo4 -fa on` | Symmetric, validated for code generation |
+| Max compression | `-ctk turbo3 -ctv turbo3 -fa on` | +1.06% PPL, avoid on Q4_K_M weights |
+| Reasoning models | `-ctk turbo4 -ctv turbo4 -rea off` | **Our recommended config** |
+
+### Asymmetric K/V Limitation
+
+turboquant_plus recommends asymmetric K/V (e.g., `-ctk q8_0 -ctv turbo3`) as the safest config since K precision controls quality. However, [ggml-org/llama.cpp#20866](https://github.com/ggml-org/llama.cpp/issues/20866) documents that **asymmetric K/V types cannot be GPU-offloaded** — they force CPU processing, dropping throughput to ~30 tok/s. Until fixed, symmetric turbo4/turbo4 is the practical optimum.
 
 ## Why Per-Model KV Configs Matter
 
