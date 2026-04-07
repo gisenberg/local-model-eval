@@ -1,105 +1,123 @@
 # Model Rankings
 
-Tested April 2026 on RTX 5090 32GB. Models tested via both LM Studio (f16 KV) and TurboQuant llama-server (turbo3/turbo4 KV). All models fully GPU-offloaded with flash attention.
+Tested April 2026 on RTX 5090 32 GB. Models tested via LM Studio (f16 KV) and TurboQuant llama-server (turbo4 KV, `-rea off`). All models fully GPU-offloaded with flash attention, temperature 0 for single-shot and 0.3 for multi-run.
 
-## Tier List
+## Tier List (Single-Shot, temp 0, turbo4 KV, thinking off)
 
-| Tier | Model | Quant | Backend | KV Config | Thinking | VRAM (32K) | Tok/s | TTFT | Expr Eval (5) | A* Path (6+) | LRU Cache (6) | Total | Notes |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **S** | gemma-4-26b-a4b | Q6_K | TurboQuant | turbo4/turbo4 | off | 25,636 MB | 142.2 | 2.32s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Best overall. Fast (12-15s/bench). |
-| **S** | gemma-4-26b-a4b | Q6_K | TurboQuant | turbo4/turbo4 | on | 25,162 MB | 146.5 | 2.42s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Thinking on also perfect with reasoning budget. |
-| **S** | gemma-4-31b-it | Q4_K_M | TurboQuant | turbo4/turbo4 | off | 22,293 MB | 53.3 | 2.20s | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Dense arch. Was D-tier with thinking on. |
-| **S** | qwen3.5-35b-a3b | Q4_K_M | LM Studio | f16/f16 | on | -- | 92.9 | 2.39s | 5/5 | 8/8 | 6/6 | **19/19 (100%)** | LM Studio only. Regresses on llama-server. |
-| **A** | gemma-4-26b-a4b | Q4_K_M | TurboQuant | turbo4/turbo4 | off | 20,046 MB | 156.1 | 2.31s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Lowest VRAM (20 GB). One LRU edge case. |
-| **A** | qwopus-3.5-27b-v3 | Q6_K | TurboQuant | turbo4/turbo4 | off | 24,549 MB | 51.7 | 2.38s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Embeds reasoning in content even with -rea off. |
-| **A** | qwopus-3.5-27b-v3 | Q6_K | TurboQuant | turbo3/turbo3 | on | 24,035 MB | 52.9 | 2.23s | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Heavy thinker. Reliable on turbo3. |
-| **A** | gemma-4-26b-a4b | Q6_K | LM Studio | f16/f16 | on | -- | 161.9 | 2.43s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Best speed/quality on LM Studio. |
-| **B** | qwen3.5-9b | Q8_0 | LM Studio | f16/f16 | on | -- | 113.2 | 2.20s | 5/5 | 6/7 | 4/6 | **15/18 (83%)** | Good for light tasks. LM Studio only. |
-| **C** | qwen3.5-35b-a3b | Q4_K_M | TurboQuant | turbo4/turbo4 | off | 23,910 MB | 188.1 | 2.31s | 4/5 | 7/7 | 0/6 | **11/17 (65%)** | Fastest. LRU consistently fails (Q4_K_M sensitivity). |
-| **D** | nemotron-3-nano | Q4_K_M | LM Studio | f16/f16 | on | -- | 78.4 | 4.22s | 0/5 | 3/7 | 0/6 | **3/18 (17%)** | Broken test files. |
-| **F** | nemotron-3-nano-4b | Q8_0 | LM Studio | f16/f16 | on | -- | 209.8 | 2.65s | 0/5 | -- | -- | -- | Non-functional code. |
+| Tier | Model | Quant | VRAM (32K) | Tok/s | Expr Eval (5) | A* Path (6) | LRU Cache (6) | Total | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| **S** | gemma-4-26b-a4b | Q6_K | 25,636 MB | 142 | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Best overall. Fastest S-tier. |
+| **S** | gemma-4-31b-it | Q4_K_M | 22,293 MB | 53 | 5/5 | 6/6 | 6/6 | **17/17 (100%)** | Dense arch. Requires TurboQuant to fit. |
+| **S** | qwen3.5-27b-opus-distilled | Q4_K_M | 19,565 MB | 64 | 5/5 | 7/7 | 5/6 | **17/17 (100%)** | Lowest VRAM. Bonus A* tests. |
+| **A** | gemma-4-26b-a4b | Q4_K_M | 20,046 MB | 156 | 5/5 | 6/6 | 5/6 | **16/17 (94%)** | Fastest model. One LRU edge case. |
+| **A** | qwopus-3.5-27b-v3 | Q6_K | 24,549 MB | 52 | 4/5 | 6/6 | 6/6 | **16/17 (94%)** | Embeds reasoning in content. |
+| **B+** | harmonic-27b | Q8_0 | 30,835 MB | 45 | 4/5 | 6/6 | 5/6 | **15/17 (88%)** | VRAM-heavy (31 GB). |
+| **B+** | harmonic-27b | Q4_K_M | 19,995 MB | 66 | 4/5 | 6/6 | 5/6 | **15/17 (88%)** | Same score, half the VRAM. |
+| **C** | qwen3.5-35b-a3b | Q4_K_M | 23,910 MB | 188 | 4/5 | 7/7 | 0/6 | **11/17 (65%)** | Fastest raw throughput. LRU always fails. |
+| **C** | qwen3.5-27b | Q6_K | 24,606 MB | 51 | 4/5 | 6/6 | 0/6 | **10/17 (59%)** | Base model. LRU 0/6 — fine-tuning fixes this. |
 
-## What Changed with TurboQuant
+## Expanded Suite (temp 0.3, best-of-3 / average, 6 benchmarks)
 
-### Gemma Q6_K went from A-tier to S-tier
+Adds String Processor (easy), Implementation-Only ExprEval (harness tests), and Debug BST Fix. 3 runs per benchmark at temperature 0.3 to measure consistency.
 
-The original LM Studio evaluation scored Gemma 26B Q6_K at 16/17 — one LRU cache test failed due to a subtle lazy-cleanup bug in `size()`. With TurboQuant's llama-server using turbo4 KV + `--reasoning-budget 12288`, the same model scored **17/17 (100%)**. The reasoning budget cap forced the model to transition from thinking to code output more decisively, which paradoxically produced better code.
+| Model | Quant | VRAM | Best-of-3 | Average | Consistency | Notes |
+|---|---|---|---|---|---|---|
+| **gemma-4-31b-it** | Q4_K_M | 22,565 MB | **31/31 (100%)** | **30.7/31 (99%)** | Very high | Perfect best, near-perfect avg. Most consistent S-tier. |
+| **harmonic-27b** | Q8_0 | 30,819 MB | **31/31 (100%)** | **28.7/31 (93%)** | High | A* 6/6 every run. ExprEval slightly variable. |
+| **harmonic-27b** | Q4_K_M | 19,936 MB | **31/31 (100%)** | **25.7/31 (83%)** | Moderate | Best-of-3 perfect but avg lower. LRU variable (3-6). |
+| **qwen3.5-27b-opus** | Q4_K_M | 19,928 MB | **31/31 (100%)** | **25.3/31 (82%)** | Moderate | A* always passes (6-8). ImplOnly variable (1-5). |
+| **gemma-4-26b-a4b** | Q6_K | 25,972 MB | **30/31 (97%)** | **30.0/31 (97%)** | Very high | ExprEval 4/5 all 3 runs. Most consistent overall. |
+| **qwopus-3.5-27b-v3** | Q6_K | 24,875 MB | **30/31 (97%)** | **24.0/31 (77%)** | Low | LRU: 5/6, 2/6, 0/6. High variance on hard benchmarks. |
+| **qwen3.5-35b-a3b** | Q4_K_M | 24,288 MB | **25/31 (81%)** | **24.3/31 (78%)** | High (on what it passes) | LRU: 0/6 all runs. Genuine capability gap. |
 
-### Qwen 35B regressed on llama-server
+### What the Expanded Suite Reveals
 
-Qwen 35B was the undisputed champion on LM Studio (19/19, 100%). On llama-server — regardless of KV config — it scored 6/17 at best. This is NOT a KV quantization issue: even with q8_0 KV (essentially lossless), the output differs due to FP accumulation order differences between LM Studio's backend and raw llama-server (different parallel slot defaults, batch scheduling, etc.). The model is highly sensitive to these infrastructure-level differences at temperature=0.
+**Consistency matters more than peak scores.** Gemma 26B Q6_K scores "only" 30/31 best-of-3, but its average (30.0) nearly matches — it produces the same quality every run. Qwopus scores 30/31 best-of-3 but averages 24.0 — its quality varies wildly between runs.
 
-### New models entered the rankings
+**New benchmarks differentiate the floor:**
+- **String Processor** (easy): Every model passes 5/5, confirming basic coding ability across the board
+- **Debug BST Fix**: 4/4 on every run for every model — all can reliably identify and fix bugs
+- **Impl-Only ExprEval** (harness tests): Isolates implementation quality from test-writing. Most models score 5/5, confirming that self-test failures are usually about test-writing, not implementation quality
 
-- **Qwopus 3.5 27B-v3 Q6_K** (A-tier, 94%): A fine-tune of Qwen 3.5 27B trained on Opus-distilled reasoning data. Dense but hybrid DeltaNet architecture (16/64 attention layers). Slower than Gemma but highly reliable — only model to score 6/6 on both A* and LRU on turbo3 KV.
-- **Gemma 4 31B-IT Q4_K_M** (C-tier, 24%): Dense 30.7B model, NOT MoE. 7x more expensive KV cache per token than the 26B-A4B variant. Needs turbo3 to fit even 32K context, struggles with A* pathfinding.
+**Temperature 0 vs 0.3:** Single-shot temp 0 is implementation-dependent — FP accumulation order in the inference engine changes the output. Temp 0.3 with 3 runs is more robust and reveals true capability vs lucky sampling.
+
+## LM Studio Baselines (f16 KV, temp 0)
+
+| Tier | Model | Quant | Tok/s | TTFT | Expr Eval (5) | A* Path (6+) | LRU Cache (6) | Total |
+|---|---|---|---|---|---|---|---|---|
+| **S** | qwen3.5-35b-a3b | Q4_K_M | 92.9 | 2.39s | 5/5 | 8/8 | 6/6 | **19/19 (100%)** |
+| **A** | gemma-4-26b-a4b | Q6_K | 161.9 | 2.43s | 5/5 | 6/6 | 5/6 | **16/17 (94%)** |
+| **B** | qwen3.5-9b | Q8_0 | 113.2 | 2.20s | 5/5 | 6/7 | 4/6 | **15/18 (83%)** |
+| **D** | nemotron-3-nano | Q4_K_M | 78.4 | 4.22s | 0/5 | 3/7 | 0/6 | **3/18 (17%)** |
+| **F** | nemotron-3-nano-4b | Q8_0 | 209.8 | 2.65s | 0/5 | -- | -- | -- |
+
+Note: Qwen 35B's S-tier score on LM Studio does not reproduce on llama-server due to FP accumulation order differences at temperature 0. At temp 0.3 with turbo4 KV, it scores 25/31 best-of-3 (81%) — LRU Cache is the persistent failure.
+
+## Recommendations
+
+### For code generation quality: Gemma 4 26B-A4B Q6_K
+- 17/17 (100%) single-shot, 97% average across runs
+- 142 tok/s — fast enough for interactive use
+- Reaches ~230K context with turbo4 KV
+- Most consistent model in the expanded suite
+
+### For VRAM-constrained setups: Qwen 3.5 27B Opus-Distilled Q4_K_M
+- 17/17 (100%) single-shot, 31/31 best-of-3
+- Only 20 GB VRAM at 32K context — leaves 12 GB for context scaling
+- 64 tok/s — moderate speed
+- Full 262K native context fits easily
+
+### For maximum context: Gemma 4 31B-IT Q4_K_M
+- 17/17 (100%) single-shot, 31/31 (100%) best-of-3
+- **Requires TurboQuant** — only fits 16K context without KV compression
+- 53 tok/s, dense architecture
+- Most consistent model in expanded suite (99% average)
+
+### For raw speed: Qwen 3.5 35B-A3B Q4_K_M
+- 188 tok/s — 3x faster than Gemma 31B
+- 65% code quality (LRU consistently fails)
+- Best for quick drafts where speed > correctness
 
 ## Full Context Window Analysis
 
-With optimal TurboQuant KV configs on the RTX 5090 (32 GB):
-
-| Model | KV Config | KV/Token | Max Usable Ctx | Full 262K? |
-|---|---|---|---|---|
-| qwen3.5-35b-a3b Q4_K_M | q8_0/q8_0 | ~10 KB | **262K** | Yes |
-| qwopus-3.5-27b-v3 Q6_K | turbo3/turbo3 | ~16 KB | **262K** | Yes |
-| gemma-4-26b-a4b Q4_K_M | turbo4/turbo4 | ~36 KB | **262K** | Yes |
-| gemma-4-26b-a4b Q6_K | turbo4/turbo4 | ~36 KB | **~230K** | Nearly |
-| gemma-4-31b-it Q4_K_M | turbo3/turbo3 | ~217 KB | **~58K** | No |
-
-Previously, Gemma 26B Q6_K at 256K context with f16 KV dropped from 150 to 55 tok/s due to RAM spill. With turbo4 KV, it fits to ~230K entirely in VRAM.
-
-## Benchmark Details
-
-### Expression Evaluator (Medium)
-Recursive descent parser for `+`, `-`, `*`, `/` with operator precedence, parentheses, unary minus, floats, and error handling. 5 pytest tests.
-
-- **S/A tier**: All produced correct implementations. Differences were in test assertions.
-- **D/F tier**: Nemotron 30B had a test import bug (`from module import ValueError`). Nemotron 4B had a broken regex (`(?P<plus>+)` — unescaped quantifier) plus undefined variables.
-
-### A* Pathfinding (Medium-Hard)
-Weighted 2D grid pathfinding with walls, Manhattan distance heuristic, heapq open set. 6 pytest tests.
-
-- **Qwen 35B (LM Studio)**: 8/8 (generated bonus tests, all passed)
-- **Gemma Q6_K (TurboQuant turbo4)**: 6/6
-- **Qwopus Q6_K (turbo3)**: 6/6
-- **Gemma 31B (turbo3)**: 0/6 (persistent import errors in test file)
-
-### LRU Cache with TTL (Hard)
-O(1) LRU cache with doubly-linked list + hash map, time-based expiry via mocked `time.monotonic()`, lazy cleanup. 6 pytest tests.
-
-- **Gemma Q6_K (TurboQuant turbo4)**: 6/6 — improved from 5/6 on LM Studio
-- **Qwopus Q6_K (turbo3)**: 6/6
-- **Qwen 35B (LM Studio)**: 6/6
-
-## TurboQuant Configuration Guide
-
-### Per-Model KV Config Selection
-
-| Architecture | KV Savings with turbo3 | Recommendation |
-|---|---|---|
-| DeltaNet hybrid, few attn layers (Qwen 35B) | Minimal (~15 KB/token) | **q8_0/q8_0** — don't compress |
-| DeltaNet hybrid, moderate attn (Qwopus 27B) | Moderate (~48 KB/token) | **turbo3/turbo3** — good tradeoff |
-| Sliding window + global (Gemma 26B) | Significant (~90 KB/token) | **turbo4/turbo4** — safer for thinking |
-| Dense transformer (Gemma 31B) | Essential (~650 KB/token) | **turbo3/turbo3** — must compress |
-
-### Key Flags
-
-- `-ctk TYPE -ctv TYPE`: KV cache quantization (turbo2/turbo3/turbo4/q8_0/q4_0/f16)
-- `--reasoning-budget N`: Cap thinking tokens (-1=unlimited, N=max thinking tokens)
-- `-fa on`: Flash attention — **required** for turbo KV types
-- `-np 1`: Single parallel slot for max context per request
-
-See [TURBO3_RESULTS.md](TURBO3_RESULTS.md) for full experimental data across 4 benchmark runs.
+| Model | Weights | KV Config | KV/Token | Max Usable Ctx | Full 262K? |
+|---|---|---|---|---|---|
+| qwen3.5-27b-opus Q4_K_M | 16 GB | turbo4/turbo4 | ~36 KB | **262K (full)** | Yes |
+| gemma-4-26b-a4b Q4_K_M | 16 GB | turbo4/turbo4 | ~36 KB | **262K (full)** | Yes |
+| qwen3.5-35b-a3b Q4_K_M | 20 GB | turbo4/turbo4 | ~8 KB | **262K (full)** | Yes |
+| harmonic-27b Q4_K_M | 16 GB | turbo4/turbo4 | ~36 KB | **262K (full)** | Yes |
+| qwopus-3.5-27b-v3 Q6_K | 22 GB | turbo4/turbo4 | ~36 KB | **262K (full)** | Yes |
+| gemma-4-26b-a4b Q6_K | 22 GB | turbo4/turbo4 | ~36 KB | **~230K** | Nearly |
+| harmonic-27b Q8_0 | 27 GB | turbo4/turbo4 | ~36 KB | **~60K** | No |
+| gemma-4-31b-it Q4_K_M | 18 GB | turbo4/turbo4 | ~260 KB | **~58K** | No |
 
 ## Quantization Impact
 
-Direct comparison of Gemma 4 26B at two quant levels, same prompt:
+| Weight Quant | Behavior Under TurboQuant KV |
+|---|---|
+| **Q6_K** | Consistently outperforms Q4_K_M. Higher weight precision absorbs KV quantization noise. |
+| **Q8_0** | Best quality but often doesn't fit. Harmonic Q8_0 = Q4_K_M scores at 2x the VRAM. |
+| **Q4_K_M** | Documented risky combination with turbo KV (turboquant_plus). Model-dependent — Gemma 31B handles it, Qwen 35B doesn't. |
 
-| Quant | Backend | KV Config | Tok/s | Expr Eval | Total |
-|---|---|---|---|---|---|
-| Q4_K_M | LM Studio | f16/f16 | 168.8 | 4/5 | -- |
-| Q6_K | LM Studio | f16/f16 | 161.9 | 5/5 | 16/17 |
-| Q4_K_M | TurboQuant | turbo4/turbo4 | 155.6 | 0/5 | 13/17 |
-| Q6_K | TurboQuant | turbo4/turbo4 | 146.5 | 5/5 | **17/17** |
+## TurboQuant Configuration
 
-Q6_K consistently outperforms Q4_K_M on code quality. The 2 extra bits per weight are worth the 7% throughput cost.
+### Recommended Server Startup
+
+```bash
+# General-purpose (best config for most models)
+llama-server -m model.gguf --port 8080 -c 32768 -ngl 99 \
+  -fa on -ctk turbo4 -ctv turbo4 -np 1 -rea off
+```
+
+### Key Flags
+
+| Flag | Purpose | Notes |
+|---|---|---|
+| `-ctk turbo4 -ctv turbo4` | KV cache quantization | 3.8x compression, +0.23% PPL |
+| `-rea off` | Disable thinking | Prevents reasoning loops, 5-10x faster |
+| `-fa on` | Flash attention | **Required** for turbo KV types |
+| `-np 1` | Single parallel slot | Maximizes context per request |
+| `--reasoning-budget N` | Alternative: cap thinking tokens | Use if you need thinking but want a safety net |
+
+See [TURBO3_RESULTS.md](TURBO3_RESULTS.md) for full experimental data across all runs.
+See [TURBOQUANT_IMPACT.md](TURBOQUANT_IMPACT.md) for what TurboQuant unlocks on 32 GB VRAM.

@@ -164,6 +164,52 @@ parallel=4 improved A* scores for Gemma but caused MORE thinking exhaustion else
 
 See "Optimal Settings" table above. This is the configuration to use going forward.
 
+## Expanded Benchmark Suite (temp 0.3, 3 runs, 6 benchmarks)
+
+### New Benchmarks
+
+In addition to the original 3 (Expression Evaluator, A* Pathfinding, LRU Cache), we added:
+
+- **String Processor** (Easy, 5 tests): reverse_words, count_vowels, is_palindrome, caesar_cipher, most_common_word. Establishes a quality floor.
+- **Expression Evaluator Implementation-Only** (Medium, 5 tests): Same prompt but model writes only the implementation; tests are provided by the harness. Isolates code quality from test-writing.
+- **Debug BST Fix** (Medium, 4 tests): Given a BST with 3 bugs, fix all bugs. Tests code reading and targeted repair.
+
+### Temperature 0.3 Methodology
+
+Temperature 0 is deterministic but implementation-dependent — FP accumulation order in the inference engine changes the output. This caused Qwen 35B to score 19/19 on LM Studio but 6/17 on llama-server with the same model. Temperature 0.3 with 3 runs per benchmark:
+
+- Introduces enough sampling diversity to reduce infrastructure coupling
+- Reveals model consistency (average score) vs peak capability (best-of-3)
+- Separates genuine capability gaps from sampling luck
+
+### Results: Consistency Is the Differentiator
+
+| Model | Quant | Best-of-3 | Average | Gap | Most Consistent Benchmark |
+|---|---|---|---|---|---|
+| gemma-4-31b-it | Q4_K_M | 31/31 (100%) | 30.7/31 (99%) | 0.3 | All benchmarks near-perfect |
+| gemma-4-26b-a4b | Q6_K | 30/31 (97%) | 30.0/31 (97%) | 0 | ExprEval: 4/5 all 3 runs |
+| harmonic-27b | Q8_0 | 31/31 (100%) | 28.7/31 (93%) | 2.3 | A* 6/6 every run, Debug 4/4 every run |
+| harmonic-27b | Q4_K_M | 31/31 (100%) | 25.7/31 (83%) | 5.3 | String Processor: 5/5 all 3 runs |
+| qwen3.5-27b-opus | Q4_K_M | 31/31 (100%) | 25.3/31 (82%) | 5.7 | A* always 6-8, Debug 4/4 every run |
+| qwopus-3.5-27b-v3 | Q6_K | 30/31 (97%) | 24.0/31 (77%) | 6 | LRU: 5/6, 2/6, 0/6 — most variable |
+| qwen3.5-35b-a3b | Q4_K_M | 25/31 (81%) | 24.3/31 (78%) | 0.7 | LRU: 0/6 all 3 runs (genuine gap) |
+
+**Gemma models are the most consistent.** Both 26B and 31B have best-of-3 nearly equal to their average. Qwen-family models (Qwopus, Opus-distilled, Harmonic) show higher variance — their best-of-3 scores are generous.
+
+### Universal Passes
+
+Every model, every run, 100%:
+- **String Processor** (easy): Confirms basic coding ability
+- **Debug BST Fix**: All models reliably identify and fix bugs
+
+### Harmonic 27B (New)
+
+Fine-tune of Qwen 3.5 27B focused on structured reasoning (self-correction, verification, multi-path exploration). Trained on only 799 curated rows.
+
+- Q8_0 (27 GB): 15/17 single-shot, 31/31 best-of-3, A* 6/6 every run
+- Q4_K_M (16 GB): 15/17 single-shot, 31/31 best-of-3, same quality at half the VRAM
+- Consistent on A* and Debug. Variable on ExprEval and LRU at temp 0.3.
+
 ## Settings Reference
 
 ### Build
