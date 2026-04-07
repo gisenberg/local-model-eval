@@ -1,0 +1,1703 @@
+[
+  {
+    "model": "Gemma 4 26B-A4B Q6_K",
+    "model_key": "gemma26b-q6k",
+    "vram_mb": 25972,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 120.6,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 117.9,
+            "tokens": 1499,
+            "elapsed_s": 12.72,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 120.5,
+            "tokens": 1483,
+            "elapsed_s": 12.31,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 123.3,
+            "tokens": 1772,
+            "elapsed_s": 14.37,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 6.3,
+        "best_passed": 7,
+        "avg_tok_per_sec": 123.5,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 123.3,
+            "tokens": 1771,
+            "elapsed_s": 14.37,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 123.9,
+            "tokens": 1808,
+            "elapsed_s": 14.59,
+            "finish_reason": "stop",
+            "tests_passed": 7,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 123.2,
+            "tokens": 1780,
+            "elapsed_s": 14.45,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 6.0,
+        "best_passed": 6,
+        "avg_tok_per_sec": 125.0,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 125.3,
+            "tokens": 2037,
+            "elapsed_s": 16.26,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 125.1,
+            "tokens": 2055,
+            "elapsed_s": 16.43,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 124.7,
+            "tokens": 1975,
+            "elapsed_s": 15.83,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 112.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 111.7,
+            "tokens": 1022,
+            "elapsed_s": 9.15,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 115.4,
+            "tokens": 1194,
+            "elapsed_s": 10.35,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 110.2,
+            "tokens": 984,
+            "elapsed_s": 8.93,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 115.1,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 115.8,
+            "tokens": 1213,
+            "elapsed_s": 10.48,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 115.5,
+            "tokens": 1180,
+            "elapsed_s": 10.21,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 114.0,
+            "tokens": 1154,
+            "elapsed_s": 10.12,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 79.6,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 79.6,
+            "tokens": 379,
+            "elapsed_s": 4.76,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 79.8,
+            "tokens": 379,
+            "elapsed_s": 4.75,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 79.3,
+            "tokens": 379,
+            "elapsed_s": 4.78,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "Gemma 4 31B-IT Q4_K_M",
+    "model_key": "gemma31b-q4km",
+    "vram_mb": 22565,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 48.6,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 48.6,
+            "tokens": 1315,
+            "elapsed_s": 27.04,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 48.6,
+            "tokens": 1244,
+            "elapsed_s": 25.59,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.6,
+            "tokens": 1334,
+            "elapsed_s": 27.44,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 5.7,
+        "best_passed": 6,
+        "avg_tok_per_sec": 48.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 48.5,
+            "tokens": 1672,
+            "elapsed_s": 34.5,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 48.4,
+            "tokens": 1646,
+            "elapsed_s": 34.02,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.4,
+            "tokens": 1650,
+            "elapsed_s": 34.09,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 6.0,
+        "best_passed": 6,
+        "avg_tok_per_sec": 48.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 48.4,
+            "tokens": 1865,
+            "elapsed_s": 38.55,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 48.4,
+            "tokens": 1838,
+            "elapsed_s": 38.01,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.3,
+            "tokens": 1736,
+            "elapsed_s": 35.93,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 47.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 46.7,
+            "tokens": 796,
+            "elapsed_s": 17.03,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 47.0,
+            "tokens": 813,
+            "elapsed_s": 17.31,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.4,
+            "tokens": 1244,
+            "elapsed_s": 25.7,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 47.9,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 47.8,
+            "tokens": 964,
+            "elapsed_s": 20.18,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 47.7,
+            "tokens": 989,
+            "elapsed_s": 20.75,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.1,
+            "tokens": 1007,
+            "elapsed_s": 20.93,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 40.7,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 40.3,
+            "tokens": 379,
+            "elapsed_s": 9.41,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 40.9,
+            "tokens": 379,
+            "elapsed_s": 9.26,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 40.8,
+            "tokens": 379,
+            "elapsed_s": 9.29,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "Qwopus 3.5 27B-v3 Q6_K",
+    "model_key": "qwopus27b-q6k",
+    "vram_mb": 24875,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 3.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 49.5,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 49.2,
+            "tokens": 9026,
+            "elapsed_s": 183.62,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 49.7,
+            "tokens": 6942,
+            "elapsed_s": 139.56,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 49.5,
+            "tokens": 7735,
+            "elapsed_s": 156.41,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 5,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 6.0,
+        "best_passed": 7,
+        "avg_tok_per_sec": 49.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 49.7,
+            "tokens": 6586,
+            "elapsed_s": 132.54,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 49.2,
+            "tokens": 8158,
+            "elapsed_s": 165.65,
+            "finish_reason": "stop",
+            "tests_passed": 7,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 49.4,
+            "tokens": 7790,
+            "elapsed_s": 157.74,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 2.3,
+        "best_passed": 5,
+        "avg_tok_per_sec": 48.3,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 48.7,
+            "tokens": 9870,
+            "elapsed_s": 202.84,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 47.8,
+            "tokens": 12509,
+            "elapsed_s": 261.7,
+            "finish_reason": "stop",
+            "tests_passed": 2,
+            "tests_failed": 4,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.5,
+            "tokens": 10504,
+            "elapsed_s": 216.5,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 6,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 50.2,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 50.2,
+            "tokens": 4510,
+            "elapsed_s": 89.8,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 50.1,
+            "tokens": 5351,
+            "elapsed_s": 106.71,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 50.2,
+            "tokens": 4892,
+            "elapsed_s": 97.54,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 3.7,
+        "best_passed": 5,
+        "avg_tok_per_sec": 49.7,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 49.0,
+            "tokens": 9246,
+            "elapsed_s": 188.6,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 49.9,
+            "tokens": 6368,
+            "elapsed_s": 127.61,
+            "finish_reason": "stop",
+            "tests_passed": 1,
+            "tests_failed": 4,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 50.3,
+            "tokens": 4936,
+            "elapsed_s": 98.19,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 49.0,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 48.7,
+            "tokens": 1510,
+            "elapsed_s": 31.01,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 49.7,
+            "tokens": 2152,
+            "elapsed_s": 43.3,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 48.6,
+            "tokens": 1334,
+            "elapsed_s": 27.44,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M",
+    "model_key": "qwen27b-opus-q4km",
+    "vram_mb": 19928,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 3.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 61.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 61.4,
+            "tokens": 4172,
+            "elapsed_s": 67.93,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 61.2,
+            "tokens": 2742,
+            "elapsed_s": 44.82,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 61.5,
+            "tokens": 3132,
+            "elapsed_s": 50.96,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 5,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 7.0,
+        "best_passed": 8,
+        "avg_tok_per_sec": 61.1,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 60.9,
+            "tokens": 2887,
+            "elapsed_s": 47.42,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 61.1,
+            "tokens": 2670,
+            "elapsed_s": 43.71,
+            "finish_reason": "stop",
+            "tests_passed": 7,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 61.3,
+            "tokens": 3845,
+            "elapsed_s": 62.7,
+            "finish_reason": "stop",
+            "tests_passed": 8,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 5.3,
+        "best_passed": 6,
+        "avg_tok_per_sec": 61.1,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 61.3,
+            "tokens": 3753,
+            "elapsed_s": 61.23,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 61.1,
+            "tokens": 2715,
+            "elapsed_s": 44.42,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 60.9,
+            "tokens": 5815,
+            "elapsed_s": 95.49,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 4.7,
+        "best_passed": 5,
+        "avg_tok_per_sec": 60.5,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 61.0,
+            "tokens": 2531,
+            "elapsed_s": 41.52,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 60.1,
+            "tokens": 1738,
+            "elapsed_s": 28.9,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 60.5,
+            "tokens": 2234,
+            "elapsed_s": 36.92,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 2.3,
+        "best_passed": 5,
+        "avg_tok_per_sec": 61.0,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 60.7,
+            "tokens": 2224,
+            "elapsed_s": 36.61,
+            "finish_reason": "stop",
+            "tests_passed": 1,
+            "tests_failed": 4,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 60.8,
+            "tokens": 2196,
+            "elapsed_s": 36.1,
+            "finish_reason": "stop",
+            "tests_passed": 1,
+            "tests_failed": 4,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 61.6,
+            "tokens": 3853,
+            "elapsed_s": 62.59,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 53.7,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 51.7,
+            "tokens": 571,
+            "elapsed_s": 11.05,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 56.9,
+            "tokens": 980,
+            "elapsed_s": 17.22,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 52.6,
+            "tokens": 594,
+            "elapsed_s": 11.29,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "Harmonic 27B Q8_0",
+    "model_key": "harmonic27b-q8",
+    "vram_mb": 30819,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 3.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 43.0,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 43.0,
+            "tokens": 1638,
+            "elapsed_s": 38.09,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 43.1,
+            "tokens": 1739,
+            "elapsed_s": 40.31,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 5,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 43.0,
+            "tokens": 1584,
+            "elapsed_s": 36.85,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 6.0,
+        "best_passed": 6,
+        "avg_tok_per_sec": 43.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 43.4,
+            "tokens": 2167,
+            "elapsed_s": 49.93,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 43.5,
+            "tokens": 2146,
+            "elapsed_s": 49.36,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 43.4,
+            "tokens": 2093,
+            "elapsed_s": 48.19,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 5.7,
+        "best_passed": 6,
+        "avg_tok_per_sec": 43.3,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 43.4,
+            "tokens": 2144,
+            "elapsed_s": 49.43,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 43.3,
+            "tokens": 2117,
+            "elapsed_s": 48.87,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 43.3,
+            "tokens": 2250,
+            "elapsed_s": 51.91,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 42.5,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 42.1,
+            "tokens": 1234,
+            "elapsed_s": 29.28,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 42.7,
+            "tokens": 1433,
+            "elapsed_s": 33.58,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 42.6,
+            "tokens": 1328,
+            "elapsed_s": 31.19,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 42.1,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 42.2,
+            "tokens": 1220,
+            "elapsed_s": 28.88,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 42.0,
+            "tokens": 1122,
+            "elapsed_s": 26.72,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 42.0,
+            "tokens": 1113,
+            "elapsed_s": 26.52,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 35.1,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 34.7,
+            "tokens": 336,
+            "elapsed_s": 9.67,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 35.4,
+            "tokens": 336,
+            "elapsed_s": 9.49,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 35.3,
+            "tokens": 336,
+            "elapsed_s": 9.53,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "Harmonic 27B Q4_K_M",
+    "model_key": "harmonic27b-q4km",
+    "vram_mb": 19936,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 3.3,
+        "best_passed": 5,
+        "avg_tok_per_sec": 60.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 60.4,
+            "tokens": 1983,
+            "elapsed_s": 32.84,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 60.2,
+            "tokens": 1820,
+            "elapsed_s": 30.24,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 60.6,
+            "tokens": 2292,
+            "elapsed_s": 37.79,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 5,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 5.7,
+        "best_passed": 6,
+        "avg_tok_per_sec": 60.3,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 60.1,
+            "tokens": 1962,
+            "elapsed_s": 32.62,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 60.6,
+            "tokens": 2251,
+            "elapsed_s": 37.12,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 60.3,
+            "tokens": 2022,
+            "elapsed_s": 33.52,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 1,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 4.0,
+        "best_passed": 6,
+        "avg_tok_per_sec": 60.8,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 60.6,
+            "tokens": 2594,
+            "elapsed_s": 42.82,
+            "finish_reason": "stop",
+            "tests_passed": 3,
+            "tests_failed": 3,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 60.9,
+            "tokens": 2502,
+            "elapsed_s": 41.06,
+            "finish_reason": "stop",
+            "tests_passed": 3,
+            "tests_failed": 3,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 60.8,
+            "tokens": 2472,
+            "elapsed_s": 40.68,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 57.6,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 57.3,
+            "tokens": 1071,
+            "elapsed_s": 18.68,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 57.4,
+            "tokens": 1067,
+            "elapsed_s": 18.59,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 58.0,
+            "tokens": 1193,
+            "elapsed_s": 20.57,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 3.7,
+        "best_passed": 5,
+        "avg_tok_per_sec": 57.3,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 57.1,
+            "tokens": 1067,
+            "elapsed_s": 18.69,
+            "finish_reason": "stop",
+            "tests_passed": 1,
+            "tests_failed": 4,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 57.6,
+            "tokens": 1124,
+            "elapsed_s": 19.52,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 57.3,
+            "tokens": 1025,
+            "elapsed_s": 17.9,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 45.3,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 44.9,
+            "tokens": 336,
+            "elapsed_s": 7.48,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 45.5,
+            "tokens": 336,
+            "elapsed_s": 7.39,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 45.6,
+            "tokens": 336,
+            "elapsed_s": 7.36,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "Qwen 3.5 35B-A3B Q4_K_M",
+    "model_key": "qwen35b-q4km",
+    "vram_mb": 24288,
+    "temperature": 0.3,
+    "runs": 3,
+    "benchmarks": {
+      "expression_evaluator": {
+        "name": "Expression Evaluator",
+        "expected": 5,
+        "avg_passed": 4.3,
+        "best_passed": 5,
+        "avg_tok_per_sec": 160.8,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 159.7,
+            "tokens": 2679,
+            "elapsed_s": 16.78,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 160.8,
+            "tokens": 2421,
+            "elapsed_s": 15.05,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 1,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 162.0,
+            "tokens": 2622,
+            "elapsed_s": 16.19,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "astar": {
+        "name": "A* Pathfinding",
+        "expected": 6,
+        "avg_passed": 6.3,
+        "best_passed": 7,
+        "avg_tok_per_sec": 163.7,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 163.4,
+            "tokens": 3059,
+            "elapsed_s": 18.72,
+            "finish_reason": "stop",
+            "tests_passed": 7,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 164.3,
+            "tokens": 3273,
+            "elapsed_s": 19.92,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 163.5,
+            "tokens": 3078,
+            "elapsed_s": 18.83,
+            "finish_reason": "stop",
+            "tests_passed": 6,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "lru_cache": {
+        "name": "LRU Cache with TTL",
+        "expected": 6,
+        "avg_passed": 0.0,
+        "best_passed": 0,
+        "avg_tok_per_sec": 164.1,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 162.5,
+            "tokens": 2911,
+            "elapsed_s": 17.91,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "tests_errors": 15
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 165.9,
+            "tokens": 3743,
+            "elapsed_s": 22.57,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "tests_errors": 25
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 164.0,
+            "tokens": 3204,
+            "elapsed_s": 19.54,
+            "finish_reason": "stop",
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "tests_errors": 17
+          }
+        ]
+      },
+      "string_processor": {
+        "name": "String Processor",
+        "expected": 5,
+        "avg_passed": 11.7,
+        "best_passed": 25,
+        "avg_tok_per_sec": 148.2,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 153.4,
+            "tokens": 1818,
+            "elapsed_s": 11.85,
+            "finish_reason": "stop",
+            "tests_passed": 25,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 147.2,
+            "tokens": 1462,
+            "elapsed_s": 9.93,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 143.9,
+            "tokens": 1342,
+            "elapsed_s": 9.33,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "expr_eval_impl": {
+        "name": "Expr Eval (impl only)",
+        "expected": 5,
+        "avg_passed": 5.0,
+        "best_passed": 5,
+        "avg_tok_per_sec": 148.4,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 152.2,
+            "tokens": 1768,
+            "elapsed_s": 11.62,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 151.3,
+            "tokens": 1658,
+            "elapsed_s": 10.96,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 141.7,
+            "tokens": 1237,
+            "elapsed_s": 8.73,
+            "finish_reason": "stop",
+            "tests_passed": 5,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      },
+      "debug_fix": {
+        "name": "Debug BST Fix",
+        "expected": 4,
+        "avg_passed": 4.0,
+        "best_passed": 4,
+        "avg_tok_per_sec": 85.6,
+        "runs": [
+          {
+            "run": 1,
+            "tok_per_sec": 84.8,
+            "tokens": 336,
+            "elapsed_s": 3.96,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 2,
+            "tok_per_sec": 85.8,
+            "tokens": 336,
+            "elapsed_s": 3.92,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          },
+          {
+            "run": 3,
+            "tok_per_sec": 86.2,
+            "tokens": 336,
+            "elapsed_s": 3.9,
+            "finish_reason": "stop",
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "tests_errors": 0
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "model": "Harmonic 27B Q8_0",
+    "model_key": "harmonic27b-q8-turbo4-nothink",
+    "kv_config": "turbo4/turbo4 -rea off",
+    "context_length": 32768,
+    "reasoning": "off",
+    "native_ctx": 262144,
+    "vram_mb": 30835,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 43.3,
+        "tokens": 1732,
+        "elapsed_s": 40.02,
+        "finish_reason": "stop",
+        "thinking_chars": 0,
+        "content_chars": 7691,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 43.4,
+        "tokens": 2299,
+        "elapsed_s": 52.98,
+        "finish_reason": "stop",
+        "thinking_chars": 0,
+        "content_chars": 7979,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 43.3,
+        "tokens": 2341,
+        "elapsed_s": 54.01,
+        "finish_reason": "stop",
+        "thinking_chars": 0,
+        "content_chars": 9686,
+        "tests_passed": 5,
+        "tests_failed": 1,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 45.35,
+      "token_count": 1001,
+      "ttft_s": 2.295,
+      "total_s": 24.365,
+      "thinking_tokens": 0,
+      "content_tokens": 1001
+    }
+  },
+  {
+    "model": "Harmonic 27B Q4_K_M",
+    "model_key": "harmonic27b-q4km-turbo4-nothink",
+    "kv_config": "turbo4/turbo4 -rea off",
+    "context_length": 32768,
+    "reasoning": "off",
+    "native_ctx": 262144,
+    "vram_mb": 19995,
+    "benchmarks": {
+      "expression_evaluator": {
+        "tok_per_sec": 60.2,
+        "tokens": 1711,
+        "elapsed_s": 28.44,
+        "finish_reason": "stop",
+        "thinking_chars": 0,
+        "content_chars": 7432,
+        "tests_passed": 4,
+        "tests_failed": 1,
+        "tests_errors": 0,
+        "tests_expected": 5
+      },
+      "astar": {
+        "tok_per_sec": 60.7,
+        "tokens": 2350,
+        "elapsed_s": 38.71,
+        "finish_reason": "stop",
+        "thinking_chars": 0,
+        "content_chars": 8153,
+        "tests_passed": 6,
+        "tests_failed": 0,
+        "tests_errors": 0,
+        "tests_expected": 6
+      },
+      "lru_cache": {
+        "tok_per_sec": 60.5,
+        "tokens": 2207,
+        "elapsed_s": 36.49,
+        "finish_reason": "stop",
+        "thinking_chars": 0,
+        "content_chars": 8761,
+        "tests_passed": 5,
+        "tests_failed": 1,
+        "tests_errors": 0,
+        "tests_expected": 6
+      }
+    },
+    "throughput": {
+      "tokens_per_second": 65.55,
+      "token_count": 675,
+      "ttft_s": 2.227,
+      "total_s": 12.525,
+      "thinking_tokens": 0,
+      "content_tokens": 675
+    }
+  }
+]
