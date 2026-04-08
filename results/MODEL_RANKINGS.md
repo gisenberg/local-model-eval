@@ -78,22 +78,25 @@ Fastest model with 94%+ quality. The Q4_K_M tradeoff: 10% faster, 10% less VRAM,
 
 ---
 
-## B-Tier: Solid Workhorses
+## A-Tier (with thinking): Reasoning Fine-Tunes
 
-### Harmonic 27B Q4_K_M
-Good at everything, excellent at nothing. A* 6/6 on every single run — most reliable on that benchmark.
+### Harmonic 27B Q4_K_M (thinking ON)
+With thinking enabled, Harmonic becomes the most consistent model tested. **30.7/31 average** — near-perfect on every benchmark, every run. Designed for structured reasoning (self-correction, verification, multi-path exploration).
 
 | Metric | Value |
 |---|---|
-| Single-shot (temp 0) | **15/17 (88%)** |
-| Best-of-3 (temp 0.3) | **31/31 (100%)** |
-| Average (temp 0.3) | 25.7/31 (83%) |
-| Throughput | 66 tok/s |
+| Best-of-3 (temp 0.3, thinking on) | **31/31 (100%)** |
+| Average (temp 0.3, thinking on) | **30.7/31 (99%)** |
+| Best-of-3 (temp 0.3, thinking off) | 31/31 (100%) |
+| Average (temp 0.3, thinking off) | 27.0/31 (87%) |
+| Throughput | 61 tok/s (thinking on), 66 tok/s (thinking off) |
 | VRAM (32K ctx) | 19,995 MB |
 | Max context (turbo4) | 262K (full) |
-| Config | `-ctk turbo4 -ctv turbo4 -rea off` |
+| Config | `-ctk turbo4 -ctv turbo4 -rea on --reasoning-budget 16384` |
 
-**Note:** Q8_0 version scores identically (15/17 single-shot, 31/31 best-of-3) at 31 GB VRAM. Always pick Q4_K_M — same quality, half the VRAM.
+**Thinking ON is decisively better for this model** (+3.7 avg). LRU Cache: 6/6 every run with thinking, 4.0 avg without.
+
+**Note:** Q8_0 version scores identically at 31 GB VRAM. Always pick Q4_K_M — same quality, half the VRAM.
 
 ---
 
@@ -147,6 +150,23 @@ The fine-tuned versions (Opus-distilled, Harmonic, Qwopus) all dramatically outp
 
 ---
 
+## Thinking ON vs OFF: It's Model-Dependent
+
+We ran a controlled head-to-head: same models, same benchmarks, temp 0.3, 3 runs each, turbo4 KV. Thinking ON used `--reasoning-budget 16384`.
+
+| Model | ON avg | OFF avg | Winner | Why |
+|---|---|---|---|---|
+| Harmonic 27B Q4_K_M | **30.7/31** | 27.0/31 | **ON (+3.7)** | Designed for reasoning. LRU 6.0 vs 4.0 avg. |
+| Qwopus 27B Q6_K | **29.7/31** | 26.4/31 | **ON (+3.3)** | Thinks regardless; structured ON is better. |
+| Gemma 31B Q4_K_M | 29.3/31 | **30.4/31** | **OFF (+1.1)** | Efficient thinker but slightly more consistent without. |
+| Gemma 26B Q6_K | 26.7/31 | **29.0/31** | **OFF (+2.3)** | Thinking causes 2 truncations (A*, LRU hit budget). |
+| Opus-Distilled 27B | **22.6/31** | 21.7/31 | **ON (+0.9)** | Marginal. Both inconsistent. |
+
+**Key findings:**
+- **Reasoning fine-tunes** (Harmonic, Qwopus) benefit from thinking ON — it's what they were trained for
+- **Gemma models** do better with thinking OFF under turbo4 KV — the turbo4 quantization noise occasionally disrupts the thinking→content transition, causing truncation
+- **The difference is about consistency, not capability** — best-of-3 is often tied; the gap is in average scores
+
 ## LM Studio Baselines (f16 KV, temp 0, no TurboQuant)
 
 For reference — these were tested before TurboQuant and use LM Studio's default f16 KV cache.
@@ -162,20 +182,25 @@ For reference — these were tested before TurboQuant and use LM Studio's defaul
 
 ## Quick Reference: Choosing a Model
 
-| Priority | Pick | Why |
-|---|---|---|
-| **Best quality** | Gemma 26B Q6_K | 100% single-shot, 97% avg, fastest S-tier |
-| **Best consistency** | Gemma 31B Q4_K_M | 99% avg, requires TurboQuant |
-| **Lowest VRAM** | Opus-Distilled 27B Q4_K_M | 20 GB, 100% single-shot, full 262K ctx |
-| **Fastest** | Qwen 35B Q4_K_M | 188 tok/s, 65% quality |
-| **Best value** | Harmonic 27B Q4_K_M | 20 GB, 88% single-shot, solid all-rounder |
+| Priority | Pick | Thinking | Why |
+|---|---|---|---|
+| **Best quality** | Gemma 26B Q6_K | off | 100% single-shot, 97% avg, fastest S-tier |
+| **Best consistency** | Harmonic 27B Q4_K_M | on | 30.7/31 avg (99%), 20 GB VRAM |
+| **Best consistency (fast)** | Gemma 31B Q4_K_M | off | 30.4/31 avg, requires TurboQuant |
+| **Lowest VRAM** | Opus-Distilled 27B Q4_K_M | on | 20 GB, 100% single-shot, full 262K ctx |
+| **Fastest** | Qwen 35B Q4_K_M | off | 188 tok/s, 65% quality |
+| **Best value** | Harmonic 27B Q4_K_M | on | 20 GB, 99% avg, best all-rounder |
 
 ## Configuration
 
-All TurboQuant models use:
 ```bash
-llama-server -m model.gguf --port 8080 -c 32768 -ngl 99 \
+# Gemma models (thinking off — avoids budget truncation under turbo4)
+llama-server -m gemma-model.gguf --port 8080 -c 32768 -ngl 99 \
   -fa on -ctk turbo4 -ctv turbo4 -np 1 -rea off
+
+# Reasoning fine-tunes: Harmonic, Qwopus, Opus-distilled (thinking on)
+llama-server -m harmonic-model.gguf --port 8080 -c 32768 -ngl 99 \
+  -fa on -ctk turbo4 -ctv turbo4 -np 1 -rea on --reasoning-budget 16384
 ```
 
 See [TURBO3_RESULTS.md](TURBO3_RESULTS.md) for full experimental data across 8+ benchmark runs.
