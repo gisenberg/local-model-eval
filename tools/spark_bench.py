@@ -72,7 +72,7 @@ MODEL_CONFIGS = {
         "notes": "Dense 31B, 870KB/tok KV. f16 KV fits up to ~90K on 128GB Spark; turbo only needed for >100K.",
     },
     "qwen122b": {
-        "name": "Qwen3.5-122B-A10B Q4_K_M",
+        "name": "Qwen3.5-122B-A10B Q4_K_M (unsloth)",
         "path": f"{MODELS_DIR}/unsloth/Qwen3.5-122B-A10B-GGUF/Q4_K_M/Qwen3.5-122B-A10B-Q4_K_M-00001-of-00003.gguf",
         "server": "standard",  # MoE with tiny KV, no turbo needed
         "kv_configs": ["f16"],
@@ -80,7 +80,18 @@ MODEL_CONFIGS = {
         "default_context": 32768,
         "default_kv": "f16",
         "reasoning": "off",
-        "notes": "122B/10B MoE, DeltaNet hybrid (12 attn layers of 48), ~24KB/tok KV.",
+        "notes": "122B/10B MoE, DeltaNet hybrid (12 attn layers of 48), ~24KB/tok KV. Unsloth Q4_K_M.",
+    },
+    "qwen122b-bartowski": {
+        "name": "Qwen3.5-122B-A10B Q4_K_M (bartowski)",
+        "path": f"{MODELS_DIR}/bartowski/Qwen3.5-122B-A10B-GGUF/Qwen_Qwen3.5-122B-A10B-Q4_K_M/Qwen_Qwen3.5-122B-A10B-Q4_K_M-00001-of-00002.gguf",
+        "server": "standard",
+        "kv_configs": ["f16"],
+        "context_sizes": [32768, 65536, 131072, 196608, 262144],
+        "default_context": 32768,
+        "default_kv": "f16",
+        "reasoning": "off",
+        "notes": "122B/10B MoE, DeltaNet hybrid. Bartowski Q4_K_M (more accurate than unsloth per Nauful).",
     },
     "qwen-coder": {
         "name": "Qwen3-Coder-Next UD-Q4_K_M",

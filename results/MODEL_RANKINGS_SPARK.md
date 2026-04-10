@@ -71,6 +71,37 @@ Loads fine, runs at ~6.7 tok/s. Not a model quality issue — this is hardware p
 
 ---
 
+### Qwen3.5-122B-A10B Q4_K_M (bartowski)
+Same model, same Q4_K_M nominal precision, different quantization provider. Bartowski's quants are reportedly more accurate than unsloth's at the same bit budget. **The throughput claim holds; the quality claim is more complicated.**
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **13/17 (76%)** — see caveat |
+| Throughput (sustained) | **25.8 tok/s** (+23% vs unsloth) |
+| TTFT | 0.60 s |
+| Weight size | 71 GB (2-shard GGUF) |
+| Bandwidth utilization | ~7.5 GB/token × 25.8 tok/s ≈ 194 GB/s = 71% of peak |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 -rea off --no-mmap --jinja` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | **0/5** | 2324 | Real model bug: chose to use a `self.tokens` list accumulator but never reset it between `evaluate()` calls. The pytest fixture reuses one evaluator instance, so tokens accumulate across tests and parsing immediately fails on the second call. |
+| A* Pathfinding | 6/6 (+1 bonus) | 3443 | Clean. Same outcome as unsloth. |
+| LRU Cache with TTL | 6/6 | 2929 | Clean. Same outcome as unsloth. |
+
+**The quant-comparison surprise:** At single-shot temp=0, the bartowski quant produces *worse* code on ExprEval than the unsloth quant — a real implementation bug, not a test-wording mismatch. The two models took architecturally different approaches: unsloth chose a string-and-position parser (which auto-resets on each call), bartowski chose a token-list parser (which doesn't). **At temp=0 the quant noise determines which architecture path the model takes**, and on this prompt that difference flipped the outcome.
+
+This **does not** mean unsloth is better than bartowski in general:
+- A* and LRU are perfect on both quants — quality on the hardest tasks is unchanged
+- One single-shot run is a sample of one; we'd need temp=0.3 best-of-3 to make any general claim
+- The 23% throughput improvement is reproducible across all 4 generations (25.5–25.8 tok/s) and matches the expectation that bartowski uses better-optimized quant kernels
+- The bartowski model still produced *correct, working code* for 2 out of 3 benchmarks; it just happened to choose a buggy approach on ExprEval
+
+**Verdict:** Use bartowski's Q4_K_M for the throughput improvement (23% faster, no real downside), but be aware that single-shot quality at temp=0 is a high-variance comparison and isolated benchmark scores between quant providers can flip on either side. The architectural quality of the model is the same — both quants are running the same 122B/10B parameter network.
+
+---
+
 ## B-Tier: Fast but Inconsistent
 
 ### Qwen3-Coder-Next UD-Q4_K_M (unsloth dynamic)

@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "throughput",
+    "tok_per_sec": 25.79,
+    "tokens": 1033,
+    "ttft_s": 0.598,
+    "total_s": 40.649
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "Expression Evaluator",
+    "tok_per_sec": 25.5,
+    "tokens": 2324,
+    "elapsed_s": 91.13,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 9882
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "A* Pathfinding",
+    "tok_per_sec": 24.6,
+    "tokens": 3443,
+    "elapsed_s": 139.78,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 12470
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "LRU Cache with TTL",
+    "tok_per_sec": 23.1,
+    "tokens": 2929,
+    "elapsed_s": 126.59,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 11445
+  }
+]
