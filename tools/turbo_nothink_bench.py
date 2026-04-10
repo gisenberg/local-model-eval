@@ -18,7 +18,7 @@ import requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 PORT = 8080
-OUTPUT_DIR = "turbo_nothink"
+OUTPUT_DIR = "experiments/turbo_nothink"
 
 # With thinking disabled, turbo3 is safe for all models — no thinking loops possible.
 # This lets us test turbo3 across the board for max KV compression.

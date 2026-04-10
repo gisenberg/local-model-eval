@@ -19,7 +19,7 @@ PORT = 8080
 CONTEXT_LENGTH = 98304  # 96K — room for 64K generation + prompt
 MAX_THINKING_TOKENS = 65536  # 64K thinking budget
 PARALLEL = 1  # parallel=1 so each request gets the full context window (parallel=4 divides it)
-OUTPUT_DIR = "turbo3_bench_64k"
+OUTPUT_DIR = "experiments/turbo3_bench_64k"
 
 MODELS = [
     {

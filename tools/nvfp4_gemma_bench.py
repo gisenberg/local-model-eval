@@ -11,7 +11,7 @@ MODEL = "LilaRest/gemma-4-31B-it-NVFP4-turbo"
 TEMP = 0.3
 RUNS = 3
 MAX_TOKENS = 8192
-OUTPUT_DIR = "nvfp4_gemma_bench"
+OUTPUT_DIR = "experiments/nvfp4_gemma_bench"
 
 BENCHMARKS = {
     "expression_evaluator": {

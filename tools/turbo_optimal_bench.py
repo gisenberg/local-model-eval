@@ -20,7 +20,7 @@ import requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 PORT = 8080
-OUTPUT_DIR = "turbo_optimal"
+OUTPUT_DIR = "experiments/turbo_optimal"
 
 # Per-model optimal configs based on architecture analysis:
 # - Qwen 35B: q8_0 KV — DeltaNet hybrid has only ~20 KB/token KV, turbo3 saves nothing

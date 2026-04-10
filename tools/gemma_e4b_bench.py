@@ -6,7 +6,7 @@ import json, os, re, subprocess, sys, time, requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODEL = os.path.expanduser("~/.lmstudio/models/lmstudio-community/gemma-4-E4B-it-GGUF/gemma-4-E4B-it-Q8_0.gguf")
 PORT = 8080
-OUTPUT_DIR = "gemma_e4b_bench"
+OUTPUT_DIR = "experiments/gemma_e4b_bench"
 TEMP = 0.3
 RUNS = 3
 MAX_TOKENS = 16384

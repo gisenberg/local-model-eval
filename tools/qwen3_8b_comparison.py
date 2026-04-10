@@ -22,7 +22,7 @@ PORT = 8080
 TEMP = 0.3
 RUNS = 3
 MAX_TOKENS = 16384
-OUTPUT_DIR = "qwen3_8b_comparison"
+OUTPUT_DIR = "experiments/qwen3_8b_comparison"
 
 CONFIGS = [
     {"key": "f16", "ctk": "f16", "ctv": "f16", "label": "f16 KV (baseline)"},

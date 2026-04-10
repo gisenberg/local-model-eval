@@ -47,7 +47,7 @@ MODELS = [
     "qwen/qwen3.5-9b",
 ]
 
-OUTPUT_DIR = "hard_bench"
+OUTPUT_DIR = "experiments/hard_bench"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 results = []

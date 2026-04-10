@@ -22,7 +22,7 @@ import requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 PORT = 8080
-OUTPUT_DIR = "turbo4_nothink"
+OUTPUT_DIR = "experiments/turbo4_nothink"
 
 # turbo4 for all models — recommended by turboquant_plus for code generation.
 # turboquant_plus warns Q4_K_M + symmetric turbo is risky; Q6_K is safer.

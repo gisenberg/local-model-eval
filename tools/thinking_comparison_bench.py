@@ -17,7 +17,7 @@ import requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 PORT = 8080
-OUTPUT_DIR = "thinking_comparison"
+OUTPUT_DIR = "experiments/thinking_comparison"
 TEMPERATURE = 0.3
 RUNS = 3
 MAX_TOKENS = 16384

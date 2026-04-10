@@ -18,7 +18,7 @@ PORT = 8090
 MODEL = "Qwen/Qwen3-8B"
 TEMP = 0.3
 RUNS = 3
-OUTPUT_DIR = "triattention_bench"
+OUTPUT_DIR = "experiments/triattention_bench"
 
 BENCHMARKS = {
     "expression_evaluator": {

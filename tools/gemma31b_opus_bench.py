@@ -22,7 +22,7 @@ import requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 PORT = 8080
-OUTPUT_DIR = "gemma31b_opus_bench"
+OUTPUT_DIR = "experiments/gemma31b_opus_bench"
 
 # Gemma 31B Opus Distill vs base Gemma 31B — same arch, different fine-tune.
 # Both need turbo4 (dense arch, 870 KB/token f16 KV).

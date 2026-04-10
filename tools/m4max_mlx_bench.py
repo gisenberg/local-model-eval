@@ -24,7 +24,7 @@ import requests
 
 PORT = 8766                          # different port from llama.cpp bench (8765)
 BASE_URL = f"http://localhost:{PORT}"
-OUTPUT_DIR = "m4max_bench"
+OUTPUT_DIR = "experiments/m4max_bench"
 MAX_TOKENS_DEFAULT = 16384
 
 # mlx-lm 0.31+ requires Python 3.10+ and the matching mlx 0.31+ wheel.

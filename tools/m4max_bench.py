@@ -36,7 +36,7 @@ LLAMA_SERVER     = LLAMA_SERVER_TQ
 MODELS_DIR   = Path.home() / ".lmstudio" / "models"
 PORT = 8765
 BASE_URL = f"http://localhost:{PORT}"
-OUTPUT_DIR = "m4max_bench"
+OUTPUT_DIR = "experiments/m4max_bench"
 MAX_TOKENS_DEFAULT = 16384
 
 # Per-model config. context_length is picked to fit within ~27 GB Metal budget

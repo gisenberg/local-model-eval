@@ -54,8 +54,24 @@ See [results/CONTEXT_CAPACITY.md](results/CONTEXT_CAPACITY.md) for VRAM and cont
 
 5. **Infrastructure params can change output** — `parallel=4` vs `parallel=1` produces different code at `temperature=0` due to floating-point accumulation order changes.
 
+## Repo Layout
+
+```
+benchmarks/      Prompt definitions for the 3 coding benchmarks (md files)
+templates/       Jinja chat templates for non-default model families
+tools/           Python scripts: bench runners, scorers, helpers
+results/         Tier-list rankings, hardware specs, comparison tables
+experiments/     Per-experiment output directories (one per bench run)
+README.md        This file
+METHODOLOGY.md   How the benchmarks are scored
+```
+
 ## Tools
 
 - [`tools/lmstudio_bench.py`](tools/lmstudio_bench.py) — Throughput benchmark (streaming tok/s, TTFT, thinking token tracking)
 - [`tools/compare_outputs.py`](tools/compare_outputs.py) — Code quality benchmark runner (load/generate/save per model)
 - [`tools/tuning_experiments.py`](tools/tuning_experiments.py) — Parameter sweep (parallel, eval_batch_size, KV cache quant)
+- [`tools/extract_and_test.py`](tools/extract_and_test.py) — Extract code blocks from .md outputs and run pytest (1-block-per-file pattern)
+- [`tools/score_combined.py`](tools/score_combined.py) — Same idea but combines all blocks into one file (handles bundled impl+test outputs)
+- [`tools/m4max_bench.py`](tools/m4max_bench.py) — M4 Max benchmark via direct llama-server (handles `--reasoning-budget 0`)
+- [`tools/m4max_mlx_bench.py`](tools/m4max_mlx_bench.py) — Same prompts via `mlx_lm.server` for MLX vs llama.cpp comparison

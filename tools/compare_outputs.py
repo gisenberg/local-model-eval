@@ -33,7 +33,7 @@ MODELS = [
     {"id": "qwen/qwen3.5-35b-a3b",      "context_length": 32768, "practical_max_ctx": "~256K", "note": "22.1GB weights, hybrid 10 attn layers"},
 ]
 
-OUTPUT_DIR = "compare4"
+OUTPUT_DIR = "experiments/compare4"
 MAX_TOKENS = 16384
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)

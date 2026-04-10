@@ -15,7 +15,7 @@ import requests
 LLAMA_SERVER = "T:/git/TheTom/llama-cpp-turboquant/build/bin/Release/llama-server.exe"
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 PORT = 8080
-OUTPUT_DIR = "qwen27b_bench"
+OUTPUT_DIR = "experiments/qwen27b_bench"
 
 MODELS = [
     {
