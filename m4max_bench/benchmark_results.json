@@ -1,0 +1,94 @@
+[
+  {
+    "model": "qwen/qwen3.5-9b",
+    "avg_tokens_per_second": 38.49,
+    "avg_ttft_s": 0.391,
+    "avg_tokens": 1022.0,
+    "avg_gen_time_s": 26.564,
+    "avg_total_time_s": 26.954,
+    "runs": [
+      {
+        "token_count": 1022,
+        "thinking_tokens": 636,
+        "content_tokens": 386,
+        "total_time_s": 26.406,
+        "time_to_first_token_s": 0.508,
+        "thinking_time_s": 16.156,
+        "generation_time_s": 25.898,
+        "tokens_per_second": 39.46,
+        "server_usage": null,
+        "response_preview": "\n\n```python\nfrom typing import List\n\ndef longest_increasing_subsequence(nums: List[int]) -> List[int]:\n    \"\"\"\n    Find the longest increasing subsequence in a list of integers.\n\n    An increasing subsequence is a sequence derived from the input list where\n    elements are strictly increasing and ap"
+      },
+      {
+        "token_count": 1022,
+        "thinking_tokens": 636,
+        "content_tokens": 386,
+        "total_time_s": 26.948,
+        "time_to_first_token_s": 0.332,
+        "thinking_time_s": 16.532,
+        "generation_time_s": 26.616,
+        "tokens_per_second": 38.4,
+        "server_usage": null,
+        "response_preview": "\n\n```python\nfrom typing import List\n\ndef longest_increasing_subsequence(nums: List[int]) -> List[int]:\n    \"\"\"\n    Find the longest increasing subsequence in a list of integers.\n\n    An increasing subsequence is a sequence derived from the input list where\n    elements are strictly increasing and ap"
+      },
+      {
+        "token_count": 1022,
+        "thinking_tokens": 636,
+        "content_tokens": 386,
+        "total_time_s": 27.509,
+        "time_to_first_token_s": 0.332,
+        "thinking_time_s": 16.963,
+        "generation_time_s": 27.177,
+        "tokens_per_second": 37.6,
+        "server_usage": null,
+        "response_preview": "\n\n```python\nfrom typing import List\n\ndef longest_increasing_subsequence(nums: List[int]) -> List[int]:\n    \"\"\"\n    Find the longest increasing subsequence in a list of integers.\n\n    An increasing subsequence is a sequence derived from the input list where\n    elements are strictly increasing and ap"
+      }
+    ]
+  },
+  {
+    "model": "nvidia/nemotron-3-nano-4b",
+    "avg_tokens_per_second": 65.45,
+    "avg_ttft_s": 0.242,
+    "avg_tokens": 872.0,
+    "avg_gen_time_s": 13.322,
+    "avg_total_time_s": 13.564,
+    "runs": [
+      {
+        "token_count": 872,
+        "thinking_tokens": 122,
+        "content_tokens": 750,
+        "total_time_s": 13.69,
+        "time_to_first_token_s": 0.313,
+        "thinking_time_s": 1.896,
+        "generation_time_s": 13.378,
+        "tokens_per_second": 65.18,
+        "server_usage": null,
+        "response_preview": "\n**Python implementation**\n\n```python\nfrom __future__ import annotations\n\nfrom typing import List\n\n\ndef longest_increasing_subsequence(nums: List[int]) -> List[int]:\n    \"\"\"\n    Return the longest strictly increasing subsequence of ``nums``.\n\n    The algorithm runs in O(n²) time and O(n) extra space"
+      },
+      {
+        "token_count": 872,
+        "thinking_tokens": 122,
+        "content_tokens": 750,
+        "total_time_s": 13.519,
+        "time_to_first_token_s": 0.213,
+        "thinking_time_s": 1.891,
+        "generation_time_s": 13.307,
+        "tokens_per_second": 65.53,
+        "server_usage": null,
+        "response_preview": "\n**Python implementation**\n\n```python\nfrom __future__ import annotations\n\nfrom typing import List\n\n\ndef longest_increasing_subsequence(nums: List[int]) -> List[int]:\n    \"\"\"\n    Return the longest strictly increasing subsequence of ``nums``.\n\n    The algorithm runs in O(n²) time and O(n) extra space"
+      },
+      {
+        "token_count": 872,
+        "thinking_tokens": 122,
+        "content_tokens": 750,
+        "total_time_s": 13.482,
+        "time_to_first_token_s": 0.199,
+        "thinking_time_s": 1.875,
+        "generation_time_s": 13.282,
+        "tokens_per_second": 65.65,
+        "server_usage": null,
+        "response_preview": "\n**Python implementation**\n\n```python\nfrom __future__ import annotations\n\nfrom typing import List\n\n\ndef longest_increasing_subsequence(nums: List[int]) -> List[int]:\n    \"\"\"\n    Return the longest strictly increasing subsequence of ``nums``.\n\n    The algorithm runs in O(n²) time and O(n) extra space"
+      }
+    ]
+  }
+]

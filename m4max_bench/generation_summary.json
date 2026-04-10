@@ -1,0 +1,50 @@
+[
+  {
+    "model": "qwen/qwen3.5-9b",
+    "benchmark": "expression_evaluator",
+    "tokens": 6514,
+    "tok_per_sec": 36.4,
+    "elapsed_s": 178.72,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "qwen/qwen3.5-9b",
+    "benchmark": "astar",
+    "tokens": 2970,
+    "tok_per_sec": 34.5,
+    "elapsed_s": 86.21,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "qwen/qwen3.5-9b",
+    "benchmark": "lru_cache",
+    "tokens": 6744,
+    "tok_per_sec": 34.3,
+    "elapsed_s": 196.45,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "nvidia/nemotron-3-nano-4b",
+    "benchmark": "expression_evaluator",
+    "tokens": 2272,
+    "tok_per_sec": 61.3,
+    "elapsed_s": 37.07,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "nvidia/nemotron-3-nano-4b",
+    "benchmark": "astar",
+    "tokens": 3745,
+    "tok_per_sec": 59.4,
+    "elapsed_s": 63.03,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "nvidia/nemotron-3-nano-4b",
+    "benchmark": "lru_cache",
+    "tokens": 4348,
+    "tok_per_sec": 59.4,
+    "elapsed_s": 73.25,
+    "finish_reason": "stop"
+  }
+]

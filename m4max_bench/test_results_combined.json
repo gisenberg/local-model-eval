@@ -1,0 +1,212 @@
+[
+  {
+    "file": "gemma-4-26b-a4b-q6k-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y/test_combined.py::test_basic_put_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y/test_combined.py::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y/test_combined.py::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y/test_combined.py::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y/test_combined.py::test_delete PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpbpmw3u9y/test_combined.py::test_update_existing_key PASSED [100%]\n\n============================== 6 passed in 0.02s ===============================\n"
+  },
+  {
+    "file": "gemma-4-31b-q4km-turbo4-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp/test_combined.py::test_basic_put_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp/test_combined.py::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp/test_combined.py::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp/test_combined.py::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp/test_combined.py::test_delete PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmprvfuzahp/test_combined.py::test_update_refreshes_lru_and_ttl PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "nemotron-3-nano-4b-q4km-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 1,
+    "failed": 4,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "azily on access.\"\"\"\n>       with self.mock.patch('time.monotonic', self.mock_monotonic):\nE       AttributeError: 'TestTTLCache' object has no attribute 'mock'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py:235: AttributeError\n________________________ TestTTLCache.test_put_and_get _________________________\n\nself = <test_combined.TestTTLCache testMethod=test_put_and_get>\n\n    def test_put_and_get(self):\n        \"\"\"Test basic put and get functionality.\"\"\"\n>       with self.mock.patch('time.monotonic', self.mock_monotonic):\nE       AttributeError: 'TestTTLCache' object has no attribute 'mock'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py:208: AttributeError\n________________ TestTTLCache.test_put_without_ttl_uses_default ________________\n\nself = <test_combined.TestTTLCache testMethod=test_put_without_ttl_uses_default>\n\n    def test_put_without_ttl_uses_default(self):\n        \"\"\"Test that put without ttl uses default TTL.\"\"\"\n>       with self.mock.patch('time.monotonic', self.mock_monotonic):\nE       AttributeError: 'TestTTLCache' object has no attribute 'mock'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py:217: AttributeError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py::TestTTLCache::test_eviction_when_capacity_exceeded\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py::TestTTLCache::test_expired_items_removed_lazily\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py::TestTTLCache::test_put_and_get\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpnzvs1gip/test_combined.py::TestTTLCache::test_put_without_ttl_uses_default\n========================= 4 failed, 1 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "nvidia_nemotron-3-nano-4b_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 4,
+    "failed": 2,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "42\n>           assert c.size() == 1\nE           assert 0 == 1\nE            +  where 0 = size()\nE            +    where size = <test_combined.TTLCache object at 0x108c59c40>.size\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpa_zys4dd/test_combined.py:182: AssertionError\n______________________________ test_size_updates _______________________________\n\n    def test_size_updates():\n        \"\"\"size() reflects the current number of entries.\"\"\"\n        with mock.patch(\"time.monotonic\", return_value=0):\n            c = TTLCache(3, 10)\n            c.put(\"a\", 1)\n            c.put(\"b\", 2)\n            c.put(\"c\", 3)\n    \n            assert c.size() == 3\n    \n            # delete a\n>           c.delete(\"a\")\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpa_zys4dd/test_combined.py:246: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpa_zys4dd/test_combined.py:157: in delete\n    self._remove_node(node)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_combined.TTLCache object at 0x108c97fd0>\nnode = <test_combined._Node object at 0x108d04270>\n\n    def _remove_node(self, node: _Node) -> None:\n        \"\"\"Detach *node* from the list and clear its map entry.\"\"\"\n        prev_n = node.prev\n        nxt_n = node.next\n        prev_n.next = nxt_n\n        nxt_n.prev = prev_n\n        if node.key is not None:\n>           del self._map[node.key]\nE           KeyError: 'a'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpa_zys4dd/test_combined.py:93: KeyError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpa_zys4dd/test_combined.py::test_basic\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpa_zys4dd/test_combined.py::test_size_updates\n========================= 2 failed, 4 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_/test_combined.py::TestTTLCache::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_/test_combined.py::TestTTLCache::test_delete PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp8biqu6j_/test_combined.py::TestTTLCache::test_update_existing_key PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-9b-q4km-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 5,
+    "failed": 1,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "ng ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_delete PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_delete_nonexistent PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_ttl_update_on_put FAILED [100%]\n\n=================================== FAILURES ===================================\n_____________________ TestTTLCache.test_ttl_update_on_put ______________________\n\nself = <test_combined.TestTTLCache testMethod=test_ttl_update_on_put>\n\n    def test_ttl_update_on_put(self):\n        \"\"\"Test TTL reset on put.\"\"\"\n        self.cache.put(\"key1\", \"value1\", ttl=0.1)\n        with patch('time.monotonic', return_value=1.0):\n            self.assertEqual(self.cache.get(\"key1\"), None)\n    \n        self.cache.put(\"key1\", \"value1\", ttl=1.0)\n        with patch('time.monotonic', return_value=1.0):\n>           self.assertEqual(self.cache.get(\"key1\"), \"value1\")\nE           AssertionError: None != 'value1'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py:153: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp88bbz6ot/test_combined.py::TestTTLCache::test_ttl_update_on_put\n========================= 1 failed, 5 passed in 0.02s ==========================\n"
+  },
+  {
+    "file": "qwen_qwen3.5-9b_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 0,
+    "failed": 6,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "rameworks/Python3.framework/Versions/3.9/lib/python3.9/contextlib.py:429: in enter_context\n    result = _cm_type.__enter__(cm)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1389: in __enter__\n    self.target = self.getter()\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1564: in <lambda>\n    getter = lambda: _importer(target)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = 'ttl_cache.time'\n\n    def _importer(target):\n        components = target.split('.')\n        import_path = components.pop(0)\n>       thing = __import__(import_path)\nE       ModuleNotFoundError: No module named 'ttl_cache'\n\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py:1236: ModuleNotFoundError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp3o51bbfq/test_combined.py::TestTTLCache::test_basic_put_and_get\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp3o51bbfq/test_combined.py::TestTTLCache::test_delete_method\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp3o51bbfq/test_combined.py::TestTTLCache::test_lru_eviction\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp3o51bbfq/test_combined.py::TestTTLCache::test_size_consistency_with_lazy_cleanup\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp3o51bbfq/test_combined.py::TestTTLCache::test_ttl_expiration_lazy_cleanup\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp3o51bbfq/test_combined.py::TestTTLCache::test_update_existing_key_refreshes_ttl\n============================== 6 failed in 0.30s ===============================\n"
+  },
+  {
+    "file": "gemma-4-26b-a4b-q6k-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w/test_combined.py::test_path_exists PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w/test_combined.py::test_no_path_due_to_walls PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w/test_combined.py::test_weighted_path_optimality PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w/test_combined.py::test_start_equals_end PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w/test_combined.py::test_out_of_bounds_raises_error PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplsc_f61w/test_combined.py::test_start_on_wall PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "gemma-4-31b-q4km-turbo4-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3/test_combined.py::test_start_equals_end PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3/test_combined.py::test_simple_path PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3/test_combined.py::test_weighted_path PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3/test_combined.py::test_no_path_walls PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3/test_combined.py::test_out_of_bounds PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp_vbj30l3/test_combined.py::test_start_or_end_is_wall PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "nemotron-3-nano-4b-q4km-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 3,
+    "failed": 3,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "ined.py:146: KeyError\n______________________________ test_complex_path _______________________________\n\n    def test_complex_path():\n        grid = [[1, 2, 1, 1],\n                [1, 0, 0, 1],\n                [1, 1, 1, 1],\n                [1, 1, 1, 1]]\n        grid_obj = AStarGrid(grid)\n>       path = grid_obj.find_path((0, 0), (3, 3))\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmphzu_jqvz/test_combined.py:205: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmphzu_jqvz/test_combined.py:89: in find_path\n    return self._reconstruct_path(start, end)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_combined.AStarGrid object at 0x106e28160>, start = (0, 0)\nend = (3, 3)\n\n    def _reconstruct_path(self, start: Tuple[int, int], end: Tuple[int, int]) -> List[Tuple[int, int]]:\n        \"\"\"\n        Reconstruct the path from start to end using parent pointers.\n    \n        Args:\n            start: (row, col) tuple\n            end: (row, col) tuple\n    \n        Returns:\n            List of (row, col) tuples representing the path from start to end\n        \"\"\"\n        path = []\n        current = end\n        while current != start:\n            path.append(current)\n>           current = self.parent[current]\nE           KeyError: None\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmphzu_jqvz/test_combined.py:146: KeyError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmphzu_jqvz/test_combined.py::test_simple_path\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmphzu_jqvz/test_combined.py::test_wall_blocked\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmphzu_jqvz/test_combined.py::test_complex_path\n========================= 3 failed, 3 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "nvidia_nemotron-3-nano-4b_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 3,
+    "failed": 3,
+    "errors": 0,
+    "status": "ok",
+    "stdout": " output truncated (16 lines hidden), use '-vv' to show\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py:180: AssertionError\n_________________________________ test_no_path _________________________________\n\n    def test_no_path():\n        grid = [[0, 0],\n                [0, 0]]\n        g = AStarGrid(grid)\n        start = (0, 1)\n        end = (1, 0)\n>       assert g.find_path(start, end) is None\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py:188: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py:65: in find_path\n    self._validate_coordinates(start)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_combined.AStarGrid object at 0x10aade1f0>, coord = (0, 1)\n\n    def _validate_coordinates(self, coord: Tuple[int, int]) -> None:\n        \"\"\"Raise ``ValueError`` for malformed or illegal coordinates.\"\"\"\n        if not (isinstance(coord, tuple) and len(coord) == 2):\n            raise ValueError(\"Coordinates must be a tuple of two integers.\")\n        r, c = coord\n        if self._is_valid(r, c):\n            return\n>       raise ValueError(f\"Coordinate {coord} is out of bounds or a wall.\")\nE       ValueError: Coordinate (0, 1) is out of bounds or a wall.\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py:125: ValueError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py::test_simple_path\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py::test_wall_blocked\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpmlp2xj1v/test_combined.py::test_no_path\n========================= 3 failed, 3 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 1,
+    "status": "collection_error",
+    "stdout": "r0000gp/T/tmpqlqx4hv0\nplugins: anyio-4.12.1\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n______________________ ERROR collecting test_combined.py _______________________\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/python.py:498: in importtestmodule\n    mod = import_path(\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/__init__.py:127: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n<frozen importlib._bootstrap>:1030: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1007: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:986: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:680: in _load_unlocked\n    ???\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:177: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ast.py:50: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqlqx4hv0/test_combined.py\", line 147\nE       except ImportError:\nE       ^\nE   SyntaxError: invalid syntax\n=========================== short test summary info ============================\nERROR ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqlqx4hv0/test_combined.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.10s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-9b-q4km-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 4,
+    "failed": 3,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "est_no_path_exists _______________________\n\nself = <test_combined.TestAStarGrid object at 0x108b16130>\n\n    def test_no_path_exists(self):\n        \"\"\"Test when no path exists due to walls.\"\"\"\n        grid = [\n            [1, 0, 1],\n            [1, 0, 1],\n            [1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (2, 2))\n    \n>       assert path is None\nE       assert [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)] is None\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpyo0kxmmc/test_combined.py:171: AssertionError\n_____________________ TestAStarGrid.test_optimal_path_cost _____________________\n\nself = <test_combined.TestAStarGrid object at 0x108b16700>\n\n    def test_optimal_path_cost(self):\n        \"\"\"Test that the path found is optimal (minimum total cost).\"\"\"\n        grid = [\n            [1, 1, 1],\n            [1, 10, 1],\n            [1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (2, 2))\n    \n        assert path is not None\n        # Path should avoid the high-cost cell (1, 1)\n        assert path == [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]\n        # Calculate total cost\n        total_cost = sum(grid[r][c] for r, c in path[1:])  # Exclude start\n>       assert total_cost == 5  # 1+1+1+1+1\nE       assert 4 == 5\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpyo0kxmmc/test_combined.py:221: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpyo0kxmmc/test_combined.py::TestAStarGrid::test_simple_path\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpyo0kxmmc/test_combined.py::TestAStarGrid::test_no_path_exists\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpyo0kxmmc/test_combined.py::TestAStarGrid::test_optimal_path_cost\n========================= 3 failed, 4 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "qwen_qwen3.5-9b_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 2,
+    "failed": 4,
+    "errors": 0,
+    "status": "ok",
+    "stdout": " 1)\n\n    def find_path(self, start: Tuple[int, int], end: Tuple[int, int]) -> Optional[List[Tuple[int, int]]]:\n        \"\"\"\n        Find the shortest path from start to end using A* algorithm.\n    \n        Args:\n            start: Starting position as (row, col) tuple\n            end: Ending position as (row, col) tuple\n    \n        Returns:\n            List of (row, col) tuples representing the path from start to end,\n            or None if no path exists.\n    \n        Raises:\n            ValueError: If start or end positions are out of bounds or on walls.\n        \"\"\"\n        # Validate start and end positions\n        if not self._is_valid_position(start):\n            raise ValueError(f\"Start position {start} is invalid\")\n    \n        if not self._is_valid_position(end):\n            raise ValueError(f\"End position {end} is invalid\")\n    \n        # Handle start == end case\n        if start == end:\n            return [start]\n    \n        # A* algorithm implementation\n        open_set = []  # Priority queue\n>       heapq.heappush(open_set, (self._f_score(start), start))\nE       TypeError: _f_score() missing 1 required positional argument: 'goal'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp16azioma/test_combined.py:65: TypeError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp16azioma/test_combined.py::TestAStarGrid::test_simple_path\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp16azioma/test_combined.py::TestAStarGrid::test_no_path_due_to_wall\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp16azioma/test_combined.py::TestAStarGrid::test_optimal_cost_path\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp16azioma/test_combined.py::TestAStarGrid::test_diagonal_movement_not_allowed\n========================= 4 failed, 2 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "gemma-4-26b-a4b-q6k-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 3,
+    "failed": 2,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "    def test_error_cases():\n        evaluator = ExpressionEvaluator()\n        # Division by zero\n        with pytest.raises(ValueError, match=\"Division by zero\"):\n            evaluator.evaluate(\"10 / 0\")\n        # Invalid tokens\n        with pytest.raises(ValueError, match=\"Invalid token\"):\n            evaluator.evaluate(\"10 + abc\")\n        # Empty expression\n        with pytest.raises(ValueError, match=\"cannot be empty\"):\n            evaluator.evaluate(\"   \")\n        # Mismatched parentheses\n        with pytest.raises(ValueError, match=\"Expected '\\)'\"):\n>           evaluator.evaluate(\"1 + (2 * 3\")\nE           AssertionError: Regex pattern did not match.\nE            Regex: \"Expected '\\\\)'\"\nE            Input: 'Unexpected end of expression.'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py:198: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py:175\n  /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py:175: DeprecationWarning: invalid escape sequence \\)\n    with pytest.raises(ValueError, match=\"Expected '\\)'\"):\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py:197\n  /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py:197: DeprecationWarning: invalid escape sequence \\)\n    with pytest.raises(ValueError, match=\"Expected '\\)'\"):\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py::test_parentheses\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp6wue60c8/test_combined.py::test_error_cases\n=================== 2 failed, 3 passed, 2 warnings in 0.04s ====================\n"
+  },
+  {
+    "file": "gemma-4-31b-q4km-turbo4-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9oyv660q\nplugins: anyio-4.12.1\ncollecting ... collected 5 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9oyv660q/test_combined.py::test_basic_arithmetic PASSED [ 20%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9oyv660q/test_combined.py::test_precedence PASSED [ 40%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9oyv660q/test_combined.py::test_parentheses PASSED [ 60%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9oyv660q/test_combined.py::test_unary_minus PASSED [ 80%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9oyv660q/test_combined.py::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "nemotron-3-nano-4b-q4km-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 0,
+    "failed": 5,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "        min = int(lo)\n                        if min >= MAXREPEAT:\n                            raise OverflowError(\"the repetition number is too large\")\n                    if hi:\n                        max = int(hi)\n                        if max >= MAXREPEAT:\n                            raise OverflowError(\"the repetition number is too large\")\n                        if max < min:\n                            raise source.error(\"min repeat greater than max repeat\",\n                                               source.tell() - here)\n                else:\n                    raise AssertionError(\"unsupported quantifier %r\" % (char,))\n                # figure out which item to repeat\n                if subpattern:\n                    item = subpattern[-1:]\n                else:\n                    item = None\n                if not item or item[0][0] is AT:\n>                   raise source.error(\"nothing to repeat\",\n                                       source.tell() - here + len(this))\nE                   re.error: nothing to repeat at position 207 (line 5, column 22)\n\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/sre_parse.py:668: error\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpq7h8wzfk/test_combined.py::test_basic_arithmetic\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpq7h8wzfk/test_combined.py::test_precedence\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpq7h8wzfk/test_combined.py::test_parentheses\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpq7h8wzfk/test_combined.py::test_unary_minus\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpq7h8wzfk/test_combined.py::test_error_cases\n============================== 5 failed in 0.20s ===============================\n"
+  },
+  {
+    "file": "nvidia_nemotron-3-nano-4b_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 0,
+    "failed": 0,
+    "errors": 1,
+    "status": "collection_error",
+    "stdout": "8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpentdb9hq\nplugins: anyio-4.12.1\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n______________________ ERROR collecting test_combined.py _______________________\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/python.py:498: in importtestmodule\n    mod = import_path(\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/__init__.py:127: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n<frozen importlib._bootstrap>:1030: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1007: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:986: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:680: in _load_unlocked\n    ???\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:177: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:359: in _rewrite_test\n    co = compile(tree, strfn, \"exec\", dont_inherit=True)\nE     File \"/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpentdb9hq/test_combined.py\", line 59\nE       return float(result)\nE       ^\nE   SyntaxError: 'return' outside function\n=========================== short test summary info ============================\nERROR ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpentdb9hq/test_combined.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.09s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9wz3_liw\nplugins: anyio-4.12.1\ncollecting ... collected 5 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9wz3_liw/test_combined.py::TestExpressionEvaluator::test_basic_arithmetic PASSED [ 20%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9wz3_liw/test_combined.py::TestExpressionEvaluator::test_operator_precedence PASSED [ 40%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9wz3_liw/test_combined.py::TestExpressionEvaluator::test_parentheses PASSED [ 60%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9wz3_liw/test_combined.py::TestExpressionEvaluator::test_unary_minus PASSED [ 80%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp9wz3_liw/test_combined.py::TestExpressionEvaluator::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-9b-q4km-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 0,
+    "failed": 5,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "loat:\n        \"\"\"\n        Parses numbers and unary operators (highest precedence).\n        Handles parentheses and unary minus.\n        \"\"\"\n        if self.pos >= len(self.tokens):\n>           raise ValueError(\"Unexpected end of expression.\")\nE           ValueError: Unexpected end of expression.\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py:119: ValueError\n\nDuring handling of the above exception, another exception occurred:\n\nself = <test_combined.TestExpressionEvaluator object at 0x10823a040>\n\n    def test_error_cases(self):\n        \"\"\"Tests that ValueError is raised for invalid inputs.\"\"\"\n        evaluator = ExpressionEvaluator()\n    \n        # Mismatched parentheses\n        with pytest.raises(ValueError, match=\"Mismatched parentheses\"):\n>           evaluator.evaluate(\"(1 + 2\")\nE           AssertionError: Regex pattern did not match.\nE            Regex: 'Mismatched parentheses'\nE            Input: 'Unexpected end of expression.'\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py:219: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py::TestExpressionEvaluator::test_basic_arithmetic\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py::TestExpressionEvaluator::test_operator_precedence\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py::TestExpressionEvaluator::test_parentheses_grouping\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py::TestExpressionEvaluator::test_unary_minus\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpxhi9imko/test_combined.py::TestExpressionEvaluator::test_error_cases\n============================== 5 failed in 0.05s ===============================\n"
+  },
+  {
+    "file": "qwen_qwen3.5-9b_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 1,
+    "failed": 4,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_combined.ExpressionEvaluator object at 0x108fd57f0>, expr = '-5'\n\n    def evaluate(self, expr: str) -> float:\n        \"\"\"\n        Evaluates a mathematical expression string and returns the result as a float.\n    \n        Args:\n            expr: A string representing a valid mathematical expression.\n    \n        Returns:\n            The evaluated result as a float.\n    \n        Raises:\n            ValueError: If the expression is empty, has invalid tokens,\n                       mismatched parentheses, or division by zero.\n        \"\"\"\n        if not expr:\n            raise ValueError(\"Empty expression\")\n    \n        # Tokenize the input string\n        self.tokens = self._tokenize(expr)\n        self.pos = 0\n    \n        try:\n            result = self._parse_expression()\n            # Ensure we consumed all tokens (no trailing garbage)\n            if self.pos < len(self.tokens):\n>               raise ValueError(f\"Unexpected token after expression: {self.tokens[self.pos]}\")\nE               ValueError: Unexpected token after expression: Token(TokenType.EOF, None)\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpy1n4m1p1/test_combined.py:59: ValueError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpy1n4m1p1/test_combined.py::TestExpressionEvaluator::test_basic_arithmetic\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpy1n4m1p1/test_combined.py::TestExpressionEvaluator::test_precedence\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpy1n4m1p1/test_combined.py::TestExpressionEvaluator::test_parentheses\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpy1n4m1p1/test_combined.py::TestExpressionEvaluator::test_unary_minus\n========================= 4 failed, 1 passed in 0.04s ==========================\n"
+  }
+]

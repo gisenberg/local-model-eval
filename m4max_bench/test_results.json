@@ -1,0 +1,74 @@
+[
+  {
+    "file": "nvidia_nemotron-3-nano-4b_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "ok",
+    "stdout": "",
+    "stderr": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3: No module named pytest\n"
+  },
+  {
+    "file": "qwen_qwen3.5-9b_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "ok",
+    "stdout": "",
+    "stderr": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3: No module named pytest\n"
+  },
+  {
+    "file": "nvidia_nemotron-3-nano-4b_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "ok",
+    "stdout": "",
+    "stderr": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3: No module named pytest\n"
+  },
+  {
+    "file": "qwen_qwen3.5-9b_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "ok",
+    "stdout": "",
+    "stderr": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3: No module named pytest\n"
+  },
+  {
+    "file": "nvidia_nemotron-3-nano-4b_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "ok",
+    "stdout": "",
+    "stderr": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3: No module named pytest\n"
+  },
+  {
+    "file": "qwen_qwen3.5-9b_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "ok",
+    "stdout": "",
+    "stderr": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3: No module named pytest\n"
+  }
+]
