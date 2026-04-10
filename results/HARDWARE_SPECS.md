@@ -6,15 +6,13 @@ This document captures the hardware we run benchmarks on, with a focus on the sp
 
 | | RTX 5090 (Workstation) | M4 Max MacBook Pro 16" | DGX Spark (GB10) |
 |---|---|---|---|
-| **Total memory** | 32 GB GDDR7 | 36 GB LPDDR5X (unified) | 128 GB LPDDR5x (unified) |
+| **Total memory** | 32 GB GDDR7 | 36 GB LPDDR5X (unified, **~30 GB usable on Metal**) | 128 GB LPDDR5x (unified) |
 | **Memory bandwidth** | **1,792 GB/s** | **410 GB/s** | **273 GB/s** |
-| **Max model (dense, Q4)** | ~31 GB at 53 tok/s | ~30 GB at ~18 tok/s* | ~70 GB but at <8 tok/s |
-| **Max model (MoE A10B, Q4)** | ~22 GB at 188 tok/s** | doesn't fit | ~70 GB at 21 tok/s |
-| **Best for** | Dense models, max throughput, code generation | Portable inference, mid-size dense, MoE up to ~30 GB | Huge MoE models, full context windows |
-| **Bottleneck** | VRAM capacity | Mid-tier on both axes | Memory bandwidth |
-
-*Projected from bandwidth math, not yet measured in this repo.
-**Qwen 35B-A3B on llama-server. Quality varies by inference engine.
+| **Max model (dense, Q4)** | ~31 GB at 53 tok/s | ~18 GB at **11.5 tok/s** (gemma 31B, turbo4 KV req'd) | ~70 GB but at <8 tok/s |
+| **Max model (MoE A4B, Q6)** | 142 tok/s | **60 tok/s** (gemma 26B-A4B, 16K ctx max) | ~70 GB at 21 tok/s |
+| **Max model (MoE A10B, Q4)** | doesn't fit | doesn't fit | ~70 GB at 21 tok/s |
+| **Best for** | Dense models, max throughput, code generation | Portable inference, MoE A4B-class models | Huge MoE models, full context windows |
+| **Bottleneck** | VRAM capacity | Metal working set (30 GB) | Memory bandwidth |
 
 **The headline insight:** these three machines occupy distinct points on the capacity vs. bandwidth tradeoff curve. The 5090 has compute and bandwidth in abundance but is starved for capacity. The Spark has capacity in abundance but is starved for bandwidth. The M4 Max sits between them — moderate capacity, moderate bandwidth — and complements both with portability and an entirely different software stack (Metal/MLX). Almost no model class is "good on all three"; picking the right machine for a model is more important than picking the right model.
 
@@ -98,47 +96,52 @@ Note: The "full" M4 Max (16C CPU / 40C GPU) ships with 48/64/128 GB and 546 GB/s
 ### Key constraints
 
 - **Unified memory means no PCIe spill.** Like the Spark, weights and KV cache share a single coherent pool. Either it fits or it doesn't — no slow degradation from RAM offload.
+- **Metal working set is 30 GB, not 36 GB.** macOS reserves the rest of unified memory for the system. `recommendedMaxWorkingSetSize ≈ 30150 MB` is the *hard* ceiling for `weights + KV cache + compute buffers`. Going over produces `kIOGPUCommandBufferCallbackErrorOutOfMemory`, not graceful degradation. So in practice the Mac has less effective memory than the spec sheet implies.
 - **Bandwidth sits in the middle.** 410 GB/s is ~1.5x the Spark and ~4.4x slower than the 5090. This puts it in an interesting "Goldilocks zone" for mid-sized models.
 - **No FP4 tensor cores.** Apple Silicon GPUs don't have NVIDIA-style tensor cores at all — Metal uses general-purpose compute units. NVFP4 models cannot run here. The practical quantization options are llama.cpp Q-formats (Q4_K_M, Q6_K, etc.) and MLX-native quants.
-- **No CUDA, no TurboQuant.** The TurboQuant fork is x86 + CUDA. On macOS, KV cache compression is limited to llama.cpp's stock options (`-ctk q8_0 -ctv q8_0` etc.) or MLX's native KV quantization.
+- **TurboQuant fork DOES build on Metal.** Earlier versions of this doc said otherwise — corrected after building `feature/turboquant-kv-cache` (commit 8590cbff9) on M4 Max with `cmake -DGGML_METAL=ON`. The Metal turbo3/turbo4 KV cache kernels work. **However, on this hardware turbo4 KV is *slower* than f16** (see measured numbers below) — the dequant compute overhead exceeds the KV bandwidth savings. Use turbo4 only when you need the memory savings, not for speed.
 
-### Bandwidth-driven performance ceilings
+### Measured throughput on M4 Max 36 GB
 
-For the M4 Max 36 GB (410 GB/s):
+Real numbers from `m4max_bench/`, llama.cpp turboquant fork build 8590cbff9, single-shot temp 0:
 
-| Active params (Q4 weights) | Theoretical max | Practical (~75% util) |
-|---|---|---|
-| 3B | ~205 tok/s | ~150 tok/s |
-| 8B | ~80 tok/s | ~60 tok/s |
-| 14B | ~46 tok/s | ~35 tok/s |
-| 27B | ~24 tok/s | ~18 tok/s |
-| 31B (dense) | ~22 tok/s | ~16–18 tok/s |
-| 70B (dense) | ~7 tok/s | ~5 tok/s (also won't fit in 36 GB) |
+| Model | Quant | KV | Ctx | Tok/s | Code score | Notes |
+|---|---|---|---|---|---|---|
+| Nemotron 3 Nano 4B | Q4_K_M | f16 | 32K | **65** | 7/17 | Smallest, fastest |
+| Gemma 4 26B-A4B (MoE, 4B active) | Q6_K | f16 | 16K | **60** | 15/17 | 32K f16 OOMs |
+| Gemma 4 26B-A4B | Q4_K_M | f16 | 32K | 59 | 11/17 | Q4 quality drop is real |
+| Gemma 4 26B-A4B | Q6_K | turbo4 | 16K | 46 | 16/17 | Turbo4 *slower* than f16 |
+| Qwen 3.5 9B (dense) | Q4_K_M | f16 | 32K | 35 | 9/17 | Thinking off |
+| Qwen 3.5 27B Opus-Distilled (dense) | Q4_K_M | f16 | 32K | 13 | 11/17 | Bandwidth-limited |
+| Gemma 4 31B-IT (dense) | Q4_K_M | turbo4 | 16K | **11.5** | **17/17** | Requires turbo4 to fit |
 
-**Interactive zone:** Up to ~31B dense at Q4_K_M. Above that, both bandwidth AND capacity become problems.
+**Reality check:** the bandwidth-math projections (deleted from this section) overestimated by 30-40% for everything ≥27B. A dense 27B at Q4 actually runs at 13 tok/s, not the projected 18. A dense 31B at Q4 (turbo4 KV) runs at 11.5 tok/s, not 16-18. The bandwidth ceiling is real, but kernel efficiency and KV-cache compute overhead eat more of the budget than the back-of-envelope formula assumed.
+
+**Interactive zone:** Up to ~26B-A4B (MoE) and ~9B (dense) at Q4 with f16 KV. 27B+ dense models cross into "wait for it" territory at 11-13 tok/s.
 
 ### What this machine is good at
 
-- **Mid-size dense models on the go.** A laptop that runs Gemma 4 26B-A4B or 31B-IT at usable speed (~16–18 tok/s for dense 31B) on battery is genuinely novel.
-- **MLX-optimized models.** Apple's MLX framework has tight Metal integration and often beats llama.cpp by 10–30% on the same model. For Apple Silicon, MLX is the native option.
+- **Mid-size MoE models on the go.** Gemma 4 26B-A4B at Q6_K runs at 60 tok/s with 15/17 quality on a laptop. That's a credible code-generation experience away from the desk.
+- **Highest-quality coding model under 25 GB.** Gemma 4 31B-IT Q4_K_M turbo4 hits the same 17/17 score as on a 5090, just at 11.5 tok/s instead of 53. Slow but correct.
 - **Long battery life inference.** ~30 W power draw under sustained load vs the 5090's 575 W. You can run a coding agent for hours on battery.
 - **Workloads that need portability.** This is the only machine in the lineup you can put in a backpack.
 
 ### What this machine is bad at
 
-- **Anything above ~30 GB.** 36 GB unified memory leaves only ~6 GB for KV cache after a 30 GB model is loaded. Long contexts on big models are not feasible.
+- **Anything above ~25 GB of weights.** The Metal working set is ~30 GB, not 36. A 22 GB model (Gemma 4 26B-A4B Q6_K) leaves ~8 GB for KV+compute. A 25 GB model leaves none. Long contexts on bigger models are simply not possible at any KV format.
 - **NVFP4 / NVIDIA-specific formats.** The model ecosystem is increasingly NVIDIA-flavored. AWQ, GPTQ, and NVFP4 have varying levels of Apple support; GGUF + MLX are the safe paths.
 - **Maximum throughput.** A 5090 will always smoke this on raw tok/s for any model that fits both. The M4 Max trades throughput for portability and lower power.
-- **Latest CUDA-only features.** TurboQuant KV cache, vLLM batched serving, NVIDIA's NVFP4 — none of these have macOS equivalents. You're locked into the llama.cpp/MLX ecosystem.
+- **MLX, surprisingly.** Despite the marketing, MLX (`mlx_lm.server` 0.31.2 with `mlx-community/*` quants) was 4-38% *slower* than llama.cpp on every model we benchmarked. The biggest gap was Gemma 4 26B-A4B Q6_K vs 6bit MLX (60.3 vs 33.5 tok/s). MLX may still win on prefill-heavy workloads but for autoregressive code generation, llama.cpp's Metal backend is the better choice on this hardware.
 
 ### Status in this repo
 
-The M4 Max has not yet been benchmarked in this repo. Throughput numbers above are projected from bandwidth math (`active_params × bytes_per_param × tokens/sec ≈ bandwidth × 0.7–0.8`). Real measurements would need:
-- A llama.cpp Metal build on the laptop
-- Same GGUF files used on the 5090
-- Same benchmark scripts (with Mac-friendly paths)
+Benchmarked April 2026. See [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) for the full per-model tier list with quality scores, and [`m4max_bench/`](../m4max_bench/) for the raw outputs.
 
-The MLX framework would also be worth comparing — Apple-native quantization formats sometimes outperform llama.cpp on Apple Silicon by 10–30%.
+Headline findings:
+- Dense 27B+ runs hit 11-13 tok/s — bandwidth-bound, matches the lower end of the projection range.
+- MoE 26B-A4B (4B active) runs at 60 tok/s — by far the best speed/quality combo on this machine.
+- TurboQuant KV cache: builds and works on Metal, but is *slower* than f16 KV here (the dequant compute overhead exceeds the bandwidth savings on a bandwidth-constrained platform). Use turbo4 only when you need its capacity savings (e.g. Gemma 4 31B which can't run with f16 KV at all).
+- The MLX comparison contradicted the previous "MLX is 10-30% faster" footnote — see the bullet above.
 
 ---
 
@@ -207,11 +210,12 @@ Anything above ~10B active parameters becomes painfully slow on this machine.
 
 | Metric | RTX 5090 | M4 Max 36 GB | DGX Spark |
 |---|---|---|---|
-| Capacity | 32 GB | 36 GB | 128 GB |
+| Capacity (raw) | 32 GB | 36 GB | 128 GB |
+| Capacity (usable for GPU) | ~30 GB (CUDA) | **~30 GB (Metal working set)** | ~120 GB |
 | Bandwidth | 1,792 GB/s | 410 GB/s | 273 GB/s |
 | Bandwidth ratio (vs 5090) | 1.0x | 0.23x | 0.15x |
-| Capacity ratio (vs 5090) | 1.0x | 1.13x | 4.0x |
-| Largest dense Q4 model viable | ~31B (53 tok/s) | ~31B (~18 tok/s) | ~7B for interactive |
+| Capacity ratio (vs 5090) | 1.0x | 1.13x raw / 1.0x usable | 4.0x |
+| Largest dense Q4 model viable | ~31B (53 tok/s) | ~31B (**11.5 tok/s, turbo4 only**) | ~7B for interactive |
 | Largest MoE A10B model viable | ~35B total | ~30B total | ~122B total |
 | Power draw | 575 W | ~30 W | ~140 W |
 
@@ -221,13 +225,14 @@ Where we have comparable runs:
 
 | Model | RTX 5090 | M4 Max | DGX Spark | Notes |
 |---|---|---|---|---|
-| Gemma 4 31B-IT Q4_K_M (dense) | **53 tok/s** | ~16-18* | ~6.7 tok/s | M4 Max projected; Spark bandwidth-bound |
+| Gemma 4 31B-IT Q4_K_M (dense) | **53 tok/s** | **11.5 tok/s** (turbo4 req'd) | ~6.7 tok/s | All measured. M4 Max needs turbo4 KV to fit. |
 | Qwen 3.5 35B-A3B Q4_K_M (MoE, 3B active) | **188 tok/s** | not tested | not tested | 5090 only — compute headroom matters here |
 | Qwen 3.5 122B-A10B Q4 (MoE, 10B active) | **does not fit** | does not fit | 21 tok/s | Spark wins by capacity |
 | Qwen3-Coder-Next 80B-A3B (MoE, 3B active) | does not fit | does not fit | 50 tok/s | Spark wins by capacity |
-| Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **142 tok/s** | ~50-65* | not tested | 5090 wins on bandwidth |
-
-*M4 Max numbers are projected from bandwidth math, not measured.
+| Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **142 tok/s** | **60 tok/s** (16K ctx max) | not tested | 5090 wins on bandwidth, M4 Max ctx-limited |
+| Qwen 3.5 27B Opus-Distilled Q4_K_M (dense) | 64 tok/s | **13 tok/s** | not tested | Bandwidth ratio holds (~5x slower) |
+| Qwen 3.5 9B Q4_K_M (dense, thinking off) | not in baseline | **35 tok/s** | not tested | M4 Max measured |
+| Nemotron 3 Nano 4B Q4_K_M (dense) | not in baseline | **65 tok/s** | not tested | Smallest, fastest on Mac |
 
 ### Code quality (where comparable)
 
@@ -264,7 +269,7 @@ Does the model fit in 32-36 GB at usable quant?
 - → RTX 5090 + Gemma 4 31B-IT Q4_K_M with TurboQuant turbo4 KV. 17/17 score, 53 tok/s, 22 GB VRAM, 58K context.
 
 **"I want the same quality but on a laptop I can actually carry."**
-- → M4 Max + Gemma 4 31B-IT Q4_K_M (or Q4_K_S to leave more KV headroom). Same model, ~16–18 tok/s instead of 53. 30W power draw. No TurboQuant available so context is limited by stock f16/q8 KV options.
+- → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which does build on Metal). Same 17/17 quality, but **11.5 tok/s** instead of 53. Without turbo4 the model literally won't load — 18 GB of weights + 14 GB of f16 KV at 16K context exceeds the 30 GB Metal working set.
 
 **"I want to run the biggest model possible at interactive speed."**
 - → DGX Spark + Qwen 3.5 122B-A10B Q4_K_M. 21 tok/s (just barely interactive), full 256K context, 16/17 quality.
@@ -276,10 +281,10 @@ Does the model fit in 32-36 GB at usable quant?
 - → DGX Spark, but accept ~4 tok/s. Don't expect to use it for interactive coding. M4 Max can't fit it; 5090 can't fit it either.
 
 **"I want the longest context window possible for any model."**
-- → DGX Spark wins by default — 120 GB of KV cache headroom dwarfs the 5090's ~10 GB even with TurboQuant compression. M4 Max sits in the middle with ~6 GB free for KV after a 30 GB model.
+- → DGX Spark wins by default — 120 GB of KV cache headroom dwarfs the 5090's ~10 GB even with TurboQuant compression. M4 Max is the most context-constrained of the three: a 22 GB model leaves only ~8 GB for KV, and the working set ceiling is 30 GB total.
 
 **"I'm in a hotel room and need a coding agent right now."**
-- → M4 Max. The other two machines aren't going anywhere. This one runs Gemma 26B Q6_K at ~50–65 tok/s on battery, which is plenty for interactive use.
+- → M4 Max. The other two machines aren't going anywhere. This one runs Gemma 26B-A4B Q6_K at **60 tok/s** (measured) on battery, which is plenty for interactive use. Score: 15/17 single-shot.
 
 ---
 
@@ -308,4 +313,4 @@ A few traps to avoid when reading marketing material:
 - RTX 5090 spec values: NVIDIA official product page and CUDA programming guide.
 - M4 Max spec values: [Apple MacBook Pro 16" Tech Specs](https://support.apple.com/en-us/121554), [9to5Mac M4 Max coverage](https://9to5mac.com/2024/10/30/m4-max-chip-has-16-core-cpu-40-core-gpu-and-35-increase-in-memory-bandwidth/), [EveryMac M4 Max 14C/32C profile](https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m4-max-14-core-cpu-32-core-gpu-16-2024-specs.html).
 - DGX Spark spec values: [NVIDIA DGX Spark Hardware Overview](https://docs.nvidia.com/dgx/dgx-spark/hardware.html), [LMSYS DGX Spark Review](https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/), [Backend.ai analysis](https://www.backend.ai/blog/2026-02-is-dgx-spark-actually-a-blackwell).
-- Throughput measurements: our own benchmarks, see [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) and [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md). M4 Max numbers are projected from bandwidth math, not yet measured.
+- Throughput measurements: our own benchmarks, see [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md), [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md), and [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md).
