@@ -71,10 +71,39 @@ Loads fine, runs at ~6.7 tok/s. Not a model quality issue — this is hardware p
 
 ---
 
+## B-Tier: Fast but Inconsistent
+
+### Qwen3-Coder-Next UD-Q4_K_M (unsloth dynamic)
+80B/3B-active hybrid (12 attention layers of 48, gated DeltaNet for the rest). The "coding specialist" billing didn't deliver — quality lands at 76%, comparable to a mid-B-tier model on the 5090. Speed is the strong story: **50 tok/s** sustained, the fastest large model on the platform so far and within striking distance of a 5090 running dense Gemma 31B.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **13/17 (76%)** |
+| Throughput (sustained) | **50.2 tok/s** |
+| TTFT | 0.39 s |
+| Weight size | 46 GB |
+| Bandwidth utilization | ~2 GB/token × 50 tok/s = 100 GB/s = 37% of peak |
+| VRAM (32K ctx) | TBD (small KV: ~24 KB/token via DeltaNet hybrid) |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 -rea off --no-mmap --jinja` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | 4/5 | 2258 | Same error_cases wording mismatch as Qwen 122B (raises ValueError but with "Invalid token" instead of "Mismatched parentheses") |
+| A* Pathfinding | 6/6 | 2705 | Clean. Algorithmic code is solid. |
+| LRU Cache with TTL | 3/6 | 2407 | Wrote tests with `mock.patch('ttl_cache.time.monotonic', side_effect=[0,0,...])` but mis-counted how many times its own implementation calls `time.monotonic()`, causing `StopIteration` and wrong values. The impl may be correct; the test harness is broken. |
+
+**Strengths:** Fast (50 tok/s — 2.4× Qwen 122B's speed for comparable bandwidth math, because only 3B params are active per token). Solid on stateless algorithmic code (A* perfect). Tiny weight footprint leaves >70 GB free for other workloads or huge contexts.
+
+**Weakness:** Self-inconsistency in stateful test mocking. The model seems to know what `mock.patch` is, knows its API, but doesn't model the runtime call sequence of its own code carefully enough. This is the "coding specialist" failing on a coding task — possibly because the test harness instructions explicitly required mocked time, which forced the model into a code path it's worse at than its happy path.
+
+**Verdict:** 50 tok/s is genuinely useful — interactive enough to use for coding agents — but you'd want to pair it with a more reliable model for verification on complex stateful logic. Treat it as a "fast first-draft" model rather than a one-shot solver.
+
+---
+
 ### Pending
 
-- **Qwen3-Coder-Next Q4_K_M** (80B/3B active, hybrid DeltaNet, coding specialist) — downloaded, benchmark queued. Expected ~80–100 tok/s based on bandwidth math.
-- **MiniMax-M2.5 UD-Q3_K_XL** (230B/10B active, Lightning Attention) — downloading.
+- **MiniMax-M2.5 UD-Q3_K_XL** (230B/10B active, Lightning Attention) — downloading. Expected ~30–40 tok/s based on bandwidth math, similar quality profile to large Qwen MoE.
 
 ---
 

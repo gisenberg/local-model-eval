@@ -80,6 +80,28 @@ def split_impl_and_test(blocks: list[str]) -> tuple[str, str]:
     return "\n\n".join(impl_parts), "\n\n".join(test_parts)
 
 
+def detect_test_module(test_code: str, impl_code: str) -> str | None:
+    """Find the module name the test is importing from.
+
+    Looks for 'from <name> import <Symbol>' where Symbol is defined in impl.
+    Returns the module name if found, otherwise None.
+    """
+    if not test_code or not impl_code:
+        return None
+    class_names = set(re.findall(r"^class (\w+)", impl_code, re.MULTILINE))
+    func_names = set(re.findall(r"^def (\w+)", impl_code, re.MULTILINE))
+    symbols = class_names | func_names
+    if not symbols:
+        return None
+
+    for m in re.finditer(r"from (\w+) import ([\w, ]+)", test_code):
+        from_module = m.group(1)
+        imported = {n.split(" as ")[0].strip() for n in m.group(2).split(",")}
+        if imported & symbols:
+            return from_module
+    return None
+
+
 def fix_test_imports(test_code: str, module_name: str, impl_code: str) -> str:
     """If tests import from a non-matching module name, rewrite the import.
 
@@ -111,9 +133,15 @@ def fix_test_imports(test_code: str, module_name: str, impl_code: str) -> str:
     return test_code
 
 
-def run_pytest(impl_code: str, test_code: str, module_name: str) -> dict:
-    """Write the code to a temp dir and run pytest, return results."""
-    if not impl_code or not test_code:
+def run_pytest(impl_code: str, test_code: str, module_name: str,
+               single_file: bool = False) -> dict:
+    """Write the code to a temp dir and run pytest, return results.
+
+    If single_file=True, write impl+test combined to one file (the model
+    intended them to live in the same file). Otherwise split into impl
+    and test files per the methodology.
+    """
+    if not impl_code and not test_code:
         return {
             "passed": 0, "failed": 0, "errors": 0, "total": 0,
             "status": "no_code",
@@ -121,10 +149,22 @@ def run_pytest(impl_code: str, test_code: str, module_name: str) -> dict:
         }
 
     with tempfile.TemporaryDirectory() as td:
-        impl_path = Path(td) / f"{module_name}.py"
-        test_path = Path(td) / f"test_{module_name}.py"
-        impl_path.write_text(impl_code)
-        test_path.write_text(test_code)
+        if single_file:
+            # Combined: write everything to one test file
+            combined = (impl_code + "\n\n" + test_code) if impl_code else test_code
+            test_path = Path(td) / f"test_{module_name}.py"
+            test_path.write_text(combined)
+        else:
+            if not impl_code or not test_code:
+                return {
+                    "passed": 0, "failed": 0, "errors": 0, "total": 0,
+                    "status": "no_code",
+                    "stdout": "", "stderr": "",
+                }
+            impl_path = Path(td) / f"{module_name}.py"
+            test_path = Path(td) / f"test_{module_name}.py"
+            impl_path.write_text(impl_code)
+            test_path.write_text(test_code)
 
         try:
             result = subprocess.run(
@@ -203,17 +243,36 @@ def main():
         for md_file in sorted(md_files):
             markdown = md_file.read_text()
             blocks = extract_code_blocks(markdown)
+
+            # Single-block outputs: model expects impl+test in one file.
+            # Don't split them - the test code may rely on direct access to
+            # symbols in the impl without imports, or use mock patch strings
+            # that reference the same module.
+            single_file = len(blocks) == 1
             impl, test = split_impl_and_test(blocks)
-            test = fix_test_imports(test, info["module"], impl)
+            # Auto-detect module name from the test's import statement.
+            # The model may name the module differently than our default
+            # (e.g., 'ttl_cache' vs 'lru_cache'). Use what the test expects
+            # so that mock.patch strings (which reference module by name)
+            # also resolve correctly.
+            module_name = info["module"]
+            if not single_file:
+                detected = detect_test_module(test, impl)
+                if detected:
+                    module_name = detected
+                test = fix_test_imports(test, module_name, impl)
 
             if args.save_extracted:
                 base = md_file.with_suffix("")
-                if impl:
-                    Path(f"{base}_impl.py").write_text(impl)
-                if test:
-                    Path(f"{base}_test.py").write_text(test)
+                if single_file:
+                    Path(f"{base}_combined.py").write_text(blocks[0])
+                else:
+                    if impl:
+                        Path(f"{base}_impl.py").write_text(impl)
+                    if test:
+                        Path(f"{base}_test.py").write_text(test)
 
-            result = run_pytest(impl, test, info["module"])
+            result = run_pytest(impl, test, module_name, single_file=single_file)
             display_name = md_file.name[:48]
             print(
                 f"{display_name:50s} | {bench_key:18s} | "
