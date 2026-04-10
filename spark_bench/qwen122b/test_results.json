@@ -1,0 +1,38 @@
+[
+  {
+    "file": "Qwen3.5-122B-A10B_Q4_K_M_KV_f16_(baseline)_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 4,
+    "failed": 1,
+    "errors": 0,
+    "total": 5,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmp1mzvr6qa\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_operator_precedence PASSED            [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus_and_floats PASSED         [ 80%]\ntest_expression_evaluator.py::test_error_cases FAILED                    [100%]\n\n=================================== FAILURES ===================================\n_______________________________ test_error_cases _______________________________\n\n    def test_error_cases():\n        \"\"\"Tests various error conditions.\"\"\"\n        # Empty expression\n        with pytest.raises(ValueError, match=\"Empty expression\"):\n            evaluator.evaluate(\"\")\n    \n        with pytest.raises(ValueError, match=\"Empty expression\"):\n            evaluator.evaluate(\"   \")\n    \n        # Mismatched parentheses\n        with pytest.raises(ValueError, match=\"Mismatched parentheses\"):\n            evaluator.evaluate(\"(2 + 3\")\n    \n        with pytest.raises(ValueError, match=\"Mismatched parentheses\"):\n>           evaluator.evaluate(\"2 + 3)\")\n\ntest_expression_evaluator.py:55: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <expression_evaluator.ExpressionEvaluator object at 0xf2e6a74de570>\nexpr = '2 + 3)'\n\n    def evaluate(self, expr: str) -> float:\n        \"\"\"\n        Evaluates a mathematical expression string and returns the result.\n    \n        Args:\n            expr: The mathematical expression string to evaluate.\n    \n        Returns:\n            The calculated float result.\n    \n        Raises:\n            ValueError: If the expression is empty, contains invalid tokens,\n                        has mismatched parentheses, or involves division by zero.\n        \"\"\"\n        if not expr or not expr.strip():\n            raise ValueError(\"Empty expression\")\n    \n        self.expression = expr.replace(\" \", \"\")\n        self.pos = 0\n        self.length = len(self.expression)\n    \n        if self.length == 0:\n            raise ValueError(\"Empty expression\")\n    \n        result = self._parse_expression()\n    \n        if self.pos < self.length:\n>           raise ValueError(f\"Invalid token at position {self.pos}: '{self.expression[self.pos]}'\")\nE           ValueError: Invalid token at position 3: ')'\n\nexpression_evaluator.py:42: ValueError\n\nDuring handling of the above exception, another exception occurred:\n\n    def test_error_cases():\n        \"\"\"Tests various error conditions.\"\"\"\n        # Empty expression\n        with pytest.raises(ValueError, match=\"Empty expression\"):\n            evaluator.evaluate(\"\")\n    \n        with pytest.raises(ValueError, match=\"Empty expression\"):\n            evaluator.evaluate(\"   \")\n    \n        # Mismatched parentheses\n        with pytest.raises(ValueError, match=\"Mismatched parentheses\"):\n            evaluator.evaluate(\"(2 + 3\")\n    \n>       with pytest.raises(ValueError, match=\"Mismatched parentheses\"):\nE       AssertionError: Regex pattern did not match.\nE         Expected regex: 'Mismatched parentheses'\nE         Actual message: \"Invalid token at position 3: ')'\"\n\ntest_expression_evaluator.py:54: AssertionError\n=========================== short test summary info ============================\nFAILED test_expression_evaluator.py::test_error_cases - AssertionError: Regex...\n========================= 1 failed, 4 passed in 0.02s ==========================\n",
+    "stderr": ""
+  },
+  {
+    "file": "Qwen3.5-122B-A10B_Q4_K_M_KV_f16_(baseline)_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 7,
+    "failed": 0,
+    "errors": 0,
+    "total": 7,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmp696spgeu\nplugins: anyio-4.13.0\ncollecting ... collected 7 items\n\ntest_astar.py::TestAStarGrid::test_simple_path_uniform_grid PASSED       [ 14%]\ntest_astar.py::TestAStarGrid::test_path_around_obstacles PASSED          [ 28%]\ntest_astar.py::TestAStarGrid::test_weighted_grid_optimality PASSED       [ 42%]\ntest_astar.py::TestAStarGrid::test_no_path_exists PASSED                 [ 57%]\ntest_astar.py::TestAStarGrid::test_start_equals_end PASSED               [ 71%]\ntest_astar.py::TestAStarGrid::test_invalid_coordinates PASSED            [ 85%]\ntest_astar.py::TestAStarGrid::test_start_or_end_is_wall PASSED           [100%]\n\n============================== 7 passed in 0.01s ===============================\n",
+    "stderr": ""
+  },
+  {
+    "file": "Qwen3.5-122B-A10B_Q4_K_M_KV_f16_(baseline)_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "total": 6,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmp2a1eog7k\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction_lru_order PASSED               [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_per_key_ttl PASSED                        [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_with_mixed_expired_valid PASSED             [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+    "stderr": ""
+  }
+]

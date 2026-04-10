@@ -83,8 +83,8 @@ MODEL_CONFIGS = {
         "notes": "122B/10B MoE, DeltaNet hybrid (12 attn layers of 48), ~24KB/tok KV.",
     },
     "qwen-coder": {
-        "name": "Qwen3-Coder-Next Q4_K_M",
-        "path": f"{MODELS_DIR}/Qwen/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q4_K_M.gguf",
+        "name": "Qwen3-Coder-Next UD-Q4_K_M",
+        "path": f"{MODELS_DIR}/unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_M.gguf",
         "server": "standard",
         "kv_configs": ["f16"],
         "context_sizes": [32768, 65536, 131072, 196608, 262144],

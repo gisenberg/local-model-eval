@@ -43,12 +43,38 @@ Loads fine, runs at ~6.7 tok/s. Not a model quality issue — this is hardware p
 
 ---
 
-## S/A/B/C-Tier
+## A-Tier: Strong Quality at Interactive Speed
 
-*Pending benchmark results for the MoE models that this hardware actually suits:*
-- Qwen3.5-122B-A10B Q4_K_M (122B/10B active, hybrid DeltaNet)
-- Qwen3-Coder-Next Q4_K_M (80B/3B active, hybrid DeltaNet, coding specialist)
-- MiniMax-M2.5 UD-Q3_K_XL (230B/10B active, Lightning Attention)
+### Qwen3.5-122B-A10B Q4_K_M (unsloth)
+122B/10B-active hybrid (DeltaNet linear attention in 36 layers + full attention in 12). The flagship Qwen MoE works exactly as the architecture predicts on Spark — 21 tok/s sustained, with code quality matching A-tier 5090 results despite the much lower bandwidth.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **16/17 (94%)** |
+| Throughput (sustained) | **21.0 tok/s** |
+| TTFT | 0.56 s |
+| Weight size | 72 GB (3-shard GGUF) |
+| Bandwidth utilization | ~7.5 GB/token × 21 tok/s ≈ 158 GB/s = 58% of peak |
+| VRAM (32K ctx) | TBD (small KV: ~24 KB/token via DeltaNet hybrid) |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 -rea off --no-mmap --jinja` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | 4/5 | 2245 | Test-wording mismatch on error_cases (raises ValueError but with "Invalid token" instead of "Mismatched parentheses") |
+| A* Pathfinding | 6/6 (+1 bonus test) | 3280 | Wrote a 7th test beyond the 6 required, all passed |
+| LRU Cache with TTL | 6/6 | 2758 | Clean pass on the hardest benchmark |
+
+**Strengths:** Production-quality code on the hardest benchmark (LRU). Stable throughput across all 4 generation runs (21.0–21.2 tok/s, no degradation). Spark's first viable A-tier model.
+
+**Caveats:** ExprEval miss is the same kind of error-categorization quibble that costs other A-tier models a point — the implementation is correct, just doesn't tag the error class the test expects. Single-shot result only; multi-run consistency not yet measured.
+
+---
+
+### Pending
+
+- **Qwen3-Coder-Next Q4_K_M** (80B/3B active, hybrid DeltaNet, coding specialist) — downloaded, benchmark queued. Expected ~80–100 tok/s based on bandwidth math.
+- **MiniMax-M2.5 UD-Q3_K_XL** (230B/10B active, Lightning Attention) — downloading.
 
 ---
 
