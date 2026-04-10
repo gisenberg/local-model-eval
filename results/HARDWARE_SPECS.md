@@ -1,6 +1,8 @@
 # Hardware Spec Sheet — Benchmarked Machines
 
-This document captures the hardware we run benchmarks on, with a focus on the specs that actually matter for local LLM inference. Numbers come from official NVIDIA documentation, our own measurements, and the bandwidth/throughput data we've gathered through benchmarking.
+This document is the deep spec sheet for the **three machines we've benchmarked directly**: the RTX 5090, the M4 Max 36 GB MacBook Pro, and the NVIDIA DGX Spark. Numbers come from official documentation and our own measurements, captured at enough detail to support the per-platform model rankings.
+
+> **Looking to buy hardware rather than understand it?** See [HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md) for the buyer's guide. The shortlist covers the broader set of serious options for local model workflows — including the M4 Max Studio, M3 Ultra Studio, M5 Max MacBook Pro, and NVIDIA RTX Pro 6000 Blackwell — with public benchmarks where available, even though we haven't measured them ourselves. This doc (HARDWARE_SPECS.md) is the deeper technical reference for the three machines that did come through our bench.
 
 ## TL;DR
 
@@ -107,13 +109,13 @@ Real numbers from `m4max_bench/`, llama.cpp turboquant fork build 8590cbff9, sin
 
 | Model | Quant | KV | Ctx | Tok/s | Code score | Notes |
 |---|---|---|---|---|---|---|
-| Nemotron 3 Nano 4B | Q4_K_M | f16 | 32K | **65** | 7/17 | Smallest, fastest |
-| Gemma 4 26B-A4B (MoE, 4B active) | Q6_K | f16 | 16K | **60** | 15/17 | 32K f16 OOMs |
+| Nemotron 3 Nano 4B | Q4_K_M | f16 | 32K | **65** | 7/17 | Smallest, fastest. Default `-ub 512` is fine. |
+| Gemma 4 26B-A4B (MoE, 4B active) | Q6_K | f16 | **32K** | **61** | 15/17 | Needs `-ub 256` to fit at 32K (default OOMs) |
 | Gemma 4 26B-A4B | Q4_K_M | f16 | 32K | 59 | 11/17 | Q4 quality drop is real |
-| Gemma 4 26B-A4B | Q6_K | turbo4 | 16K | 46 | 16/17 | Turbo4 *slower* than f16 |
+| Gemma 4 26B-A4B | Q6_K | turbo4 | **32K** | 45 | 16/17 | Turbo4 *slower* than f16 even at same ctx |
 | Qwen 3.5 9B (dense) | Q4_K_M | f16 | 32K | 35 | 9/17 | Thinking off |
 | Qwen 3.5 27B Opus-Distilled (dense) | Q4_K_M | f16 | 32K | 13 | 11/17 | Bandwidth-limited |
-| Gemma 4 31B-IT (dense) | Q4_K_M | turbo4 | 16K | **11.5** | **17/17** | Requires turbo4 to fit |
+| Gemma 4 31B-IT (dense) | Q4_K_M | turbo4 | **32K** | **11.8** | **17/17** | Needs both turbo4 KV (mandatory) AND `-ub 256` |
 
 **Reality check:** the bandwidth-math projections (deleted from this section) overestimated by 30-40% for everything ≥27B. A dense 27B at Q4 actually runs at 13 tok/s, not the projected 18. A dense 31B at Q4 (turbo4 KV) runs at 11.5 tok/s, not 16-18. The bandwidth ceiling is real, but kernel efficiency and KV-cache compute overhead eat more of the budget than the back-of-envelope formula assumed.
 
@@ -248,21 +250,9 @@ Quality is determined by the model, not the hardware — same GGUF file produces
 
 ---
 
-## How to Pick a Machine for a Model
+## How to Pick from the Three Machines We've Measured
 
-The decision tree:
-
-```
-Does the model fit in 32-36 GB at usable quant?
-├── Yes → Do you need maximum throughput, or is portability/power important?
-│         ├── Throughput > all → RTX 5090 (1,792 GB/s wins anything dense or MoE)
-│         └── Portability/battery > peak speed → M4 Max (~30 W, runs anywhere)
-└── No → Does it fit in 128 GB?
-        ├── No → Neither/none
-        └── Yes → Is it dense or MoE?
-                ├── Dense → DGX Spark, but expect <10 tok/s if >20B
-                └── MoE → DGX Spark, expect 20–80 tok/s depending on active params
-```
+For the broader hardware decision tree (which now covers M4 Max Studio, M3 Ultra Studio, M5 Max, RTX Pro 6000 Blackwell, etc.) see **[HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md)**. The section below is just the picks among the three machines we directly benchmarked, with worked examples that ground the recommendations in our measurements.
 
 ### Worked examples
 
@@ -270,7 +260,7 @@ Does the model fit in 32-36 GB at usable quant?
 - → RTX 5090 + Gemma 4 31B-IT Q4_K_M with TurboQuant turbo4 KV. 17/17 score, 50 tok/s, 24 GB VRAM, 58K context.
 
 **"I want the same quality but on a laptop I can actually carry."**
-- → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which builds on Metal) AND `-ub 256`. Same 17/17 quality, but 11.8 tok/s instead of 50. Without turbo4 the model literally won't load (dense f16 KV at 16K = 14 GB on top of 18 GB weights). Without `-ub 256` the model loads at turbo4 but caps at 16K context; with `-ub 256` it reaches 32K. Full config: `-c 32768 -b 2048 -ub 256 -ctk turbo4 -ctv turbo4`.
+- → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which builds on Metal) AND `-ub 256`. Same 17/17 quality, 11.8 tok/s instead of 50. **Both** flags are required: turbo4 because dense f16 KV at 16K = 14 GB on top of 18 GB of weights blows the 30 GB Metal working set, and `-ub 256` because the default `-ub 512` makes the compute buffer too big to reach 32K. Full config: `-c 32768 -b 2048 -ub 256 -ctk turbo4 -ctv turbo4`.
 
 **"I want to run the biggest model possible at interactive speed."**
 - → DGX Spark + Qwen 3.5 122B-A10B Q4_K_M. 21 tok/s (just barely interactive), full 256K context, 16/17 quality.

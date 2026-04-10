@@ -165,7 +165,7 @@ The M3 Ultra is a generation older than the M4 Max we measured. A few things cou
 
 ## NVIDIA RTX Pro 6000 Blackwell (workstation, non-Apple)
 
-The other interesting "speculative hardware" data point — not Apple Silicon, but it changes the tradeoff curve enough to be worth covering here. **The RTX Pro 6000 Blackwell is essentially "RTX 5090 with 3× the memory at the same speed."** It removes the 5090's main weakness (32 GB capacity) without giving up any of its bandwidth.
+The non-Apple option that changes the tradeoff curve enough to belong on the shortlist. **The RTX Pro 6000 Blackwell is essentially "RTX 5090 with 3× the memory at the same speed."** It removes the 5090's main weakness (32 GB capacity) without giving up any of its bandwidth.
 
 ### Specs (Workstation Edition)
 

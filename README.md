@@ -47,7 +47,7 @@ For per-platform context window / KV-cache analysis:
 
 For the shortlist of hardware that's a serious live option for local model workflows (Apple Silicon laptops/Studios + NVIDIA workstation class):
 
-- [results/SPECULATIVE_HARDWARE.md](results/SPECULATIVE_HARDWARE.md) — buyer's guide covering M4/M5 Max, M3 Ultra Studio, RTX 5090, RTX Pro 6000 Blackwell, and DGX Spark. Mix of our measurements, third-party benchmarks (cited inline), and bandwidth-math projections.
+- [results/HARDWARE_SHORTLIST.md](results/HARDWARE_SHORTLIST.md) — buyer's guide covering M4/M5 Max, M3 Ultra Studio, RTX 5090, RTX Pro 6000 Blackwell, and DGX Spark. Mix of our measurements, third-party benchmarks (cited inline), and bandwidth-math projections.
 
 ## Key Findings
 
