@@ -254,3 +254,53 @@ Asymmetric configs (e.g., `-ctk q8_0 -ctv turbo3`) would be ideal but **cannot b
 ### TQ3_4S Weight Quantization
 
 The Qwopus TQ3_4S GGUF model failed to load — it uses GGML tensor type 46, which is not defined in the `feature/turboquant-kv-cache` branch (max supported: type 45 = TQ4_1S). A newer branch or fork version is needed.
+
+## Cross-Engine Comparisons
+
+### NVFP4-turbo (vLLM) vs Q4_K_M + turbo4 (llama.cpp) — Gemma 31B
+
+We tested LilaRest's `gemma-4-31B-it-NVFP4-turbo` against our standard llama.cpp pipeline. NVFP4 is NVIDIA's 4-bit floating-point format that uses Blackwell tensor cores via CUTLASS kernels.
+
+**Setup difficulty (NVFP4 path):**
+- Required vLLM 0.19.0+cu130 wheel (not standard pip install)
+- Required CUDA 13.0 toolkit installed in WSL for flashinfer JIT compilation of SM 12.0 NVFP4 kernels
+- Required `LD_LIBRARY_PATH` setup for libcudart.so.13
+- Required `transformers>=5.5.0` despite vLLM pinning `transformers<5` (dependency conflict, ignored)
+- Required `--quantization modelopt` flag to activate CUTLASS backend
+
+**Results (3-benchmark suite, temp 0.3, 3 runs):**
+
+| Config | Score | Tok/s | VRAM | Max Ctx | Notes |
+|---|---|---|---|---|---|
+| llama.cpp Q4_K_M + turbo4 | **17/17 (100%)** | **53** | **22.3 GB** | ~58K | Our standard pipeline |
+| vLLM NVFP4-turbo + FP8 KV | 16/17 (94%) | 41 | 29.6 GB | ~16K | -1 ExprEval test |
+
+**Verdict:** llama.cpp wins on quality, throughput, AND VRAM efficiency for our single-stream coding workload. NVFP4-turbo's published advantage (1,244 tok/s batched, 6.22 concurrent req/s) requires multi-user serving — not what we measure. The FP4 weight quantization noise lost one ExprEval test compared to Q4_K_M's mixed-precision approach.
+
+### TriAttention (vLLM) vs TurboQuant (llama.cpp) — Qwen3-8B
+
+Three-way comparison on the same model to isolate compression strategies:
+
+| Approach | Engine | Compression | Best-of-3 | Avg |
+|---|---|---|---|---|
+| **TriAttention** | vLLM | Token eviction (4096 budget) | **14/17 (82%)** | 8.3/17 |
+| f16 baseline | llama.cpp | None | 12/17 (71%) | 9.1/17 |
+| turbo4 | llama.cpp | KV quantization (3.8x) | 8/17 (47%) | 5.7/17 |
+
+**Key findings:**
+1. **TriAttention wins on 8B models.** Token eviction (keeping 4096 of 16K+ tokens at full precision) preserves more quality than quantizing all tokens to 4 bits.
+2. **turbo4 hurts 8B models more than 27B+ models.** On Gemma 26B/31B, turbo4 scores 17/17. On 8B, it drops to 8/17. Smaller models have less redundancy to absorb quantization noise.
+3. **Compression strategy depends on model size.** TriAttention for small models, TurboQuant for large.
+
+### Gemma E4B Capability Floor
+
+Tested Gemma 4 E4B (2.3B active / 5.1B total params with PLE) to find our benchmark suite's lower bound:
+
+| Config | ExprEval | A* | LRU | StrProc | Total |
+|---|---|---|---|---|---|
+| f16 KV | 0/5 | 0/6 | 0/6 | **5/5** | **5/22 (23%)** |
+| turbo4 KV | 0/5 | 0/6 | 0/6 | **5/5** | **5/22 (23%)** |
+
+E4B passes String Processor reliably (often generates 9-13 bonus tests) but completely fails Expression Evaluator, A* Pathfinding, and LRU Cache. **turbo4 is essentially free at this scale** — same 5/22 on both KV configs, only saves 418 MB of KV cache.
+
+**Capability floor:** Need ~8B+ active parameters for medium tasks, ~27B+ for hard data structures.

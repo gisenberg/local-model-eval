@@ -72,3 +72,32 @@ At short context (32K), this is a modest cost. At long context (128K+), TurboQua
 | 3 models viable for long context | 5+ models viable for long context |
 
 TurboQuant's value scales with KV cache cost. Models with cheap KV (DeltaNet hybrids like Qwen 35B) don't need it. Models with expensive KV (dense transformers like Gemma 31B, or global-attention models like Gemma 26B) are transformed by it.
+
+## Model-Size Effect on Compression Quality
+
+TurboQuant's quality cost also scales with model size — but inversely. Smaller models pay a larger quality penalty for the same KV compression ratio.
+
+| Model | turbo4 vs f16 KV | Delta |
+|---|---|---|
+| Gemma 4 31B-IT (31B dense) | 17/17 → 17/17 | **No degradation** |
+| Gemma 4 26B-A4B (4B active MoE) | 17/17 → 17/17 | **No degradation** |
+| Qwen3-8B (8B dense) | 12/17 → 8/17 | **-4 tests (-24%)** |
+| Gemma 4 E4B (2.3B active) | 5/22 → 5/22 | No effect (model already at floor) |
+
+**The pattern:** Models with sufficient capacity (~20B+ active params or large total) absorb the quantization noise without quality loss. 8B models lose meaningful quality. Below ~5B, the model is already too small for our benchmark suite to differentiate.
+
+**Practical implication:** Use turbo4 freely on 26B+ models. On 8B models, prefer **TriAttention** (token eviction) instead — it preserves more quality at this scale by keeping a smaller number of tokens at full precision rather than degrading all tokens.
+
+## Comparison to NVFP4-turbo (NVIDIA Blackwell)
+
+NVIDIA's NVFP4 format uses Blackwell tensor cores via CUTLASS kernels. We tested LilaRest's NVFP4-turbo Gemma 31B against our llama.cpp pipeline:
+
+| | llama.cpp Q4_K_M + turbo4 | vLLM NVFP4-turbo |
+|---|---|---|
+| Score (3 benchmarks) | **17/17 (100%)** | 16/17 (94%) |
+| Throughput (single-stream) | **53 tok/s** | 41 tok/s |
+| VRAM | **22.3 GB** | 29.6 GB |
+| Max context | **~58K** | ~16K |
+| Setup difficulty | Medium | High (CUDA 13 toolkit, cu130 wheel, JIT compile) |
+
+For our single-stream coding workload, **llama.cpp + turbo4 wins on every metric we measure**. NVFP4-turbo's strength is concurrent batched throughput (1,244 tok/s with multiple concurrent users in published benchmarks) — relevant for production serving but not for our benchmarks.

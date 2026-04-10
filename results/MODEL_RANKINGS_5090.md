@@ -8,6 +8,21 @@ Tested April 2026.
 
 Rankings combine single-shot accuracy (temp 0), multi-run consistency (temp 0.3, best-of-3 and average across 3 runs), and practical factors (speed, VRAM, max context).
 
+## Capability Spectrum
+
+How model size correlates with benchmark capability across our test suite:
+
+| Active Params | Best Score | Capable Of |
+|---|---|---|
+| **2.3B** (Gemma E4B) | 5/22 (23%) | String manipulation only |
+| **8B** (Qwen3-8B) | 14/17 (82%) | Medium coding, some hard tasks |
+| **~4B active / 26B MoE** (Gemma 26B-A4B) | 17/17 (100%) | All benchmarks, fastest S-tier |
+| **27B dense** (Harmonic, Qwopus, Opus-distilled) | 16-17/17 (94-100%) | All benchmarks, varies by fine-tune |
+| **31B dense** (Gemma 31B) | 17/17 (100%) | All benchmarks, most consistent |
+| **35B MoE** (Qwen 3.5 35B-A3B) | 11/17 (65%) | Easy/medium only — fails LRU consistently |
+
+**Key insight:** Active parameter count matters more than total parameters. Gemma 26B-A4B (~4B active, MoE) ties Gemma 31B-IT (31B dense, every param active) on quality while being 3x faster.
+
 ## S-Tier: Reliable Excellence
 
 ### Gemma 4 26B-A4B Q6_K
@@ -122,6 +137,23 @@ Embeds reasoning in content output even with thinking off. Produces verbose, tho
 
 ---
 
+## B-Tier: Reasoning Fine-Tune Variants
+
+### Gemma 31B Opus-Distilled Q4_K_M (TeichAI)
+Fine-tuned on Claude Opus reasoning data. Slightly worse than the base model on coding — fine-tuning didn't help and lost one A* test.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **16/17 (94%)** |
+| Throughput | 47 tok/s |
+| VRAM (32K ctx) | 23,199 MB |
+| Max context (turbo4) | ~58K |
+| Config | `-ctk turbo4 -ctv turbo4 -rea off` |
+
+**Verdict:** Base Gemma 31B-IT (17/17) beats the Opus-distilled version (16/17). Reasoning distillation helps Qwen models (+7 tests on 27B) but slightly hurts Gemma 31B which already had strong coding capability baked in.
+
+---
+
 ## C-Tier: Niche Use
 
 ### Qwen 3.5 35B-A3B Q4_K_M
@@ -154,6 +186,25 @@ The fine-tuned versions (Opus-distilled, Harmonic, Qwopus) all dramatically outp
 
 ---
 
+## F-Tier: Below Capability Floor
+
+### Gemma 4 E4B Q8_0 (2.3B active params)
+Per-Layer Embeddings (PLE) architecture, 2.3B active / 5.1B total parameters. Establishes the lower bound of our benchmark suite.
+
+| Metric | Value |
+|---|---|
+| Score (4 benchmarks) | **5/22 (23%)** |
+| Throughput | 131 tok/s |
+| VRAM (32K ctx) | 12,526 MB (f16) / 12,108 MB (turbo4) |
+| Config | `-ctk turbo4 -ctv turbo4 -rea off` |
+
+**Strengths:** Passes String Processor 5/5 (often generates 9-13 bonus tests). Confirms basic coding ability.
+**Weakness:** 0/5 on Expression Evaluator, 0/6 on A*, 0/6 on LRU. Too small for medium/hard tasks. turbo4 doesn't change this — same 5/22 on both KV configs.
+
+**Capability floor finding:** Need ~8B+ active parameters for medium coding tasks, ~27B+ for hard data-structure tasks.
+
+---
+
 ## Thinking ON vs OFF: It's Model-Dependent
 
 We ran a controlled head-to-head: same models, same benchmarks, temp 0.3, 3 runs each, turbo4 KV. Thinking ON used `--reasoning-budget 16384`.
@@ -170,6 +221,33 @@ We ran a controlled head-to-head: same models, same benchmarks, temp 0.3, 3 runs
 - **Reasoning fine-tunes** (Harmonic, Qwopus) benefit from thinking ON — it's what they were trained for
 - **Gemma models** do better with thinking OFF under turbo4 KV — the turbo4 quantization noise occasionally disrupts the thinking→content transition, causing truncation
 - **The difference is about consistency, not capability** — best-of-3 is often tied; the gap is in average scores
+
+## Cross-Engine Comparison: Same Model, Different Inference Stacks
+
+We tested Gemma 4 31B-IT and Qwen3-8B across multiple inference engines and KV compression strategies to isolate what comes from the model vs the engine vs the compression.
+
+### Gemma 4 31B-IT (3-benchmark suite)
+
+| Engine | Quant | KV Compression | Score | Tok/s | VRAM | Notes |
+|---|---|---|---|---|---|---|
+| **llama.cpp** | Q4_K_M | turbo4 (3.8x) | **17/17 (100%)** | **53** | **22.3 GB** | Our standard pipeline |
+| vLLM 0.19+cu130 | NVFP4-turbo | FP8 KV (2x) | 16/17 (94%) | 41 | 29.6 GB | Blackwell-only, harder setup |
+
+**Verdict:** llama.cpp wins on quality, throughput, AND VRAM efficiency for single-stream coding workloads. NVFP4-turbo's published advantage is **batched/concurrent throughput** (1,244 tok/s with multiple concurrent users) — we don't measure that.
+
+### Qwen3-8B (3-benchmark suite)
+
+| Engine | Quant | KV Compression | Best-of-3 | Notes |
+|---|---|---|---|---|
+| **vLLM + TriAttention** | BF16 | Token eviction (4096 budget) | **14/17 (82%)** | TriAttention monkeypatches needed for vLLM 0.19 to work on Blackwell at all |
+| llama.cpp | Q4_K_M | f16 (baseline) | 12/17 (71%) | |
+| llama.cpp | Q4_K_M | turbo4 (3.8x) | 8/17 (47%) | turbo4 hurts 8B models more than 27B+ |
+
+**Verdict on small models:** Token eviction (TriAttention) preserves more quality than weight-precision quantization (turbo4) on 8B models. The pattern flips on 27B+ where turbo4 is essentially free.
+
+### Key Insight
+
+**Compression strategy effectiveness scales with model size.** Larger models have more redundancy to absorb quantization noise. Smaller models are better served by selective retention (TriAttention) than uniform compression (TurboQuant).
 
 ## LM Studio Baselines (f16 KV, temp 0, no TurboQuant)
 
