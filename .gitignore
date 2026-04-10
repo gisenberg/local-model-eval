@@ -1,3 +1,8 @@
 __pycache__/
 .env
 spark_bench/spark_results.json
+# Transient server logs
+*.log
+# Transient spec dec experiment log
+/tmp/specdec_*.log
+/tmp/ik_*.log
