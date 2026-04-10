@@ -25,24 +25,6 @@ The implication: **dense >20B models are not viable for interactive use.** A den
 
 ---
 
-## F-Tier: Bandwidth-bottlenecked
-
-### Gemma 4 31B-IT Q8_0 (dense)
-Loads fine, runs at ~6.7 tok/s. Not a model quality issue — this is hardware physics. Use a 5090 or A100 if you need a dense 31B.
-
-| Metric | Value |
-|---|---|
-| Throughput | **6.7 tok/s** |
-| TTFT | 0.4s |
-| Weight size | 31 GB |
-| Bandwidth utilization | ~221 GB/s = 81% of peak |
-| VRAM (32K ctx) | ~58 GB |
-| Config | `-ctk f16 -ctv f16 -rea off` |
-
-**Takeaway:** Gemma 31B is one of the highest-quality models in the 5090 rankings but on the Spark it is unusable for any task that involves more than a few hundred tokens of output. A 5,000-character expression evaluator solution takes over 3 minutes to generate. Coding benchmarks were aborted as it would take ~30+ minutes per benchmark and the result is fundamentally a hardware limitation, not a model capability question.
-
----
-
 ## A-Tier: Strong Quality at Interactive Speed
 
 ### Qwen3.5-122B-A10B Q4_K_M (unsloth)
@@ -160,6 +142,24 @@ This **does not** mean unsloth is better than bartowski in general:
 - Per-request timeout must be 25+ minutes, and even that isn't enough for hard prompts
 
 **Verdict:** Don't use MiniMax-M2.5 on Spark for interactive coding. The model is fine — the Spark is the wrong host for it. A bandwidth-richer GPU (5090, A100, H100) would let it think at 5–10× the speed, which is the difference between a 25-minute round-trip and a 3-minute one.
+
+---
+
+## F-Tier: Bandwidth-bottlenecked
+
+### Gemma 4 31B-IT Q8_0 (dense)
+Loads fine, runs at ~6.7 tok/s. Not a model quality issue — this is hardware physics. Use a 5090 or A100 if you need a dense 31B.
+
+| Metric | Value |
+|---|---|
+| Throughput | **6.7 tok/s** |
+| TTFT | 0.4s |
+| Weight size | 31 GB |
+| Bandwidth utilization | ~221 GB/s = 81% of peak |
+| VRAM (32K ctx) | ~58 GB |
+| Config | `-ctk f16 -ctv f16 -rea off` |
+
+**Takeaway:** Gemma 31B is one of the highest-quality models in the 5090 rankings but on the Spark it is unusable for any task that involves more than a few hundred tokens of output. A 5,000-character expression evaluator solution takes over 3 minutes to generate. Coding benchmarks were aborted as it would take ~30+ minutes per benchmark and the result is fundamentally a hardware limitation, not a model capability question.
 
 ---
 
