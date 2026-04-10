@@ -579,7 +579,7 @@ def main():
         help="Run context scaling test to find max usable context",
     )
     parser.add_argument(
-        "--output-dir", default="spark_bench",
+        "--output-dir", default="experiments/spark_bench",
     )
     parser.add_argument(
         "--kv", choices=list(KV_CONFIGS.keys()), default=None,
