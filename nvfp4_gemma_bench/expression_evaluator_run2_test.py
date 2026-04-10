@@ -1,15 +1,15 @@
 import re
-, Optional
+from typing import List, Optional
 
 class ExpressionEvaluator:
     """
     A mathematical expression evaluator that supports basic arithmetic,
-    operator precedence, parentheses, and unary operators.
+    operator precedence, parentheses, and unary minus.
     """
 
     def __init__(self):
-        self.tokens: List[str] = []
-        self.pos: int = 0
+        # Token patterns: float/int, operators, and parentheses
+        self.token_pattern = re.compile(r'\d*\.\d+|\d+|[+\-*/()]')
 
     def evaluate(self, expr: str) -> float:
         """
@@ -22,26 +22,29 @@ class ExpressionEvaluator:
             float: The result of the evaluation.
             
         Raises:
-            ValueError: If the expression is empty, contains invalid tokens,
-                         has mismatched parentheses, or division by zero.
+            ValueError: For invalid tokens, mismatched parentheses, 
+                        division by zero, or empty expressions.
         """
         if not expr or not expr.strip():
             raise ValueError("Expression cannot be empty")
 
-        # Tokenize using regex: numbers (including floats), operators, and parentheses
-        self.tokens = re.findall(r'\d*\.\d+|\d+|[+\-*/()]', expr)
+        # Tokenize the input string
+        tokens = self.token_pattern.findall(expr)
         
-        # Check for invalid characters by comparing reconstructed string
-        # This ensures we don't ignore characters like '?' or 'a'
-        reconstructed = "".join(self.tokens)
-        if len(reconstructed) != len(expr.replace(" ", "")):
-            raise ValueError("Expression contains invalid tokens")
+        # Validate that no characters were skipped (invalid tokens)
+        # This ensures that characters like 'a' or '@' trigger a ValueError
+        reconstructed = "".join(tokens)
+        cleaned_expr = "".join(expr.split())
+        if len(reconstructed) != len(cleaned_expr):
+            raise ValueError("Expression contains invalid characters")
 
+        self.tokens = tokens
         self.pos = 0
+
         result = self._parse_expression()
 
         if self.pos < len(self.tokens):
-            raise ValueError("Mismatched parentheses or trailing tokens")
+            raise ValueError("Unexpected tokens at end of expression")
             
         return float(result)
 
@@ -50,7 +53,7 @@ class ExpressionEvaluator:
         return self.tokens[self.pos] if self.pos < len(self.tokens) else None
 
     def _consume(self) -> str:
-        """Returns the current token and advances the position."""
+        """Returns the current token and moves the pointer forward."""
         token = self._peek()
         if token is None:
             raise ValueError("Unexpected end of expression")
@@ -59,77 +62,73 @@ class ExpressionEvaluator:
 
     def _parse_expression(self) -> float:
         """Handles addition and subtraction (lowest precedence)."""
-        result = self._parse_term()
+        node = self._parse_term()
+
         while self._peek() in ('+', '-'):
             op = self._consume()
             right = self._parse_term()
             if op == '+':
-                result += right
+                node += right
             else:
-                result -= right
-        return result
+                node -= right
+        return node
 
     def _parse_term(self) -> float:
         """Handles multiplication and division."""
-        result = self._parse_unary()
+        node = self._parse_factor()
+
         while self._peek() in ('*', '/'):
             op = self._consume()
-            right = self._parse_unary()
+            right = self._parse_factor()
             if op == '*':
-                result *= right
+                node *= right
             else:
                 if right == 0:
                     raise ValueError("Division by zero")
-                result /= right
-        return result
-
-    def _parse_unary(self) -> float:
-        """Handles unary minus and plus."""
-        if self._peek() == '-':
-            self._consume()
-            return -self._parse_unary()
-        if self._peek() == '+':
-            self._consume()
-            return self._parse_unary()
-        return self._parse_factor()
+                node /= right
+        return node
 
     def _parse_factor(self) -> float:
-        """Handles parentheses and numbers (highest precedence)."""
+        """Handles unary minus, parentheses, and numbers (highest precedence)."""
         token = self._peek()
 
+        if token == '-':
+            self._consume()  # consume '-'
+            return -self._parse_factor()
+        
+        if token == '+':
+            self._consume()  # consume '+' (unary plus)
+            return self._parse_factor()
+
         if token == '(':
-            self._consume() # consume '('
+            self._consume()  # consume '('
             result = self._parse_expression()
             if self._peek() != ')':
                 raise ValueError("Mismatched parentheses: missing ')'")
-            self._consume() # consume ')'
+            self._consume()  # consume ')'
             return result
-        
-        if token is None:
-            raise ValueError("Unexpected end of expression")
 
-        # Try to parse as a float
+        # Handle numbers
         try:
             val = float(self._consume())
             return val
-        except ValueError:
-            raise ValueError(f"Invalid token: {token}")
+        except (TypeError, ValueError):
+            raise ValueError(f"Expected number or '(' but found {token}")
 
 import pytest
 
-
 def test_basic_arithmetic():
     evaluator = ExpressionEvaluator()
-    assert evaluator.evaluate("3 + 5 * 2") == 13.0
+    assert evaluator.evaluate("2 + 3 * 4") == 14.0
     assert evaluator.evaluate("10 / 2 - 1") == 4.0
     assert evaluator.evaluate("3.14 * 2") == 6.28
 
 def test_parentheses_and_unary():
     evaluator = ExpressionEvaluator()
-    assert evaluator.evaluate("-(2 + 3) * 2") == -10.0
+    assert evaluator.evaluate("-(2 + 1)") == -3.0
     assert evaluator.evaluate("2 * (3 + 4)") == 14.0
-    assert evaluator.evaluate("-5 + -2") == -7.0
-    assert evaluator.evaluate("(-3.5 + 1.5)") == -2.0
+    assert evaluator.evaluate("-3 + -5") == -8.0
+    assert evaluator.evaluate("(-2 * -3)") == 6.0
 
 def test_division_by_zero():
     evaluator = ExpressionEvaluator()
@@ -139,15 +138,15 @@ def test_division_by_zero():
 def test_mismatched_parentheses():
     evaluator = ExpressionEvaluator()
     with pytest.raises(ValueError, match="Mismatched parentheses"):
-        evaluator.evaluate("(1 + 2")
+        evaluator.evaluate("(2 + 3")
     with pytest.raises(ValueError):
-        evaluator.evaluate("1 + 2)")
+        evaluator.evaluate("2 + 3)")
 
 def test_invalid_inputs():
     evaluator = ExpressionEvaluator()
-    with pytest.raises(ValueError, match="Expression cannot be empty"):
+    with pytest.raises(ValueError, match="invalid characters"):
+        evaluator.evaluate("2 + a")
+    with pytest.raises(ValueError, match="cannot be empty"):
         evaluator.evaluate("   ")
-    with pytest.raises(ValueError, match="invalid tokens"):
-        evaluator.evaluate("3 + a")
     with pytest.raises(ValueError):
-        evaluator.evaluate("++")
+        evaluator.evaluate("2 ++ 3") # Invalid syntax for this parser

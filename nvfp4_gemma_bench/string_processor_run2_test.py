@@ -1,6 +1,6 @@
 import re
-
-
+from collections import Counter
+from typing import Optional
 
 class StringProcessor:
     """A utility class for processing and manipulating strings."""
@@ -15,8 +15,11 @@ class StringProcessor:
         return sum(1 for char in s.lower() if char in vowels)
 
     def is_palindrome(self, s: str) -> bool:
-        """Checks if a string is a palindrome, ignoring case, spaces, and punctuation."""
-        clean_s = re.sub(r'[^a-zA-Z0-9]', '', s).lower()
+        """
+        Checks if a string is a palindrome, ignoring case, spaces, and punctuation.
+        """
+        # Remove non-alphanumeric characters and convert to lowercase
+        clean_s = "".join(char.lower() for char in s if char.isalnum())
         return clean_s == clean_s[::-1]
 
     def caesar_cipher(self, s: str, shift: int) -> str:
@@ -38,46 +41,53 @@ class StringProcessor:
     def most_common_word(self, s: str) -> Optional[str]:
         """
         Returns the most frequent word in a string (case-insensitive).
-        Returns the first occurring word in case of a tie.
+        Returns the first occurring word if there is a tie.
         """
         if not s.strip():
             return None
         
-        # Normalize to lowercase and split by whitespace
-        words = s.lower().split()
+        # Extract words using regex to handle punctuation, convert to lowercase
+        words = re.findall(r'\w+', s.lower())
+        if not words:
+            return None
+            
         counts = Counter(words)
-        
-        # max() returns the first occurrence in case of ties
+        # max() in Python is stable; it returns the first occurrence in case of ties
         return max(words, key=lambda w: counts[w])
 
-# --- Pytest Tests ---
+# -----------------------------------------------------------------------------
+# Pytest Tests
+# -----------------------------------------------------------------------------
 import pytest
 
 def test_string_processor():
     sp = StringProcessor()
 
-    # Test reverse_words
+    # 1. Test reverse_words
     assert sp.reverse_words("Hello World") == "World Hello"
-    assert sp.reverse_words("  Python is fun  ") == "fun is Python"
+    assert sp.reverse_words("  Python is  fun  ") == "fun is Python"
 
-    # Test count_vowels
+    # 2. Test count_vowels
     assert sp.count_vowels("Apple") == 2
     assert sp.count_vowels("Sky") == 0
+    assert sp.count_vowels("AEIOU aeiou") == 10
 
-    # Test is_palindrome
+    # 3. Test is_palindrome
     assert sp.is_palindrome("A man, a plan, a canal: Panama") is True
-    assert sp.is_palindrome("racecar") is True
-    assert sp.is_palindrome("hello") is False
+    assert sp.is_palindrome("Racecar") is True
+    assert sp.is_palindrome("Hello") is False
 
-    # Test caesar_cipher
-    assert sp.caesar_cipher("Hello World!", 3) == "Khoor Zruog!"
-    assert sp.caesar_cipher("abc", -1) == "zab"
+    # 4. Test caesar_cipher
+    assert sp.caesar_cipher("Abc", 1) == "Bcd"
+    assert sp.caesar_cipher("xyz", 3) == "abc"
+    assert sp.caesar_cipher("Hello!", -1) == "Gdkkn!"
 
-    # Test most_common_word
+    # 5. Test most_common_word
     assert sp.most_common_word("The cat sat on the mat") == "the"
     assert sp.most_common_word("Apple Banana Apple Banana") == "apple" # Tie: first one wins
     assert sp.most_common_word("") is None
 
 if __name__ == "__main__":
-    # This allows running the tests directly via python file.py
+    # This allows running the tests directly via `python filename.py` 
+    # though `pytest filename.py` is the standard way.
     pytest.main([__file__])

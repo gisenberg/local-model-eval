@@ -52,7 +52,9 @@ def extract_and_test(content, test_file):
     blocks = re.findall(r'```python\n(.*?)```', content, re.DOTALL)
     if not blocks: return {"passed": 0, "failed": 0, "errors": 0}
     combined = "\n\n".join(b.strip() for b in blocks)
-    for p in [r'from \w+ import \w+']: combined = re.sub(p, '', combined)
+    # Strip only imports referencing the implementation classes (not stdlib imports)
+    for cls in ['ExpressionEvaluator', 'AStarGrid', 'TTLCache', 'StringProcessor', 'BST', 'Node']:
+        combined = re.sub(rf'from \w+ import {cls}\b.*\n', '', combined)
     with open(test_file, "w", encoding="utf-8") as f: f.write(combined)
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", test_file, "-v", "--tb=short"],

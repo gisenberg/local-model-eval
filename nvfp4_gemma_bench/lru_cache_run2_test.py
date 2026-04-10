@@ -1,8 +1,8 @@
 import time
-, Any
+from typing import Optional, Any
 
 class Node:
-    """Doubly Linked List Node to store cache data."""
+    """Helper class for Doubly Linked List."""
     def __init__(self, key: Any, value: Any, expiry: float):
         self.key = key
         self.value = value
@@ -13,14 +13,12 @@ class Node:
 class TTLCache:
     """
     LRU Cache with Time-To-Live (TTL) support.
-    Evicts the Least Recently Used item when capacity is reached.
-    Items are lazily removed if they have expired.
+    Items are evicted based on Least Recently Used policy or expiration.
     """
     def __init__(self, capacity: int, default_ttl: float):
         self.capacity = capacity
         self.default_ttl = default_ttl
         self.cache = {}  # Map key -> Node
-        self.size = 0
         
         # Dummy head and tail for the doubly linked list
         self.head = Node(None, None, 0)
@@ -32,8 +30,8 @@ class TTLCache:
         """Removes a node from the linked list."""
         prev_node = node.prev
         next_node = node.next
-        prev_node.next = next_node
-        next_node.prev = prev_node
+        if prev_node: prev_node.next = next_node
+        if next_node: next_node.prev = prev_node
 
     def _add_to_front(self, node: Node):
         """Adds a node immediately after the dummy head."""
@@ -42,17 +40,12 @@ class TTLCache:
         self.head.next.prev = node
         self.head.next = node
 
-    def _move_to_front(self, node: Node):
-        """Moves an existing node to the front (most recently used)."""
-        self._remove(node)
-        self._add_to_front(node)
-
     def _is_expired(self, node: Node) -> bool:
-        """Checks if a node has exceeded its TTL."""
+        """Checks if a node has passed its expiry time."""
         return time.monotonic() > node.expiry
 
     def get(self, key: Any) -> Optional[Any]:
-        """Retrieve item from cache. Returns None if expired or missing."""
+        """Retrieve value from cache. Returns None if missing or expired."""
         if key not in self.cache:
             return None
         
@@ -62,105 +55,120 @@ class TTLCache:
             self.delete(key)
             return None
         
-        self._move_to_front(node)
+        # Move to front (MRU)
+        self._remove(node)
+        self.head.next = node # Simplified for brevity, using _add_to_front is safer
+        self._add_to_front(node) 
+        # Note: Fixed logic: remove then add_to_front
+        self._remove(node) # This was a logic error in draft, corrected below:
+        
+        # Correct LRU update sequence:
+        # 1. Remove from current position
+        # 2. Add to front
+        # (Handled by the logic below in the actual method)
+        return node.value
+
+    # Refined get to avoid the double-call bug in the draft above
+    def get(self, key: Any) -> Optional[Any]:
+        if key not in self.cache:
+            return None
+        
+        node = self.cache[key]
+        if self._is_expired(node):
+            self.delete(key)
+            return None
+        
+        self._remove(node)
+        self._add_to_front(node)
         return node.value
 
     def put(self, key: Any, value: Any, ttl: Optional[float] = None) -> None:
-        """Insert or update item. Evicts LRU if capacity is exceeded."""
+        """Insert or update a key-value pair with an optional TTL."""
         if key in self.cache:
             self.delete(key)
-
-        # Calculate expiry time
-        ttl_value = ttl if ttl is not None else self.default_ttl
-        expiry = time.monotonic() + ttl_value
+            
+        # Calculate expiry
+        expiry_time = time.monotonic() + (ttl if ttl is not None else self.default_ttl)
+        new_node = Node(key, value, expiry_time)
         
-        # Handle capacity
-        if self.size >= self.capacity:
-            # Evict the least recently used (the one before dummy tail)
-            lru_node = self.tail.prev
-            if lru_node != self.head:
-                self.delete(lru_node.key)
-
-        new_node = Node(key, value, expiry)
         self.cache[key] = new_node
         self._add_to_front(new_node)
-        self.size += 1
+        
+        # Evict LRU if capacity exceeded
+        if len(self.cache) > self.capacity:
+            lru_node = self.tail.prev
+            self.delete(lru_node.key)
 
     def delete(self, key: Any) -> None:
-        """Remove a specific key from the cache."""
+        """Remove a key from the cache."""
         if key in self.cache:
             node = self.cache.pop(key)
             self._remove(node)
-            self.size -= 1
 
-    def current_size(self) -> int:
-        """Returns the number of items currently in the cache."""
-        return self.size
+    def size(self) -> int:
+        """Returns the current number of items in the cache."""
+        # Note: This doesn't proactively clean expired items, it returns current count
+        return len(self.cache)
 
-import unittest
+# ==========================================
+# Tests
+# ==========================================
+import pytest
 from unittest.mock import patch
 
-class TestTTLCache(unittest.TestCase):
+def test_basic_put_get():
+    cache = TTLCache(2, 10)
+    cache.put("a", 1)
+    assert cache.get("a") == 1
 
-    @patch('time.monotonic')
-    def test_basic_put_get(self, mock_time):
-        mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=60)
-        cache.put("a", 1)
-        self.assertEqual(cache.get("a"), 1)
+def test_lru_eviction():
+    cache = TTLCache(2, 10)
+    cache.put("a", 1)
+    cache.put("b", 2)
+    cache.get("a") # a is now MRU
+    cache.put("c", 3) # b should be evicted
+    assert cache.get("b") is None
+    assert cache.get("a") == 1
 
-    @patch('time.monotonic')
-    def test_ttl_expiration(self, mock_time):
-        mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=10)
-        cache.put("a", 1) # Expires at 110.0
-        
-        mock_time.return_value = 105.0
-        self.assertEqual(cache.get("a"), 1) # Still valid
-        
-        mock_time.return_value = 111.0
-        self.assertIsNone(cache.get("a")) # Expired
-        self.assertEqual(cache.current_size(), 0)
+@patch('time.monotonic')
+def test_ttl_expiration(mock_time):
+    mock_time.return_value = 100.0
+    cache = TTLCache(2, 10) # default 10s
+    cache.put("a", 1) # expires at 110.0
+    
+    mock_time.return_value = 105.0
+    assert cache.get("a") == 1 # Not expired yet
+    
+    mock_time.return_value = 111.0
+    assert cache.get("a") is None # Expired
 
-    @patch('time.monotonic')
-    def test_lru_eviction(self, mock_time):
-        mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=60)
-        cache.put("a", 1)
-        cache.put("b", 2)
-        cache.get("a")    # Access 'a' to make it MRU
-        cache.put("c", 3) # Should evict 'b'
-        
-        self.assertEqual(cache.get("a"), 1)
-        self.assertIsNone(cache.get("b"))
-        self.assertEqual(cache.get("c"), 3)
+@patch('time.monotonic')
+def test_custom_ttl(mock_time):
+    mock_time.return_value = 100.0
+    cache = TTLCache(2, 100)
+    cache.put("short", 1, ttl=5) # expires at 105.0
+    
+    mock_time.return_value = 106.0
+    assert cache.get("short") is None
 
-    @patch('time.monotonic')
-    def test_custom_ttl(self, mock_time):
-        mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=100)
-        cache.put("short", "val", ttl=1) # Expires at 101.0
-        
-        mock_time.return_value = 102.0
-        self.assertIsNone(cache.get("short"))
+def test_delete_and_size():
+    cache = TTLCache(2, 10)
+    cache.put("a", 1)
+    cache.put("b", 2)
+    assert cache.size() == 2
+    cache.delete("a")
+    assert cache.size() == 1
+    assert cache.get("a") is None
 
-    @patch('time.monotonic')
-    def test_delete(self, mock_time):
-        mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=60)
-        cache.put("a", 1)
-        cache.delete("a")
-        self.assertIsNone(cache.get("a"))
-        self.assertEqual(cache.current_size(), 0)
-
-    @patch('time.monotonic')
-    def test_update_existing_key(self, mock_time):
-        mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=60)
-        cache.put("a", 1)
-        cache.put("a", 2) # Update value
-        self.assertEqual(cache.get("a"), 2)
-        self.assertEqual(cache.current_size(), 1)
-
-if __name__ == "__main__":
-    unittest.main()
+@patch('time.monotonic')
+def test_lazy_cleanup_on_put(mock_time):
+    mock_time.return_value = 100.0
+    cache = TTLCache(1, 10)
+    cache.put("a", 1)
+    
+    mock_time.return_value = 120.0 # "a" is now expired
+    # Putting "b" should trigger capacity check. 
+    # Even though "a" is expired, it's still in the map until accessed or evicted by LRU.
+    cache.put("b", 2) 
+    assert cache.size() == 1
+    assert cache.get("a") is None
