@@ -45,6 +45,10 @@ For per-platform context window / KV-cache analysis:
 - [results/CONTEXT_CAPACITY_5090.md](results/CONTEXT_CAPACITY_5090.md) — RTX 5090 32GB (KV cache spill cliff, full 256K context tests)
 - [results/CONTEXT_CAPACITY_M4MAX.md](results/CONTEXT_CAPACITY_M4MAX.md) — M4 Max 36GB (Metal working set ceiling, OOM-not-spill failure mode)
 
+For projections to Mac Studio / other Apple Silicon based on the M4 Max findings:
+
+- [results/SPECULATIVE_HARDWARE.md](results/SPECULATIVE_HARDWARE.md) — how the M4 Max 36 GB lessons transfer to M4 Max Studio (64-128 GB) and M3 Ultra Studio (256-512 GB). Marked as projection, not measurement.
+
 ## Key Findings
 
 1. **Thinking models produce better code** — Qwen 3.5 and Gemma 4 use chain-of-thought reasoning that catches bugs before they're written. The Nemotron models think less and make more mistakes.
