@@ -1,0 +1,407 @@
+[
+  {
+    "model": "Gemma 4 26B-A4B Q6_K",
+    "key": "gemma26b-q6k",
+    "vram_mb": 26739,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.07301901600000349,
+        "decode_tps": 138.8010262277733,
+        "n_tokens": 256,
+        "total_s": 1.9174819809999946
+      },
+      {
+        "ttft_s": 0.057270779000006655,
+        "decode_tps": 139.6296544314684,
+        "n_tokens": 256,
+        "total_s": 1.890866348000003
+      },
+      {
+        "ttft_s": 0.058838758000007374,
+        "decode_tps": 137.69814315011402,
+        "n_tokens": 256,
+        "total_s": 1.9180765420000085
+      },
+      {
+        "ttft_s": 0.05924062900000138,
+        "decode_tps": 139.16646823349353,
+        "n_tokens": 256,
+        "total_s": 1.8988672790000152
+      },
+      {
+        "ttft_s": 0.05604457499998716,
+        "decode_tps": 139.41720126618983,
+        "n_tokens": 256,
+        "total_s": 1.892390497000008
+      }
+    ],
+    "ttft_mean": 0.0609,
+    "ttft_median": 0.0588,
+    "ttft_min": 0.056,
+    "ttft_max": 0.073,
+    "decode_mean": 138.9,
+    "decode_median": 139.2
+  },
+  {
+    "model": "Gemma 4 26B-A4B Q4_K_M",
+    "key": "gemma26b-q4km",
+    "vram_mb": 21194,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.06845189599999912,
+        "decode_tps": 149.60809126094455,
+        "n_tokens": 256,
+        "total_s": 1.7797785340000019
+      },
+      {
+        "ttft_s": 0.05506908899999985,
+        "decode_tps": 149.17042133278733,
+        "n_tokens": 256,
+        "total_s": 1.7713143090000187
+      },
+      {
+        "ttft_s": 0.05313266199999589,
+        "decode_tps": 149.0840990711477,
+        "n_tokens": 256,
+        "total_s": 1.7703871209999988
+      },
+      {
+        "ttft_s": 0.054833929000011494,
+        "decode_tps": 150.06250771693684,
+        "n_tokens": 256,
+        "total_s": 1.7609388509999917
+      },
+      {
+        "ttft_s": 0.056024578999995356,
+        "decode_tps": 149.33953906320912,
+        "n_tokens": 256,
+        "total_s": 1.7703285810000011
+      }
+    ],
+    "ttft_mean": 0.0575,
+    "ttft_median": 0.0551,
+    "ttft_min": 0.0531,
+    "ttft_max": 0.0685,
+    "decode_mean": 149.5,
+    "decode_median": 149.3
+  },
+  {
+    "model": "Gemma 4 31B-IT Q4_K_M",
+    "key": "gemma31b-q4km",
+    "vram_mb": 23620,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.14248127900003738,
+        "decode_tps": 50.0942666375881,
+        "n_tokens": 256,
+        "total_s": 5.253000823000036
+      },
+      {
+        "ttft_s": 0.07797024500001726,
+        "decode_tps": 50.02690718699,
+        "n_tokens": 256,
+        "total_s": 5.195367078999993
+      },
+      {
+        "ttft_s": 0.07679759100000183,
+        "decode_tps": 49.16622895839174,
+        "n_tokens": 256,
+        "total_s": 5.283726816000012
+      },
+      {
+        "ttft_s": 0.08041487999997798,
+        "decode_tps": 50.20961289524432,
+        "n_tokens": 256,
+        "total_s": 5.17927481800001
+      },
+      {
+        "ttft_s": 0.07516390600000022,
+        "decode_tps": 51.803778655762414,
+        "n_tokens": 256,
+        "total_s": 5.0169849429999545
+      }
+    ],
+    "ttft_mean": 0.0906,
+    "ttft_median": 0.078,
+    "ttft_min": 0.0752,
+    "ttft_max": 0.1425,
+    "decode_mean": 50.3,
+    "decode_median": 50.1
+  },
+  {
+    "model": "Gemma 31B Opus-Distill Q4_K_M",
+    "key": "gemma31b-opus-q4km",
+    "vram_mb": 23625,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.1274229979999859,
+        "decode_tps": 51.35705053845944,
+        "n_tokens": 256,
+        "total_s": 5.112329837000061
+      },
+      {
+        "ttft_s": 0.08024566499989305,
+        "decode_tps": 51.42560299927853,
+        "n_tokens": 256,
+        "total_s": 5.058507224999971
+      },
+      {
+        "ttft_s": 0.07817359399996349,
+        "decode_tps": 51.38116403444705,
+        "n_tokens": 256,
+        "total_s": 5.060826646999999
+      },
+      {
+        "ttft_s": 0.07686287299998185,
+        "decode_tps": 51.30555482743047,
+        "n_tokens": 256,
+        "total_s": 5.0667318139999225
+      },
+      {
+        "ttft_s": 0.07679715699998724,
+        "decode_tps": 49.2151067123471,
+        "n_tokens": 256,
+        "total_s": 5.278560844000026
+      }
+    ],
+    "ttft_mean": 0.0879,
+    "ttft_median": 0.0782,
+    "ttft_min": 0.0768,
+    "ttft_max": 0.1274,
+    "decode_mean": 50.9,
+    "decode_median": 51.4
+  },
+  {
+    "model": "Qwopus 3.5 27B-v3 Q6_K",
+    "key": "qwopus27b-q6k",
+    "vram_mb": 25505,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.1884825220000721,
+        "decode_tps": 49.6156934193307,
+        "n_tokens": 256,
+        "total_s": 5.348229146999984
+      },
+      {
+        "ttft_s": 0.07330794699998933,
+        "decode_tps": 49.66265168512885,
+        "n_tokens": 256,
+        "total_s": 5.228178491999984
+      },
+      {
+        "ttft_s": 0.07336944899998343,
+        "decode_tps": 49.54165553323561,
+        "n_tokens": 256,
+        "total_s": 5.240830332999963
+      },
+      {
+        "ttft_s": 0.07406760900005338,
+        "decode_tps": 49.60368425350347,
+        "n_tokens": 256,
+        "total_s": 5.235076885000012
+      },
+      {
+        "ttft_s": 0.07281428800001777,
+        "decode_tps": 49.60900543191023,
+        "n_tokens": 256,
+        "total_s": 5.233327658000007
+      }
+    ],
+    "ttft_mean": 0.0964,
+    "ttft_median": 0.0734,
+    "ttft_min": 0.0728,
+    "ttft_max": 0.1885,
+    "decode_mean": 49.6,
+    "decode_median": 49.6
+  },
+  {
+    "model": "Harmonic 27B Q4_K_M",
+    "key": "harmonic27b-q4km",
+    "vram_mb": 20533,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.1837825669999802,
+        "decode_tps": 61.39509600497596,
+        "n_tokens": 256,
+        "total_s": 4.353587293000032
+      },
+      {
+        "ttft_s": 0.07373805800000355,
+        "decode_tps": 61.415379994084326,
+        "n_tokens": 256,
+        "total_s": 4.242164208999952
+      },
+      {
+        "ttft_s": 0.07368965500006652,
+        "decode_tps": 61.2183008033503,
+        "n_tokens": 256,
+        "total_s": 4.255668764999996
+      },
+      {
+        "ttft_s": 0.07472417300004963,
+        "decode_tps": 61.16461599517121,
+        "n_tokens": 256,
+        "total_s": 4.260240006000004
+      },
+      {
+        "ttft_s": 0.07456467700001213,
+        "decode_tps": 61.09381012631718,
+        "n_tokens": 256,
+        "total_s": 4.264941146000069
+      }
+    ],
+    "ttft_mean": 0.0961,
+    "ttft_median": 0.0746,
+    "ttft_min": 0.0737,
+    "ttft_max": 0.1838,
+    "decode_mean": 61.3,
+    "decode_median": 61.2
+  },
+  {
+    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M",
+    "key": "qwen27b-opus-q4km",
+    "vram_mb": 20530,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.1814653480000743,
+        "decode_tps": 59.785102688468,
+        "n_tokens": 254,
+        "total_s": 4.4301160290000325
+      },
+      {
+        "ttft_s": 0.06676086700008454,
+        "decode_tps": 60.80995743804644,
+        "n_tokens": 254,
+        "total_s": 4.24385703400003
+      },
+      {
+        "ttft_s": 0.06807280800001081,
+        "decode_tps": 61.19214051625932,
+        "n_tokens": 254,
+        "total_s": 4.21902104000003
+      },
+      {
+        "ttft_s": 0.06718883799999276,
+        "decode_tps": 59.5552903397473,
+        "n_tokens": 254,
+        "total_s": 4.332226090999939
+      },
+      {
+        "ttft_s": 0.07837382799993975,
+        "decode_tps": 58.58559523724681,
+        "n_tokens": 254,
+        "total_s": 4.414048389999948
+      }
+    ],
+    "ttft_mean": 0.0924,
+    "ttft_median": 0.0681,
+    "ttft_min": 0.0668,
+    "ttft_max": 0.1815,
+    "decode_mean": 60.0,
+    "decode_median": 59.8
+  },
+  {
+    "model": "Qwen 3.5 27B Q6_K (base)",
+    "key": "qwen27b-q6k",
+    "vram_mb": 25644,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.19366890099990997,
+        "decode_tps": 49.78898789010759,
+        "n_tokens": 256,
+        "total_s": 5.335536317999868
+      },
+      {
+        "ttft_s": 0.08085667099999228,
+        "decode_tps": 49.613904296368766,
+        "n_tokens": 256,
+        "total_s": 5.240908497999953
+      },
+      {
+        "ttft_s": 0.08307747200001359,
+        "decode_tps": 49.707773166500886,
+        "n_tokens": 256,
+        "total_s": 5.233341978999988
+      },
+      {
+        "ttft_s": 0.08006518199999846,
+        "decode_tps": 49.24951082904201,
+        "n_tokens": 256,
+        "total_s": 5.278188910999916
+      },
+      {
+        "ttft_s": 0.07960924000008163,
+        "decode_tps": 49.42497460288523,
+        "n_tokens": 256,
+        "total_s": 5.2593403169998965
+      }
+    ],
+    "ttft_mean": 0.1035,
+    "ttft_median": 0.0809,
+    "ttft_min": 0.0796,
+    "ttft_max": 0.1937,
+    "decode_mean": 49.6,
+    "decode_median": 49.6
+  },
+  {
+    "model": "Qwen 3.5 35B-A3B Q4_K_M",
+    "key": "qwen35b-a3b",
+    "vram_mb": 24842,
+    "kv_config": "turbo4/turbo4",
+    "thinking": "off",
+    "runs": [
+      {
+        "ttft_s": 0.11458984200021405,
+        "decode_tps": 174.21832985567042,
+        "n_tokens": 256,
+        "total_s": 1.5842050550002114
+      },
+      {
+        "ttft_s": 0.06461302000002433,
+        "decode_tps": 175.0602037169262,
+        "n_tokens": 256,
+        "total_s": 1.527117108000084
+      },
+      {
+        "ttft_s": 0.06427697200001603,
+        "decode_tps": 174.47000637901084,
+        "n_tokens": 256,
+        "total_s": 1.5316721940000662
+      },
+      {
+        "ttft_s": 0.06624453199992786,
+        "decode_tps": 174.23383163537457,
+        "n_tokens": 256,
+        "total_s": 1.5356298540000353
+      },
+      {
+        "ttft_s": 0.06432417299993176,
+        "decode_tps": 174.16526625658224,
+        "n_tokens": 256,
+        "total_s": 1.534289951000119
+      }
+    ],
+    "ttft_mean": 0.0748,
+    "ttft_median": 0.0646,
+    "ttft_min": 0.0643,
+    "ttft_max": 0.1146,
+    "decode_mean": 174.4,
+    "decode_median": 174.2
+  }
+]

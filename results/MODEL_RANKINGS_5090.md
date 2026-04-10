@@ -8,7 +8,7 @@ Tested April 2026.
 
 Rankings combine single-shot accuracy (temp 0), multi-run consistency (temp 0.3, best-of-3 and average across 3 runs), and practical factors (speed, VRAM, max context).
 
-> **⚠ TTFT values below are inflated by ~2.1s due to a Python `requests` library issue on Windows** (see [A Note on TTFT](#a-note-on-ttft--our-numbers-were-measuring-the-wrong-thing) at the bottom). Real TTFT for every model is ~60–70ms on this hardware. Throughput (tok/s) and benchmark scores are unaffected — only TTFT is wrong. Decode tok/s may also be slightly understated (~24% higher when measured from Linux) but the relative rankings between models hold.
+> **All TTFT and throughput values below have been corrected** (April 10) after we discovered our Windows Python `requests` client was inflating TTFT by ~2.1s and slightly inflating decode tok/s due to buffering. Re-measured from a Linux client (WSL2) hitting a llama-server built from the same TurboQuant source. The corrected decode numbers are within ~5% of the originals (relative rankings hold) but TTFT is now ~25-40x lower. Benchmark scores were unaffected and have not been re-measured. See [A Note on TTFT](#a-note-on-ttft--our-numbers-were-measuring-the-wrong-thing) at the bottom for the full investigation.
 
 ## Capability Spectrum
 
@@ -35,9 +35,9 @@ The most consistent model tested. Average score nearly equals best-of-3 — prod
 | Single-shot (temp 0) | **17/17 (100%)** |
 | Best-of-3 (temp 0.3) | 30/31 (97%) |
 | Average (temp 0.3) | 30.0/31 (97%) |
-| Throughput | 142 tok/s |
-| TTFT | 2.32s |
-| VRAM (32K ctx) | 25,636 MB |
+| Throughput | **138.9 tok/s** |
+| TTFT | **61 ms** |
+| VRAM (32K ctx) | 26,739 MB |
 | Max context (turbo4) | ~230K |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -54,9 +54,9 @@ Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run
 | Single-shot (temp 0) | **17/17 (100%)** |
 | Best-of-3 (temp 0.3) | **31/31 (100%)** |
 | Average (temp 0.3) | **30.7/31 (99%)** |
-| Throughput | 53 tok/s |
-| TTFT | 2.20s |
-| VRAM (32K ctx) | 22,293 MB |
+| Throughput | **50.3 tok/s** |
+| TTFT | **91 ms** |
+| VRAM (32K ctx) | 23,620 MB |
 | Max context (turbo4) | ~58K |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -75,9 +75,9 @@ Lowest VRAM of any high-quality model. Peak capability matches S-tier but higher
 | Single-shot (temp 0) | **17/17 (100%)** |
 | Best-of-3 (temp 0.3) | **31/31 (100%)** |
 | Average (temp 0.3) | 25.3/31 (82%) |
-| Throughput | 64 tok/s |
-| TTFT | 2.14s |
-| VRAM (32K ctx) | 19,565 MB |
+| Throughput | **60.0 tok/s** |
+| TTFT | **92 ms** |
+| VRAM (32K ctx) | 20,530 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -92,9 +92,9 @@ Fastest model with 94%+ quality. The Q4_K_M tradeoff: 10% faster, 10% less VRAM,
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **16/17 (94%)** |
-| Throughput | 156 tok/s |
-| TTFT | 2.31s |
-| VRAM (32K ctx) | 20,046 MB |
+| Throughput | **149.5 tok/s** |
+| TTFT | **58 ms** |
+| VRAM (32K ctx) | 21,194 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -114,9 +114,9 @@ With thinking enabled, Harmonic becomes the most consistent model tested. **30.7
 | Average (temp 0.3, thinking on) | **30.7/31 (99%)** |
 | Best-of-3 (temp 0.3, thinking off) | 31/31 (100%) |
 | Average (temp 0.3, thinking off) | 27.0/31 (87%) |
-| Throughput | 61 tok/s (thinking on), 66 tok/s (thinking off) |
-| TTFT | 2.23s (Q4_K_M), 2.29s (Q8_0) |
-| VRAM (32K ctx) | 19,995 MB |
+| Throughput (thinking off) | **61.3 tok/s** |
+| TTFT | **96 ms** |
+| VRAM (32K ctx) | 20,533 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea on --reasoning-budget 16384` |
 
@@ -134,9 +134,9 @@ Embeds reasoning in content output even with thinking off. Produces verbose, tho
 | Single-shot (temp 0) | **16/17 (94%)** |
 | Best-of-3 (temp 0.3) | 30/31 (97%) |
 | Average (temp 0.3) | 24.0/31 (77%) |
-| Throughput | 52 tok/s |
-| TTFT | 2.38s |
-| VRAM (32K ctx) | 24,549 MB |
+| Throughput | **49.6 tok/s** |
+| TTFT | **96 ms** |
+| VRAM (32K ctx) | 25,505 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -153,9 +153,9 @@ Fine-tuned on Claude Opus reasoning data. Slightly worse than the base model on 
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **16/17 (94%)** |
-| Throughput | 47 tok/s |
-| TTFT | 2.19s |
-| VRAM (32K ctx) | 23,199 MB |
+| Throughput | **50.9 tok/s** |
+| TTFT | **88 ms** |
+| VRAM (32K ctx) | 23,625 MB |
 | Max context (turbo4) | ~58K |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -172,9 +172,9 @@ Fastest model by far. Use when speed > correctness.
 |---|---|
 | Single-shot (temp 0) | **11/17 (65%)** |
 | Best-of-3 (temp 0.3) | 25/31 (81%) |
-| Throughput | **188 tok/s** |
-| TTFT | 2.31s |
-| VRAM (32K ctx) | 23,910 MB |
+| Throughput | **174.4 tok/s** |
+| TTFT | **75 ms** |
+| VRAM (32K ctx) | 24,842 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
@@ -189,9 +189,9 @@ The fine-tuned versions (Opus-distilled, Harmonic, Qwopus) all dramatically outp
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **10/17 (59%)** |
-| Throughput | 51 tok/s |
-| TTFT | 2.15s |
-| VRAM (32K ctx) | 24,606 MB |
+| Throughput | **49.6 tok/s** |
+| TTFT | **104 ms** |
+| VRAM (32K ctx) | 25,644 MB |
 
 **Bottom line:** No reason to use when fine-tunes exist at the same VRAM cost.
 
@@ -317,20 +317,45 @@ The ~1.9-second overhead is added **between `http.client` and `urllib3`** on Win
 
 **Most likely cause:** `urllib3` on Windows does eager SSL context initialization (`ssl.create_default_context()`) and Windows root certificate store enumeration on the first HTTP call — even for plain `http://` connections. This is a known slow path on Python/Windows. Linux's OpenSSL cert loading doesn't have this delay.
 
-### What the real 5090 TTFT looks like
+### Re-measurement: corrected TTFT and decode for all models
 
-For reference, **Gemma 26B Q6_K turbo4 has an actual TTFT of ~60-70ms on the 5090**. Other models will be in the same range (the bottleneck is GPU prompt processing on a short prompt, which is fast on this hardware regardless of model size).
+We re-ran throughput measurements for all 9 ranked models from inside WSL2 (Linux client + Linux-built llama-server, same TurboQuant source as the Windows build). The numbers in the per-model cards above have been updated to reflect these clean measurements.
 
-The model-by-model TTFT numbers in the cards above should be interpreted as: "the *measurement methodology* added a fixed ~2.1s of client overhead, but the *actual* model TTFT is ~70ms across the board."
+| Model | OLD TTFT | **NEW TTFT** | OLD tok/s | **NEW tok/s** |
+|---|---|---|---|---|
+| Gemma 26B-A4B Q6_K | 2,320 ms | **61 ms** | 142.2 | 138.9 |
+| Gemma 26B-A4B Q4_K_M | 2,310 ms | **58 ms** | 156.1 | 149.5 |
+| Gemma 31B-IT Q4_K_M | 2,200 ms | **91 ms** | 53.3 | 50.3 |
+| Gemma 31B Opus-Distill | 2,190 ms | **88 ms** | 46.8 | 50.9 |
+| Qwopus 27B Q6_K | 2,380 ms | **96 ms** | 51.7 | 49.6 |
+| Harmonic 27B Q4_K_M | 2,230 ms | **96 ms** | 65.5 | 61.3 |
+| Qwen 27B Opus-Distill | 2,140 ms | **92 ms** | 63.8 | 60.0 |
+| Qwen 27B Q6_K (base) | 2,150 ms | **104 ms** | 51.3 | 49.6 |
+| Qwen 35B-A3B Q4_K_M | 2,310 ms | **75 ms** | 188.1 | 174.4 |
 
-### Implications
+**Key observations from the re-benchmark:**
 
-1. **All Windows-measured TTFT in this repo is wrong by ~2 seconds.** Real TTFT is ~70ms.
-2. **Wall-clock latency for short responses is much better than we said.** A "3 second" coding response is actually closer to 1 second.
-3. **Decode throughput on Windows is also slightly understated.** Linux measured 24% higher tok/s on the same model (140 vs 113 for Gemma 26B Q6_K), suggesting some streaming/buffering overhead in `requests` on Windows in addition to the connection-startup hit.
-4. **Fix:** Run benchmarks from inside WSL2 against the Windows server, or use raw `socket`/`http.client` instead of `requests`. The server itself is fine.
+1. **TTFT was wrong by 25-40x.** Real values are 58-104ms. The old "every model is 2.3s" cluster was 100% client overhead.
+2. **Real TTFT scales with model size, slightly.** Smaller models (Gemma 26B at ~60ms) are faster than larger ones (Qwen 27B base at 104ms). The differences are tiny but visible — masked entirely by the old constant overhead.
+3. **Decode throughput was actually *overstated* by ~5%, not understated.** Opposite of my initial guess. The Windows Python pipeline was buffering tokens in larger chunks, making the per-iteration timing look faster than the steady-state rate. Linux gets clean per-token timing, which is slightly slower but more accurate.
+4. **Relative rankings are unchanged.** Qwen 35B-A3B is still fastest, Gemma 26B variants still cluster around 140-150 tok/s, dense 27-31B models still 50-60 tok/s.
+5. **Gemma 31B Opus-Distill flipped:** previously measured at 47 tok/s (slower than the base 31B at 53), it's now at 51 tok/s (slightly faster than the base at 50). Within noise, but worth noting that the Opus-distilled variant doesn't actually have a throughput penalty.
 
-See [`tools/ttft_isolation_test.py`](../tools/ttft_isolation_test.py) and [`tools/ttft_session_test.py`](../tools/ttft_session_test.py) for the full test methodology.
+### Practical implications
+
+- **TTFT ~60-100ms means the 5090 is genuinely fast for short responses.** A "factorial function with one test" response that we said took ~3s actually completes in ~1.4s wall-clock (100ms TTFT + 1.3s decode of ~250 tokens at 175 tok/s on Qwen 35B).
+- **Decode rates ~50-175 tok/s depending on architecture** — MoE small-active models (Qwen 35B-A3B, Gemma 26B-A4B) at 140-175 tok/s, dense 27-31B at 50-60 tok/s. Bandwidth math holds up.
+- **The Windows Python `requests` bug only affected our measurement, not real users.** Users running the server from any non-Python client (curl, the llama-server web UI, LM Studio) get the real ~70ms TTFT.
+
+### Fixing it for future benchmarks
+
+Three options, in order of effort:
+
+1. **Run benchmark scripts from inside WSL2** against the same Windows server. WSL2 can reach Windows localhost via the NAT bridge (172.20.240.1) once a firewall rule allows it. This is what we used for the re-benchmark.
+2. **Use Python `http.client` (stdlib) instead of `requests`** in benchmark scripts. Adds ~100ms TTFT instead of 2,100ms. Easy code change.
+3. **Use raw `socket.socket()`** for the absolute lowest overhead (~67ms). More code, more parsing, but matches the cleanest measurement we got.
+
+See [`tools/ttft_isolation_test.py`](../tools/ttft_isolation_test.py), [`tools/ttft_session_test.py`](../tools/ttft_session_test.py), and [`tools/rebench_5090_throughput.py`](../tools/rebench_5090_throughput.py) for the test methodology and re-benchmark script.
 
 ## Configuration
 

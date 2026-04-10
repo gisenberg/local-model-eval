@@ -8,8 +8,8 @@ This document captures the hardware we run benchmarks on, with a focus on the sp
 |---|---|---|---|
 | **Total memory** | 32 GB GDDR7 | 36 GB LPDDR5X (unified, **~30 GB usable on Metal**) | 128 GB LPDDR5x (unified) |
 | **Memory bandwidth** | **1,792 GB/s** | **410 GB/s** | **273 GB/s** |
-| **Max model (dense, Q4)** | ~31 GB at 53 tok/s | ~18 GB at **11.5 tok/s** (gemma 31B, turbo4 KV req'd) | ~70 GB but at <8 tok/s |
-| **Max model (MoE A4B, Q6)** | 142 tok/s | **60 tok/s** (gemma 26B-A4B, 16K ctx max) | ~70 GB at 21 tok/s |
+| **Max model (dense, Q4)** | ~31 GB at 50 tok/s | ~18 GB at **11.5 tok/s** (gemma 31B, turbo4 KV req'd) | ~70 GB but at <8 tok/s |
+| **Max model (MoE A4B, Q6)** | 139 tok/s | **60 tok/s** (gemma 26B-A4B, 16K ctx max) | ~70 GB at 21 tok/s |
 | **Max model (MoE A10B, Q4)** | doesn't fit | doesn't fit | ~70 GB at 21 tok/s |
 | **Best for** | Dense models, max throughput, code generation | Portable inference, MoE A4B-class models | Huge MoE models, full context windows |
 | **Bottleneck** | VRAM capacity | Metal working set (30 GB) | Memory bandwidth |
@@ -50,12 +50,12 @@ This document captures the hardware we run benchmarks on, with a focus on the sp
 ### Key constraints
 
 - **VRAM ceiling at 32 GB.** Anything bigger spills to system RAM via PCIe and crashes throughput.
-- Bandwidth is **never the bottleneck** for any model that fits — even a dense 31B model at Q4 reads ~17.5 GB/token, which would theoretically allow ~100 tok/s on this bandwidth alone (we measure 53 tok/s, compute-bound).
+- Bandwidth is **never the bottleneck** for any model that fits — even a dense 31B model at Q4 reads ~17.5 GB/token, which would theoretically allow ~100 tok/s on this bandwidth alone (we measure 50 tok/s, compute-bound).
 - **FP4 tensor cores are unique to Blackwell.** NVFP4-quantized models (like LilaRest's Gemma 31B NVFP4-turbo) can use the dedicated FP4 path through CUTLASS kernels, but only via vLLM with the cu130 wheel.
 
 ### What this machine is good at
 
-- **Dense models up to ~31B at Q4.** Gemma 4 31B-IT is the canonical example: 53 tok/s, 17/17 quality, 22 GB total VRAM with TurboQuant turbo4 KV.
+- **Dense models up to ~31B at Q4.** Gemma 4 31B-IT is the canonical example: 50 tok/s, 17/17 quality, 24 GB total VRAM with TurboQuant turbo4 KV.
 - **Anything compute-heavy.** FP4 kernels have ~3 PFLOPS of headroom — far more than the bandwidth can feed for a single user, so this machine excels at concurrent batched serving where compute matters.
 - **High-quality code generation.** Our entire S-tier (Gemma 26B, Gemma 31B, fine-tuned Qwen 27Bs) runs at interactive speed with TurboQuant.
 
@@ -216,7 +216,7 @@ Anything above ~10B active parameters becomes painfully slow on this machine.
 | Bandwidth | 1,792 GB/s | 410 GB/s | 273 GB/s |
 | Bandwidth ratio (vs 5090) | 1.0x | 0.23x | 0.15x |
 | Capacity ratio (vs 5090) | 1.0x | 1.13x raw / 1.0x usable | 4.0x |
-| Largest dense Q4 model viable | ~31B (53 tok/s) | ~31B (**11.5 tok/s, turbo4 only**) | ~7B for interactive |
+| Largest dense Q4 model viable | ~31B (50 tok/s) | ~31B (**11.5 tok/s, turbo4 only**) | ~7B for interactive |
 | Largest MoE A10B model viable | ~35B total | ~30B total | ~122B total |
 | Power draw | 575 W | ~30 W | ~140 W |
 
@@ -226,11 +226,11 @@ Where we have comparable runs:
 
 | Model | RTX 5090 | M4 Max | DGX Spark | Notes |
 |---|---|---|---|---|
-| Gemma 4 31B-IT Q4_K_M (dense) | **53 tok/s** | **11.5 tok/s** (turbo4 req'd) | ~6.7 tok/s | All measured. M4 Max needs turbo4 KV to fit. |
-| Qwen 3.5 35B-A3B Q4_K_M (MoE, 3B active) | **188 tok/s** | not tested | not tested | 5090 only — compute headroom matters here |
+| Gemma 4 31B-IT Q4_K_M (dense) | **50 tok/s** | **11.5 tok/s** (turbo4 req'd) | ~6.7 tok/s | All measured. M4 Max needs turbo4 KV to fit. |
+| Qwen 3.5 35B-A3B Q4_K_M (MoE, 3B active) | **174 tok/s** | not tested | not tested | 5090 only — compute headroom matters here |
 | Qwen 3.5 122B-A10B Q4 (MoE, 10B active) | **does not fit** | does not fit | 21 tok/s | Spark wins by capacity |
 | Qwen3-Coder-Next 80B-A3B (MoE, 3B active) | does not fit | does not fit | 50 tok/s | Spark wins by capacity |
-| Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **142 tok/s** | **60 tok/s** (16K ctx max) | not tested | 5090 wins on bandwidth, M4 Max ctx-limited |
+| Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **139 tok/s** | **60 tok/s** (16K ctx max) | not tested | 5090 wins on bandwidth, M4 Max ctx-limited |
 | Qwen 3.5 27B Opus-Distilled Q4_K_M (dense) | 64 tok/s | **13 tok/s** | not tested | Bandwidth ratio holds (~5x slower) |
 | Qwen 3.5 9B Q4_K_M (dense, thinking off) | not in baseline | **35 tok/s** | not tested | M4 Max measured |
 | Nemotron 3 Nano 4B Q4_K_M (dense) | not in baseline | **65 tok/s** | not tested | Smallest, fastest on Mac |
@@ -241,8 +241,8 @@ Quality is determined by the model, not the hardware — same GGUF file produces
 
 | Model | Score | Where it's actually usable |
 |---|---|---|
-| Gemma 4 31B-IT Q4_K_M | 17/17 (100%) | **5090 only** (53 tok/s vs Spark's 6.7) |
-| Gemma 4 26B-A4B Q6_K | 17/17 (100%) | 5090 (142 tok/s) |
+| Gemma 4 31B-IT Q4_K_M | 17/17 (100%) | **5090 only** (50 tok/s vs Spark's 6.7) |
+| Gemma 4 26B-A4B Q6_K | 17/17 (100%) | 5090 (139 tok/s) |
 | Qwen 3.5 122B-A10B Q4_K_M | 16/17 (94%) | **Spark only** (21 tok/s vs 5090 OOM) |
 | Harmonic 27B Q4_K_M | 15/17 (88%) | 5090 only (Spark untested) |
 
@@ -267,7 +267,7 @@ Does the model fit in 32-36 GB at usable quant?
 ### Worked examples
 
 **"I want the highest-quality coding model that fits."**
-- → RTX 5090 + Gemma 4 31B-IT Q4_K_M with TurboQuant turbo4 KV. 17/17 score, 53 tok/s, 22 GB VRAM, 58K context.
+- → RTX 5090 + Gemma 4 31B-IT Q4_K_M with TurboQuant turbo4 KV. 17/17 score, 50 tok/s, 24 GB VRAM, 58K context.
 
 **"I want the same quality but on a laptop I can actually carry."**
 - → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which does build on Metal). Same 17/17 quality, but **11.5 tok/s** instead of 53. Without turbo4 the model literally won't load — 18 GB of weights + 14 GB of f16 KV at 16K context exceeds the 30 GB Metal working set.
@@ -276,7 +276,7 @@ Does the model fit in 32-36 GB at usable quant?
 - → DGX Spark + Qwen 3.5 122B-A10B Q4_K_M. 21 tok/s (just barely interactive), full 256K context, 16/17 quality.
 
 **"I want max throughput for real-time use, model quality is secondary."**
-- → RTX 5090 + Qwen 3.5 35B-A3B Q4_K_M. 188 tok/s (3x faster than anything else tested), 11/17 quality.
+- → RTX 5090 + Qwen 3.5 35B-A3B Q4_K_M. 174 tok/s (3x faster than anything else tested), 11/17 quality.
 
 **"I want to load a 70B dense model and play with it."**
 - → DGX Spark, but accept ~4 tok/s. Don't expect to use it for interactive coding. M4 Max can't fit it; 5090 can't fit it either.
@@ -316,16 +316,14 @@ A few traps to avoid when reading marketing material:
 - DGX Spark spec values: [NVIDIA DGX Spark Hardware Overview](https://docs.nvidia.com/dgx/dgx-spark/hardware.html), [LMSYS DGX Spark Review](https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/), [Backend.ai analysis](https://www.backend.ai/blog/2026-02-is-dgx-spark-actually-a-blackwell).
 - Throughput measurements: our own benchmarks, see [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md), [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md), and [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md).
 
-### Caveat: 5090 numbers are measured through a Windows Python client
+### Note: 5090 numbers were originally measured through a buggy Windows client (now corrected)
 
-Our 5090 benchmarks were run with a Python `requests` client on Windows. We later discovered (April 10) that this client adds a fixed **~2.1 seconds of TTFT overhead** per request and slightly understates decode throughput by **~24%**. Root cause is `urllib3` doing eager Windows root certificate store enumeration on the first HTTP call — even for plain `http://` connections.
+Our original 5090 benchmarks were run with a Python `requests` client on Windows. On April 10 we discovered this client added a fixed **~2.1 seconds of TTFT overhead** per request and slightly **overstated** decode throughput by ~5% due to client-side buffering masking the true per-token rate. Root cause is `urllib3` doing eager `ssl.create_default_context()` and Windows root certificate store enumeration on the first HTTP call, even for plain `http://` connections — adds ~1.9s vs Python stdlib `http.client`.
 
-The same llama-server binary returns in 60–70ms when called from a Linux client (WSL2 or otherwise). We confirmed this with a four-cell isolation test (Windows/WSL2 server × Windows/WSL2 client) and a layer-by-layer Python stack test (`socket` < `http.client` < `urllib3` < `requests`).
+The same llama-server binary returns in 60–100ms when called from a Linux client. We confirmed this with a four-cell isolation test (Windows/WSL2 server × Windows/WSL2 client) and a layer-by-layer Python stack test (`socket` < `http.client` < `urllib3` < `requests`).
 
-What this means for the numbers in this doc:
-- **TTFT values from MODEL_RANKINGS_5090.md are wrong** by a fixed ~2.1s. Real TTFT is ~70ms across all models.
-- **Throughput (tok/s) values are roughly accurate but slightly understated.** Linux measured 140 vs 113 tok/s for the same Gemma 26B Q6_K (+24%). Treat published 5090 throughput as a lower bound.
-- **Benchmark scores are unaffected** — they depend on the model output, not the timing measurement.
-- **Spark and M4 Max numbers are not affected** because they were measured directly on Linux and macOS respectively.
+**The MODEL_RANKINGS_5090.md numbers have been re-measured and corrected.** All 9 ranked models were re-benchmarked from inside WSL2 against a Linux-built llama-server (same TurboQuant source as the Windows build). New TTFT range: 58-104ms (was 2,140-2,380ms). New decode range: 50-174 tok/s (was 47-188 tok/s — relative rankings unchanged, absolute values within ~5%).
 
-See "A Note on TTFT" in MODEL_RANKINGS_5090.md for the full isolation test results, and `tools/ttft_isolation_test.py` / `tools/ttft_session_test.py` for the test methodology.
+Spark and M4 Max numbers were not affected because they were measured directly on Linux and macOS respectively.
+
+See "A Note on TTFT" in MODEL_RANKINGS_5090.md for the full isolation test results, the corrected before/after table, and `tools/ttft_isolation_test.py` / `tools/ttft_session_test.py` / `tools/rebench_5090_throughput.py` for the test methodology and re-benchmark script.
