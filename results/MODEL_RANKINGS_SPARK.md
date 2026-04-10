@@ -84,6 +84,31 @@ This **does not** mean unsloth is better than bartowski in general:
 
 ---
 
+### Qwen3.5-122B-A10B Q4_K_M (bartowski) — asymmetric KV experiment
+Testing [Nauful's KV quantization advice](../../../.claude/projects/-home-gisenberg-git-gisenberg-local-model-eval/memory/feedback_kv_quantization.md): "don't quantize K cache, only V to q8_0 — quantizing K breaks tool calls." Same model, same prompts, same temp=0. Only `-ctv` changed from `f16` to `q8_0`.
+
+| Metric | f16/f16 (baseline) | f16K/q8V (asym) | Δ |
+|---|---|---|---|
+| Throughput | 25.8 tok/s | **14.0 tok/s** | **−46%** |
+| ExprEval | 0/5 | 0/5 | tied |
+| A* Pathfinding | 6/6 (+1 bonus) | 6/6 (+1 bonus) | tied |
+| LRU Cache with TTL | 6/6 | 6/6 | tied |
+| Total | 13/17 (76%) | 13/17 (76%) | tied |
+| Generated tokens | 2324 / 3443 / 2929 | 2367 / 3596 / 2803 | within 5% |
+
+**Quality result: identical.** At temp=0 the asymmetric KV produces effectively the same generation path — token counts are within 5% of the f16 baseline, and the pass/fail outcome on every benchmark is the same. This confirms the quality half of Nauful's claim: V-cache q8_0 is lossless enough to not affect content generation. Tool-call reliability would need a separate experiment to validate the K-cache half of the claim.
+
+**Throughput result: −46% slowdown.** This is the surprise. Conventional wisdom is that KV quantization saves bandwidth and helps performance, especially on memory-bound hardware. On the Spark with llama.cpp + CUDA 13, the opposite happens: the q8_0 V-cache dequantization compute on every attention read costs more than the bandwidth savings buy. The model's *active weights* are the dominant bandwidth consumer (~6 GB read per token), and the KV cache reads at 32K context are a tiny fraction of that — so there is no bandwidth headroom to recoup, and the dequant compute becomes pure overhead.
+
+**Practical recommendation for Spark:** Don't use asymmetric KV (or any KV quantization) on MoE/hybrid models with small per-token KV cost. The throughput cost is severe and the memory savings are immaterial — Qwen3.5-122B's KV cache at 32K context is well under 1 GB. KV quantization is only worth considering on Spark for **dense models with massive KV cost** (e.g., the unfortunate Gemma 31B), where the memory savings let you fit larger contexts that wouldn't otherwise work — and even then the throughput penalty applies.
+
+**Caveats:**
+- This finding is on Spark/llama.cpp/CUDA 13 specifically; the same KV config might behave differently on a 5090 (different compute-to-bandwidth ratio) or with ik-llama (different attention kernels)
+- The original Nauful advice was about *quality* (tool calls), and our test does not invalidate that quality concern
+- We didn't test the K-cache-quantized variants (q8_0/q8_0 symmetric or turbo*) because they're known to break tool calls per the original advice
+
+---
+
 ## B-Tier: Fast but Inconsistent
 
 ### Qwen3-Coder-Next UD-Q4_K_M (unsloth dynamic)

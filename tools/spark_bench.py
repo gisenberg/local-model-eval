@@ -449,7 +449,11 @@ def run_code_benchmarks(port, model_name, kv_label, output_dir,
             if result["finish_reason"] == "length":
                 print("    WARNING: output truncated (hit max_tokens)")
 
-            safe_name = f"{model_name}_{kv_label}_{bench_key}".replace(" ", "_")
+            safe_name = (
+                f"{model_name}_{kv_label}_{bench_key}"
+                .replace(" ", "_")
+                .replace("/", "-")  # KV labels like "f16K/q8V" must not become path separators
+            )
             with open(f"{output_dir}/{safe_name}.md", "w", encoding="utf-8") as f:
                 f.write(f"# {model_name} — {kv_label} — {bench['name']}\n\n")
                 if result["reasoning"]:
@@ -577,6 +581,10 @@ def main():
     parser.add_argument(
         "--output-dir", default="spark_bench",
     )
+    parser.add_argument(
+        "--kv", choices=list(KV_CONFIGS.keys()), default=None,
+        help="Override the model's default KV cache config (e.g. 'asym-q8' for f16K/q8V)",
+    )
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -598,7 +606,12 @@ def main():
         max_tokens = model_cfg.get("max_tokens", 16384)
         request_timeout = model_cfg.get("request_timeout", 600)
 
-        kv_types = model_cfg["kv_configs"] if args.context_scaling else [model_cfg["default_kv"]]
+        if args.kv:
+            kv_types = [args.kv]
+        elif args.context_scaling:
+            kv_types = model_cfg["kv_configs"]
+        else:
+            kv_types = [model_cfg["default_kv"]]
 
         for kv_key in kv_types:
             kv_cfg = KV_CONFIGS[kv_key]
