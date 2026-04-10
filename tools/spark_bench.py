@@ -50,6 +50,11 @@ STANDARD_SERVER = os.environ.get(
     os.path.expanduser("~/llama.cpp/build/bin/llama-server"),
 )
 
+IK_SERVER = os.environ.get(
+    "IK_SERVER",
+    os.path.expanduser("~/git/ikawrakow/ik_llama.cpp/build/bin/llama-server"),
+)
+
 MODELS_DIR = os.path.expanduser("~/.lmstudio/models")
 
 # Model configurations for 128GB Spark
@@ -92,6 +97,30 @@ MODEL_CONFIGS = {
         "default_kv": "f16",
         "reasoning": "off",
         "notes": "122B/10B MoE, DeltaNet hybrid. Bartowski Q4_K_M (more accurate than unsloth per Nauful).",
+    },
+    "qwen122b-bartowski-ik": {
+        "name": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
+        "path": f"{MODELS_DIR}/bartowski/Qwen3.5-122B-A10B-GGUF/Qwen_Qwen3.5-122B-A10B-Q4_K_M/Qwen_Qwen3.5-122B-A10B-Q4_K_M-00001-of-00002.gguf",
+        "server": "ik",
+        "kv_configs": ["f16"],
+        "context_sizes": [32768, 65536, 131072, 196608, 262144],
+        "default_context": 32768,
+        "default_kv": "f16",
+        "reasoning": "off",
+        "notes": "Same model as qwen122b-bartowski but on ik-llama (ikawrakow's fork). NOTE: ik-llama's --reasoning-budget 0 doesn't actually disable thinking on this model — reasoning content is still emitted.",
+    },
+    "qwen122b-bartowski-thinking": {
+        "name": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [thinking on]",
+        "path": f"{MODELS_DIR}/bartowski/Qwen3.5-122B-A10B-GGUF/Qwen_Qwen3.5-122B-A10B-Q4_K_M/Qwen_Qwen3.5-122B-A10B-Q4_K_M-00001-of-00002.gguf",
+        "server": "standard",
+        "kv_configs": ["f16"],
+        "context_sizes": [32768, 65536, 131072, 196608, 262144],
+        "default_context": 32768,
+        "default_kv": "f16",
+        "reasoning": "on",  # explicit -rea on
+        "max_tokens": 16384,  # need more for thinking + content
+        "request_timeout": 1200,
+        "notes": "Control experiment: mainline llama.cpp with thinking enabled on the same bartowski quant. Isolates whether the ik-llama 17/17 result is from ik-llama or from thinking being enabled.",
     },
     "qwen-coder": {
         "name": "Qwen3-Coder-Next UD-Q4_K_M",
@@ -226,12 +255,19 @@ def get_server_binary(model_cfg):
             print("Falling back to standard server (turbo KV types won't work)")
             return STANDARD_SERVER
         return TURBOQUANT_SERVER
+    if model_cfg["server"] == "ik":
+        if not os.path.isfile(IK_SERVER):
+            print(f"WARNING: ik-llama server not found at {IK_SERVER}")
+            print("Falling back to standard server")
+            return STANDARD_SERVER
+        return IK_SERVER
     return STANDARD_SERVER
 
 
 def start_server(server_bin, model_path, port, context_length, ctk, ctv,
                  gpu_layers=99, reasoning="off", chat_template=None):
     """Start llama-server as a subprocess. Returns the Popen handle."""
+    is_ik_llama = "ik_llama" in server_bin
     cmd = [
         server_bin,
         "-m", model_path,
@@ -244,17 +280,27 @@ def start_server(server_bin, model_path, port, context_length, ctk, ctv,
         "-np", "1",  # single slot for max context
         "--temp", "0",
         "--no-mmap",  # load fully into memory (recommended for Spark unified mem)
-        "--jinja",    # enable Jinja chat templates
     ]
+    if not is_ik_llama:
+        # ik-llama doesn't support --jinja (built from older llama.cpp branch).
+        # Mainline llama.cpp benefits from it for newer chat template features.
+        cmd.append("--jinja")
     if reasoning == "off":
-        cmd.extend(["-rea", "off"])
+        if is_ik_llama:
+            # ik-llama uses --reasoning-budget instead of -rea off
+            cmd.extend(["--reasoning-budget", "0"])
+        else:
+            cmd.extend(["-rea", "off"])
     elif reasoning == "thinking":
         # Model is a thinking model that doesn't honor -rea off
         # (or has a known llama.cpp bug). Don't pass -rea flag at all,
         # let the model and template control it.
         pass
     else:
-        cmd.extend(["-rea", "on", "--reasoning-budget", "16384"])
+        if is_ik_llama:
+            cmd.extend(["--reasoning-budget", "16384"])
+        else:
+            cmd.extend(["-rea", "on", "--reasoning-budget", "16384"])
 
     if chat_template:
         cmd.extend(["--chat-template-file", chat_template])

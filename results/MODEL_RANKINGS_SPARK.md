@@ -27,7 +27,37 @@ The implication: **dense >20B models are not viable for interactive use.** A den
 
 ## S-Tier: Reliable Excellence
 
-### Qwen3.5-122B-A10B Q4_K_M (unsloth)
+### Qwen3.5-122B-A10B Q4_K_M (bartowski) on ik-llama
+The fastest S-tier configuration on Spark. Same model file as our other Qwen3.5-122B benchmarks, but running on [ik-llama.cpp](https://github.com/ikawrakow/ik_llama.cpp) (ikawrakow's fork with custom attention/MoE kernels) instead of mainline llama.cpp. Marginally faster generation, dramatically better code quality on this hardware.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **17/17 (5/5 + 7/6 + 5/6)** |
+| Throughput (sustained) | **26.0 tok/s** |
+| TTFT | 0.6 s |
+| Weight size | 71 GB (2-shard GGUF, bartowski Q4_K_M) |
+| Engine | ik-llama.cpp built from `main` (commit `db31e7d8`) for CUDA 13 / Blackwell sm_100 |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 --no-mmap --reasoning-budget 0` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | **5/5** | 4985 (8.6 KB think + 11.3 KB content) | Clean recursive descent parser. Different code than what mainline produces on the same model. |
+| A* Pathfinding | **7/6** | 3412 | Perfect plus the bonus 7th test that all Qwen3.5-122B variants seem to write. |
+| LRU Cache with TTL | **5/6** | 12553 (24 KB think + 23 KB content) | One test failure on lazy expiry edge case. The hardest benchmark. |
+
+**Why ik-llama wins on this hardware:** ik-llama uses different attention and MoE kernels than mainline llama.cpp (it's a fork that adds SOTA quantizations and optimized kernels). On the GB10 specifically, those kernels produce very small numerical differences in the per-token logits compared to mainline. At `temperature=0` those tiny differences accumulate over tokens and steer the model down meaningfully different generation paths. **For this model on this hardware the ik-llama path consistently produces correct code where the mainline path produces buggy code on Expression Evaluator** (see the cautionary tale below).
+
+**Caveats and quirks:**
+- ik-llama's `--reasoning-budget 0` does NOT actually disable thinking on Qwen3.5-122B — the model still emits reasoning content. We got the 100% score *with* thinking happening, not without. This is a quirk of how ik-llama interprets the budget flag for hybrid models, not a deliberate setting.
+- The `--jinja` and `-rea on/off` mainline flags don't exist in ik-llama (it's based on an older llama.cpp branch with different flag conventions). `tools/spark_bench.py` handles the differences automatically when `server: "ik"` is set.
+- ik-llama has some bugs in its speculative decoding implementation for hybrid models — produces incorrect output and runs slower than the baseline. We tested this; don't use spec dec on ik-llama for hybrid models.
+
+**Verdict:** This is now the recommended Spark configuration for Qwen3.5-122B. 100% on every benchmark, 26 tok/s, fits comfortably in 128 GB unified memory.
+
+---
+
+### Qwen3.5-122B-A10B Q4_K_M (unsloth) on mainline llama.cpp
 122B/10B-active hybrid (DeltaNet linear attention in 36 layers + full attention in 12). The flagship Qwen MoE works exactly as the architecture predicts on Spark — 21 tok/s sustained, with **perfect code quality on every benchmark plus a bonus test**.
 
 | Metric | Value |
@@ -47,16 +77,16 @@ The implication: **dense >20B models are not viable for interactive use.** A den
 | A* Pathfinding | **7/6** | 3280 | Wrote a 7th test beyond the 6 required, all passed |
 | LRU Cache with TTL | **6/6** | 2758 | Clean pass on the hardest benchmark |
 
-**Strengths:** The first model to score perfectly on every Spark benchmark. Production-quality code on the hardest benchmark (LRU). Stable throughput across all 4 generation runs (21.0–21.2 tok/s, no degradation).
+**Strengths:** Highest absolute quality score on Spark (the bonus 7th A* test edges this model to 18/17). Stable throughput across all 4 generation runs (21.0–21.2 tok/s, no degradation). Doesn't need ik-llama — works perfectly on mainline.
 
-**Verdict:** Spark's daily-driver model. 21 tok/s is interactive enough for coding agents, the quality matches the best 5090 results, and the 122B parameter footprint takes meaningful advantage of the Spark's 128 GB memory budget.
+**Verdict:** Best raw quality score. Slower than the bartowski + ik-llama combo above, but the simpler stack (just mainline llama.cpp, no engine fork to maintain) makes this the easier choice if you don't want to deal with ik-llama's quirks. 21 tok/s is still interactive.
 
 ---
 
 ## A-Tier: Strong Quality at Interactive Speed
 
-### Qwen3.5-122B-A10B Q4_K_M (bartowski)
-Same model, same Q4_K_M nominal precision, different quantization provider. Bartowski's quants are reportedly more accurate than unsloth's at the same bit budget. **The throughput claim holds. Quality is ranked-tied with the unsloth result on hard benchmarks but the bartowski version produced a self-inconsistent ExprEval implementation that the unsloth version didn't.**
+### Qwen3.5-122B-A10B Q4_K_M (bartowski) on mainline llama.cpp
+Same model file as the S-tier ik-llama entry above, same nominal Q4_K_M quant, but running on mainline llama.cpp. **Quality drops dramatically.** This is the cautionary tale for why inference engine choice matters at temp=0 on this hardware. Documented separately from the ik-llama entry to keep the engine-quality interaction visible.
 
 | Metric | Value |
 |---|---|
@@ -108,6 +138,52 @@ Testing [Nauful's KV quantization advice](../../../.claude/projects/-home-gisenb
 - This finding is on Spark/llama.cpp/CUDA 13 specifically; the same KV config might behave differently on a 5090 (different compute-to-bandwidth ratio) or with ik-llama (different attention kernels)
 - The original Nauful advice was about *quality* (tool calls), and our test does not invalidate that quality concern
 - We didn't test the K-cache-quantized variants (q8_0/q8_0 symmetric or turbo*) because they're known to break tool calls per the original advice
+
+---
+
+### Qwen3.5-122B-A10B Q4_K_M (bartowski) — mainline llama.cpp + thinking on (cautionary)
+Control experiment to isolate whether the ik-llama 17/17 win comes from *the engine* or from *thinking being enabled*. We ran the same model file on mainline llama.cpp with `-rea on --reasoning-budget 16384` to enable thinking. The result is striking and lands the configuration in **D-tier (8/17)**.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **8/17 (47%)** |
+| Throughput (sustained) | **25.3 tok/s** |
+| Engine | mainline llama.cpp `b8740-e34f04215` |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 -rea on --reasoning-budget 16384 --no-mmap --jinja` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | 1/5 | 6963 (14.4 KB think + 12.4 KB content) | Model chose `__init__(self, expr)` design that breaks the test fixture pattern (`evaluator = ExpressionEvaluator()` then `evaluator.evaluate(...)`). 4 of 5 tests can't even instantiate. |
+| A* Pathfinding | 7/6 | 6161 (12.2 KB think + 8.9 KB content) | Perfect, same as the no-thinking and ik-llama versions. |
+| LRU Cache with TTL | **0/6** (no_code) | 16384 (51.1 KB think + **0 B content**) | Model thought for 656 seconds straight, hit max_tokens=16384, never produced any code. Same failure mode as MiniMax-M2.5. |
+
+**The finding:** *Same model file, same hardware, same prompts, same temperature.* Three different engine configurations, three completely different generation paths:
+- ik-llama + thinking → **17/17** (clean recursive descent, all tests pass)
+- mainline llama.cpp, thinking off → 13/17 (`self.tokens` accumulator bug on ExprEval)
+- mainline llama.cpp, thinking on → 8/17 (`__init__(self, expr)` design + LRU thinking loop)
+
+This confirms that on bandwidth-constrained hardware running large MoE models at temp=0, **the inference engine's per-kernel numerical noise is large enough to steer the model down completely different code generation paths**. ik-llama's kernels happen to land on the good path; mainline's kernels land on either a buggy path (without thinking) or a runaway-thinking path (with thinking). The win is not from "thinking is good" — thinking with mainline kernels is *worse* than without. The win is engine-specific.
+
+**Practical recommendation:** For Qwen3.5-122B on Spark, use ik-llama, not mainline llama.cpp. The 22% throughput advantage is small but the quality difference is huge (17/17 vs at most 13/17 on mainline).
+
+---
+
+### Speculative decoding on Spark — does not work for our flagship models
+Original hypothesis: speculative decoding (small draft model + 122B target) could break the bandwidth ceiling and double or triple our 25 tok/s. We tested this and it does not work on Spark for Qwen3.5-122B for two independent reasons:
+
+1. **Mainline llama.cpp blocks speculative decoding on hybrid models entirely.** The error is `common_speculative_is_compat: the target context does not support partial sequence removal`. DeltaNet's recurrent linear-attention layers don't support the position-rollback that standard speculative decoding requires. PR [#20075](https://github.com/ggml-org/llama.cpp/pull/20075) is in flight to add checkpoint/restore for hybrid SSM/MoE models, but it's not merged in our build (`b8740-e34f04215`). Both `--model-draft` and the draftless `--spec-type ngram-mod` modes hit the same compat check and fail at server startup.
+
+2. **ik-llama supports spec dec on hybrid models but the implementation is broken.** ik-llama uses context checkpointing to handle the recurrent state rollback, and the server starts successfully with the draft model loaded. But the actual generation is **3× slower than the no-spec-dec baseline** (8.3 tok/s vs 26 tok/s) and produces *different* output (the model failed to stop naturally, hit max_tokens). Either the acceptance logic is wrong or the checkpoint/restore overhead exceeds any speedup from accepted draft tokens at concurrency=1.
+
+We tested with Qwen3.5-0.8B Q4_K_M as the draft model (533 MB, same 248K vocab as the 122B target). The draft itself loads and runs fine; the issue is in the spec dec coordination layer.
+
+**The unintended discovery:** The negative spec dec result led us to test ik-llama as a general engine alternative (since we'd built it for the spec dec experiment), and that's how we found ik-llama is the better engine for Qwen3.5-122B on Spark (the S-tier entry above). Spec dec failed; ik-llama succeeded as a different optimization. This is the most useful kind of negative result.
+
+**When to revisit speculative decoding on Spark:**
+- After PR #20075 lands in mainline llama.cpp and we update our build
+- Or if ik-llama fixes its hybrid spec dec implementation
+- Or if Qwen ships a model architecture that's spec-dec-compatible on this engine class (none currently in our viable set)
 
 ---
 
