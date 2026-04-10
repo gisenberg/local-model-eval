@@ -68,6 +68,26 @@ MODELS = [
         "no_think": True,
     },
     {
+        "key": "gemma-4-26b-a4b-q6k-turbo4-nothink",
+        "name": "Gemma 4 26B-A4B Q6_K (turbo4 KV)",
+        "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q6_K.gguf",
+        # Same 16K context as f16 baseline above — apples-to-apples turbo4
+        # vs f16 KV speed comparison. Q6_K weights at 22 GB are the actual
+        # bottleneck on 30 GB Metal budget; turbo4 at 32K still OOMs because
+        # KV isn't the limiting factor here.
+        "context_length": 16384,
+        "ctk": "turbo4", "ctv": "turbo4",
+        "no_think": True,
+    },
+    {
+        "key": "gemma-4-26b-a4b-q4km-nothink",
+        "name": "Gemma 4 26B-A4B Q4_K_M",
+        "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q4_K_M.gguf",
+        # Q4_K_M is ~16 GB. Leaves ~14 GB for KV at 32K f16.
+        "context_length": 32768,
+        "no_think": True,
+    },
+    {
         "key": "gemma-4-31b-q4km-turbo4-nothink",
         "name": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
         "path": MODELS_DIR / "unsloth/gemma-4-31B-it-GGUF/gemma-4-31B-it-Q4_K_M.gguf",

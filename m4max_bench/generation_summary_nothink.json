@@ -1,61 +1,31 @@
 [
   {
-    "model": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
-    "key": "gemma-4-31b-q4km-turbo4-nothink",
+    "model": "Gemma 4 26B-A4B Q4_K_M",
+    "key": "gemma-4-26b-a4b-q4km-nothink",
     "benchmark": "expression_evaluator",
-    "tokens": 1772,
-    "tok_per_sec": 12.6,
-    "elapsed_s": 140.43,
+    "tokens": 1981,
+    "tok_per_sec": 58.1,
+    "elapsed_s": 34.07,
     "thinking_chars": 0,
     "finish_reason": "stop"
   },
   {
-    "model": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
-    "key": "gemma-4-31b-q4km-turbo4-nothink",
+    "model": "Gemma 4 26B-A4B Q4_K_M",
+    "key": "gemma-4-26b-a4b-q4km-nothink",
     "benchmark": "astar",
-    "tokens": 1886,
-    "tok_per_sec": 10.8,
-    "elapsed_s": 175.38,
+    "tokens": 1643,
+    "tok_per_sec": 59.4,
+    "elapsed_s": 27.65,
     "thinking_chars": 0,
     "finish_reason": "stop"
   },
   {
-    "model": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
-    "key": "gemma-4-31b-q4km-turbo4-nothink",
+    "model": "Gemma 4 26B-A4B Q4_K_M",
+    "key": "gemma-4-26b-a4b-q4km-nothink",
     "benchmark": "lru_cache",
-    "tokens": 2115,
-    "tok_per_sec": 11.0,
-    "elapsed_s": 192.78,
-    "thinking_chars": 0,
-    "finish_reason": "stop"
-  },
-  {
-    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M",
-    "key": "qwen3.5-27b-opus-distill-q4km-nothink",
-    "benchmark": "expression_evaluator",
-    "tokens": 2082,
-    "tok_per_sec": 13.0,
-    "elapsed_s": 160.52,
-    "thinking_chars": 0,
-    "finish_reason": "stop"
-  },
-  {
-    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M",
-    "key": "qwen3.5-27b-opus-distill-q4km-nothink",
-    "benchmark": "astar",
-    "tokens": 3204,
-    "tok_per_sec": 12.8,
-    "elapsed_s": 249.39,
-    "thinking_chars": 0,
-    "finish_reason": "stop"
-  },
-  {
-    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M",
-    "key": "qwen3.5-27b-opus-distill-q4km-nothink",
-    "benchmark": "lru_cache",
-    "tokens": 2392,
-    "tok_per_sec": 13.1,
-    "elapsed_s": 182.23,
+    "tokens": 2391,
+    "tok_per_sec": 59.3,
+    "elapsed_s": 40.35,
     "thinking_chars": 0,
     "finish_reason": "stop"
   }
