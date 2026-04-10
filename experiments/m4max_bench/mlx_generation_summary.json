@@ -1,62 +1,32 @@
 [
   {
-    "model": "Gemma 4 26B-A4B 6bit MLX",
-    "key": "mlx-gemma-4-26b-a4b-6bit-nothink",
+    "model": "Qwen 3.5 27B Opus-Distilled 4bit MLX",
+    "key": "mlx-qwen3.5-27b-opus-distill-4bit-nothink",
     "benchmark": "expression_evaluator",
-    "tokens": 16382,
-    "tok_per_sec": 33.5,
-    "elapsed_s": 488.38,
-    "thinking_chars": 45330,
-    "finish_reason": "length"
+    "tokens": 5448,
+    "tok_per_sec": 19.2,
+    "elapsed_s": 284.33,
+    "thinking_chars": 816,
+    "finish_reason": "stop"
   },
   {
-    "model": "Gemma 4 26B-A4B 6bit MLX",
-    "key": "mlx-gemma-4-26b-a4b-6bit-nothink",
+    "model": "Qwen 3.5 27B Opus-Distilled 4bit MLX",
+    "key": "mlx-qwen3.5-27b-opus-distill-4bit-nothink",
     "benchmark": "astar",
-    "tokens": 4333,
-    "tok_per_sec": 37.0,
-    "elapsed_s": 117.07,
-    "thinking_chars": 7942,
+    "tokens": 3412,
+    "tok_per_sec": 18.5,
+    "elapsed_s": 184.76,
+    "thinking_chars": 542,
     "finish_reason": "stop"
   },
   {
-    "model": "Gemma 4 26B-A4B 6bit MLX",
-    "key": "mlx-gemma-4-26b-a4b-6bit-nothink",
+    "model": "Qwen 3.5 27B Opus-Distilled 4bit MLX",
+    "key": "mlx-qwen3.5-27b-opus-distill-4bit-nothink",
     "benchmark": "lru_cache",
-    "tokens": 3803,
-    "tok_per_sec": 37.4,
-    "elapsed_s": 101.6,
-    "thinking_chars": 6267,
-    "finish_reason": "stop"
-  },
-  {
-    "model": "Gemma 4 31B 4bit MLX",
-    "key": "mlx-gemma-4-31b-4bit-nothink",
-    "benchmark": "expression_evaluator",
-    "tokens": 2490,
-    "tok_per_sec": 7.9,
-    "elapsed_s": 316.96,
-    "thinking_chars": 3584,
-    "finish_reason": "stop"
-  },
-  {
-    "model": "Gemma 4 31B 4bit MLX",
-    "key": "mlx-gemma-4-31b-4bit-nothink",
-    "benchmark": "astar",
-    "tokens": 3075,
-    "tok_per_sec": 8.0,
-    "elapsed_s": 382.81,
-    "thinking_chars": 3665,
-    "finish_reason": "stop"
-  },
-  {
-    "model": "Gemma 4 31B 4bit MLX",
-    "key": "mlx-gemma-4-31b-4bit-nothink",
-    "benchmark": "lru_cache",
-    "tokens": 2789,
-    "tok_per_sec": 11.9,
-    "elapsed_s": 234.97,
-    "thinking_chars": 3070,
+    "tokens": 4025,
+    "tok_per_sec": 18.3,
+    "elapsed_s": 219.45,
+    "thinking_chars": 434,
     "finish_reason": "stop"
   }
 ]

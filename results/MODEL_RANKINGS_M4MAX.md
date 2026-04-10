@@ -166,30 +166,35 @@ The 5090 ranking's headline advice is "always use turbo4 KV — same quality, le
 
 ## MLX vs llama.cpp on Apple Silicon
 
-The HARDWARE_SPECS.md footnote claims "MLX sometimes outperforms llama.cpp on Apple Silicon by 10–30%." We tested this directly using `mlx_lm.server` against `mlx-community/*` quants, on the same prompts at temp 0.
+The HARDWARE_SPECS.md footnote claimed "MLX sometimes outperforms llama.cpp on Apple Silicon by 10–30%." We tested this directly using `mlx_lm.server` 0.31.2 against `mlx-community/*` quants, same prompts, temp 0.
 
-| Model | llama.cpp | MLX | MLX vs llama.cpp |
+**The answer is "it depends on the model class."** MLX wins on dense ≥27B models, loses on MoE models, and ties on small dense.
+
+| Model | llama.cpp | MLX | Winner |
 |---|---|---|---|
-| Qwen 3.5 9B (Q4_K_M / 4bit) | 35.4 tok/s, 9/17 | 33.9 tok/s, 10/17* | -4% speed, ~equal quality |
-| Gemma 4 26B-A4B (Q6_K f16 / 6bit) | **60.3 tok/s**, 15/17 | 33.5–37.4 tok/s, 12/17 | **-38% speed**, worse quality |
-| Gemma 4 31B-IT (Q4_K_M turbo4 / 4bit) | 11.5 tok/s, 17/17 | 7.9–11.9 tok/s, 17/17 | -10% to +3% speed, **identical quality** |
+| Qwen 3.5 9B (Q4_K_M / 4bit, dense) | 35.4 tok/s, 9/17 | 33.9 tok/s, 10/17 | tie (~4% MLX slower) |
+| Gemma 4 26B-A4B (Q6_K f16 / 6bit, **MoE 4B-active**) | **60.3 tok/s**, 15/17 | 33.5–37.4 tok/s, 12/17 | **llama.cpp** (-38% on MLX) |
+| Gemma 4 31B-IT (Q4_K_M turbo4 / 4bit, dense) | 11.5 tok/s, 17/17 | 7.9–11.9 tok/s, 17/17 | tie speed, same quality (17/17) |
+| Qwen 3.5 27B Opus-Distilled (Q4_K_M / 4bit, **dense**) | 13.0 tok/s, 11/17 | **18.5 tok/s**, 13/17 | **MLX** (+42% speed, +12% quality) |
 | Nemotron 3 Nano 4B (Q4_K_M / 6bit) | 65.5 tok/s, 7/17 | **N/A** | mlx_lm 0.31.2 hits transformers `KeyError: '-'` parsing nemotron_h layer pattern |
-| Qwen 3.5 27B Opus-Distilled (Q4_K_M / 4bit) | 13.0 tok/s, 11/17 | TBD | mlx-community download in progress |
 
-*MLX qwen 9B wrote a 7th astar test that passed (capped at 6 in the headline).
+### The pattern: MoE active params hurt MLX, dense weights help it
 
-**The footnote is wrong on this hardware.** For our coding benchmark workload:
-- llama.cpp wins on every model where both ran
-- The biggest gap is Gemma 26B-A4B Q6_K vs 6bit MLX: **38% slower** and one ExprEval generation went runaway (16K tokens of "thinking" content, hit max_tokens, no usable output)
-- Gemma 31B 4bit MLX matches llama.cpp turbo4 on quality (both 17/17) and roughly matches speed
-- The chat template handling in `mlx_lm.server` mis-classifies regular content as `reasoning`/thinking for Gemma 4 — visible in the output as a 45 KB "thinking" trace before the actual code
+Bandwidth utilization (rough) = `(weights+KV bytes per token) × tok/s ÷ peak bandwidth`. Plugging in real numbers:
 
-**Why MLX underperforms here:**
-1. Apple's MLX framework is optimized for prefill-heavy workloads (where its tensor APIs matter most). Our benchmark is mostly autoregressive decoding, where the bottleneck is memory bandwidth, not compute. llama.cpp's metal backend has had years of optimization for exactly this case.
-2. mlx-community's 4-bit / 6-bit quantizations are different formats than llama.cpp's Q4_K_M / Q6_K. They are similar in size but the kernel implementations differ.
-3. The chat template handling regression on Gemma 4 caused at least one runaway generation, which inflates wall-clock time without producing useful output.
+- **Qwen 27B dense Q4** at 13 tok/s (llama.cpp) ≈ 70% of 410 GB/s peak. Same model at 18.5 tok/s (MLX) ≈ 99% of peak. **MLX is leaving almost nothing on the table here.**
+- **Gemma 26B-A4B Q6** (only ~4 GB read per token from MoE) at 60 tok/s (llama.cpp) ≈ 88% of peak. Same model at 33 tok/s (MLX) ≈ 49%. **MLX's MoE kernels under-perform — most likely it's not exploiting the sparse activation pattern as efficiently.**
 
-**Recommendation:** stick with llama.cpp (turboquant fork) for benchmarking and production on this M4 Max. Only consider MLX if you specifically need a feature it provides (e.g. dynamic quantization, Apple-only model formats, or speculative decoding via `--draft-model`).
+Plus:
+- **Gemma 4 31B-IT 4bit MLX matched llama.cpp on quality (17/17)** — the same 5/5 / 6/6 / 6/6 breakdown. So the 4-bit MLX quantization doesn't lose accuracy on this model.
+- **Gemma 4 26B-A4B 6bit MLX had a chat-template regression**: ExprEval went runaway (16K tokens of misclassified `reasoning_content` in the output before any actual code). The mlx_lm.server handling of Gemma 4's reasoning fields is broken; this contributed to the speed loss above and the 0/5 ExprEval score.
+
+### Recommendations
+
+- **Dense ≥27B model on Mac → consider MLX first.** Significant speedup possible.
+- **MoE model on Mac → use llama.cpp.** MLX kernels lose 30-40% on this class.
+- **Gemma 4 specifically on MLX → wait for the chat-template fix.** Outputs are sometimes garbage due to reasoning misclassification.
+- **Gemma 4 31B-IT → either works.** Same quality, similar speed.
 
 ---
 

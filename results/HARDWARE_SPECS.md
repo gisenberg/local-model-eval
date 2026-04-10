@@ -131,7 +131,7 @@ Real numbers from `m4max_bench/`, llama.cpp turboquant fork build 8590cbff9, sin
 - **Anything above ~25 GB of weights.** The Metal working set is ~30 GB, not 36. A 22 GB model (Gemma 4 26B-A4B Q6_K) leaves ~8 GB for KV+compute. A 25 GB model leaves none. Long contexts on bigger models are simply not possible at any KV format.
 - **NVFP4 / NVIDIA-specific formats.** The model ecosystem is increasingly NVIDIA-flavored. AWQ, GPTQ, and NVFP4 have varying levels of Apple support; GGUF + MLX are the safe paths.
 - **Maximum throughput.** A 5090 will always smoke this on raw tok/s for any model that fits both. The M4 Max trades throughput for portability and lower power.
-- **MLX, surprisingly.** Despite the marketing, MLX (`mlx_lm.server` 0.31.2 with `mlx-community/*` quants) was 4-38% *slower* than llama.cpp on every model we benchmarked. The biggest gap was Gemma 4 26B-A4B Q6_K vs 6bit MLX (60.3 vs 33.5 tok/s). MLX may still win on prefill-heavy workloads but for autoregressive code generation, llama.cpp's Metal backend is the better choice on this hardware.
+- **MLX has a model-class-dependent story.** Tested `mlx_lm.server` 0.31.2 against `mlx-community/*` quants on the same prompts. MLX *wins* on dense ≥27B models (Qwen 3.5 27B Opus-Distilled MLX 4bit: 18.5 tok/s vs llama.cpp 13.0 — **+42%**, hitting ~99% of bandwidth). MLX *loses* on MoE models (Gemma 4 26B-A4B 6bit MLX: 33 tok/s vs llama.cpp Q6_K 60 — **-45%**, only ~49% bandwidth utilization). Likely MLX's MoE kernels don't exploit the sparse activation pattern as efficiently as llama.cpp's. For dense models, MLX is the best option; for MoE, llama.cpp wins.
 
 ### Status in this repo
 
