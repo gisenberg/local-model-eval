@@ -90,9 +90,10 @@ Same model, same prompts, same context — the only difference is the KV cache f
 When picking a KV format on this Mac:
 
 1. **Default to `-ctk f16 -ctv f16`.**
-2. **If the model won't load, try `-ctk turbo4 -ctv turbo4`.** (Not `-ctk f16 -ctv q8_0` — the per-V-only path saves less memory and isn't enough to fit Gemma 31B.)
-3. **Don't expect a speedup from turbo4.** It's purely a capacity workaround on this hardware.
-4. **If you're hitting OOM and turbo4 doesn't help, the bottleneck is the weights, not the KV.** Drop to a smaller quant (Q6 → Q4), or switch to a smaller model class.
+2. **First lever for OOMs is `-ub 256`, not turbo4 KV.** The compute buffer is usually the actual bottleneck, not the KV cache. Halving `-ub` (the physical batch size) cuts the compute buffer in half with zero decode-throughput cost. See [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) for the full sweep.
+3. **Use turbo4 KV only when the KV cache itself is the bottleneck.** That's basically just Gemma 4 31B-IT, where dense full attention puts the KV at 14 GB at 16K f16. For most other models, KV is <1% of the working set on Metal — turbo4 saves nothing meaningful and slows you down ~25%.
+4. **Don't expect a speedup from turbo4 on Apple Silicon.** It's purely a capacity workaround when needed.
+5. **If you're hitting OOM and `-ub 256` + turbo4 don't help, the bottleneck is the weights themselves.** Drop to a smaller quant (Q6 → Q4), or switch to a smaller model class.
 
 ## Future Experiments
 

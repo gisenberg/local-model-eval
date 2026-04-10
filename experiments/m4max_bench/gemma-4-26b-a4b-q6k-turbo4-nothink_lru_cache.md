@@ -155,41 +155,34 @@ def test_lru_eviction():
         cache.put("a", 1)
         cache.put("b", 2)
         cache.get("a")      # "a" is now most recent
-        cache.put("c", 3)   # "b" should be evicted
-        
+        cache.put("c", 3)    # "b" should be evicted
         assert cache.get("a") == 1
-        assert cache.get("c") == 3
         assert cache.get("b") is None
+        assert cache.get("c") == 3
 
 def test_ttl_expiration():
-    # Start at time 100
     with patch('time.monotonic') as mock_time:
         mock_time.return_value = 100.0
-        cache = TTLCache(capacity=2, default_ttl=5)
-        
+        cache = TTLCache(capacity=2, default_ttl=10)
         cache.put("a", 1)
         
-        # Advance time to 104 (not expired)
-        mock_time.return_value = 104.0
+        # Advance time to 105 (not expired)
+        mock_time.return_value = 105.0
         assert cache.get("a") == 1
         
-        # Advance time to 106 (expired)
-        mock_time.return_value = 106.0
+        # Advance time to 111 (expired)
+        mock_time.return_value = 111.0
         assert cache.get("a") is None
         assert cache.size() == 0
 
 def test_custom_ttl():
-    with patch('time.monotonic', return_value=100.0):
+    with patch('time.monotonic') as mock_time:
+        mock_time.return_value = 100.0
         cache = TTLCache(capacity=2, default_ttl=100)
         cache.put("short", "val", ttl=5)
         
-        # Advance time to 104 (still valid)
-        with patch('time.monotonic', return_value=104.0):
-            assert cache.get("short") == "val"
-            
-        # Advance time to 106 (expired)
-        with patch('time.monotonic', return_value=106.0):
-            assert cache.get("short") is None
+        mock_time.return_value = 106.0
+        assert cache.get("short") is None
 
 def test_delete():
     with patch('time.monotonic', return_value=100.0):
@@ -199,13 +192,18 @@ def test_delete():
         assert cache.get("a") is None
         assert cache.delete("non_existent") is False
 
-def test_capacity_zero_error():
-    with pytest.raises(ValueError):
-        TTLCache(capacity=0, default_ttl=10)
+def test_update_existing_key():
+    with patch('time.monotonic') as mock_time:
+        mock_time.return_value = 100.0
+        cache = TTLCache(capacity=2, default_ttl=10)
+        cache.put("a", 1)
+        cache.put("a", 2) # Update
+        assert cache.get("a") == 2
+        assert cache.size() == 1
 ```
 
 ### Key Implementation Details:
-1.  **Complexity:** `get`, `put`, and `delete` are all $O(1)$ because they involve dictionary lookups and pointer manipulations in a doubly linked list.
-2.  **Lazy Cleanup:** We don't use a background thread to clean up expired keys (which can be resource-heavy). Instead, we check if a key is expired during the `get()` call.
-3.  **Dummy Nodes:** The `head` and `tail` nodes are "sentinels." They prevent `if node.prev is None` checks, making the linked list logic cleaner and faster.
-4.  **Memory Efficiency:** `__slots__` is used in the `Node` class to reduce memory overhead per entry.
+1.  **Complexity:** `get`, `put`, and `delete` all operate in $O(1)$ time because dictionary lookups and doubly linked list pointer updates are constant time.
+2.  **Lazy Cleanup:** We don't run a background thread to clean up expired keys (which would be complex and resource-heavy). Instead, we check if a key is expired only when `get()` is called.
+3.  **Memory Management:** We use `__slots__` in the `Node` class to reduce memory overhead, which is important for large caches.
+4.  **Dummy Nodes:** The `head` and `tail` dummy nodes prevent `if node.prev is not None` checks, making the linked list logic cleaner and faster.

@@ -157,18 +157,22 @@ def test_precedence():
     assert evaluator.evaluate("2 + 3 * 4") == 14.0
     # Parentheses override precedence
     assert evaluator.evaluate("(2 + 3) * 4") == 20.0
-    # Division and multiplication same level
+    # Division and multiplication same precedence (left-to-right)
     assert evaluator.evaluate("10 / 2 * 5") == 25.0
 
 def test_parentheses_and_unary():
     evaluator = ExpressionEvaluator()
     assert evaluator.evaluate("-(2 + 3)") == -5.0
     assert evaluator.evaluate("-3 + -5") == -8.0
-    assert evaluator.evaluate("10 / (2 + (3 * 1))") == 2.0
-    assert evaluator.evaluate("-(5 - 10)") == 5.0
+    assert evaluator.evaluate("2 * -(3 + 1)") == -8.0
+    assert evaluator.evaluate("(-5)") == -5.0
 
 def test_error_cases():
     evaluator = ExpressionEvaluator()
+    
+    # Division by zero
+    with pytest.raises(ValueError, match="Division by zero"):
+        evaluator.evaluate("10 / 0")
     
     # Mismatched parentheses
     with pytest.raises(ValueError, match="Mismatched parentheses"):
@@ -177,13 +181,9 @@ def test_error_cases():
     with pytest.raises(ValueError, match="Mismatched parentheses"):
         evaluator.evaluate("1 + 2)")
 
-    # Division by zero
-    with pytest.raises(ValueError, match="Division by zero"):
-        evaluator.evaluate("10 / 0")
-
     # Invalid tokens
     with pytest.raises(ValueError, match="Invalid characters"):
-        evaluator.evaluate("10 + abc")
+        evaluator.evaluate("1 + abc")
 
     # Empty expression
     with pytest.raises(ValueError, match="Expression cannot be empty"):
@@ -191,8 +191,6 @@ def test_error_cases():
 
 def test_complex_expression():
     evaluator = ExpressionEvaluator()
-    # Testing a mix of everything
-    expr = "-(10 + 2.5) * (4 / -2) + 7"
-    # -12.5 * -2 + 7 = 25 + 7 = 32
-    assert evaluator.evaluate(expr) == 32.0
+    # (10 + (2 * 3)) / -2 = 16 / -2 = -8
+    assert evaluator.evaluate("(10 + (2 * 3)) / -2") == -8.0
 ```

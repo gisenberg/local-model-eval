@@ -125,8 +125,8 @@ def test_weighted_path():
 def test_no_path_walls():
     grid = [
         [1, 0, 1],
-        [0, 0, 0],
-        [1, 0, 1]
+        [0, 0, 1],
+        [1, 1, 1]
     ]
     astar = AStarGrid(grid)
     assert astar.find_path((0, 0), (2, 2)) is None
@@ -146,17 +146,17 @@ def test_start_or_end_is_wall():
     # Start is wall
     assert astar.find_path((0, 0), (1, 1)) is None
     # End is wall
-    grid2 = [[1, 0], [1, 1]]
+    grid2 = [[1, 1], [1, 0]]
     astar2 = AStarGrid(grid2)
-    assert astar2.find_path((0, 0), (0, 1)) is None
+    assert astar2.find_path((0, 0), (1, 1)) is None
 ```
 
 ### Implementation Details:
-1.  **Time Complexity**: $O(E \log V)$ where $E$ is the number of edges (roughly $4 \times \text{cells}$) and $V$ is the number of cells.
-2.  **Space Complexity**: $O(V)$ to store the `g_score` and `came_from` maps.
-3.  **Optimality**: Since the Manhattan distance is an **admissible heuristic** (it never overestimates the distance to the goal on a grid with costs $\ge 1$), A* is guaranteed to find the optimal path.
+1.  **Complexity**: The time complexity is $O(E \log V)$ where $E$ is the number of edges (roughly $4 \times \text{cells}$) and $V$ is the number of cells.
+2.  **Optimality**: By using the Manhattan distance (which is an *admissible* heuristic for 4-directional movement) and a priority queue, A* is guaranteed to find the path with the minimum total cost.
+3.  **Weighted Grid**: Unlike BFS, which finds the path with the fewest steps, this implementation adds the value of the destination cell (`self.grid[neighbor[0]][neighbor[1]]`) to the total cost, ensuring it respects the weights.
 4.  **Edge Cases**:
     *   **Start == End**: Returns a list containing only the start node.
     *   **Walls**: Cells with value `0` are treated as impassable.
-    *   **Weights**: The algorithm uses the value of the cell being entered as the edge weight, ensuring the path with the minimum total cost is chosen.
-    *   **Bounds**: `ValueError` is raised if coordinates are outside the grid dimensions.
+    *   **Out of Bounds**: Raises `ValueError` as requested.
+    *   **Unreachable**: Returns `None` if the open set is exhausted without reaching the goal.

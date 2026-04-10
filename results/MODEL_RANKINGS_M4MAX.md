@@ -6,35 +6,38 @@
 
 Tested April 2026.
 
-## The M4 Max's defining constraint: compute buffer, not weights or KV cache
+## The M4 Max's defining constraint: compute buffer is sized by `n_ubatch × n_ctx`
 
-Three things conspire to limit context length on this machine far below the 5090, despite both having ~30 GB of usable GPU memory:
+Three things conspire to limit context length on this machine, but the dominant one has a config-level workaround that took us a while to find:
 
 1. **Metal working set is ~30 GB**, not the full 36 GB. `recommendedMaxWorkingSetSize ≈ 30150 MB`. macOS reserves the rest. Going over produces `kIOGPUCommandBufferCallbackErrorOutOfMemory` immediately, no graceful spillover.
 
-2. **Metal's compute buffer is ~4-5 GB bigger than CUDA's** for the same model + context. This is the surprise. We measured the breakdown for Gemma 4 26B-A4B Q6_K turbo4 at 32K context:
+2. **Metal's compute buffer dominates context capacity, and its size is set by `n_ubatch × n_ctx`** — not by the KV cache, not by the weights, and not by `n_batch`. The KV cache is <1% of the working set on these models. The actual breakdown for Gemma 4 26B-A4B Q6_K turbo4 at 32K context with default `-ub 512`:
    - Weights: 21,574 MiB
-   - KV cache (turbo4): 165 MiB ← negligible
+   - KV cache (turbo4): 250 MiB ← negligible
    - **Compute buffer: 8,402 MiB ← the dominant cost**
    - Total: 30,141 MiB → over the 28,753 MiB free budget → OOM
 
-   The compute buffer scales linearly with context at **~260 MiB per 1024 tokens** for this architecture. At 16K it's 4.2 GB, at 32K it's 8.4 GB. The 5090 ranking shows the same model using 25,636 MiB *total* at 32K — which means CUDA's compute buffer for Gemma 4 26B-A4B is roughly **half** the size of Metal's.
+   The compute buffer scales linearly with `n_ubatch`: roughly **16.4 MiB per ubatch token at 32K context**. At the default `-ub 512` it's 8.4 GB. With `-ub 256` it drops to **4.2 GB** — and 32K context fits comfortably in the same model.
+
+   **The fix:** add `-b 2048 -ub 256` to llama-server. The `-b` (logical batch / max prompt length) stays at default; only `-ub` (physical batch processed per forward pass) shrinks. Long prompts still work — they just chunk into more micro-batches (~2× slower prefill on max-length prompts, zero cost on short prompts).
 
 3. **No PCIe spill.** When the 5090 hits its 32 GB limit, it spills to system RAM via PCIe (slow but functional — see [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md) for the cliff at 256K). The Mac has no PCIe to spill across; either it fits or it OOMs.
 
 ### Practical context limits, by model
 
-These are measured, not calculated:
+These are measured at `-ub 256` (the recommended config). Larger contexts are possible by halving `-ub` further at the cost of slower prefill on long prompts.
 
-| Model | Quant | KV | Max ctx that fits | Why |
-|---|---|---|---|---|
-| Gemma 4 26B-A4B | Q6_K | f16 or turbo4 | **~20K** | Compute buffer at 24K already exceeds the Metal allocator margin |
-| Gemma 4 26B-A4B | Q4_K_M | f16 | **32K** | Weights drop from 22 → 16 GB, leaves 6 GB more for compute |
-| Gemma 4 31B-IT | Q4_K_M | turbo4 | **16K** | Same issue, but smaller weight headroom |
-| Qwen 3.5 27B Opus-Distilled | Q4_K_M | f16 | **32K** | Smaller compute buffer (different architecture) |
-| Qwen 3.5 9B / Nemotron 4B | Q4_K_M | f16 | 32K | Plenty of headroom |
+| Model | Quant | KV | Max ctx tested | Compute buf | Could go further with |
+|---|---|---|---|---|---|
+| Gemma 4 26B-A4B | Q6_K | f16 | **32K** | 4.2 GB | `-ub 128` for ~64K |
+| Gemma 4 26B-A4B | Q6_K | turbo4 | **32K** | 4.2 GB | same |
+| Gemma 4 26B-A4B | Q4_K_M | f16 | **32K** | 4.2 GB | even larger headroom |
+| Gemma 4 31B-IT | Q4_K_M | turbo4 | **32K** | 4.2 GB | turbo4 is mandatory (KV is 14 GB at 16K f16) |
+| Qwen 3.5 27B Opus-Distilled | Q4_K_M | f16 | **32K** | small | dense, GQA → tiny KV |
+| Qwen 3.5 9B / Nemotron 4B | Q4_K_M | f16 | 32K | small | plenty of headroom |
 
-The 5090 ranking shows Gemma 4 26B-A4B Q6_K turbo4 at "~230K" context. **That number is not achievable on M4 Max at any KV format** because the compute buffer alone would be ~60 GB at 230K context.
+The 5090 ranking shows Gemma 4 26B-A4B Q6_K turbo4 at "~230K" context. We have not pushed the M4 Max that far in this benchmark, but the math says 230K is achievable with `-ub 32` or smaller (compute buffer ≈ 32 × 230 ≈ 7.4 GB). Throughput at that ubatch would be acceptable for decode but very slow for any non-trivial prefill. The 5090 doesn't have this problem because CUDA's compute-buffer-per-ubatch-token is roughly half the size of Metal's, so it can run the same model at default ubatch and still fit.
 
 Two follow-on findings:
 
@@ -46,16 +49,16 @@ Two follow-on findings:
 ## S-Tier: The Best Quality That Fits
 
 ### Gemma 4 31B-IT Q4_K_M (turbo4 KV)
-The highest-quality model on this machine. Perfect single-shot score, but you pay for it in throughput — 11 tok/s is borderline interactive. **Turbo4 KV is mandatory**: dense 31B at f16 KV = ~870 KB/token, and 16K of that is 14 GB on top of 18 GB of weights. The Metal budget can't take it.
+The highest-quality model on this machine. Perfect single-shot score, but you pay for it in throughput — 11.8 tok/s is borderline interactive. **Turbo4 KV is mandatory**: dense 31B at f16 KV = ~870 KB/token, and 16K of that is 14 GB on top of 18 GB of weights. The Metal budget can't take it.
 
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **17/17 (100%)** |
-| Throughput | **11.5 tok/s** |
+| Throughput | **11.8 tok/s** |
 | Weight size | 18.3 GB (Q4_K_M, unsloth) |
-| Context (turbo4) | 16K |
+| Context | **32K** (with `-ub 256`) |
 | KV format | turbo4/turbo4 (mandatory) |
-| Config | `-c 16384 -ctk turbo4 -ctv turbo4 --reasoning-budget 0 --jinja` |
+| Config | `-c 32768 -b 2048 -ub 256 -ctk turbo4 -ctv turbo4 --reasoning-budget 0 --jinja` |
 
 **Strengths:** Same quality you'd get on a 5090 (also 17/17). Per-benchmark perfect: ExprEval 5/5, A* 6/6, LRU 6/6.
 **Weakness:** Throughput. 11 tok/s means a 2K-token generation takes 3 minutes. Acceptable for "give me the right answer once" workflows; painful for chat.
@@ -69,15 +72,15 @@ The all-around best quality + speed combination on this machine. MoE means only 
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **15/17 (88%)** |
-| Throughput | **60.3 tok/s** |
+| Throughput | **61.1 tok/s** |
 | Weight size | 22.6 GB |
-| Context | 16K |
+| Context | **32K** (with `-ub 256`) |
 | KV format | f16/f16 |
-| Config | `-c 16384 -ctk f16 -ctv f16 --reasoning-budget 0 --jinja` |
+| Config | `-c 32768 -b 2048 -ub 256 -ctk f16 -ctv f16 --reasoning-budget 0 --jinja` |
 
 **Strengths:** Fastest model with high quality. Per-benchmark: ExprEval 3/5, A* 6/6, LRU 6/6.
-**Weakness:** Capped at ~20K context. The compute buffer alone is 4.2 GB at 16K and grows to 8.4 GB at 32K — not the KV cache (which is only ~85 MiB at 16K with f16 because Gemma 4 uses sliding-window attention). If you need >20K, drop to Q4_K_M which has 6 GB less weight footprint.
-**Same model with turbo4 KV** scored 16/17 at 46 tok/s — *slower* for ~1 test of additional quality. Turbo4 doesn't even buy you context here because the compute buffer dominates, not the KV. On Apple Silicon, prefer f16 KV. The 5090 ranking's "always use turbo4" advice does not transfer.
+**Note on `-ub 256`:** With the default `-ub 512`, this model OOMs at 32K context (compute buffer hits 8.4 GB on top of 22 GB weights). Halving the ubatch drops the compute buffer to 4.2 GB and 32K fits comfortably. **No throughput cost** at decode (61.1 tok/s with `-ub 256` vs the 60.3 tok/s we measured at 16K with default ubatch). Long prompts (>256 tokens) just chunk into more micro-batches. To go beyond 32K, halve `-ub` again — `-ub 128` should fit ~64K, `-ub 64` should fit ~128K. We have not tested past 64K.
+**Same model with turbo4 KV** scored 16/17 at 45 tok/s — *slower* for ~1 test of additional quality. Turbo4 KV is purely a speed loss here because the KV cache is <1% of the working set; there's nothing meaningful to compress. On Apple Silicon, prefer f16 KV. The 5090 ranking's "always use turbo4" advice does not transfer.
 
 ---
 
@@ -245,14 +248,16 @@ Two models, two opposite outcomes — same lesson the 5090 ranking found: thinki
 
 ---
 
-## What Couldn't Run
+## What Couldn't Run (with the default `-ub 512`)
 
-| Model + Config | Why | Workaround |
+These OOMs all clear if you reduce `-ub`. The lesson: don't trust the default ubatch on this hardware for any model with ≥20 GB weights.
+
+| Model + Config | Why | Fix |
 |---|---|---|
-| Gemma 4 26B-A4B Q6_K @ 24K+ (any KV) | Compute buffer >6 GB pushes total over 28.7 GB Metal free budget | Cap at 20K, or switch to Q4_K_M (6 GB less weight footprint) |
-| Gemma 4 31B-IT Q4_K_M @ 16K f16 | 18 GB weights + 14 GB f16 KV cache > 30 GB ceiling | Use turbo4 KV (only option) |
-| Anything > ~22 GB weight at non-trivial context | Compute buffer takes 4-8 GB on top of weights, leaving no room | Use a 5090 or Spark |
-| Long-context (>32K) on any ≥26B model | Compute buffer scales ~260 MiB per 1024 tokens — by 64K it's 16 GB on top of weights | Same as above |
+| Gemma 4 26B-A4B Q6_K @ 32K (any KV) at default `-ub 512` | Compute buffer is 8.4 GB on top of 22 GB weights → 30.2 GB total > 28.7 GB free | **`-ub 256`** drops compute buffer to 4.2 GB → 26.7 GB total → fits |
+| Gemma 4 31B-IT Q4_K_M @ 16K f16 (any ubatch) | 18 GB weights + 14 GB f16 KV cache > 30 GB ceiling. The KV itself is the bottleneck here, not the compute buffer. | Use turbo4 KV (only KV format that fits) |
+| Anything > ~22 GB weight at default ubatch | Compute buffer at default ub=512 is ~8 GB at 32K | Reduce `-ub` (256 → 128 → 64 as needed) |
+| Long-context (>32K) on any ≥26B model at `-ub 256` | Compute buffer scales linearly with `n_ubatch × n_ctx` | Halve ubatch for each doubling of context. `-ub 128` for 64K, `-ub 64` for 128K, etc. Slower prefill but functional. |
 
 ---
 
@@ -274,18 +279,24 @@ Two models, two opposite outcomes — same lesson the 5090 ranking found: thinki
 ### llama.cpp (turboquant fork) — default
 
 ```bash
-# Standard config — Gemma 26B-A4B Q6_K, the recommended all-rounder
+# Standard config — Gemma 26B-A4B Q6_K at full 32K context
+# CRITICAL: -ub 256 (default 512 OOMs on this Mac at 32K)
 ~/git/TheTom/llama-cpp-turboquant/build/bin/llama-server \
   -m gemma-4-26B-A4B-it-Q6_K.gguf --port 8765 \
-  -c 16384 -ngl 999 -fa on \
+  -c 32768 -b 2048 -ub 256 -ngl 999 -fa on \
   -ctk f16 -ctv f16 \
   -np 1 --jinja --reasoning-budget 0
 
-# Gemma 31B (turbo4 mandatory)
-... -c 16384 -ctk turbo4 -ctv turbo4 ...
+# Gemma 31B (turbo4 mandatory + ub 256 to reach 32K)
+... -c 32768 -b 2048 -ub 256 -ctk turbo4 -ctv turbo4 ...
 
-# Qwen 9B / Nemotron 4B (full 32K f16, no compression needed)
+# Qwen 9B / Nemotron 4B (small, default ubatch fine)
 ... -c 32768 -ctk f16 -ctv f16 ...
+
+# To go beyond 32K on the gemma 4 family, halve -ub for each doubling of context:
+#   64K  → -ub 128
+#   128K → -ub 64
+#   The cost is slower prefill on long prompts (more micro-batches), not throughput.
 ```
 
 The Docker build at `~/.docker/bin/inference/llama-server` (build 3191462) is too old for Gemma 4 (`unknown model architecture: 'gemma4'`). Use the turboquant fork which is built from a newer base — it supports both f16 and turbo3/turbo4 KV cache types and works as a drop-in replacement when you don't need TurboQuant features.

@@ -117,53 +117,48 @@ def test_simple_path():
     assert path[-1] == (2, 2)
 
 def test_weighted_path():
-    # Path through (0,1) is cost 1+1+1=3. Path through (1,0) is 1+10+1=12.
+    # Path through (0,1) is cost 10, path through (1,0) is cost 1.
+    # We want the path with minimum total cost.
     grid = [
-        [1, 1, 1],
-        [10, 10, 1],
+        [1, 10, 1],
+        [1, 10, 1],
         [1, 1, 1]
     ]
     astar = AStarGrid(grid)
-    path = astar.find_path((0, 0), (2, 0))
-    # Should go around the heavy weights: (0,0)->(0,1)->(0,2)->(1,2)->(2,2)->(2,1)->(2,0)
-    assert (1, 0) not in path
-    assert (0, 1) in path
+    path = astar.find_path((0, 0), (0, 2))
+    # Should go around the expensive wall: (0,0)->(1,0)->(2,0)->(2,1)->(2,2)->(1,2)->(0,2)
+    # or similar, but definitely not through (0,1)
+    assert (0, 1) not in path
 
-def test_no_path_due_to_walls():
+def test_no_path():
     grid = [
         [1, 0, 1],
         [1, 0, 1],
         [1, 0, 1]
     ]
     astar = AStarGrid(grid)
-    path = astar.find_path((0, 0), (0, 2))
-    assert path is None
+    assert astar.find_path((0, 0), (0, 2)) is None
 
-def test_start_equals_end():
-    grid = [[5]]
-    astar = AStarGrid(grid)
-    path = astar.find_path((0, 0), (0, 0))
-    assert path == [(0, 0)]
-
-def test_out_of_bounds_error():
+def test_start_is_end():
     grid = [[1, 1], [1, 1]]
     astar = AStarGrid(grid)
-    with pytest.raises(ValueError, match="out of bounds"):
-        astar.find_path((-1, 0), (1, 1))
+    assert astar.find_path((0, 0), (0, 0)) == [(0, 0)]
 
-def test_wall_start_error():
+def test_out_of_bounds():
+    grid = [[1, 1], [1, 1]]
+    astar = AStarGrid(grid)
+    with pytest.raises(ValueError):
+        astar.find_path((-1, 0), (1, 1))
+    with pytest.raises(ValueError):
+        astar.find_path((0, 0), (2, 2))
+
+def test_start_is_wall():
     grid = [[0, 1], [1, 1]]
     astar = AStarGrid(grid)
-    with pytest.raises(ValueError, match="impassable wall"):
+    with pytest.raises(ValueError):
         astar.find_path((0, 0), (1, 1))
 
 if __name__ == "__main__":
-    # Manual verification if not running via pytest
-    grid = [
-        [1, 5, 1],
-        [1, 5, 1],
-        [1, 1, 1]
-    ]
-    astar = AStarGrid(grid)
-    print(f"Path: {astar.find_path((0, 0), (0, 2))}")
+    # Manual execution if not using pytest command
+    pytest.main([__file__])
 ```

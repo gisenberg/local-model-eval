@@ -1,31 +1,91 @@
 [
   {
-    "model": "Gemma 4 26B-A4B Q4_K_M",
-    "key": "gemma-4-26b-a4b-q4km-nothink",
+    "model": "Gemma 4 26B-A4B Q6_K",
+    "key": "gemma-4-26b-a4b-q6k-nothink",
     "benchmark": "expression_evaluator",
-    "tokens": 1981,
-    "tok_per_sec": 58.1,
-    "elapsed_s": 34.07,
+    "tokens": 2157,
+    "tok_per_sec": 61.5,
+    "elapsed_s": 35.07,
     "thinking_chars": 0,
     "finish_reason": "stop"
   },
   {
-    "model": "Gemma 4 26B-A4B Q4_K_M",
-    "key": "gemma-4-26b-a4b-q4km-nothink",
+    "model": "Gemma 4 26B-A4B Q6_K",
+    "key": "gemma-4-26b-a4b-q6k-nothink",
     "benchmark": "astar",
-    "tokens": 1643,
-    "tok_per_sec": 59.4,
-    "elapsed_s": 27.65,
+    "tokens": 1695,
+    "tok_per_sec": 60.9,
+    "elapsed_s": 27.85,
     "thinking_chars": 0,
     "finish_reason": "stop"
   },
   {
-    "model": "Gemma 4 26B-A4B Q4_K_M",
-    "key": "gemma-4-26b-a4b-q4km-nothink",
+    "model": "Gemma 4 26B-A4B Q6_K",
+    "key": "gemma-4-26b-a4b-q6k-nothink",
     "benchmark": "lru_cache",
-    "tokens": 2391,
-    "tok_per_sec": 59.3,
-    "elapsed_s": 40.35,
+    "tokens": 2109,
+    "tok_per_sec": 60.8,
+    "elapsed_s": 34.68,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "Gemma 4 26B-A4B Q6_K (turbo4 KV)",
+    "key": "gemma-4-26b-a4b-q6k-turbo4-nothink",
+    "benchmark": "expression_evaluator",
+    "tokens": 1663,
+    "tok_per_sec": 47.2,
+    "elapsed_s": 35.2,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "Gemma 4 26B-A4B Q6_K (turbo4 KV)",
+    "key": "gemma-4-26b-a4b-q6k-turbo4-nothink",
+    "benchmark": "astar",
+    "tokens": 1642,
+    "tok_per_sec": 45.0,
+    "elapsed_s": 36.46,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "Gemma 4 26B-A4B Q6_K (turbo4 KV)",
+    "key": "gemma-4-26b-a4b-q6k-turbo4-nothink",
+    "benchmark": "lru_cache",
+    "tokens": 2122,
+    "tok_per_sec": 44.0,
+    "elapsed_s": 48.22,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
+    "key": "gemma-4-31b-q4km-turbo4-nothink",
+    "benchmark": "expression_evaluator",
+    "tokens": 1758,
+    "tok_per_sec": 11.5,
+    "elapsed_s": 152.39,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
+    "key": "gemma-4-31b-q4km-turbo4-nothink",
+    "benchmark": "astar",
+    "tokens": 1899,
+    "tok_per_sec": 11.8,
+    "elapsed_s": 161.03,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  },
+  {
+    "model": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
+    "key": "gemma-4-31b-q4km-turbo4-nothink",
+    "benchmark": "lru_cache",
+    "tokens": 2198,
+    "tok_per_sec": 12.0,
+    "elapsed_s": 183.43,
     "thinking_chars": 0,
     "finish_reason": "stop"
   }

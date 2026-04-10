@@ -39,9 +39,11 @@ BASE_URL = f"http://localhost:{PORT}"
 OUTPUT_DIR = "experiments/m4max_bench"
 MAX_TOKENS_DEFAULT = 16384
 
-# Per-model config. context_length is picked to fit within ~27 GB Metal budget
-# on a 36 GB M4 Max (default 75% iogpu.wired_limit). Dense models with big KV
-# (Gemma 31B-IT, ~870 KB/token at f16) are capped at 16K so they don't spill.
+# Per-model config. The default n_ubatch=512 inflates the Metal compute buffer
+# to ~8 GB at 32K context for sliding-window models, which OOMs once weights
+# are >20 GB. Setting n_ubatch=256 cuts the compute buffer in half and unlocks
+# 32K context for the gemma 4 family. Long prompts still work — they just
+# get chunked into more micro-batches (slower prefill, no functional cap).
 MODELS = [
     {
         "key": "qwen3.5-9b-q4km-nothink",
@@ -61,29 +63,29 @@ MODELS = [
         "key": "gemma-4-26b-a4b-q6k-nothink",
         "name": "Gemma 4 26B-A4B Q6_K",
         "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q6_K.gguf",
-        # Q6_K weights = 22 GB, leaving only ~8 GB for KV+compute on the
-        # M4 Max's ~30 GB Metal working set. 32K f16 KV blows the budget,
-        # so cap at 16K (still > the 16384 max_tokens we generate).
-        "context_length": 16384,
+        # 32K f16 fits comfortably with -ub 256 (compute buffer 4.2 GB instead
+        # of the default 8.4 GB at -ub 512).
+        "context_length": 32768,
+        "ub": 256,
         "no_think": True,
     },
     {
         "key": "gemma-4-26b-a4b-q6k-turbo4-nothink",
         "name": "Gemma 4 26B-A4B Q6_K (turbo4 KV)",
         "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q6_K.gguf",
-        # Same 16K context as f16 baseline above — apples-to-apples turbo4
-        # vs f16 KV speed comparison. Q6_K weights at 22 GB are the actual
-        # bottleneck on 30 GB Metal budget; turbo4 at 32K still OOMs because
-        # KV isn't the limiting factor here.
-        "context_length": 16384,
+        # Same 32K context as f16 with -ub 256. The KV cache here is <1% of
+        # the working set so turbo4 is purely a speed loss vs f16 — kept for
+        # the apples-to-apples KV format comparison.
+        "context_length": 32768,
         "ctk": "turbo4", "ctv": "turbo4",
+        "ub": 256,
         "no_think": True,
     },
     {
         "key": "gemma-4-26b-a4b-q4km-nothink",
         "name": "Gemma 4 26B-A4B Q4_K_M",
         "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q4_K_M.gguf",
-        # Q4_K_M is ~16 GB. Leaves ~14 GB for KV at 32K f16.
+        # Q4_K_M is ~16 GB. Fits at 32K f16 even at default -ub 512.
         "context_length": 32768,
         "no_think": True,
     },
@@ -91,11 +93,12 @@ MODELS = [
         "key": "gemma-4-31b-q4km-turbo4-nothink",
         "name": "Gemma 4 31B-IT Q4_K_M (turbo4 KV)",
         "path": MODELS_DIR / "unsloth/gemma-4-31B-it-GGUF/gemma-4-31B-it-Q4_K_M.gguf",
-        # Dense 31B has ~870 KB/token KV at f16 — 16K f16 KV = 14 GB which
-        # blows the 30 GB Metal budget when added to 18 GB weights. turbo4
-        # KV is the only way to run this on 36 GB unified memory.
-        "context_length": 16384,
+        # Dense 31B: weights 18 GB + dense f16 KV at 16K = 32 GB → won't load.
+        # turbo4 KV drops KV to ~3.5 GB at 16K. Then -ub 256 lets us push the
+        # context to 32K (compute buffer 4.2 GB instead of 8.4 GB).
+        "context_length": 32768,
         "ctk": "turbo4", "ctv": "turbo4",
+        "ub": 256,
         "no_think": True,
     },
     {
@@ -145,7 +148,7 @@ BENCHMARKS = {
 }
 
 
-def start_server(model_path: Path, ctx: int, no_think: bool, ctk="f16", ctv="f16"):
+def start_server(model_path: Path, ctx: int, no_think: bool, ctk="f16", ctv="f16", ub=None):
     """Start llama-server as a subprocess. Returns the Popen object."""
     cmd = [
         LLAMA_SERVER,
@@ -158,10 +161,15 @@ def start_server(model_path: Path, ctx: int, no_think: bool, ctk="f16", ctv="f16
         "-np", "1",             # single parallel slot for deterministic temp 0
         "--jinja",
     ]
+    # n_ubatch sizes the Metal compute buffer (~16 MiB per token at sliding-
+    # window models). Default 512 OOMs at 32K for >20 GB-weight models.
+    if ub is not None:
+        cmd += ["-b", "2048", "-ub", str(ub)]
     if no_think:
         cmd += ["--reasoning-budget", "0"]
     print(f"  Starting: llama-server -m {model_path.name} -c {ctx} "
-          f"-ctk {ctk} -ctv {ctv} "
+          f"-ctk {ctk} -ctv {ctv}"
+          f"{' -ub ' + str(ub) if ub else ''} "
           f"--reasoning-budget {'0' if no_think else 'unrestricted'}")
     return subprocess.Popen(
         cmd,
@@ -229,6 +237,7 @@ def run_one_model(mc: dict, max_tokens: int, summary: list):
         mc["path"], mc["context_length"], mc["no_think"],
         ctk=mc.get("ctk", "f16"),
         ctv=mc.get("ctv", "f16"),
+        ub=mc.get("ub"),
     )
     print("  Waiting for server...", end="", flush=True)
     if not wait_for_server():

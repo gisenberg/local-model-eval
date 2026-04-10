@@ -151,10 +151,13 @@ class ExpressionEvaluator:
 
         # Try to parse as a number
         try:
-            val = float(self._consume())
+            # Check if it's a valid number format
+            val = float(token)
+            self._consume()
             return val
         except ValueError:
-            raise ValueError(f"Expected number or '(' but found '{token}'")
+            # If it's not a number and not a parenthesis, it's an error
+            raise ValueError(f"Unexpected token: '{token}'")
 
 # --- Pytest Tests ---
 
@@ -163,7 +166,7 @@ import pytest
 def test_basic_arithmetic():
     evaluator = ExpressionEvaluator()
     assert evaluator.evaluate("10 + 5 - 2") == 13.0
-    assert evaluator.evaluate("10 * 2 / 5") == 4.0
+    assert evaluator.evaluate("10 * 5 / 2") == 25.0
     assert evaluator.evaluate("3.5 * 2") == 7.0
 
 def test_precedence():
@@ -172,7 +175,7 @@ def test_precedence():
     assert evaluator.evaluate("2 + 3 * 4") == 14.0
     # Division before subtraction
     assert evaluator.evaluate("10 - 6 / 2") == 7.0
-    # Complex mix
+    # Complex precedence
     assert evaluator.evaluate("2 * (3 + 4)") == 14.0
 
 def test_parentheses():
@@ -180,7 +183,7 @@ def test_parentheses():
     assert evaluator.evaluate("(2 + 3) * 4") == 20.0
     assert evaluator.evaluate("((1 + 1) * (2 + 2))") == 8.0
     with pytest.raises(ValueError, match="Expected '\)'"):
-        evaluator.evaluate("(1 + 2")
+        evaluator.evaluate("(2 + 3")
 
 def test_unary_minus():
     evaluator = ExpressionEvaluator()
@@ -195,10 +198,10 @@ def test_error_cases():
     with pytest.raises(ValueError, match="Division by zero"):
         evaluator.evaluate("10 / 0")
     # Invalid tokens
-    with pytest.raises(ValueError, match="Invalid token"):
+    with pytest.raises(ValueError, match="Invalid token detected"):
         evaluator.evaluate("10 + abc")
     # Empty expression
-    with pytest.raises(ValueError, match="cannot be empty"):
+    with pytest.raises(ValueError, match="Expression cannot be empty"):
         evaluator.evaluate("   ")
     # Mismatched parentheses
     with pytest.raises(ValueError, match="Expected '\)'"):
@@ -215,10 +218,10 @@ def test_error_cases():
 2.  **Tokenization**: Uses `re.findall` to split the string into numbers and operators. It includes a validation step to ensure no illegal characters (like letters) are present in the input.
 3.  **Unary Minus**: Handled in the `_parse_factor` method, which allows for recursive unary operators (e.g., `--5` becomes `5`).
 4.  **Error Handling**: 
-    *   `Division by zero` is caught during the division operation.
-    *   `Mismatched parentheses` are caught when `_consume(')')` fails to find a closing bracket.
-    *   `Invalid tokens` are caught during the regex validation phase.
-    *   `Empty expressions` are caught at the start of the `evaluate` method.
+    *   **Division by zero**: Checked during the division operation in `_parse_term`.
+    *   **Mismatched Parentheses**: Handled by the `_consume` method when it expects a `)` but finds something else or the end of the string.
+    *   **Invalid Tokens**: Detected during the regex tokenization phase.
+    *   **Empty Expressions**: Checked at the start of the `evaluate` method.
 5.  **Complexity**: 
-    *   **Time Complexity**: $O(N)$, where $N$ is the length of the string, as we visit each token once.
-    *   **Space Complexity**: $O(N)$ for the token list and the recursion stack.
+    *   **Time Complexity**: $O(n)$, where $n$ is the length of the string, as we visit each token exactly once.
+    *   **Space Complexity**: $O(n)$ for the token list and the recursion stack.

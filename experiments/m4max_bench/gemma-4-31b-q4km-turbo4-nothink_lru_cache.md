@@ -128,88 +128,93 @@ class TTLCache:
 ```
 
 ### Test Suite
-I have used `pytest` and `unittest.mock.patch` to simulate the passage of time without actually calling `time.sleep()`.
+The following tests use `unittest.mock.patch` to simulate the passage of time without actually sleeping.
 
 ```python
 import pytest
 from unittest.mock import patch
 
-# Assuming the class above is in the same file or imported
-# from cache_impl import TTLCache
-
-@pytest.fixture
-def cache():
-    # Capacity 2, Default TTL 10 seconds
-    return TTLCache(2, 10)
-
-def test_basic_put_get(cache):
-    cache.put("a", 1)
-    assert cache.get("a") == 1
-    assert cache.size() == 1
-
-def test_lru_eviction(cache):
+def test_basic_lru_eviction():
     """Test that the least recently used item is evicted when capacity is reached."""
+    cache = TTLCache(capacity=2, default_ttl=100)
     cache.put("a", 1)
     cache.put("b", 2)
-    cache.get("a")  # 'a' becomes most recent, 'b' is now LRU
-    cache.put("c", 3) # Should evict 'b'
-    
-    assert cache.get("a") == 1
+    cache.put("c", 3)  # "a" should be evicted
+    assert cache.get("a") is None
+    assert cache.get("b") == 2
     assert cache.get("c") == 3
-    assert cache.get("b") is None
 
 def test_ttl_expiration():
-    """Test that items expire after the default TTL."""
+    """Test that items expire after the TTL duration."""
     with patch('time.monotonic') as mock_time:
         mock_time.return_value = 100.0
-        cache = TTLCache(2, 10)
+        cache = TTLCache(capacity=5, default_ttl=10)
         
-        cache.put("a", 1)
+        cache.put("key1", "val1")
         
-        # Advance time by 5s (not expired)
+        # Advance time by 5 seconds (not expired)
         mock_time.return_value = 105.0
-        assert cache.get("a") == 1
+        assert cache.get("key1") == "val1"
         
-        # Advance time by 11s (expired)
-        mock_time.return_value = 116.0
-        assert cache.get("a") is None
-        assert cache.size() == 0
+        # Advance time by 6 more seconds (total 11, expired)
+        mock_time.return_value = 111.0
+        assert cache.get("key1") is None
 
 def test_custom_ttl():
     """Test that a specific TTL override works."""
     with patch('time.monotonic') as mock_time:
         mock_time.return_value = 100.0
-        cache = TTLCache(2, 100) # Long default
+        cache = TTLCache(capacity=5, default_ttl=100)
         
-        cache.put("short", 1, ttl=2) # Short custom TTL
+        # This item should expire in 2 seconds, regardless of default 100
+        cache.put("short", "lived", ttl=2)
         
         mock_time.return_value = 103.0
         assert cache.get("short") is None
 
-def test_delete(cache):
+def test_lru_update_on_get():
+    """Test that accessing an item prevents it from being evicted."""
+    cache = TTLCache(capacity=2, default_ttl=100)
+    cache.put("a", 1)
+    cache.put("b", 2)
+    
+    # Access "a", making "b" the LRU item
+    cache.get("a")
+    
+    cache.put("c", 3) # "b" should be evicted
+    assert cache.get("b") is None
+    assert cache.get("a") == 1
+
+def test_delete_functionality():
+    """Test explicit deletion of keys."""
+    cache = TTLCache(capacity=5, default_ttl=100)
     cache.put("a", 1)
     assert cache.delete("a") is True
     assert cache.get("a") is None
     assert cache.delete("nonexistent") is False
 
-def test_update_refreshes_lru_and_ttl():
-    """Updating a key should move it to front and reset its expiry."""
+def test_size_and_lazy_cleanup():
+    """Test that size reflects current map, but get cleans up expired items."""
     with patch('time.monotonic') as mock_time:
         mock_time.return_value = 100.0
-        cache = TTLCache(2, 10)
+        cache = TTLCache(capacity=5, default_ttl=10)
         
         cache.put("a", 1)
-        mock_time.return_value = 105.0
-        cache.put("a", 2) # Update 'a' at t=105, new expiry is 115
+        cache.put("b", 2)
         
-        mock_time.return_value = 112.0 
-        # If it used original TTL (110), it would be expired. 
-        # But it should be alive until 115.
-        assert cache.get("a") == 2
+        mock_time.return_value = 111.0 # Both expired
+        
+        # size() returns map length (lazy cleanup hasn't happened yet)
+        assert cache.size() == 2
+        
+        # get() triggers lazy cleanup
+        cache.get("a")
+        assert cache.size() == 1 # "a" is gone, "b" still there
 ```
 
 ### Complexity Analysis
 - **`get(key)`**: $O(1)$ average. Hash map lookup is $O(1)$, and moving a node in a doubly linked list is $O(1)$.
-- **`put(key, value)`**: $O(1)$ average. Hash map insertion/update is $O(1)$, and adding/removing nodes from the linked list is $O(1)$.
+- **`put(key, value)`**: $O(1)$ average. Hash map insertion and linked list updates are $O(1)$.
 - **`delete(key)`**: $O(1)$ average.
-- **`size()`**: $O(1)$.
+- **`size()`**: $O(1)$. Returns the length of the internal dictionary.
+- **Space Complexity**: $O(N)$ where $N$ is the capacity of the cache.

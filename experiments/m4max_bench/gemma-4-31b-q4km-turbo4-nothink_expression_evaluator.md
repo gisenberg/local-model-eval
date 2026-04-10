@@ -140,36 +140,40 @@ def test_parentheses():
     evaluator = ExpressionEvaluator()
     assert evaluator.evaluate("(2 + 3) * 4") == 20.0
     assert evaluator.evaluate("2 * (10 - (3 + 2))") == 10.0
-    assert evaluator.evaluate("((1+1))") == 2.0
+    assert evaluator.evaluate("((1 + 1))") == 2.0
 
 def test_unary_minus():
     evaluator = ExpressionEvaluator()
     assert evaluator.evaluate("-3 + 5") == 2.0
     assert evaluator.evaluate("-(2 + 1)") == -3.0
-    assert evaluator.evaluate("-(-5)") == 5.0
-    assert evaluator.evaluate("5 + -2") == 3.0
+    assert evaluator.evaluate("--5") == 5.0 # Double negative
+    assert evaluator.evaluate("-3.14 * 2") == -6.28
 
 def test_error_cases():
     evaluator = ExpressionEvaluator()
+    
     with pytest.raises(ValueError, match="Division by zero"):
         evaluator.evaluate("10 / 0")
+        
     with pytest.raises(ValueError, match="Mismatched parentheses"):
         evaluator.evaluate("(1 + 2")
+        
     with pytest.raises(ValueError, match="invalid characters"):
-        evaluator.evaluate("1 + a")
+        evaluator.evaluate("2 + a")
+        
     with pytest.raises(ValueError, match="cannot be empty"):
         evaluator.evaluate("   ")
 ```
 
 ### Explanation of Implementation:
-1.  **Tokenization**: I used `re.findall` to split the string into a list of numbers, operators, and parentheses. This simplifies the parsing logic by allowing the parser to iterate through a list rather than manipulating string indices.
+1.  **Tokenization**: I used `re.findall` to split the string into a list of numbers, operators, and parentheses. This simplifies the parsing logic by removing the need to handle whitespace manually.
 2.  **Recursive Descent**:
     *   `_parse_expression`: Handles `+` and `-`. It calls `_parse_term` first to ensure multiplication/division happens first.
-    *   `_parse_term`: Handles `*` and `/`. It calls `_parse_factor` first.
-    *   `_parse_factor`: Handles the highest priority items: unary minus (recursive call to itself), parentheses (recursive call back to `_parse_expression`), and raw numbers.
-3.  **Error Handling**:
+    *   `_parse_term`: Handles `*` and `/`. It calls `_parse_factor` to ensure unary operators and parentheses are handled first.
+    *   `_parse_factor`: Handles the "atoms" of the expression: numbers, expressions wrapped in `()`, and the unary `-` operator.
+3.  **Unary Minus**: By calling `self._parse_factor()` recursively inside the unary minus block, the evaluator supports nested unary operators (e.g., `--5`).
+4.  **Error Handling**: 
     *   **Division by Zero**: Explicitly checked during the division operation.
-    *   **Mismatched Parentheses**: Checked by verifying that a closing `)` exists after an expression started by `(`.
-    *   **Invalid Tokens**: The regex and a length-comparison check ensure that characters like letters or symbols not defined in the grammar trigger a `ValueError`.
+    *   **Mismatched Parentheses**: Checked by verifying that a `(` is always followed by a `)`.
+    *   **Invalid Tokens**: Verified by comparing the joined tokens against the original string (minus whitespace).
     *   **Empty Expressions**: Checked at the start of the `evaluate` method.
-4.  **Complexity**: The time complexity is $O(N)$ where $N$ is the length of the expression, as each token is visited exactly once. Space complexity is $O(N)$ for the token list and the recursion stack.
