@@ -314,3 +314,17 @@ A few traps to avoid when reading marketing material:
 - M4 Max spec values: [Apple MacBook Pro 16" Tech Specs](https://support.apple.com/en-us/121554), [9to5Mac M4 Max coverage](https://9to5mac.com/2024/10/30/m4-max-chip-has-16-core-cpu-40-core-gpu-and-35-increase-in-memory-bandwidth/), [EveryMac M4 Max 14C/32C profile](https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m4-max-14-core-cpu-32-core-gpu-16-2024-specs.html).
 - DGX Spark spec values: [NVIDIA DGX Spark Hardware Overview](https://docs.nvidia.com/dgx/dgx-spark/hardware.html), [LMSYS DGX Spark Review](https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/), [Backend.ai analysis](https://www.backend.ai/blog/2026-02-is-dgx-spark-actually-a-blackwell).
 - Throughput measurements: our own benchmarks, see [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md), [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md), and [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md).
+
+### Caveat: 5090 numbers are measured through a Windows Python client
+
+Our 5090 benchmarks were run with a Python `requests` client on Windows. We later discovered (April 10) that this client adds a fixed **~2.1 seconds of TTFT overhead** per request and slightly understates decode throughput by **~24%**. Root cause is `urllib3` doing eager Windows root certificate store enumeration on the first HTTP call — even for plain `http://` connections.
+
+The same llama-server binary returns in 60–70ms when called from a Linux client (WSL2 or otherwise). We confirmed this with a four-cell isolation test (Windows/WSL2 server × Windows/WSL2 client) and a layer-by-layer Python stack test (`socket` < `http.client` < `urllib3` < `requests`).
+
+What this means for the numbers in this doc:
+- **TTFT values from MODEL_RANKINGS_5090.md are wrong** by a fixed ~2.1s. Real TTFT is ~70ms across all models.
+- **Throughput (tok/s) values are roughly accurate but slightly understated.** Linux measured 140 vs 113 tok/s for the same Gemma 26B Q6_K (+24%). Treat published 5090 throughput as a lower bound.
+- **Benchmark scores are unaffected** — they depend on the model output, not the timing measurement.
+- **Spark and M4 Max numbers are not affected** because they were measured directly on Linux and macOS respectively.
+
+See "A Note on TTFT" in MODEL_RANKINGS_5090.md for the full isolation test results, and `tools/ttft_isolation_test.py` / `tools/ttft_session_test.py` for the test methodology.

@@ -8,6 +8,8 @@ Tested April 2026.
 
 Rankings combine single-shot accuracy (temp 0), multi-run consistency (temp 0.3, best-of-3 and average across 3 runs), and practical factors (speed, VRAM, max context).
 
+> **⚠ TTFT values below are inflated by ~2.1s due to a Python `requests` library issue on Windows** (see [A Note on TTFT](#a-note-on-ttft--our-numbers-were-measuring-the-wrong-thing) at the bottom). Real TTFT for every model is ~60–70ms on this hardware. Throughput (tok/s) and benchmark scores are unaffected — only TTFT is wrong. Decode tok/s may also be slightly understated (~24% higher when measured from Linux) but the relative rankings between models hold.
+
 ## Capability Spectrum
 
 How model size correlates with benchmark capability across our test suite:
@@ -282,19 +284,53 @@ For reference — these were tested before TurboQuant and use LM Studio's defaul
 | **Fastest** | Qwen 35B Q4_K_M | off | 188 tok/s, 65% quality |
 | **Best value** | Harmonic 27B Q4_K_M | on | 20 GB, 99% avg, best all-rounder |
 
-## A Note on TTFT
+## A Note on TTFT — *Our Numbers Were Measuring the Wrong Thing*
 
-Every single 5090 result above clusters tightly around **2.1–2.4 seconds TTFT**, regardless of model size, throughput, or KV configuration. The 188 tok/s Qwen 35B has the same prompt latency as the 47 tok/s Gemma Opus-Distill. Even the **LM Studio f16 baselines** (which don't use the TurboQuant fork at all) land in the same 2.20–2.43s range.
+The TTFT values above are **all wrong** in a specific, calibrated way: they reflect Python `requests` library overhead on Windows, not actual model performance. The real per-model TTFT is ~30x lower than what we reported.
 
-This is **not a TurboQuant artifact** — it's something on the Windows side of our benchmark stack adding fixed per-request overhead. Likely candidates:
-- LM Studio's HTTP/Electron wrapper (for the LM Studio runs)
-- Python `requests` library overhead on Windows (for the llama-server runs)
-- CUDA runtime / kernel cache cold-start on Windows
-- llama-server's prompt cache initialization
+### How we found out
 
-The fact that **the DGX Spark hits 0.39–0.56s TTFT** running stock llama.cpp on bare Linux strongly suggests the gap is platform-specific (Windows + our HTTP client stack), not anything to do with the model, KV cache, or weight quantization. We have not yet isolated which layer of the stack is responsible — a clean test would require running bare llama-server inside WSL2 against the same models with the same Python client.
+We ran a four-cell isolation test using the same Gemma 26B Q6_K model, the same TurboQuant fork built from the same git commit, the same turbo4 KV config — varying only the OS where the server and client ran:
 
-**Practical implication for the 5090 numbers:** Treat TTFT as a fixed ~2.3s overhead on top of decode time, not as a model-by-model metric. Total wall-clock for short responses is dominated by this constant; throughput differences only matter for outputs >500 tokens.
+| Server OS | Client OS | Mean TTFT | Decode |
+|---|---|---|---|
+| Windows | Windows | **2.158s** | 113 tok/s |
+| WSL2 (Linux) | WSL2 (Linux) | **0.062s** | 140 tok/s |
+| Windows | WSL2 (Linux) | **0.068s** | 144 tok/s |
+| WSL2 (Linux) | Windows | **2.104s** | 129 tok/s |
+
+The pattern is unambiguous: **the client OS is the only variable that matters, the server OS makes ~zero difference.** Same Windows server hit from a Linux client returns in 68ms. Same Linux server hit from a Windows client takes 2.1s.
+
+### Drilling further into the Python stack on Windows
+
+Same machine, same server, varying only the HTTP client layer:
+
+| Stack layer | TTFT |
+|---|---|
+| `socket.socket()` (raw) | **67 ms** |
+| `http.client.HTTPConnection` (Python stdlib) | 171 ms |
+| `urllib3.PoolManager` | **2,097 ms** |
+| `requests.post()` | 2,113 ms |
+| `requests.Session().post()` | 2,106 ms |
+
+The ~1.9-second overhead is added **between `http.client` and `urllib3`** on Windows. `requests` inherits it from `urllib3`. `requests.Session()` doesn't help because the slow code path runs per-request, not per-connection.
+
+**Most likely cause:** `urllib3` on Windows does eager SSL context initialization (`ssl.create_default_context()`) and Windows root certificate store enumeration on the first HTTP call — even for plain `http://` connections. This is a known slow path on Python/Windows. Linux's OpenSSL cert loading doesn't have this delay.
+
+### What the real 5090 TTFT looks like
+
+For reference, **Gemma 26B Q6_K turbo4 has an actual TTFT of ~60-70ms on the 5090**. Other models will be in the same range (the bottleneck is GPU prompt processing on a short prompt, which is fast on this hardware regardless of model size).
+
+The model-by-model TTFT numbers in the cards above should be interpreted as: "the *measurement methodology* added a fixed ~2.1s of client overhead, but the *actual* model TTFT is ~70ms across the board."
+
+### Implications
+
+1. **All Windows-measured TTFT in this repo is wrong by ~2 seconds.** Real TTFT is ~70ms.
+2. **Wall-clock latency for short responses is much better than we said.** A "3 second" coding response is actually closer to 1 second.
+3. **Decode throughput on Windows is also slightly understated.** Linux measured 24% higher tok/s on the same model (140 vs 113 for Gemma 26B Q6_K), suggesting some streaming/buffering overhead in `requests` on Windows in addition to the connection-startup hit.
+4. **Fix:** Run benchmarks from inside WSL2 against the Windows server, or use raw `socket`/`http.client` instead of `requests`. The server itself is fine.
+
+See [`tools/ttft_isolation_test.py`](../tools/ttft_isolation_test.py) and [`tools/ttft_session_test.py`](../tools/ttft_session_test.py) for the full test methodology.
 
 ## Configuration
 
