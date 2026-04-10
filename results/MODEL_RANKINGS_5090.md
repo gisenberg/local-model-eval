@@ -1,6 +1,10 @@
-# Local Model Tier List
+# Local Model Tier List — RTX 5090 32GB
 
-Tested April 2026 on RTX 5090 32 GB. TurboQuant llama-server (`feature/turboquant-kv-cache` branch), CUDA 13.2, turbo4 KV, thinking off (`-rea off`), flash attention, `max_tokens=16384`.
+**Platform:** RTX 5090 32 GB VRAM, Windows 11
+**Inference:** TurboQuant llama-server fork (`feature/turboquant-kv-cache` branch), CUDA 13.2
+**Standard config:** flash attention, `max_tokens=16384`, turbo4 KV (unless noted), thinking off (`-rea off`)
+
+Tested April 2026.
 
 Rankings combine single-shot accuracy (temp 0), multi-run consistency (temp 0.3, best-of-3 and average across 3 runs), and practical factors (speed, VRAM, max context).
 

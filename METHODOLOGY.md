@@ -53,7 +53,7 @@ A throughput drop >20% indicates VRAM spill to system RAM.
 
 ### 5. Record Results
 
-Add a row to `results/MODEL_RANKINGS.md` with:
+Add a row to the platform-specific rankings file (`results/MODEL_RANKINGS_<PLATFORM>.md`) with:
 - Model name, quant, weights size
 - Verified max context (where throughput stays stable)
 - Tok/s and TTFT

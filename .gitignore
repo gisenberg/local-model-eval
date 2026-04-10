@@ -1,1 +1,3 @@
 __pycache__/
+.env
+spark_bench/spark_results.json

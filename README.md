@@ -32,7 +32,13 @@ All benchmarks are run at `temperature=0` for deterministic output. Code is extr
 
 ## Results Summary
 
-See [results/MODEL_RANKINGS.md](results/MODEL_RANKINGS.md) for the full ranking table.
+Per-platform model rankings (each is self-contained: tier list, throughput, VRAM, max context):
+
+- [results/MODEL_RANKINGS_5090.md](results/MODEL_RANKINGS_5090.md) — RTX 5090 32GB, Windows, llama.cpp/TurboQuant fork
+- [results/MODEL_RANKINGS_SPARK.md](results/MODEL_RANKINGS_SPARK.md) — DGX Spark GB10 128GB, Linux/aarch64, llama.cpp
+- [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md) — MacBook M4 Max, Metal/MLX
+
+See [results/CROSS_PLATFORM.md](results/CROSS_PLATFORM.md) for same-model performance comparisons across hardware.
 
 See [results/CONTEXT_CAPACITY.md](results/CONTEXT_CAPACITY.md) for VRAM and context window analysis.
 
