@@ -1,11 +1,27 @@
-# Generalizing the M4 Max Findings to Other Apple Silicon
+# Hardware That's a Serious Live Option for Local Model Workflows
 
-**Three flavors of evidence in this doc:**
-1. ✅ **Measured by us** — only the M4 Max 36 GB MacBook Pro rows in any throughput table. See [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md).
-2. 📰 **Measured by others** — public benchmarks from people who own M3 Ultra or M5 Max hardware. Cited inline.
-3. ⚠️ **Projected** — bandwidth math at the same utilization fractions we observed. The asterisk on the projection: kernel utilization may differ on older (M3) or newer (M5) Metal generations.
+The doc the rest of the repo points to when you're asking: **"What should I actually buy to run local LLMs at meaningful scale?"**
 
-The purpose of this doc is to answer: "I have M4 Max findings — how do they apply to a different Mac?"
+The three machines we've measured directly ([RTX 5090](MODEL_RANKINGS_5090.md), [DGX Spark](MODEL_RANKINGS_SPARK.md), [M4 Max 36 GB MBP](MODEL_RANKINGS_M4MAX.md)) sit in three corners of the capacity-vs-bandwidth-vs-portability tradeoff space, but they're not the only serious options. This doc is the shortlist of *every* hardware configuration we think is worth considering for a real local-model workflow as of April 2026 — including the ones we haven't been able to put on a bench. For each, it captures: what specs make it interesting, where the public benchmarks land, what the workflow tradeoffs are, and where it sits relative to the machines we did measure.
+
+The shortlist (in roughly increasing capacity):
+
+| Tier | Machine | Why it's on the list |
+|---|---|---|
+| Mobile | **M4 Max MBP** (36-128 GB) | Only serious portable option. Battery + fanless-quiet for hours. |
+| Mobile (newer) | **M5 Max MBP** (up to 128 GB) | March 2026 release. Neural Accelerators give 4× faster prefill, 1.2× faster decode vs M4. Now the best mobile choice. |
+| Desktop entry | **RTX 5090** | Bandwidth king at the consumer price point ($2k). Capacity-limited at 32 GB. |
+| Desktop mid | **M4 Max Studio** (64-128 GB) | "M4 Max but with no OOM workarounds." Drops the `-ub 256` tuning we needed on the 36 GB MBP. |
+| Desktop pro | **NVIDIA RTX Pro 6000 Blackwell** (96 GB) | RTX 5090 bandwidth (1792 GB/s) with 3× the memory. Removes the 5090's main weakness for 4× the price. |
+| Desktop max-capacity | **M3 Ultra Studio** (256-512 GB) | The only Apple Silicon that runs 122B-A10B / 235B / 405B-class models. ~46% of 5090 bandwidth but unique capacity. |
+| Server-class capacity | **DGX Spark** (128 GB) | Bandwidth-poor (273 GB/s) but the cheapest path to 128 GB unified memory. Only viable for small-active MoE. |
+
+**Three flavors of evidence in the rest of this doc:**
+1. ✅ **Measured by us** — see [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md), [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md), [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md).
+2. 📰 **Measured by others** — public benchmarks from people who own M3 Ultra, M5 Max, or RTX Pro 6000 hardware. Every cited number has a source link.
+3. ⚠️ **Projected** — bandwidth math at the same utilization fractions we observed in our own runs. The asterisk: kernel utilization can differ on older (M3) or newer (M5) Metal generations, and Pro 6000 hits the same utilization as the 5090 only because they share the exact same memory subsystem.
+
+**Note on structure:** This doc started as a "generalize the M4 Max findings to other Macs" writeup (which is why most of the deep-dive sections are Apple Silicon specific) and then grew the NVIDIA RTX Pro 6000 section when that card turned out to be the obvious workstation answer. The Apple Silicon coverage is more thorough than the NVIDIA coverage as a result. If the structure starts feeling lopsided, treat the Apple Silicon sections as a case study in how this kind of analysis works rather than as the doc's center of gravity.
 
 ## The Mac product matrix (April 2026)
 

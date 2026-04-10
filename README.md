@@ -45,9 +45,9 @@ For per-platform context window / KV-cache analysis:
 - [results/CONTEXT_CAPACITY_5090.md](results/CONTEXT_CAPACITY_5090.md) — RTX 5090 32GB (KV cache spill cliff, full 256K context tests)
 - [results/CONTEXT_CAPACITY_M4MAX.md](results/CONTEXT_CAPACITY_M4MAX.md) — M4 Max 36GB (Metal working set ceiling, OOM-not-spill failure mode)
 
-For projections to Mac Studio / other Apple Silicon based on the M4 Max findings:
+For the shortlist of hardware that's a serious live option for local model workflows (Apple Silicon laptops/Studios + NVIDIA workstation class):
 
-- [results/SPECULATIVE_HARDWARE.md](results/SPECULATIVE_HARDWARE.md) — how the M4 Max 36 GB lessons transfer to M4 Max Studio (64-128 GB) and M3 Ultra Studio (256-512 GB). Marked as projection, not measurement.
+- [results/SPECULATIVE_HARDWARE.md](results/SPECULATIVE_HARDWARE.md) — buyer's guide covering M4/M5 Max, M3 Ultra Studio, RTX 5090, RTX Pro 6000 Blackwell, and DGX Spark. Mix of our measurements, third-party benchmarks (cited inline), and bandwidth-math projections.
 
 ## Key Findings
 
