@@ -95,14 +95,22 @@ MODEL_CONFIGS = {
     },
     "minimax-m25": {
         "name": "MiniMax-M2.5 UD-Q3_K_XL",
-        "path": f"{MODELS_DIR}/unsloth/MiniMax-M2.5-GGUF/MiniMax-M2.5-UD-Q3_K_XL-00001-of-00004.gguf",
+        "path": f"{MODELS_DIR}/unsloth/MiniMax-M2.5-GGUF/UD-Q3_K_XL/MiniMax-M2.5-UD-Q3_K_XL-00001-of-00004.gguf",
         "server": "standard",  # Lightning Attention = tiny KV, but weights are 101GB
         "kv_configs": ["f16"],
         "context_sizes": [32768, 65536, 131072],  # conservative — only 19GB left for KV
         "default_context": 32768,
         "default_kv": "f16",
-        "reasoning": "off",
-        "notes": "230B/10B MoE, Lightning Attention, 62 layers. 101GB weights → tight fit.",
+        "reasoning": "thinking",  # MiniMax is a thinking model; -rea off doesn't work
+        # Custom chat template fixes llama.cpp issue #21465 (the official template
+        # injects <think> in add_generation_prompt which breaks reasoning detection).
+        "chat_template": os.path.expanduser(
+            "~/git/gisenberg/local-model-eval/templates/minimax-m25-no-think.jinja"
+        ),
+        "max_tokens": 32768,        # Thinking model needs much bigger budget
+        "request_timeout": 1500,    # 25 min — thinking takes time on this hardware
+        "notes": "230B/10B MoE, Lightning Attention, 62 layers. 101GB weights → tight fit. "
+                 "Thinking model: needs 32K max_tokens and longer request timeout.",
     },
 }
 
@@ -211,7 +219,7 @@ def get_server_binary(model_cfg):
 
 
 def start_server(server_bin, model_path, port, context_length, ctk, ctv,
-                 gpu_layers=99, reasoning="off"):
+                 gpu_layers=99, reasoning="off", chat_template=None):
     """Start llama-server as a subprocess. Returns the Popen handle."""
     cmd = [
         server_bin,
@@ -229,11 +237,20 @@ def start_server(server_bin, model_path, port, context_length, ctk, ctv,
     ]
     if reasoning == "off":
         cmd.extend(["-rea", "off"])
+    elif reasoning == "thinking":
+        # Model is a thinking model that doesn't honor -rea off
+        # (or has a known llama.cpp bug). Don't pass -rea flag at all,
+        # let the model and template control it.
+        pass
     else:
         cmd.extend(["-rea", "on", "--reasoning-budget", "16384"])
 
+    if chat_template:
+        cmd.extend(["--chat-template-file", chat_template])
+
     print(f"  Server: {os.path.basename(server_bin)}")
-    print(f"  Args: -c {context_length} -ctk {ctk} -ctv {ctv} -np 1 -rea {reasoning}")
+    template_note = f" --chat-template-file {os.path.basename(chat_template)}" if chat_template else ""
+    print(f"  Args: -c {context_length} -ctk {ctk} -ctv {ctv} -np 1 -rea {reasoning}{template_note}")
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -276,7 +293,8 @@ def stop_server(proc):
 # Inference
 # ---------------------------------------------------------------------------
 
-def run_inference(port, prompt, max_tokens=16384, stream=True, temperature=0):
+def run_inference(port, prompt, max_tokens=16384, stream=True, temperature=0,
+                  request_timeout=600):
     """Send a chat completion request and measure performance."""
     base_url = f"http://localhost:{port}"
     messages = [{"role": "user", "content": prompt}]
@@ -291,7 +309,7 @@ def run_inference(port, prompt, max_tokens=16384, stream=True, temperature=0):
                 "max_tokens": max_tokens,
                 "temperature": temperature,
             },
-            timeout=600,
+            timeout=request_timeout,
         )
         elapsed = time.perf_counter() - t0
         resp.raise_for_status()
@@ -330,7 +348,7 @@ def run_inference(port, prompt, max_tokens=16384, stream=True, temperature=0):
             "stream": True,
         },
         stream=True,
-        timeout=600,
+        timeout=request_timeout,
     )
     resp.raise_for_status()
 
@@ -402,13 +420,15 @@ def run_inference(port, prompt, max_tokens=16384, stream=True, temperature=0):
 # Benchmark runners
 # ---------------------------------------------------------------------------
 
-def run_code_benchmarks(port, model_name, kv_label, output_dir):
+def run_code_benchmarks(port, model_name, kv_label, output_dir,
+                        max_tokens=16384, request_timeout=600):
     """Run all 3 coding benchmarks and save results."""
     results = []
     for bench_key, bench in BENCHMARKS.items():
         print(f"\n    [{bench['name']}] Generating...", end="", flush=True)
         try:
-            result = run_inference(port, bench["prompt"], max_tokens=16384, stream=False)
+            result = run_inference(port, bench["prompt"], max_tokens=max_tokens,
+                                   stream=False, request_timeout=request_timeout)
             print(
                 f" {result['tok_per_sec']:.1f} tok/s | "
                 f"{result['tokens']} tok | {result['elapsed_s']:.1f}s | "
@@ -456,11 +476,13 @@ def run_code_benchmarks(port, model_name, kv_label, output_dir):
     return results
 
 
-def run_throughput_benchmark(port, model_name, kv_label, max_tokens=2048):
+def run_throughput_benchmark(port, model_name, kv_label, max_tokens=2048,
+                              request_timeout=600):
     """Run streaming throughput benchmark."""
     print(f"    [Throughput] Generating...", end="", flush=True)
     try:
-        result = run_inference(port, THROUGHPUT_PROMPT, max_tokens=max_tokens, stream=True)
+        result = run_inference(port, THROUGHPUT_PROMPT, max_tokens=max_tokens,
+                               stream=True, request_timeout=request_timeout)
         think_info = ""
         if result["thinking_tokens"] > 0:
             think_info = f" | Thinking: {result['thinking_tokens']} tok"
@@ -560,6 +582,11 @@ def main():
             print(f"\nSKIP: {model_name} — not found at {model_path}")
             continue
 
+        # Per-model overrides
+        chat_template = model_cfg.get("chat_template")
+        max_tokens = model_cfg.get("max_tokens", 16384)
+        request_timeout = model_cfg.get("request_timeout", 600)
+
         kv_types = model_cfg["kv_configs"] if args.context_scaling else [model_cfg["default_kv"]]
 
         for kv_key in kv_types:
@@ -577,6 +604,7 @@ def main():
                         server_bin, model_path, args.port, ctx_size,
                         kv_cfg["ctk"], kv_cfg["ctv"],
                         reasoning=model_cfg["reasoning"],
+                        chat_template=chat_template,
                     )
                     print("  Waiting for server...", end="", flush=True)
                     if not wait_for_server(args.port, timeout=600):
@@ -609,6 +637,7 @@ def main():
                     model_cfg["default_context"],
                     kv_cfg["ctk"], kv_cfg["ctv"],
                     reasoning=model_cfg["reasoning"],
+                    chat_template=chat_template,
                 )
                 print("  Waiting for server...", end="", flush=True)
                 if not wait_for_server(args.port, timeout=600):
@@ -617,12 +646,16 @@ def main():
                     continue
                 print(" ready")
 
-                result = run_throughput_benchmark(args.port, model_name, kv_label)
+                result = run_throughput_benchmark(
+                    args.port, model_name, kv_label,
+                    request_timeout=request_timeout,
+                )
                 all_results.append(result)
 
                 if not args.throughput_only:
                     bench_results = run_code_benchmarks(
-                        args.port, model_name, kv_label, args.output_dir
+                        args.port, model_name, kv_label, args.output_dir,
+                        max_tokens=max_tokens, request_timeout=request_timeout,
                     )
                     all_results.extend(bench_results)
 

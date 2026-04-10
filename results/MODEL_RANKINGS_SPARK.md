@@ -101,9 +101,42 @@ Loads fine, runs at ~6.7 tok/s. Not a model quality issue — this is hardware p
 
 ---
 
-### Pending
+## C-Tier: Capable but Impractically Slow
 
-- **MiniMax-M2.5 UD-Q3_K_XL** (230B/10B active, Lightning Attention) — downloading. Expected ~30–40 tok/s based on bandwidth math, similar quality profile to large Qwen MoE.
+### MiniMax-M2.5 UD-Q3_K_XL (unsloth)
+230B-total / 10B-active MoE with Lightning Attention. Fits in 128 GB at ~96 GB weight footprint. **Throughput is fine; the problem is thinking depth.** This is a thinking-mandatory model that, on the Spark, can take 20+ minutes to think through a hard problem before emitting code. ExprEval works (4/5, A-tier quality), but A* and LRU both timed out at the 25-minute request budget without ever producing content.
+
+| Metric | Value |
+|---|---|
+| Throughput (sustained) | **29.6 tok/s** |
+| TTFT | 0.95 s |
+| Weight size | 96 GB (4-shard GGUF, UD-Q3_K_XL) |
+| Bandwidth utilization | ~5 GB/token × 30 tok/s = 150 GB/s = 55% of peak |
+| Single-shot quality (partial) | **1/3 benchmarks completed** |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | 4/5 | 6245 (14.9 KB think + 13.8 KB content) | Same `error_cases` wording mismatch as both Qwen MoE models — see "Cross-model test wording issue" below |
+| A* Pathfinding | TIMEOUT | — | 25-minute request timeout fired before model emitted content. Either generated >32K tokens of thinking or slowed below 22 tok/s as context grew. |
+| LRU Cache with TTL | TIMEOUT | — | Same outcome as A*. |
+
+**The MiniMax-M2.5 paradox:** This model is sized for capability beyond what the Spark's bandwidth supports as an *interactive* tool. The architecture works (29.6 tok/s on the throughput test), and when it does produce code, the code is good (ExprEval mass-quality matches what other A-tier models produce). But for hard problems the model wants to think for tens of thousands of tokens before answering, and at Spark speeds that's a 15–25+ minute round-trip per query. Not viable for an interactive coding workflow on this hardware.
+
+**Methodology adjustments required:** This is a known [llama.cpp issue (#21465)](https://github.com/ggml-org/llama.cpp/issues/21465) where the official MiniMax-M2.5 chat template injects `<think>` into `add_generation_prompt`, breaking llama.cpp's reasoning detection. The benchmarks here use a custom chat template at [`templates/minimax-m25-no-think.jinja`](../templates/minimax-m25-no-think.jinja) that removes the prompt-side `<think>` injection so the model and llama.cpp can negotiate thinking themselves. With that fix:
+- `-rea off` is meaningless on this model (it won't suppress thinking)
+- `max_tokens` must be 32K+ to leave room for both thinking and content
+- Per-request timeout must be 25+ minutes, and even that isn't enough for hard prompts
+
+**Verdict:** Don't use MiniMax-M2.5 on Spark for interactive coding. The model is fine — the Spark is the wrong host for it. A bandwidth-richer GPU (5090, A100, H100) would let it think at 5–10× the speed, which is the difference between a 25-minute round-trip and a 3-minute one.
+
+---
+
+## Cross-model test wording issue
+
+Three different model families (Qwen3.5-122B-A10B, Qwen3-Coder-Next, MiniMax-M2.5) all fail the `test_error_cases` test in Expression Evaluator the same way. They raise `ValueError` correctly for `"(2 + 3"` but with messages like `"Invalid token at position 3: ')'"` or `"Unexpected end of expression"` instead of literally `"Mismatched parentheses"`. The test uses `pytest.raises(ValueError, match="Mismatched parentheses")` which is doing string regex matching, not exception class matching.
+
+Three independent model families converging on the same "wrong" behavior strongly suggests this is a benchmark specification problem, not a model deficiency. The benchmark prompt does say *"Raise ValueError with a descriptive message for: mismatched parentheses..."* — descriptive, plural, not a mandated literal string. A more permissive test would catch any `ValueError` raised on the malformed input. Worth noting that this single test failure costs every otherwise A-tier model 1 point and pushes them to 4/5 on ExprEval.
 
 ---
 
