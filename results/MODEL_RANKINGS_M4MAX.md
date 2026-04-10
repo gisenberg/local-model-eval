@@ -45,38 +45,56 @@ The highest-quality model on this machine. Perfect single-shot score, but you pa
 
 ---
 
-### Gemma 4 26B-A4B Q6_K (turbo4 KV)
-The all-around best quality + speed combination on this machine. MoE means only ~4B parameters are active per token, so throughput is much higher than the 31B dense. Quality matches the 5090's S-tier almost exactly (16/17 vs 17/17 — a 1-test variance on a single-shot run).
-
-| Metric | Value |
-|---|---|
-| Single-shot (temp 0) | **16/17 (94%)** |
-| Throughput | **46.0 tok/s** |
-| Weight size | 22.6 GB |
-| Context | 16K |
-| KV format | turbo4/turbo4 |
-| Config | `-c 16384 -ctk turbo4 -ctv turbo4 --reasoning-budget 0 --jinja` |
-
-**Strengths:** Strong quality across all 3 benchmarks (ExprEval 4/5, A* 6/6, LRU 6/6). MoE keeps throughput respectable.
-**Weakness:** Capped at 16K context — 32K f16 OOMs even with weights at 22 GB; 32K turbo4 also OOMs because the bottleneck is the *weights*, not the KV cache. If you need >16K, drop to Q4_K_M.
-
----
-
-## A-Tier: Real Tradeoffs
-
 ### Gemma 4 26B-A4B Q6_K (f16 KV)
-The same model as above but with stock f16 KV. **Faster than turbo4 here** (60 vs 46 tok/s) — Apple Silicon's Mac-specific quirk: turbo4's dequant overhead exceeds the KV bandwidth savings on a bandwidth-constrained platform. Quality is essentially identical to turbo4 (15/17 vs 16/17, a single-test single-shot difference).
+The all-around best quality + speed combination on this machine. MoE means only ~4B parameters are active per token, so throughput is much higher than the 31B dense. Quality matches the 5090's S-tier within a single-test single-shot variance (15-16/17 vs 17/17).
 
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **15/17 (88%)** |
 | Throughput | **60.3 tok/s** |
 | Weight size | 22.6 GB |
-| Context | 16K (32K f16 OOMs against 30 GB Metal budget) |
+| Context | 16K |
 | KV format | f16/f16 |
 | Config | `-c 16384 -ctk f16 -ctv f16 --reasoning-budget 0 --jinja` |
 
-**The takeaway:** On M4 Max, prefer f16 KV unless you have a specific capacity reason to compress it. The 5090 ranking's "always use turbo4" advice does not transfer to Apple Silicon.
+**Strengths:** Fastest model with high quality. Per-benchmark: ExprEval 3/5, A* 6/6, LRU 6/6.
+**Weakness:** Capped at 16K context — 32K f16 OOMs even with weights at 22 GB. If you need >16K, drop to Q4_K_M (with quality cost).
+**Same model with turbo4 KV** scored 16/17 at 46 tok/s — *slower* for ~1 test of additional quality. On Apple Silicon, prefer f16 KV unless you have a capacity reason to compress it. The 5090 ranking's "always use turbo4" advice does not transfer here.
+
+---
+
+## A-Tier: Best Dense Speed (with caveats)
+
+### Qwen 3.5 27B Opus-Distilled MLX 4bit (mlx_lm)
+The fastest *dense* 27B+ model on this machine — and one of only two cases where MLX outperforms llama.cpp on this hardware. **42% faster** than the same model under llama.cpp Q4_K_M (18.5 vs 13.0 tok/s) at ~99% bandwidth utilization. Run via `mlx_lm.server`, not llama.cpp.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **13/17 (76%)** |
+| Throughput | **18.5 tok/s** |
+| Weight size | ~14 GB (MLX 4-bit) |
+| Context | 32K (mlx_lm default) |
+| Config | `mlx_lm.server --model mlx-community/Qwen3.5-27B-Claude-4.6-Opus-Distilled-MLX-4bit --port 8766 --temp 0` |
+
+**Per-benchmark:** ExprEval 5/5 (28 tests written, 24 pass — over-engineered), A* 6/6, LRU 2/6.
+**Strengths:** Best speed/quality combo for dense 27B+ on this hardware. Beats llama.cpp on the same model in both speed AND code quality (single-shot).
+**Weakness:** mlx_lm.server takes 5-15 min to load, vs llama-server's seconds. Slow iteration. LRU cache fell apart at 2/6.
+
+---
+
+### Qwen 3.5 27B Opus-Distilled Q4_K_M (llama.cpp)
+The same model under llama.cpp's metal backend. Slower than MLX but easier to set up.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **11/17 (65%)** |
+| Throughput | **13.0 tok/s** |
+| Weight size | 16.5 GB |
+| Context | 32K |
+| KV format | f16/f16 |
+
+**Per-benchmark:** ExprEval 5/5, A* 0/6 (model emitted `except ImportError:` outside try block — real syntax error), LRU 6/6.
+**Caveat:** Single-shot temp 0 variance. The 5090 saw 100% on this exact GGUF. Use the MLX version above unless you specifically need llama.cpp.
 
 ---
 
@@ -96,19 +114,19 @@ The "fits everywhere" version. ~16 GB weights leaves enough room for 32K f16 KV.
 
 ---
 
-### Qwen 3.5 27B Opus-Distilled Q4_K_M
-Dense 27B that fits cleanly at 32K f16 KV. The 5090 ranking has this at 100% — the M4 Max single-shot variance dropped one full benchmark (A* hit a syntax error: `except ImportError:` block without try). Worth re-running with best-of-3 to see if the gap closes.
+### Gemma 4 26B-A4B Q4_K_M (f16 KV, full 32K context)
+The "fits everywhere" version. ~16 GB weights leaves enough room for 32K f16 KV. Quality drops noticeably from Q6_K — including a literal incomplete-line truncation in the LRU cache impl (`self.tail.prev = self.` and then EOF). The Q4_K_M quality risk that the 5090 ranking warns about is real and apparently amplified by the Mac inference path.
 
 | Metric | Value |
 |---|---|
 | Single-shot (temp 0) | **11/17 (65%)** |
-| Throughput | **13.0 tok/s** |
+| Throughput | **58.9 tok/s** |
 | Weight size | 16.5 GB |
 | Context | 32K |
 | KV format | f16/f16 |
 
-**Per-benchmark:** ExprEval 5/5, A* 0/6 (syntax error), LRU 6/6.
-**Caveat:** Single-shot temp 0. The 5090 saw 100% on this exact GGUF; the gap is most likely sampling variance, not a hardware effect.
+**Per-benchmark:** ExprEval 5/5, A* 6/6, LRU 0/6 (truncated impl).
+**Bottom line:** Take Q6_K if you don't need >16K context. Take Q4_K_M only if you specifically need long context on this model.
 
 ---
 
@@ -222,20 +240,23 @@ Two models, two opposite outcomes — same lesson the 5090 ranking found: thinki
 
 ## Quick Reference: Choosing a Model
 
-| Priority | Pick | Quant | KV | Context | Why |
-|---|---|---|---|---|---|
-| **Best quality (cost no object)** | Gemma 4 31B-IT | Q4_K_M | turbo4 | 16K | 17/17, only 11 tok/s |
-| **Best quality + interactive speed** | Gemma 4 26B-A4B | Q6_K | f16 | 16K | 15-16/17, 60 tok/s |
-| **Quality + 32K context** | Gemma 4 26B-A4B | Q4_K_M | f16 | 32K | 11/17, 59 tok/s, real Q4 quality cost |
-| **Maximum throughput** | Nemotron 3 Nano 4B | Q4_K_M | f16 | 32K | 65 tok/s, but only 41% quality |
-| **Lowest VRAM** | Nemotron 3 Nano 4B | Q4_K_M | f16 | 32K | 2.8 GB weights |
+| Priority | Pick | Engine | Quant | KV | Context | Why |
+|---|---|---|---|---|---|---|
+| **Best quality (slow)** | Gemma 4 31B-IT | llama.cpp turboquant | Q4_K_M | turbo4 | 16K | 17/17, only 11.5 tok/s |
+| **Best quality + interactive speed** | Gemma 4 26B-A4B | llama.cpp | Q6_K | f16 | 16K | 15/17, 60 tok/s |
+| **Best dense 27B at speed** | Qwen 3.5 27B Opus-Distill | **MLX 4bit** | — | — | 32K | 13/17, 18.5 tok/s (42% > llama.cpp) |
+| **Quality + 32K context** | Gemma 4 26B-A4B | llama.cpp | Q4_K_M | f16 | 32K | 11/17, 59 tok/s, real Q4 quality cost |
+| **Maximum throughput** | Nemotron 3 Nano 4B | llama.cpp | Q4_K_M | f16 | 32K | 65 tok/s, but only 41% quality |
+| **Lowest memory** | Nemotron 3 Nano 4B | llama.cpp | Q4_K_M | f16 | 32K | 2.8 GB weights |
 
 ---
 
 ## Configuration
 
+### llama.cpp (turboquant fork) — default
+
 ```bash
-# Standard config — Gemma 26B-A4B Q6_K
+# Standard config — Gemma 26B-A4B Q6_K, the recommended all-rounder
 ~/git/TheTom/llama-cpp-turboquant/build/bin/llama-server \
   -m gemma-4-26B-A4B-it-Q6_K.gguf --port 8765 \
   -c 16384 -ngl 999 -fa on \
@@ -250,6 +271,26 @@ Two models, two opposite outcomes — same lesson the 5090 ranking found: thinki
 ```
 
 The Docker build at `~/.docker/bin/inference/llama-server` (build 3191462) is too old for Gemma 4 (`unknown model architecture: 'gemma4'`). Use the turboquant fork which is built from a newer base — it supports both f16 and turbo3/turbo4 KV cache types and works as a drop-in replacement when you don't need TurboQuant features.
+
+### MLX (mlx_lm.server) — for dense ≥27B
+
+```bash
+# Qwen 3.5 27B Opus-Distilled MLX 4bit — fastest dense 27B+ on this machine
+/tmp/mlx-venv/bin/python3 -m mlx_lm server \
+  --model mlx-community/Qwen3.5-27B-Claude-4.6-Opus-Distilled-MLX-4bit \
+  --port 8766 --temp 0 --max-tokens 16384 \
+  --chat-template-args '{"enable_thinking": false}'
+```
+
+mlx-lm 0.31+ requires Python 3.10+ (system Python 3.9 only has wheels up to mlx 0.29.3 which lacks `qwen3_5.py` / `gemma4.py`). Use a brew Python venv:
+
+```bash
+brew install python@3.14
+/opt/homebrew/bin/python3.14 -m venv /tmp/mlx-venv
+/tmp/mlx-venv/bin/pip install mlx-lm
+```
+
+Note that mlx_lm.server takes 5-15 minutes to load a model on first invocation. The OpenAI-style endpoints work after that.
 
 ## See also
 
