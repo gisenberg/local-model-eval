@@ -1,5 +1,7 @@
 # TurboQuant Impact: What It Unlocks on RTX 5090 (32 GB)
 
+For the M4 Max story (where TurboQuant unlocks one model and hurts speed everywhere else), see [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md).
+
 ## Models That Require TurboQuant for Practical Use
 
 Some models simply can't function at useful context lengths without KV cache compression. TurboQuant transforms them from "technically loads but unusable" to "full context, full speed."

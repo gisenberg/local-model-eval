@@ -1,6 +1,8 @@
-# TurboQuant KV Cache Benchmark Results
+# TurboQuant KV Cache Benchmark Results — RTX 5090
 
 Tested April 2026 on RTX 5090 32 GB. TurboQuant fork of llama.cpp (`feature/turboquant-kv-cache` branch), CUDA 13.2, flash attention on, temperature 0, `max_tokens=16384`.
+
+For the M4 Max story (where TurboQuant has the *opposite* effect), see [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md).
 
 ## TL;DR
 

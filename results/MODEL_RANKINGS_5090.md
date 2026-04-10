@@ -344,5 +344,5 @@ llama-server -m harmonic-model.gguf --port 8080 -c 32768 -ngl 99 \
   -fa on -ctk turbo4 -ctv turbo4 -np 1 -rea on --reasoning-budget 16384
 ```
 
-See [TURBO3_RESULTS.md](TURBO3_RESULTS.md) for full experimental data across 8+ benchmark runs.
-See [TURBOQUANT_IMPACT.md](TURBOQUANT_IMPACT.md) for what TurboQuant unlocks on 32 GB VRAM.
+See [TURBO3_RESULTS_5090.md](TURBO3_RESULTS_5090.md) for full experimental data across 8+ benchmark runs.
+See [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md) for what TurboQuant unlocks on 32 GB VRAM.
