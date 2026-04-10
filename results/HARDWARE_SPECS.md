@@ -53,7 +53,9 @@ This document is the deep spec sheet for the **three machines we've benchmarked 
 
 - **VRAM ceiling at 32 GB.** Anything bigger spills to system RAM via PCIe and crashes throughput.
 - Bandwidth is **never the bottleneck** for any model that fits — even a dense 31B model at Q4 reads ~17.5 GB/token, which would theoretically allow ~100 tok/s on this bandwidth alone (we measure 50 tok/s, compute-bound).
-- **FP4 tensor cores are unique to Blackwell.** NVFP4-quantized models (like LilaRest's Gemma 31B NVFP4-turbo) can use the dedicated FP4 path through CUTLASS kernels, but only via vLLM with the cu130 wheel.
+- **FP4 tensor cores are unique to Blackwell.** NVFP4-quantized models (like LilaRest's Gemma 31B NVFP4-turbo or RedHatAI's Gemma 26B-A4B NVFP4) can use the dedicated FP4 path through CUTLASS kernels via vLLM with the cu130 wheel.
+- **vLLM doesn't detect the 5090's native FP4** as of v0.19.0+cu130 — it logs `Your GPU does not have native support for FP4 computation` and falls back to Marlin weight-only FP4. Likely a vLLM detection bug, since the same kernels work on B100/B200 datacenter Blackwell. Performance is still acceptable but probably leaves headroom on the table vs the dedicated FP4 tensor core path.
+- **vLLM uses ~5 GB more VRAM than llama.cpp for the same model class** because of CUDA graph capture cache, PagedAttention page tables, and pre-allocated activation memory. A model that fits 26 GB with llama.cpp (Gemma 26B-A4B Q6_K + turbo4 KV) needs ~31 GB on vLLM with FP8 KV. This caps practical max context on vLLM around 32-48K vs llama.cpp's 200K+ for the same model.
 
 ### What this machine is good at
 
@@ -233,6 +235,7 @@ Where we have comparable runs:
 | Qwen 3.5 122B-A10B Q4 (MoE, 10B active) | **does not fit** | does not fit | 21 tok/s | Spark wins by capacity |
 | Qwen3-Coder-Next 80B-A3B (MoE, 3B active) | does not fit | does not fit | 50 tok/s | Spark wins by capacity |
 | Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **139 tok/s** | **60 tok/s** (32K with `-ub 256`) | not tested | 5090 wins on bandwidth |
+| Gemma 4 26B-A4B NVFP4 via vLLM (same model, 5090) | **130-143 tok/s** | n/a | n/a | Matches llama.cpp throughput, +5 GB VRAM, ~32K ctx max |
 | Qwen 3.5 27B Opus-Distilled Q4_K_M (dense) | 64 tok/s | **13 tok/s** | not tested | Bandwidth ratio holds (~5x slower) |
 | Qwen 3.5 9B Q4_K_M (dense, thinking off) | not in baseline | **35 tok/s** | not tested | M4 Max measured |
 | Nemotron 3 Nano 4B Q4_K_M (dense) | not in baseline | **65 tok/s** | not tested | Smallest, fastest on Mac |

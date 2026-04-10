@@ -27,7 +27,7 @@ How model size correlates with benchmark capability across our test suite:
 
 ## S-Tier: Reliable Excellence
 
-### Gemma 4 26B-A4B Q6_K
+### Gemma 4 26B-A4B Q6_K (llama.cpp + TurboQuant)
 The most consistent model tested. Average score nearly equals best-of-3 — produces the same quality every run.
 
 | Metric | Value |
@@ -39,10 +39,36 @@ The most consistent model tested. Average score nearly equals best-of-3 — prod
 | TTFT | **61 ms** |
 | VRAM (32K ctx) | 26,739 MB |
 | Max context (turbo4) | ~230K |
+| Backend | llama.cpp (TurboQuant fork) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
 **Strengths:** Fastest S-tier, extremely consistent, reaches near-full context window with TurboQuant.
 **Weakness:** ExprEval caps at 4/5 at temp 0.3 (test wording mismatch, not implementation quality).
+
+---
+
+### Gemma 4 26B-A4B NVFP4 (vLLM)
+Same base model, NVFP4 quantization, served via vLLM. Quality matches the llama.cpp setup at 22/22 (100%) on the expanded 4-benchmark suite. Tested using `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4` (community variant of the RedHatAI quant that bundles a patched `gemma4.py` for vLLM's NVFP4 MoE expert mapping bug — see [vllm#38912](https://github.com/vllm-project/vllm/issues/38912)).
+
+| Metric | Value |
+|---|---|
+| Best-of-3 (temp 0.3, 4 benchmarks) | **22/22 (100%)** |
+| Average (temp 0.3) | 21.0/22 (95%) |
+| Throughput | **130–143 tok/s** (variable per benchmark) |
+| Weights | 15.74 GB (NVFP4) |
+| VRAM (32K ctx) | **31,311 MB** (~5 GB more than llama.cpp Q6_K) |
+| Max context (this config) | ~32K (VRAM-constrained) |
+| Backend | vLLM 0.19.0+cu130 |
+| Config | `--quantization modelopt --moe-backend marlin --kv-cache-dtype fp8 -e VLLM_NVFP4_GEMM_BACKEND=marlin` |
+
+**Strengths:** Smaller weights (15.7 vs 22 GB) and matches llama.cpp throughput. Useful if you need vLLM's batched serving / OpenAI API features.
+**Weaknesses:**
+- **Total VRAM is ~5 GB higher than llama.cpp Q6_K** (31.3 vs 26.7 GB) despite the smaller weights — vLLM's CUDA graph cache, PagedAttention page tables, Marlin scratch buffers, and pre-allocated activation memory cost ~13 GB on top of the 16 GB weights.
+- **Caps at ~32K context on the 5090** (compared to llama.cpp's ~230K with turbo4 KV) because of the higher compute-buffer overhead, even with FP8 KV cache.
+- Setup requires patching vLLM's `gemma4.py` and tracking down orphan EngineCore processes that hold model weights in VRAM after failed launches.
+- vLLM detects the 5090 (sm_120) as "no native FP4 support" and falls back to Marlin weight-only FP4 — likely a vLLM detection bug, possibly leaving compute headroom on the table.
+
+**Verdict:** Quality is identical to the llama.cpp setup. For our single-stream coding workload on the 5090, **llama.cpp + turbo4 is still the better choice** — same throughput, ~5 GB less VRAM, ~7x more max context. NVFP4 makes more sense on hardware where llama.cpp's TurboQuant fork doesn't apply (datacenter Blackwell, batched serving) or where you specifically need vLLM's API features.
 
 ---
 
