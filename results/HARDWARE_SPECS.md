@@ -9,7 +9,7 @@ This document captures the hardware we run benchmarks on, with a focus on the sp
 | **Total memory** | 32 GB GDDR7 | 36 GB LPDDR5X (unified, **~30 GB usable on Metal**) | 128 GB LPDDR5x (unified) |
 | **Memory bandwidth** | **1,792 GB/s** | **410 GB/s** | **273 GB/s** |
 | **Max model (dense, Q4)** | ~31 GB at 50 tok/s | ~18 GB at **11.5 tok/s** (gemma 31B, turbo4 KV req'd) | ~70 GB but at <8 tok/s |
-| **Max model (MoE A4B, Q6)** | 139 tok/s | **60 tok/s** (gemma 26B-A4B, 16K ctx max) | ~70 GB at 21 tok/s |
+| **Max model (MoE A4B, Q6)** | 139 tok/s | **60 tok/s** (gemma 26B-A4B, 32K ctx with `-ub 256`) | ~70 GB at 21 tok/s |
 | **Max model (MoE A10B, Q4)** | doesn't fit | doesn't fit | ~70 GB at 21 tok/s |
 | **Best for** | Dense models, max throughput, code generation | Portable inference, MoE A4B-class models | Huge MoE models, full context windows |
 | **Bottleneck** | VRAM capacity | Metal working set (30 GB) | Memory bandwidth |
@@ -230,7 +230,7 @@ Where we have comparable runs:
 | Qwen 3.5 35B-A3B Q4_K_M (MoE, 3B active) | **174 tok/s** | not tested | not tested | 5090 only — compute headroom matters here |
 | Qwen 3.5 122B-A10B Q4 (MoE, 10B active) | **does not fit** | does not fit | 21 tok/s | Spark wins by capacity |
 | Qwen3-Coder-Next 80B-A3B (MoE, 3B active) | does not fit | does not fit | 50 tok/s | Spark wins by capacity |
-| Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **139 tok/s** | **60 tok/s** (16K ctx max) | not tested | 5090 wins on bandwidth, M4 Max ctx-limited |
+| Gemma 4 26B-A4B Q6_K (MoE, 4B active) | **139 tok/s** | **60 tok/s** (32K with `-ub 256`) | not tested | 5090 wins on bandwidth |
 | Qwen 3.5 27B Opus-Distilled Q4_K_M (dense) | 64 tok/s | **13 tok/s** | not tested | Bandwidth ratio holds (~5x slower) |
 | Qwen 3.5 9B Q4_K_M (dense, thinking off) | not in baseline | **35 tok/s** | not tested | M4 Max measured |
 | Nemotron 3 Nano 4B Q4_K_M (dense) | not in baseline | **65 tok/s** | not tested | Smallest, fastest on Mac |
@@ -270,7 +270,7 @@ Does the model fit in 32-36 GB at usable quant?
 - → RTX 5090 + Gemma 4 31B-IT Q4_K_M with TurboQuant turbo4 KV. 17/17 score, 50 tok/s, 24 GB VRAM, 58K context.
 
 **"I want the same quality but on a laptop I can actually carry."**
-- → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which does build on Metal). Same 17/17 quality, but **11.5 tok/s** instead of 53. Without turbo4 the model literally won't load — 18 GB of weights + 14 GB of f16 KV at 16K context exceeds the 30 GB Metal working set.
+- → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which builds on Metal) AND `-ub 256`. Same 17/17 quality, but 11.8 tok/s instead of 50. Without turbo4 the model literally won't load (dense f16 KV at 16K = 14 GB on top of 18 GB weights). Without `-ub 256` the model loads at turbo4 but caps at 16K context; with `-ub 256` it reaches 32K. Full config: `-c 32768 -b 2048 -ub 256 -ctk turbo4 -ctv turbo4`.
 
 **"I want to run the biggest model possible at interactive speed."**
 - → DGX Spark + Qwen 3.5 122B-A10B Q4_K_M. 21 tok/s (just barely interactive), full 256K context, 16/17 quality.
@@ -282,7 +282,7 @@ Does the model fit in 32-36 GB at usable quant?
 - → DGX Spark, but accept ~4 tok/s. Don't expect to use it for interactive coding. M4 Max can't fit it; 5090 can't fit it either.
 
 **"I want the longest context window possible for any model."**
-- → DGX Spark wins by default — 120 GB of KV cache headroom dwarfs the 5090's ~10 GB even with TurboQuant compression. M4 Max is the most context-constrained of the three: a 22 GB model leaves only ~8 GB for KV, and the working set ceiling is 30 GB total.
+- → DGX Spark wins by default — 120 GB of KV cache headroom dwarfs the 5090's ~10 GB even with TurboQuant compression. M4 Max is more context-constrained but recoverable via `-ub` tuning: with `-ub 256` you get 32K on the gemma 4 family, and halving ubatch for each doubling of context can push to 64K / 128K with slower prefill but the same decode throughput.
 
 **"I'm in a hotel room and need a coding agent right now."**
 - → M4 Max. The other two machines aren't going anywhere. This one runs Gemma 26B-A4B Q6_K at **60 tok/s** (measured) on battery, which is plenty for interactive use. Score: 15/17 single-shot.
