@@ -38,7 +38,7 @@ Per-platform model rankings (each is self-contained: tier list, throughput, VRAM
 - [results/MODEL_RANKINGS_SPARK.md](results/MODEL_RANKINGS_SPARK.md) — DGX Spark GB10 128GB, Linux/aarch64, llama.cpp
 - [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md) — MacBook M4 Max, Metal/MLX
 
-See [results/CROSS_PLATFORM.md](results/CROSS_PLATFORM.md) for same-model performance comparisons across hardware.
+See [results/HARDWARE_SPECS.md](results/HARDWARE_SPECS.md) for measured side-by-side throughput on the same models across the 3 benchmarked machines, and [results/README.md](results/README.md) for a navigation guide to all the analysis docs.
 
 For per-platform context window / KV-cache analysis:
 

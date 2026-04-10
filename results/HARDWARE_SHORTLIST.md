@@ -8,8 +8,8 @@ The shortlist (in roughly increasing capacity):
 
 | Tier | Machine | Why it's on the list |
 |---|---|---|
-| Mobile | **M4 Max MBP** (36-128 GB) | Only serious portable option. Battery + fanless-quiet for hours. |
-| Mobile (newer) | **M5 Max MBP** (up to 128 GB) | March 2026 release. Neural Accelerators give 4× faster prefill, 1.2× faster decode vs M4. Now the best mobile choice. |
+| Mobile (current best) | **M5 Max MBP** (up to 128 GB) | March 2026 release. Neural Accelerators give 4× faster prefill and 1.2× faster decode than M4 Max — the new portable winner for inference. |
+| Mobile (older but cheaper) | **M4 Max MBP** (36-128 GB) | Still a serious portable option, especially used / refurbished. The 36 GB binning is what we measured directly in this repo. M5 Max is the better buy if you can afford it. |
 | Desktop entry | **RTX 5090** | Bandwidth king at the consumer price point ($2k). Capacity-limited at 32 GB. |
 | Desktop mid | **M4 Max Studio** (64-128 GB) | "M4 Max but with no OOM workarounds." Drops the `-ub 256` tuning we needed on the 36 GB MBP. |
 | Desktop pro | **NVIDIA RTX Pro 6000 Blackwell** (96 GB) | RTX 5090 bandwidth (1792 GB/s) with 3× the memory. Removes the 5090's main weakness for 4× the price. |
