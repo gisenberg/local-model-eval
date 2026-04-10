@@ -142,9 +142,71 @@ The M3 Ultra is a generation older than the M4 Max we measured. A few things cou
 | Highest-quality coding model at interactive speed (desk) | **M4 Max Studio 128 GB** (today) or wait for M5 Max Studio (June 2026) | Plenty of room for Q8_0 of any of our S-tier models. M5 Max Studio at the same memory tier should be the upgrade target if you can wait. |
 | Run the Spark's 122B-A10B MoE faster than the Spark | **M3 Ultra Studio 256 GB** | 819 GB/s on the 72 GB model = ~3× the Spark's bandwidth. Real measurements suggest ~50-80 tok/s on Qwen 3 235B FP8 (22B active) — and that's the *current* generation, M5 Ultra would be faster again. |
 | Run 405B+ dense models on Apple Silicon at all | **M3 Ultra Studio 512 GB** | The only Apple Silicon with the capacity for now. Expect single-digit tok/s — "loads, but not interactive." 70B Q4 measured at 12-15 tok/s on this hardware. |
-| Maximum throughput for dense models that fit | **RTX 5090** (not Apple Silicon) | 1792 GB/s and all the CUDA-only optimizations. M3 Ultra is ~46% of 5090 bandwidth. M5 Ultra (rumored ~1228 GB/s) will close the gap but probably won't pass it. |
+| Maximum throughput for dense models ≤32 GB | **RTX 5090** (not Apple Silicon) | 1792 GB/s and all the CUDA-only optimizations. Cheap (~$2,000). Capacity-limited above 32 GB. |
+| Maximum throughput for dense models 32-96 GB | **RTX Pro 6000 Blackwell** (not Apple Silicon) | Same 1792 GB/s as the 5090, 96 GB GDDR7 ECC. Strictly better than the 5090 anywhere the 5090 OOMs. ~4× the price ($8,000). See [section below](#nvidia-rtx-pro-6000-blackwell-workstation-non-apple). |
 | Maximum capacity, accept bandwidth limit | **DGX Spark** (not Apple Silicon) — 128 GB at 273 GB/s | Loses to M3 Ultra on bandwidth, but typically cheaper and still very capable for small-active MoEs. |
 | Portable inference on battery | **M5 Max MBP** (full bin 614 GB/s) | New 2026 winner. The M5's Neural Accelerators are a structural advantage for inference workloads. M4 Max MBP is still fine, just slower. |
+
+## NVIDIA RTX Pro 6000 Blackwell (workstation, non-Apple)
+
+The other interesting "speculative hardware" data point — not Apple Silicon, but it changes the tradeoff curve enough to be worth covering here. **The RTX Pro 6000 Blackwell is essentially "RTX 5090 with 3× the memory at the same speed."** It removes the 5090's main weakness (32 GB capacity) without giving up any of its bandwidth.
+
+### Specs (Workstation Edition)
+
+| Spec | Value | vs RTX 5090 |
+|---|---|---|
+| Memory | **96 GB GDDR7 with ECC** | **3× larger** |
+| Memory bandwidth | **1792 GB/s** | identical (same 512-bit bus, same 28 Gbps GDDR7) |
+| CUDA cores | 24,064 | similar |
+| Architecture | Blackwell (sm_120) | same |
+| AI TOPS (FP4 sparse) | ~4000 | similar |
+| TDP | 600 W | +25 W vs 5090's 575 W |
+| ECC memory | yes | 5090 has none |
+| ISV certifications | Autodesk / Adobe / Dassault / SolidWorks | 5090 not certified |
+| Retail price | ~$8,000 | ~4× the 5090's MSRP |
+
+Source: [NVIDIA RTX Pro 6000 Blackwell Workstation product page](https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000/) and [PNY/Micro Center listing](https://www.microcenter.com/product/694549/pny-nvidia-rtx-pro-6000-blackwell-workstation-edition-dual-fan-96gb-gddr7-pcie-50-graphics-card).
+
+### Public LLM benchmarks
+
+📰 = third-party measurements:
+
+| Model | RTX Pro 6000 | RTX 5090 (for reference) | Source |
+|---|---|---|---|
+| Llama 2 7B Q4_0 (decode) | **279 tok/s** | similar (bandwidth-bound, both should hit ~280) | [LocalScore #937](https://www.localscore.ai/accelerator/937) |
+| GPT-OSS 120B | **163 tok/s** | OOM (won't fit in 32 GB) | [llm-tracker.info](https://llm-tracker.info/RTX-PRO-6000) |
+| Shisa v2 Llama 3.1 405B IQ2_XXS (~107 GB) | **2.68 tok/s** | OOM | [LocalScore #937](https://www.localscore.ai/accelerator/937) |
+| vLLM Llama-8B (high concurrency) | **8990 tok/s** | similar | [DataBaseMart](https://www.databasemart.com/blog/vllm-gpu-benchmark-pro6000) |
+| Llama-3.3-Nemotron-Super-49B (server card) | **3030 tok/s** | OOM (49B Q8 ≈ 49 GB > 32 GB) | [Akamai Cloud benchmark](https://www.akamai.com/blog/cloud/benchmarking-nvidia-rtx-pro-6000-blackwell-akamai-cloud) |
+
+### What this means for the model lineup
+
+The Pro 6000 occupies a sweet spot none of the other machines reach:
+
+| Model class | RTX 5090 | **RTX Pro 6000** | M3 Ultra Studio (256-512 GB) | DGX Spark (128 GB) |
+|---|---|---|---|---|
+| **Dense ≤31B Q4** (e.g. Gemma 4 31B) | ✅ 50 tok/s | ✅ ~50 tok/s | ✅ ~24 tok/s | ✅ ~7 tok/s |
+| **Dense 49B-70B Q4** (e.g. Llama 3.3 70B) | ❌ OOM | ✅ ~25-30 tok/s ⚠️ | ✅ 12-15 tok/s 📰 | ✅ ~5-6 tok/s ⚠️ |
+| **MoE 122B-A10B Q4** (e.g. Qwen 3.5 122B) | ❌ OOM | ✅ ~80-100 tok/s ⚠️ (10B active = ~10 GB read/tok @ 1792 = ~140 tok/s ceiling) | ✅ ~50-80 tok/s 📰 | ✅ 21 tok/s 📰 |
+| **MoE 235B-A22B Q4-Q8** (Qwen 3 235B) | ❌ OOM | ❌ won't fit Q8, fits Q4 (~118 GB) only with offload | ✅ 25-35 tok/s 📰 | ❌ probably OOM at non-trivial quant |
+| **Dense 405B Q2/Q3** (Llama 3.1 405B class) | ❌ OOM | ⚠️ 2.68 tok/s 📰 (at IQ2_XXS only, barely fits) | ⚠️ ~5 tok/s ⚠️ at Q4 | ❌ OOM |
+| **Highest throughput on dense ≤31B** | 142 tok/s ✅ | matches 5090 | 24 tok/s | 7 tok/s |
+
+**The headline:** the Pro 6000 dominates the 5090 anywhere the 5090 OOMs (28-95 GB of weights) and matches it everywhere else. It's strictly better than the 5090 if you can afford the 4× price.
+
+### Where the Pro 6000 still loses
+
+- **Above 96 GB of weights** the Pro 6000 hits the same wall the 5090 does. 405B dense Q4 (~200 GB) won't fit; only the M3 Ultra Studio at 256+ GB or the DGX Spark at 128 GB can load these. The Pro 6000 squeezes a 405B model in only at IQ2_XXS (2.06 bpw, ~107 GB, with offload) and runs at 2.68 tok/s — basically "loads, but not interactive."
+- **Cost.** $8,000 vs $2,000 for the 5090, $5,000-10,000 for an M3 Ultra Studio depending on memory tier. The Pro 6000 is the most expensive option per dense-tok/s for models that fit on a 5090.
+- **Heat / power / form factor.** 600 W workstation card. Doesn't fit in a Mac chassis or a backpack.
+
+### How the Pro 6000 changes our hardware decision tree
+
+In [HARDWARE_SPECS.md](HARDWARE_SPECS.md) we framed the three machines as occupying three corners of a capacity-vs-bandwidth-vs-portability triangle: 5090 wins bandwidth, Spark wins capacity, M4 Max wins portability. The Pro 6000 collapses two of those corners — **it wins both bandwidth AND capacity** in the 32-96 GB range, and only loses on portability and absolute capacity (above 96 GB).
+
+So for any **dense model in the 30-90 GB range that won't fit on a 5090**, the Pro 6000 is now the obvious answer — and it's fast enough that the M3 Ultra Studio's higher capacity isn't worth the bandwidth hit unless you specifically need 96+ GB. The M3 Ultra Studio retains its niche only for models above ~96 GB.
+
+The Pro 6000 doesn't change anything about Apple Silicon though. The lessons from our M4 Max benchmarks still apply to every Apple Silicon configuration; the Pro 6000 is just another "if you don't need portability and have the budget, here's the better option" reference point.
 
 ## What about the M5 Ultra?
 
@@ -202,3 +264,15 @@ macOS Metal memory tuning:
 llama.cpp Apple Silicon performance tracking:
 - [Performance of llama.cpp on Apple Silicon M-series (Discussion #4167)](https://github.com/ggml-org/llama.cpp/discussions/4167) — long-running community benchmark thread
 - [GPU Benchmarks on LLM Inference (Xiongjie Dai, GitHub)](https://github.com/XiongjieDai/GPU-Benchmarks-on-LLM-Inference) — multi-GPU + Apple Silicon comparison repo
+
+NVIDIA RTX Pro 6000 Blackwell:
+- [NVIDIA RTX PRO 6000 Blackwell Workstation product page](https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000/) — official specs
+- [NVIDIA RTX Blackwell PRO GPU Architecture whitepaper (PDF)](https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/NVIDIA-RTX-Blackwell-PRO-GPU-Architecture-v1.0.pdf)
+- [PNY listing — 96GB GDDR7, 24064 CUDA cores, 600W (Micro Center)](https://www.microcenter.com/product/694549/pny-nvidia-rtx-pro-6000-blackwell-workstation-edition-dual-fan-96gb-gddr7-pcie-50-graphics-card)
+- [LocalScore RTX Pro 6000 Blackwell results (#937)](https://www.localscore.ai/accelerator/937) — community benchmark results for many models
+- [llm-tracker.info: RTX Pro 6000](https://llm-tracker.info/RTX-PRO-6000) — third-party LLM-specific benchmarks
+- [DataBaseMart vLLM Pro 6000 benchmark](https://www.databasemart.com/blog/vllm-gpu-benchmark-pro6000) — high-concurrency vLLM measurements
+- [DataBaseMart Ollama Pro 6000 benchmark](https://www.databasemart.com/blog/ollama-gpu-benchmark-pro6000) — Ollama-specific results
+- [Akamai Cloud RTX Pro 6000 benchmark](https://www.akamai.com/blog/cloud/benchmarking-nvidia-rtx-pro-6000-blackwell-akamai-cloud) — server-edition cloud benchmarks
+- [RTX Pro 6000 vs RTX 5090 comparison (LTT Labs)](https://www.lttlabs.com/compare/nvidia-geforce-rtx-5090-founders-edition-vs-nvidia-rtx-pro-6000-blackwell-workstation-edition) — direct spec comparison
+- [Hardware Corner: RTX 5090 vs Pro 6000 for LLM](https://www.hardware-corner.net/rtx-5090-vs-rtx-pro-6000-spec-comparison-20250321/)
