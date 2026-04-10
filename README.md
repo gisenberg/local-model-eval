@@ -40,7 +40,10 @@ Per-platform model rankings (each is self-contained: tier list, throughput, VRAM
 
 See [results/CROSS_PLATFORM.md](results/CROSS_PLATFORM.md) for same-model performance comparisons across hardware.
 
-See [results/CONTEXT_CAPACITY.md](results/CONTEXT_CAPACITY.md) for VRAM and context window analysis.
+For per-platform context window / KV-cache analysis:
+
+- [results/CONTEXT_CAPACITY_5090.md](results/CONTEXT_CAPACITY_5090.md) — RTX 5090 32GB (KV cache spill cliff, full 256K context tests)
+- [results/CONTEXT_CAPACITY_M4MAX.md](results/CONTEXT_CAPACITY_M4MAX.md) — M4 Max 36GB (Metal working set ceiling, OOM-not-spill failure mode)
 
 ## Key Findings
 

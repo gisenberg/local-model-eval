@@ -1,6 +1,8 @@
-# Context Capacity Analysis
+# Context Capacity Analysis — RTX 5090 32GB
 
-Tested April 2026 on RTX 5090 32GB.
+Tested April 2026.
+
+For the M4 Max equivalent, see [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md). Spark not yet measured.
 
 ## The Key Constraint: KV Cache
 
