@@ -34,6 +34,7 @@ The most consistent model tested. Average score nearly equals best-of-3 — prod
 | Best-of-3 (temp 0.3) | 30/31 (97%) |
 | Average (temp 0.3) | 30.0/31 (97%) |
 | Throughput | 142 tok/s |
+| TTFT | 2.32s |
 | VRAM (32K ctx) | 25,636 MB |
 | Max context (turbo4) | ~230K |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -52,6 +53,7 @@ Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run
 | Best-of-3 (temp 0.3) | **31/31 (100%)** |
 | Average (temp 0.3) | **30.7/31 (99%)** |
 | Throughput | 53 tok/s |
+| TTFT | 2.20s |
 | VRAM (32K ctx) | 22,293 MB |
 | Max context (turbo4) | ~58K |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -72,6 +74,7 @@ Lowest VRAM of any high-quality model. Peak capability matches S-tier but higher
 | Best-of-3 (temp 0.3) | **31/31 (100%)** |
 | Average (temp 0.3) | 25.3/31 (82%) |
 | Throughput | 64 tok/s |
+| TTFT | 2.14s |
 | VRAM (32K ctx) | 19,565 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -88,6 +91,7 @@ Fastest model with 94%+ quality. The Q4_K_M tradeoff: 10% faster, 10% less VRAM,
 |---|---|
 | Single-shot (temp 0) | **16/17 (94%)** |
 | Throughput | 156 tok/s |
+| TTFT | 2.31s |
 | VRAM (32K ctx) | 20,046 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -109,6 +113,7 @@ With thinking enabled, Harmonic becomes the most consistent model tested. **30.7
 | Best-of-3 (temp 0.3, thinking off) | 31/31 (100%) |
 | Average (temp 0.3, thinking off) | 27.0/31 (87%) |
 | Throughput | 61 tok/s (thinking on), 66 tok/s (thinking off) |
+| TTFT | 2.23s (Q4_K_M), 2.29s (Q8_0) |
 | VRAM (32K ctx) | 19,995 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea on --reasoning-budget 16384` |
@@ -128,6 +133,7 @@ Embeds reasoning in content output even with thinking off. Produces verbose, tho
 | Best-of-3 (temp 0.3) | 30/31 (97%) |
 | Average (temp 0.3) | 24.0/31 (77%) |
 | Throughput | 52 tok/s |
+| TTFT | 2.38s |
 | VRAM (32K ctx) | 24,549 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -146,6 +152,7 @@ Fine-tuned on Claude Opus reasoning data. Slightly worse than the base model on 
 |---|---|
 | Single-shot (temp 0) | **16/17 (94%)** |
 | Throughput | 47 tok/s |
+| TTFT | 2.19s |
 | VRAM (32K ctx) | 23,199 MB |
 | Max context (turbo4) | ~58K |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -164,6 +171,7 @@ Fastest model by far. Use when speed > correctness.
 | Single-shot (temp 0) | **11/17 (65%)** |
 | Best-of-3 (temp 0.3) | 25/31 (81%) |
 | Throughput | **188 tok/s** |
+| TTFT | 2.31s |
 | VRAM (32K ctx) | 23,910 MB |
 | Max context (turbo4) | 262K (full) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
@@ -180,6 +188,7 @@ The fine-tuned versions (Opus-distilled, Harmonic, Qwopus) all dramatically outp
 |---|---|
 | Single-shot (temp 0) | **10/17 (59%)** |
 | Throughput | 51 tok/s |
+| TTFT | 2.15s |
 | VRAM (32K ctx) | 24,606 MB |
 
 **Bottom line:** No reason to use when fine-tunes exist at the same VRAM cost.
@@ -272,6 +281,20 @@ For reference — these were tested before TurboQuant and use LM Studio's defaul
 | **Lowest VRAM** | Opus-Distilled 27B Q4_K_M | on | 20 GB, 100% single-shot, full 262K ctx |
 | **Fastest** | Qwen 35B Q4_K_M | off | 188 tok/s, 65% quality |
 | **Best value** | Harmonic 27B Q4_K_M | on | 20 GB, 99% avg, best all-rounder |
+
+## A Note on TTFT
+
+Every single 5090 result above clusters tightly around **2.1–2.4 seconds TTFT**, regardless of model size, throughput, or KV configuration. The 188 tok/s Qwen 35B has the same prompt latency as the 47 tok/s Gemma Opus-Distill. Even the **LM Studio f16 baselines** (which don't use the TurboQuant fork at all) land in the same 2.20–2.43s range.
+
+This is **not a TurboQuant artifact** — it's something on the Windows side of our benchmark stack adding fixed per-request overhead. Likely candidates:
+- LM Studio's HTTP/Electron wrapper (for the LM Studio runs)
+- Python `requests` library overhead on Windows (for the llama-server runs)
+- CUDA runtime / kernel cache cold-start on Windows
+- llama-server's prompt cache initialization
+
+The fact that **the DGX Spark hits 0.39–0.56s TTFT** running stock llama.cpp on bare Linux strongly suggests the gap is platform-specific (Windows + our HTTP client stack), not anything to do with the model, KV cache, or weight quantization. We have not yet isolated which layer of the stack is responsible — a clean test would require running bare llama-server inside WSL2 against the same models with the same Python client.
+
+**Practical implication for the 5090 numbers:** Treat TTFT as a fixed ~2.3s overhead on top of decode time, not as a model-by-model metric. Total wall-clock for short responses is dominated by this constant; throughput differences only matter for outputs >500 tokens.
 
 ## Configuration
 
