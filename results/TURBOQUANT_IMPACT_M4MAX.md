@@ -15,28 +15,32 @@ For the 5090 story, see [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md).
 
 **The decision rule on this hardware:** use turbo4 KV if and only if the model literally won't load with f16. There's no other use case where it's the right choice.
 
-## Why TurboQuant Helps the 5090 But Not the Mac
+## Why TurboQuant Helps the 5090 But Mostly Not the Mac
 
-It comes down to which bottleneck dominates each platform.
+Two platform asymmetries combine to make turbo4 a much weaker tool on Metal than on CUDA.
 
-**RTX 5090:**
-- 1,792 GB/s memory bandwidth (huge)
-- 32 GB VRAM (tight)
-- KV cache is a meaningful fraction of bandwidth per token for dense models
-- → Compressing the KV cache saves bandwidth → speeds up decoding
-- → Compressing the KV cache saves VRAM → enables longer contexts
-- Net: turbo4 = win on both axes
+### Asymmetry 1: Bandwidth bottleneck (speed)
 
-**M4 Max:**
-- 410 GB/s memory bandwidth (constrained — already the bottleneck)
-- 36 GB unified memory but only ~30 GB Metal working set
-- Weights bandwidth dominates per-token decode cost (we read the whole weight set every step, and the weights are 16-22 GB)
-- → KV cache is a small fraction of per-token bandwidth, so compressing it doesn't free up enough to matter
-- → The compute overhead of dequantizing turbo4 KV per step exceeds the bandwidth savings
-- → It does still save memory, which is the only reason to use it (for models that won't otherwise fit)
-- Net: turbo4 = capacity win, speed loss
+**RTX 5090:** 1,792 GB/s bandwidth, 32 GB VRAM. KV cache is a meaningful fraction of per-token bandwidth for dense models. Compressing the KV cache saves bandwidth → faster decoding.
 
-The asymmetry is platform-physics, not implementation quality. The same TurboQuant kernels that win on CUDA lose on Metal because the platforms have different bottleneck profiles.
+**M4 Max:** 410 GB/s bandwidth, ~30 GB working set. Weights bandwidth (16-22 GB read every token) already dominates the decode budget. KV cache is a small fraction; compressing it doesn't free up enough bandwidth to matter, and the dequantization compute overhead actively hurts. Measured: -23% speed on Gemma 26B-A4B Q6_K (60 tok/s f16 → 46 tok/s turbo4 at the same 16K context).
+
+### Asymmetry 2: Compute buffer dominates the working set (capacity)
+
+This is the bigger surprise. On Metal, the **compute buffer** is the dominant working-set cost for context — much bigger than the KV cache itself. From an actual run of Gemma 4 26B-A4B Q6_K turbo4 at 32K:
+
+```
+weights:           21,574 MiB
+KV cache (turbo4):    250 MiB    ← 0.8% of the budget
+compute buffer:     8,402 MiB    ← 28% of the budget
+total:             30,244 MiB    → exceeds 28,753 MiB free, OOMs
+```
+
+The KV cache is **less than 1%** of the working set. **Compressing the KV cache further saves you almost nothing** — there's nothing left to compress. Any context-capacity benefit from turbo4 is in the noise.
+
+Compare this to the 5090, which according to its ranking uses 25,636 MiB *total* VRAM for the same model at 32K. **Metal's compute buffer is roughly 4-5 GB bigger than CUDA's** for this architecture. That's why the 5090 hits 230K context on this model and the M4 Max can't even hit 24K — it has nothing to do with the KV cache, which both platforms keep tiny under turbo4.
+
+**The result:** turbo4 helps the M4 Max in exactly one scenario (the small fraction of cases where the *KV cache itself* is a meaningful share of memory — i.e. dense models with full attention and many KV heads, like Gemma 4 31B-IT), and is a pure speed loss everywhere else. Most of the time, what's eating your memory budget is the compute buffer, which turbo4 cannot help with.
 
 ## The One Case Where TurboQuant Is Mandatory: Gemma 4 31B-IT
 
@@ -60,12 +64,13 @@ The 5090 ranking has this same observation but with different framing: turbo4 th
 
 ## What TurboQuant Doesn't Save You From
 
-The Metal working set is the real ceiling, not just the KV cache. For models where the **weights** push you to the limit, no amount of KV compression helps:
+For most M4 Max OOMs, the **compute buffer** is the bottleneck, not the KV cache. TurboQuant compresses the KV cache; it does nothing for the compute buffer.
 
-- **Gemma 4 26B-A4B Q6_K @ 32K context** — 22 GB of weights leaves only ~8 GB for KV+compute. Even turbo4 KV at 32K (~3 GB) plus compute scratch (~3 GB) is right at the line. We measured: **OOM with both f16 and turbo4 at 32K**.
-- **Anything Q6_K above ~22 GB** — Q8_0 of these models is roughly 30 GB by itself, leaving zero room for any KV at all.
+- **Gemma 4 26B-A4B Q6_K @ 24K+ context** — 22 GB of weights + 6+ GB of compute buffer is already at the limit. The KV cache (with or without turbo4) adds <1 GB at 32K, which is the noise floor. **Both f16 and turbo4 OOM at 24K and beyond.** Measured.
+- **Anything Q6_K above ~22 GB at non-trivial context** — Q8_0 of these models is roughly 30 GB by itself, leaving zero room for compute or KV.
+- **Long contexts (>32K) on any ≥26B model** — the compute buffer scales linearly at ~260 MiB per 1024 tokens for sliding-window architectures. By 64K it's 16 GB on top of weights. Turbo4 doesn't help.
 
-The "just compress the KV more" instinct doesn't work when weights are already the bottleneck. On the M4 Max, more aggressive **weight** quantization (Q4 instead of Q6) is usually a better lever than KV compression.
+The "just compress the KV more" instinct is a CUDA habit that doesn't transfer. On the M4 Max, more aggressive **weight** quantization (Q4 instead of Q6) is usually a better lever — it frees up ~6 GB of memory by shrinking the dominant cost (the weights), which makes room for the second-largest cost (the compute buffer). KV compression is fighting over the smallest line item.
 
 ## The Speed Cost in Numbers
 

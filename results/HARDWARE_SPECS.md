@@ -128,7 +128,7 @@ Real numbers from `m4max_bench/`, llama.cpp turboquant fork build 8590cbff9, sin
 
 ### What this machine is bad at
 
-- **Anything above ~25 GB of weights.** The Metal working set is ~30 GB, not 36. A 22 GB model (Gemma 4 26B-A4B Q6_K) leaves ~8 GB for KV+compute. A 25 GB model leaves none. Long contexts on bigger models are simply not possible at any KV format.
+- **Long context on anything ≥22 GB of weights.** The Metal working set is ~30 GB, not 36. The surprise is that the **compute buffer** — not the KV cache — is what eats the rest. For Gemma 4 26B-A4B Q6_K at 32K context the actual breakdown is: weights 21.6 GB, KV cache 0.25 GB (turbo4), compute buffer **8.4 GB**. The compute buffer scales at ~260 MiB per 1024 tokens for sliding-window architectures and is roughly 4-5 GB *bigger* on Metal than on CUDA for the same model. So on the M4 Max, the S-tier MoE model effectively caps at 20K context, regardless of KV quantization. The 5090 ranking's "230K context" numbers for these models are not achievable here at any setting.
 - **NVFP4 / NVIDIA-specific formats.** The model ecosystem is increasingly NVIDIA-flavored. AWQ, GPTQ, and NVFP4 have varying levels of Apple support; GGUF + MLX are the safe paths.
 - **Maximum throughput.** A 5090 will always smoke this on raw tok/s for any model that fits both. The M4 Max trades throughput for portability and lower power.
 - **MLX has a model-class-dependent story.** Tested `mlx_lm.server` 0.31.2 against `mlx-community/*` quants on the same prompts. MLX *wins* on dense ≥27B models (Qwen 3.5 27B Opus-Distilled MLX 4bit: 18.5 tok/s vs llama.cpp 13.0 — **+42%**, hitting ~99% of bandwidth). MLX *loses* on MoE models (Gemma 4 26B-A4B 6bit MLX: 33 tok/s vs llama.cpp Q6_K 60 — **-45%**, only ~49% bandwidth utilization). Likely MLX's MoE kernels don't exploit the sparse activation pattern as efficiently as llama.cpp's. For dense models, MLX is the best option; for MoE, llama.cpp wins.
@@ -140,7 +140,8 @@ Benchmarked April 2026. See [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) f
 Headline findings:
 - Dense 27B+ runs hit 11-13 tok/s — bandwidth-bound, matches the lower end of the projection range.
 - MoE 26B-A4B (4B active) runs at 60 tok/s — by far the best speed/quality combo on this machine.
-- TurboQuant KV cache: builds and works on Metal, but is *slower* than f16 KV here (the dequant compute overhead exceeds the bandwidth savings on a bandwidth-constrained platform). Use turbo4 only when you need its capacity savings (e.g. Gemma 4 31B which can't run with f16 KV at all).
+- **Compute buffer on Metal is ~4-5 GB larger than on CUDA** for the same model, which (combined with the 2 GB lower memory ceiling) is why the M4 Max caps S-tier models around 20K context while the 5090 hits 200K+. KV quantization can't help — the KV cache is already <1% of the working set on these models.
+- TurboQuant KV cache: builds and works on Metal, but is *slower* than f16 KV here (dequant compute overhead exceeds the bandwidth savings on a bandwidth-constrained platform). Use turbo4 only when the KV cache itself is the bottleneck — basically just Gemma 4 31B-IT, where dense full attention makes the KV 14 GB at 16K f16.
 - The MLX comparison contradicted the previous "MLX is 10-30% faster" footnote — see the bullet above.
 
 ---

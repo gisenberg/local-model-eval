@@ -6,22 +6,40 @@
 
 Tested April 2026.
 
-## The M4 Max's defining constraint: Metal working set, not unified memory
+## The M4 Max's defining constraint: compute buffer, not weights or KV cache
 
-The Mac advertises 36 GB of unified memory but **the GPU can only address ~30 GB** of it (`recommendedMaxWorkingSetSize ≈ 30150 MB`). macOS reserves the rest for the system, page tables, the display, and other Metal clients. This is the hard ceiling for `weights + KV cache + compute buffers + scratch`. Going over it doesn't just slow down — it produces `kIOGPUCommandBufferCallbackErrorOutOfMemory` and the request fails.
+Three things conspire to limit context length on this machine far below the 5090, despite both having ~30 GB of usable GPU memory:
 
-What this means in practice on this machine:
+1. **Metal working set is ~30 GB**, not the full 36 GB. `recommendedMaxWorkingSetSize ≈ 30150 MB`. macOS reserves the rest. Going over produces `kIOGPUCommandBufferCallbackErrorOutOfMemory` immediately, no graceful spillover.
 
-| Model class | Weights (Q4) | Weights (Q6) | Practical config |
-|---|---|---|---|
-| ≤8B dense | ~5 GB | ~7 GB | Anything fits, full 32K f16 KV, 60+ tok/s |
-| 26B-A4B MoE | ~16 GB | ~22 GB | Q4_K_M at 32K f16 fits; Q6_K caps at 16K f16 |
-| 27B dense | ~16 GB | — | Fits at 32K f16, ~13 tok/s (bandwidth bound) |
-| 31B dense (gemma 4) | ~18 GB | — | **Requires turboquant turbo4 KV** — f16 at 16K = 14 GB KV, OOMs |
+2. **Metal's compute buffer is ~4-5 GB bigger than CUDA's** for the same model + context. This is the surprise. We measured the breakdown for Gemma 4 26B-A4B Q6_K turbo4 at 32K context:
+   - Weights: 21,574 MiB
+   - KV cache (turbo4): 165 MiB ← negligible
+   - **Compute buffer: 8,402 MiB ← the dominant cost**
+   - Total: 30,141 MiB → over the 28,753 MiB free budget → OOM
 
-You can run the same model classes the 5090 ranking covers, but **at 1/4 to 1/3 the throughput** (410 GB/s vs 1,792 GB/s) and with much tighter context windows on dense large models. The trade is portability and ~30 W power draw vs the 5090's 575 W.
+   The compute buffer scales linearly with context at **~260 MiB per 1024 tokens** for this architecture. At 16K it's 4.2 GB, at 32K it's 8.4 GB. The 5090 ranking shows the same model using 25,636 MiB *total* at 32K — which means CUDA's compute buffer for Gemma 4 26B-A4B is roughly **half** the size of Metal's.
 
-A second M4 Max-specific finding: **TurboQuant KV is *slower* than f16 KV here**. On the 5090, turbo4 buys speed because KV bandwidth is the bottleneck. On the Mac, weights bandwidth is already saturated, so the dequant compute overhead from turbo4 actively hurts. Use turbo4 only when you need it for capacity, not for speed.
+3. **No PCIe spill.** When the 5090 hits its 32 GB limit, it spills to system RAM via PCIe (slow but functional — see [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md) for the cliff at 256K). The Mac has no PCIe to spill across; either it fits or it OOMs.
+
+### Practical context limits, by model
+
+These are measured, not calculated:
+
+| Model | Quant | KV | Max ctx that fits | Why |
+|---|---|---|---|---|
+| Gemma 4 26B-A4B | Q6_K | f16 or turbo4 | **~20K** | Compute buffer at 24K already exceeds the Metal allocator margin |
+| Gemma 4 26B-A4B | Q4_K_M | f16 | **32K** | Weights drop from 22 → 16 GB, leaves 6 GB more for compute |
+| Gemma 4 31B-IT | Q4_K_M | turbo4 | **16K** | Same issue, but smaller weight headroom |
+| Qwen 3.5 27B Opus-Distilled | Q4_K_M | f16 | **32K** | Smaller compute buffer (different architecture) |
+| Qwen 3.5 9B / Nemotron 4B | Q4_K_M | f16 | 32K | Plenty of headroom |
+
+The 5090 ranking shows Gemma 4 26B-A4B Q6_K turbo4 at "~230K" context. **That number is not achievable on M4 Max at any KV format** because the compute buffer alone would be ~60 GB at 230K context.
+
+Two follow-on findings:
+
+- **TurboQuant KV is *slower* than f16 KV here.** On the 5090, turbo4 buys speed because KV bandwidth is the bottleneck. On the Mac, weights bandwidth is already saturated AND the KV cache is a tiny fraction of the working set anyway, so the dequant compute overhead from turbo4 actively hurts. Use turbo4 only when you need it for capacity (Gemma 4 31B-IT specifically), not for speed.
+- **You can run the same model classes the 5090 ranking covers**, but **at 1/4 to 1/3 the throughput** (410 GB/s vs 1,792 GB/s) and with much tighter context windows on dense large models. The trade is portability and ~30 W power draw vs the 5090's 575 W.
 
 ---
 
@@ -58,8 +76,8 @@ The all-around best quality + speed combination on this machine. MoE means only 
 | Config | `-c 16384 -ctk f16 -ctv f16 --reasoning-budget 0 --jinja` |
 
 **Strengths:** Fastest model with high quality. Per-benchmark: ExprEval 3/5, A* 6/6, LRU 6/6.
-**Weakness:** Capped at 16K context — 32K f16 OOMs even with weights at 22 GB. If you need >16K, drop to Q4_K_M (with quality cost).
-**Same model with turbo4 KV** scored 16/17 at 46 tok/s — *slower* for ~1 test of additional quality. On Apple Silicon, prefer f16 KV unless you have a capacity reason to compress it. The 5090 ranking's "always use turbo4" advice does not transfer here.
+**Weakness:** Capped at ~20K context. The compute buffer alone is 4.2 GB at 16K and grows to 8.4 GB at 32K — not the KV cache (which is only ~85 MiB at 16K with f16 because Gemma 4 uses sliding-window attention). If you need >20K, drop to Q4_K_M which has 6 GB less weight footprint.
+**Same model with turbo4 KV** scored 16/17 at 46 tok/s — *slower* for ~1 test of additional quality. Turbo4 doesn't even buy you context here because the compute buffer dominates, not the KV. On Apple Silicon, prefer f16 KV. The 5090 ranking's "always use turbo4" advice does not transfer.
 
 ---
 
@@ -231,10 +249,10 @@ Two models, two opposite outcomes — same lesson the 5090 ranking found: thinki
 
 | Model + Config | Why | Workaround |
 |---|---|---|
-| Gemma 4 26B-A4B Q6_K @ 32K f16 | OOM (22 GB weights + ~12 GB KV > 30 GB) | Use 16K context, or switch to Q4_K_M |
-| Gemma 4 26B-A4B Q6_K @ 32K turbo4 | OOM (turbo4 saves on KV but weights still dominate) | Same as above |
-| Gemma 4 31B-IT Q4_K_M @ 16K f16 | OOM (18 GB weights + 14 GB f16 KV) | Use turbo4 KV (only option) |
-| Anything > ~25 GB weight | Won't fit in 30 GB Metal budget at any context | Use a 5090 or Spark |
+| Gemma 4 26B-A4B Q6_K @ 24K+ (any KV) | Compute buffer >6 GB pushes total over 28.7 GB Metal free budget | Cap at 20K, or switch to Q4_K_M (6 GB less weight footprint) |
+| Gemma 4 31B-IT Q4_K_M @ 16K f16 | 18 GB weights + 14 GB f16 KV cache > 30 GB ceiling | Use turbo4 KV (only option) |
+| Anything > ~22 GB weight at non-trivial context | Compute buffer takes 4-8 GB on top of weights, leaving no room | Use a 5090 or Spark |
+| Long-context (>32K) on any ≥26B model | Compute buffer scales ~260 MiB per 1024 tokens — by 64K it's 16 GB on top of weights | Same as above |
 
 ---
 

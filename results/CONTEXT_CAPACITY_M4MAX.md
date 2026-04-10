@@ -4,7 +4,7 @@ Tested April 2026.
 
 For the RTX 5090 equivalent, see [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md). The Mac story is fundamentally different — capacity is limited by Metal's working set ceiling, not VRAM, and there's no graceful degradation when you go over.
 
-## The Defining Constraint: Metal Working Set ≠ Unified Memory
+## The Defining Constraint: Metal's Compute Buffer (Not the KV Cache!)
 
 The Mac advertises 36 GB of unified memory but **the GPU can only address ~30 GB** of it. This is `recommendedMaxWorkingSetSize` from Metal device init, ~30150 MB on this binning. macOS reserves the rest for the system, the display, and other Metal clients.
 
@@ -12,17 +12,46 @@ The Mac advertises 36 GB of unified memory but **the GPU can only address ~30 GB
 ggml_metal_device_init: recommendedMaxWorkingSetSize  = 30150.67 MB
 ```
 
-This 30 GB is the **hard ceiling** for `weights + KV cache + compute buffers + scratch`, summed across all loaded models. Going over does NOT produce graceful spillover (like the 5090 does to system RAM via PCIe). It produces:
+This 30 GB is the **hard ceiling** for `weights + KV cache + compute buffers + scratch`, summed across all loaded models. Going over does NOT produce graceful spillover (like the 5090 does to system RAM via PCIe). It produces `kIOGPUCommandBufferCallbackErrorOutOfMemory` and every chat completion returns `500 Compute error`.
+
+But the surprise is **what dominates that 30 GB budget**. It's not the KV cache. It's the compute buffer.
+
+### The compute buffer is much bigger than the KV cache on Metal
+
+For Gemma 4 26B-A4B Q6_K with turbo4 KV at 32K context, the actual breakdown llama-server reports on this Mac:
 
 ```
-ggml_metal_synchronize: error: command buffer 0 failed with status 5
-error: Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory)
-graph_compute: ggml_backend_sched_graph_compute_async failed with error -1
-process_ubatch: failed to compute graph, compute status: -1
-llama_decode: failed to decode, ret = -3
+load_tensors:  MTL0_Mapped model buffer size  = 21574.57 MiB    ← weights
+llama_kv_cache:    MTL0 KV buffer size        =   170.13 MiB    ← turbo4 KV (TINY)
+llama_kv_cache:    MTL0 KV buffer size        =    79.81 MiB    ← second buffer
+sched_reserve:     MTL0 compute buffer size   =  8402.37 MiB    ← THIS is the problem
 ```
 
-The model loads fine, the server starts, /health returns ok — and then every chat completion returns `500 Compute error`. So you have to know your math up front; you don't get a slow degradation warning.
+The KV cache is **170 MiB**. Three orders of magnitude smaller than the compute buffer. Compressing the KV cache further (turbo4 already gives 3.8x compression) saves nothing meaningful — there's nothing left to compress.
+
+The compute buffer scales nearly linearly with context length:
+
+| Context | KV cache | Compute buffer | Total | Fits? |
+|---|---|---|---|---|
+| 16K | 165 MiB | 4,242 MiB | ~26.0 GB | ✅ |
+| 20K | 212 MiB | 5,282 MiB | ~27.1 GB | ✅ |
+| 24K | 254 MiB | 6,322 MiB | ~28.1 GB | ❌ Metal allocator fails |
+| 28K | 296 MiB | 7,362 MiB | ~29.2 GB | ❌ |
+| 32K | 339 MiB | 8,402 MiB | ~30.2 GB | ❌ |
+
+That's roughly **260 MiB of compute buffer per 1024 tokens** for this architecture. By 64K context the compute buffer alone would be ~16 GB. By 230K (the 5090 ranking's number for this model) it would be ~58 GB.
+
+### Why the 5090 doesn't have this problem
+
+The 5090 ranking shows the same Gemma 4 26B-A4B Q6_K turbo4 model using 25,636 MB *total* VRAM at 32K context. M4 Max projects 30,244 MiB at the same configuration. **The difference is ~4.6 GB, all of it in the compute buffer.**
+
+CUDA's compute buffer for this model class is roughly half the size of Metal's. Possible reasons:
+
+- cuBLAS/cuDNN kernels can stream tensors through working memory in smaller chunks; Metal Performance Shaders may pre-allocate full intermediate tensors.
+- Flash attention on CUDA has been heavily optimized for memory efficiency over multiple years; the Metal flash attention path is newer.
+- The sliding window attention pattern in Gemma 4 (15 global + 15 sliding layers) may need re-materialization buffers on Metal that CUDA avoids via different kernel fusion.
+
+The exact root cause would require profiling both backends, but the *practical* result is clear: the M4 Max gets 4-5 GB less of usable context budget than the 5090 for the same model, on top of the 2 GB nominal memory difference (32 GB CUDA vs 30 GB Metal).
 
 ## What Fits at What Context (Measured)
 
@@ -33,21 +62,21 @@ Each row is a real run from the M4 Max benchmark. ❌ = OOM during inference, �
 | Nemotron 3 Nano 4B | Q4_K_M | f16 | 2.8 GB | 32K | ✅ 65 tok/s |
 | Qwen 3.5 9B | Q4_K_M | f16 | 5.5 GB | 32K | ✅ 35 tok/s |
 | Gemma 4 26B-A4B | Q4_K_M | f16 | 16.5 GB | 32K | ✅ 59 tok/s |
-| Gemma 4 26B-A4B | Q6_K | f16 | 22.6 GB | 16K | ✅ 60 tok/s |
-| Gemma 4 26B-A4B | Q6_K | f16 | 22.6 GB | 32K | ❌ OOM |
-| Gemma 4 26B-A4B | Q6_K | turbo4 | 22.6 GB | 16K | ✅ 46 tok/s |
-| Gemma 4 26B-A4B | Q6_K | turbo4 | 22.6 GB | 32K | ❌ OOM |
+| Gemma 4 26B-A4B | Q6_K | f16 | 22.6 GB | 16K | ✅ 60 tok/s (compute buf 4.2 GB) |
+| Gemma 4 26B-A4B | Q6_K | f16 | 22.6 GB | 20K | ✅ (compute buf 5.3 GB) |
+| Gemma 4 26B-A4B | Q6_K | f16 or turbo4 | 22.6 GB | 24K | ❌ OOM (compute buf 6.3 GB > Metal margin) |
+| Gemma 4 26B-A4B | Q6_K | f16 or turbo4 | 22.6 GB | 32K | ❌ OOM (compute buf 8.4 GB) |
 | Qwen 3.5 27B Opus-Distilled | Q4_K_M | f16 | 16.5 GB | 32K | ✅ 13 tok/s |
-| Gemma 4 31B-IT | Q4_K_M | f16 | 18.3 GB | 16K | ❌ OOM (won't load) |
-| Gemma 4 31B-IT | Q4_K_M | turbo4 | 18.3 GB | 16K | ✅ 11.5 tok/s |
+| Gemma 4 31B-IT | Q4_K_M | f16 | 18.3 GB | 16K | ❌ OOM (KV cache itself is 14 GB at f16) |
+| Gemma 4 31B-IT | Q4_K_M | turbo4 | 18.3 GB | 16K | ✅ 11.5 tok/s (KV → 3.5 GB, fits) |
 
 **Key findings:**
 
-1. **Gemma 4 26B-A4B Q6_K is the most context-constrained S-tier model.** 22 GB of weights leaves only ~8 GB for KV+compute. 16K f16 fits at ~3 GB KV. 32K f16 needs ~6 GB KV plus a few GB of compute scratch — over the line. **Even turbo4 KV doesn't help at 32K** because the bottleneck is the *weights*, not the KV cache.
+1. **Gemma 4 26B-A4B Q6_K is the most context-constrained S-tier model.** Practical max ~20K context regardless of KV format. The bottleneck is the **compute buffer** (~260 MiB per 1024 tokens of context), which on top of 22 GB of weights leaves no room. The KV cache itself is only 170 MiB even at 32K — turbo4 vs f16 makes essentially no difference here.
 
-2. **Gemma 4 31B-IT only runs with turbo4 KV.** The dense 31B has ~870 KB/token of KV at f16 (vs Qwen's ~150 KB/token with GQA), so 16K f16 = 14 GB of KV on top of 18 GB of weights. That's 32 GB, over the 30 GB limit. With turbo4 KV (~3.5 GB), the total is ~22 GB and it fits.
+2. **Gemma 4 31B-IT only runs with turbo4 KV** — but for a different reason. This is the one model where the KV cache really is the bottleneck. Dense 31B has ~870 KB/token of KV at f16 (vs Qwen's GQA which is ~150 KB/token), so 16K f16 = 14 GB of KV on top of 18 GB of weights = 32 GB > 30 GB ceiling. With turbo4 KV (~3.5 GB), it fits.
 
-3. **Qwen 3.5 27B Opus-Distilled fits at 32K f16** despite being dense and similar size to Gemma 31B, because Qwen 3.5 uses GQA (8 KV heads, not 16) — a 6× smaller per-token KV cost. Same weight class, very different capacity profile.
+3. **Qwen 3.5 27B Opus-Distilled fits at 32K f16** despite being dense and similar size to Gemma 31B, because Qwen 3.5 uses GQA (8 KV heads, not 16) — a 6× smaller per-token KV cost. Same weight class, very different capacity profile. Also: a different compute buffer pattern, since dense models without sliding window don't have the re-materialization overhead.
 
 ## Per-Token KV Cost (Measured Architectures)
 
