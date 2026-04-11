@@ -72,7 +72,7 @@ Same base model, NVFP4 quantization, served via vLLM. Quality matches the llama.
 
 ---
 
-### Gemma 4 31B-IT Q4_K_M
+### Gemma 4 31B-IT Q4_K_M (llama.cpp + TurboQuant)
 Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run without TurboQuant** — only 16K context with f16 KV.
 
 | Metric | Value |
@@ -84,10 +84,40 @@ Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run
 | TTFT | **91 ms** |
 | VRAM (32K ctx) | 23,620 MB |
 | Max context (turbo4) | ~58K |
+| Backend | llama.cpp (TurboQuant fork) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
 **Strengths:** Most consistent across all benchmarks and runs. Dense architecture produces very stable output.
-**Weakness:** 53 tok/s (dense arch penalty), limited to ~58K context even with turbo4 (870 KB/token KV cache).
+**Weakness:** 50 tok/s (dense arch penalty), limited to ~58K context even with turbo4 (870 KB/token KV cache).
+
+---
+
+### Gemma 4 31B-IT NVFP4-turbo (LilaRest, via vLLM)
+Same base model, NVFP4 quantization with aggressive attention compression ("turbo" variant). Re-measured from WSL2 client on the 4-benchmark suite — previous (committed) result used a 3-benchmark suite and Windows client.
+
+| Metric | Value |
+|---|---|
+| Best-of-3 (temp 0.3, 4 benchmarks) | **22/22 (100%)** |
+| Average (temp 0.3) | 17.9/22 (81%) |
+| Throughput (steady state) | **~42 tok/s** decode |
+| Throughput (first runs) | 21-29 tok/s (CUDA graph + torch.compile warmup) |
+| Weights | **18.54 GB** (NVFP4-turbo, 68% smaller than BF16) |
+| VRAM (16K ctx) | **30,300 MB** (`--gpu-memory-utilization 0.90`) |
+| KV cache (FP8) | 9.56 GB available → **~21K tokens** max |
+| Max context configured | 16K (used for this run) |
+| Max context theoretical | ~21K (KV-cache-limited on 5090) |
+| Backend | vLLM 0.19.0+cu130 |
+| Config | `--quantization modelopt --dtype bfloat16 --kv-cache-dtype fp8 --max-model-len 16384 --gpu-memory-utilization 0.90` |
+
+**Strengths:** Smaller weights (18.5 vs 23.6 GB) and perfect best-of-3 on all 4 benchmarks. String Processor passes 5/5 on first run, then drops to 1/5 on runs 2-3 where the model writes 1 combined test function with multiple assertions (code is correct, scoring artifact).
+
+**Weaknesses:**
+- **Throughput is ~16% slower than llama.cpp** (42 vs 50 tok/s steady state) due to Marlin fallback kernels.
+- **Available context is ~21K, not 58K.** The NVFP4 weight savings are more than offset by vLLM's compute buffers + activation pre-allocation. For a dense 31B, llama.cpp + turbo4 gives you ~3x more context on the same GPU.
+- **Average quality is lower** (17.9/22 = 81%) than the llama.cpp version (30.7/31 = 99%) because of higher run-to-run variance. Best-of-3 looks identical; single-shot is where the gap shows.
+- Warmup-sensitive: the first 2-3 requests after server start run at ~half speed due to CUDA graph compilation. Benchmarks that only run a few requests per model will understate NVFP4's steady-state performance.
+
+**Verdict:** For dense 31B on the 5090, llama.cpp + turbo4 still wins on throughput, VRAM, max context, and average-case quality. NVFP4-turbo is useful if you need vLLM features (batched serving, OpenAI API) or are on hardware where TurboQuant doesn't apply (datacenter Blackwell, ARM).
 
 ---
 
