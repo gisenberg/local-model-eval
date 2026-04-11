@@ -4,8 +4,8 @@
 **Hardware:** NVIDIA DGX Spark (GB10 Blackwell, compute cap 12.1, 128 GB LPDDR5X @ ~273 GB/s)
 **Engine:** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` (commit `20efe75cf`), CUDA 13.0, sm_121a, aarch64
 **Build:** `cmake -B build -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=121`
-**Pre-experiment predictions:** [ROTORQUANT_HYPOTHESIS.md](ROTORQUANT_HYPOTHESIS.md)
-**Prompts, config, test harness:** same as [MODEL_RANKINGS_SPARK.md](results/MODEL_RANKINGS_SPARK.md), 32K ctx, `-np 1 --no-mmap --jinja -rea off`, temp 0, single shot
+**Pre-experiment predictions:** [ROTORQUANT_HYPOTHESIS.md](../ROTORQUANT_HYPOTHESIS.md)
+**Prompts, config, test harness:** same as [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md), 32K ctx, `-np 1 --no-mmap --jinja -rea off`, temp 0, single shot
 
 Every hypothesis from the pre-experiment doc was wrong in an interesting way. Headline: **rotorquant is a net-positive quality bump on Qwen3.5-122B at negligible throughput cost, and it is completely broken on GLM-4.5-Air** — producing literal `Hello???????????` garbage even in the "zero PPL loss" K-only mode.
 
@@ -107,6 +107,8 @@ The failure mode is striking: the model doesn't produce subtly-wrong code, it pr
 - **File a finding upstream** (johndpope/llama-cpp-turboquant and/or scrya-com/rotorquant) about GLM-4.5-Air output collapse under planar3 — this is likely a kernel or numerics bug worth their time, not just a "won't work on MoE" disclaimer. The fact that iso3 and planar3K *both* fail in the same way on GLM suggests the issue is in the rotation step, not the quantization step.
 
 ## Raw results
+
+Paths are relative to the repo root:
 
 - `experiments/spark_bench/qwen122b-bartowski-iso3/` — 16/17, all benchmarks finished naturally
 - `experiments/spark_bench/qwen122b-bartowski-planar3k/` — 18/17, all benchmarks finished naturally
