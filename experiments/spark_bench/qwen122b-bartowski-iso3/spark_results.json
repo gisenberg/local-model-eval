@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "throughput",
+    "tok_per_sec": 24.99,
+    "tokens": 738,
+    "ttft_s": 0.538,
+    "total_s": 30.066
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "Expression Evaluator",
+    "tok_per_sec": 24.1,
+    "tokens": 2586,
+    "elapsed_s": 107.51,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 10654
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "A* Pathfinding",
+    "tok_per_sec": 23.8,
+    "tokens": 3059,
+    "elapsed_s": 128.77,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 10420
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "LRU Cache with TTL",
+    "tok_per_sec": 23.7,
+    "tokens": 3066,
+    "elapsed_s": 129.17,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 12354
+  }
+]

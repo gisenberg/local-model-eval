@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "throughput",
+    "tok_per_sec": 25.58,
+    "tokens": 988,
+    "ttft_s": 0.536,
+    "total_s": 39.159
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "Expression Evaluator",
+    "tok_per_sec": 25.3,
+    "tokens": 2345,
+    "elapsed_s": 92.58,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 9824
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "A* Pathfinding",
+    "tok_per_sec": 25.2,
+    "tokens": 4075,
+    "elapsed_s": 161.73,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 13600
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "LRU Cache with TTL",
+    "tok_per_sec": 25.2,
+    "tokens": 2960,
+    "elapsed_s": 117.42,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 11406
+  }
+]

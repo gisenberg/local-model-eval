@@ -1,0 +1,29 @@
+[
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "throughput",
+    "tok_per_sec": 16.24,
+    "tokens": 2048,
+    "ttft_s": 0.553,
+    "total_s": 126.66
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "Expression Evaluator",
+    "error": "HTTPConnectionPool(host='localhost', port=8080): Read timed out. (read timeout=600)"
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "A* Pathfinding",
+    "error": "HTTPConnectionPool(host='localhost', port=8080): Read timed out. (read timeout=600)"
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant iso3]",
+    "kv_config": "KV iso3 (3-bit sym, 4D quaternion)",
+    "benchmark": "LRU Cache with TTL",
+    "error": "HTTPConnectionPool(host='localhost', port=8080): Read timed out. (read timeout=600)"
+  }
+]

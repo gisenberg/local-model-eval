@@ -45,6 +45,14 @@ TURBOQUANT_SERVER = os.environ.get(
     os.path.expanduser("~/git/TheTom/llama-cpp-turboquant/build/bin/llama-server"),
 )
 
+# RotorQuant integration — johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache
+# (commit 20efe75cf). Adds planar3/iso3/planar4/iso4 KV cache types on top of the
+# TurboQuant fork. Built as a separate worktree to preserve the TurboQuant build.
+PLANARQUANT_SERVER = os.environ.get(
+    "PLANARQUANT_SERVER",
+    os.path.expanduser("~/git/johndpope-planarquant/build/bin/llama-server"),
+)
+
 STANDARD_SERVER = os.environ.get(
     "STANDARD_SERVER",
     os.path.expanduser("~/llama.cpp/build/bin/llama-server"),
@@ -119,6 +127,50 @@ MODEL_CONFIGS = {
         "default_kv": "f16",
         "reasoning": "off",
         "notes": "20% expert-pruned REAP variant on mainline llama.cpp. Head-to-head with base bartowski mainline (13/17).",
+    },
+    "qwen122b-bartowski-iso3": {
+        "name": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant iso3]",
+        "path": f"{MODELS_DIR}/bartowski/Qwen3.5-122B-A10B-GGUF/Qwen_Qwen3.5-122B-A10B-Q4_K_M/Qwen_Qwen3.5-122B-A10B-Q4_K_M-00001-of-00002.gguf",
+        "server": "planarquant",
+        "kv_configs": ["iso3"],
+        "context_sizes": [32768],
+        "default_context": 32768,
+        "default_kv": "iso3",
+        "reasoning": "off",
+        "notes": "RotorQuant iso3/iso3 symmetric 3-bit (4D quaternion). Compare to qwen122b-bartowski f16 baseline (13/17 @ 25.8 tok/s). Tests H1 — symmetric 3-bit is net-negative on Spark MoE.",
+    },
+    "qwen122b-bartowski-planar3k": {
+        "name": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+        "path": f"{MODELS_DIR}/bartowski/Qwen3.5-122B-A10B-GGUF/Qwen_Qwen3.5-122B-A10B-Q4_K_M/Qwen_Qwen3.5-122B-A10B-Q4_K_M-00001-of-00002.gguf",
+        "server": "planarquant",
+        "kv_configs": ["planar3-kv-f16-v"],
+        "context_sizes": [32768],
+        "default_context": 32768,
+        "default_kv": "planar3-kv-f16-v",
+        "reasoning": "off",
+        "notes": "RotorQuant K-only mode (planar3 K, f16 V) — rotorquant's 'zero PPL loss' claim at 5.1x K compression. Tests H2 — K-only is the least-bad config on Spark.",
+    },
+    "glm-45-air-iso3": {
+        "name": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant iso3]",
+        "path": f"{MODELS_DIR}/bartowski/GLM-4.5-Air-GGUF/zai-org_GLM-4.5-Air-Q4_K_M/zai-org_GLM-4.5-Air-Q4_K_M-00001-of-00002.gguf",
+        "server": "planarquant",
+        "kv_configs": ["iso3"],
+        "context_sizes": [32768],
+        "default_context": 32768,
+        "default_kv": "iso3",
+        "reasoning": "off",
+        "notes": "RotorQuant iso3/iso3 symmetric on GLM-4.5-Air. Compare to glm-45-air f16 baseline (15/17 @ 21.7 tok/s). Standard attention (not DeltaNet hybrid) — slightly larger per-token KV share than Qwen3.5-122B.",
+    },
+    "glm-45-air-planar3k": {
+        "name": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+        "path": f"{MODELS_DIR}/bartowski/GLM-4.5-Air-GGUF/zai-org_GLM-4.5-Air-Q4_K_M/zai-org_GLM-4.5-Air-Q4_K_M-00001-of-00002.gguf",
+        "server": "planarquant",
+        "kv_configs": ["planar3-kv-f16-v"],
+        "context_sizes": [32768],
+        "default_context": 32768,
+        "default_kv": "planar3-kv-f16-v",
+        "reasoning": "off",
+        "notes": "RotorQuant K-only mode on GLM-4.5-Air. Tests H2 on a standard-attention MoE.",
     },
     "qwen122b-bartowski-ik": {
         "name": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
@@ -221,6 +273,10 @@ KV_CONFIGS = {
     "turbo4":    {"ctk": "turbo4",  "ctv": "turbo4",  "label": "KV turbo4 (4-bit sym)"},
     "turbo3":    {"ctk": "turbo3",  "ctv": "turbo3",  "label": "KV turbo3 (3-bit sym)"},
     "asym-t4":   {"ctk": "f16",    "ctv": "turbo4",  "label": "KV f16K/turbo4V (asymmetric)"},
+    # RotorQuant (johndpope planarquant branch) — 2D Givens (planar) and 4D quaternion (iso) rotations
+    "iso3":      {"ctk": "iso3",    "ctv": "iso3",    "label": "KV iso3 (3-bit sym, 4D quaternion)"},
+    "planar3":   {"ctk": "planar3", "ctv": "planar3", "label": "KV planar3 (3-bit sym, 2D Givens)"},
+    "planar3-kv-f16-v": {"ctk": "planar3", "ctv": "f16", "label": "KV planar3K/f16V (K-only, zero-PPL claim)"},
 }
 
 DEFAULT_PORT = 8080
@@ -312,6 +368,12 @@ def get_server_binary(model_cfg):
             print("Falling back to standard server (turbo KV types won't work)")
             return STANDARD_SERVER
         return TURBOQUANT_SERVER
+    if model_cfg["server"] == "planarquant":
+        if not os.path.isfile(PLANARQUANT_SERVER):
+            print(f"WARNING: PlanarQuant server not found at {PLANARQUANT_SERVER}")
+            print("Falling back to standard server (iso3/planar3 KV types won't work)")
+            return STANDARD_SERVER
+        return PLANARQUANT_SERVER
     if model_cfg["server"] == "ik":
         if not os.path.isfile(IK_SERVER):
             print(f"WARNING: ik-llama server not found at {IK_SERVER}")

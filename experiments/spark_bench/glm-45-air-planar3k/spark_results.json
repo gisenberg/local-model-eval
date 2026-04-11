@@ -1,0 +1,29 @@
+[
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "throughput",
+    "tok_per_sec": 20.08,
+    "tokens": 2048,
+    "ttft_s": 0.535,
+    "total_s": 102.531
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "Expression Evaluator",
+    "error": "HTTPConnectionPool(host='localhost', port=8080): Read timed out. (read timeout=600)"
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "A* Pathfinding",
+    "error": "HTTPConnectionPool(host='localhost', port=8080): Read timed out. (read timeout=600)"
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski) [rotorquant planar3K/f16V]",
+    "kv_config": "KV planar3K/f16V (K-only, zero-PPL claim)",
+    "benchmark": "LRU Cache with TTL",
+    "error": "HTTPConnectionPool(host='localhost', port=8080): Read timed out. (read timeout=600)"
+  }
+]

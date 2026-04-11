@@ -1,0 +1,38 @@
+[
+  {
+    "file": "Qwen3.5-122B-A10B_Q4_K_M_(bartowski)_[rotorquant_planar3K-f16V]_KV_planar3K-f16V_(K-only,_zero-PPL_claim)_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "total": 5,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmpvkt0u6xx\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_operator_precedence PASSED            [ 40%]\ntest_expression_evaluator.py::test_parentheses_grouping PASSED           [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+    "stderr": ""
+  },
+  {
+    "file": "Qwen3.5-122B-A10B_Q4_K_M_(bartowski)_[rotorquant_planar3K-f16V]_KV_planar3K-f16V_(K-only,_zero-PPL_claim)_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "total": 6,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmp37w5y8nc\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_your_module.py::test_basic_get_put PASSED                           [ 16%]\ntest_your_module.py::test_capacity_eviction_lru_order PASSED             [ 33%]\ntest_your_module.py::test_ttl_expiry PASSED                              [ 50%]\ntest_your_module.py::test_custom_per_key_ttl PASSED                      [ 66%]\ntest_your_module.py::test_delete PASSED                                  [ 83%]\ntest_your_module.py::test_size_with_mixed_expired_valid PASSED           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+    "stderr": ""
+  },
+  {
+    "file": "Qwen3.5-122B-A10B_Q4_K_M_(bartowski)_[rotorquant_planar3K-f16V]_KV_planar3K-f16V_(K-only,_zero-PPL_claim)_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 7,
+    "failed": 0,
+    "errors": 0,
+    "total": 7,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmp1nzawzq4\nplugins: anyio-4.13.0\ncollecting ... collected 7 items\n\ntest_a_star_grid.py::TestAStarGrid::test_simple_path_uniform_grid PASSED [ 14%]\ntest_a_star_grid.py::TestAStarGrid::test_path_around_obstacles PASSED    [ 28%]\ntest_a_star_grid.py::TestAStarGrid::test_weighted_grid_optimality PASSED [ 42%]\ntest_a_star_grid.py::TestAStarGrid::test_no_path_exists PASSED           [ 57%]\ntest_a_star_grid.py::TestAStarGrid::test_start_equals_end PASSED         [ 71%]\ntest_a_star_grid.py::TestAStarGrid::test_invalid_coordinates PASSED      [ 85%]\ntest_a_star_grid.py::TestAStarGrid::test_start_or_end_is_wall PASSED     [100%]\n\n============================== 7 passed in 0.01s ===============================\n",
+    "stderr": ""
+  }
+]
