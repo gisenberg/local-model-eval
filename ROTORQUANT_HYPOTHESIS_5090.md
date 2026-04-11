@@ -5,6 +5,8 @@
 **Stack:** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` (commit `20efe75cf`)
 **Comparator:** our existing 5090 llama.cpp+TurboQuant results in [MODEL_RANKINGS_5090.md](results/MODEL_RANKINGS_5090.md) (re-measured from WSL2 Linux client, April 10)
 
+> **Hard limitation discovered during build:** the johndpope fork is based on an older upstream llama.cpp commit (April 1, 2026) that **does not have Gemma 4 architecture support**. Loading any `gemma4` GGUF crashes with `unknown model architecture: 'gemma4'`. This eliminates 3 of our 6 originally-planned models (Gemma 26B-A4B Q6_K, Gemma 26B-A4B Q4_K_M, Gemma 31B-IT Q4_K_M) — including the **one model where rotorquant would have materially mattered**, Gemma 31B-IT for the +99K context unlock described in H5. This is recorded here rather than buried in the results writeup because it significantly changes what this experiment can answer. Actual tests run only on the Qwen-family 27B models. Also fought four MSVC build issues that needed patches to compile on Windows at all: `M_PI` not defined in two `.c` files, one `extern` in C++ inside function scope, one symbol needing `GGML_API` for cross-DLL export, one `extern bool g_innerq_finalized` cross-DLL reference that had to be stubbed out because Windows won't cross-link non-dllexport symbols. None of these change behavior for the non-Gemma models we actually tested.
+
 RotorQuant ships two symmetric KV cache quantizers: `iso3` (4D quaternion rotation) and `planar3` (2D Givens rotation), plus asymmetric modes where K is rotated/quantized and V stays at f16 or q8_0. The headline claim, from [scrya.com/rotorquant](https://www.scrya.com/rotorquant.pdf), is **better PPL + 28% faster decode + 5× faster prefill than TurboQuant's WHT at the same 10.3× compression ratio**, measured on Llama 3.1 8B Instruct Q4_K_M on an RTX 5090.
 
 The headline "28% faster" is relative to TurboQuant's `turbo3`, NOT relative to f16 baseline. The paper's own numbers show rotorquant is *slower* than f16 in absolute terms (iso3: −16%, planar3: −15%, turbo3: −34%). The win is "less slow than the WHT butterfly."
@@ -146,26 +148,32 @@ The specific decision after this experiment:
 - **If iso3/iso3 is slower than that** → keep using turbo4 at 58K, accept the context ceiling, or switch models if you need longer context (Qwen 27B Opus-Distilled already runs at 262K on turbo4 for the cost of slightly lower quality).
 - **For the other 5 models** → keep turbo4. No configuration of rotorquant can improve their status.
 
-## The experiment
+## The experiment (revised scope)
 
-Two configs per S/A tier model, all on the 4-benchmark coding suite (Expression Evaluator + A* + LRU-TTL + String Processor, 22 tests), temp 0.3, **3 runs best-of-3** (matching our existing methodology), 32K context, `-np 1`, thinking off (`-rea off`) unless the model's existing A-tier ranking uses thinking on.
+Originally planned: 6 S/A tier models × 2 rotorquant configs × 4 benchmarks × 3 runs = 144 runs. **After the Gemma 4 build blocker, actual scope is 3 models × 2 configs × 4 benchmarks × 3 runs = 72 runs.** The 3 Gemma 4 models are excluded entirely because the johndpope fork's base upstream predates Gemma 4 architecture support.
+
+Two configs per testable model, all on the 4-benchmark coding suite (Expression Evaluator + A* + LRU-TTL + String Processor, 22 tests), temp 0.3, **3 runs best-of-3** (matching our existing methodology), 32K context, `-np 1`, thinking off (`-rea off`) unless the model's existing A-tier ranking uses thinking on.
 
 All benchmarks run from a **WSL2 Linux client** hitting the Windows llama-server. This matches our corrected April 10 methodology and avoids the ~2s Python urllib3-on-Windows TTFT bug.
 
 Models (all tested with iso3/iso3 and planar3/f16):
 
-| # | Model | Tier | Baseline (turbo4) | File |
-|---|---|---|---:|---|
-| 1 | Gemma 4 26B-A4B Q6_K | S | 138.9 tok/s, 30/31 avg | `gemma-4-26B-A4B-it-Q6_K.gguf` |
-| 2 | Gemma 4 26B-A4B Q4_K_M | A | 149.5 tok/s, n/a | `gemma-4-26B-A4B-it-Q4_K_M.gguf` |
-| 3 | Gemma 4 31B-IT Q4_K_M | S | 50.3 tok/s, 30.7/31 avg | `gemma-4-31B-it-Q4_K_M.gguf` |
-| 4 | Qwen 3.5 27B Opus-Distilled Q4_K_M | S | 60.0 tok/s, 25.3/31 avg | `Qwen3.5-27B.Q4_K_M.gguf` |
-| 5 | Qwopus 3.5 27B-v3 Q6_K | A | 49.6 tok/s, 24.0/31 avg | `Qwopus3.5-27B-v3-Q6_K.gguf` |
-| 6 | Harmonic 27B Q4_K_M (thinking on) | A | 61.3 tok/s, 30.7/31 avg | `Harmonic-27B-Q4_K_M.gguf` |
+| # | Model | Tier | Baseline (turbo4) | File | Testable? |
+|---|---|---|---:|---|---|
+| 1 | Gemma 4 26B-A4B Q6_K | S | 138.9 tok/s, 30/31 avg | `gemma-4-26B-A4B-it-Q6_K.gguf` | **No — gemma4 arch unsupported** |
+| 2 | Gemma 4 26B-A4B Q4_K_M | A | 149.5 tok/s, n/a | `gemma-4-26B-A4B-it-Q4_K_M.gguf` | **No — gemma4 arch unsupported** |
+| 3 | Gemma 4 31B-IT Q4_K_M | S | 50.3 tok/s, 30.7/31 avg | `gemma-4-31B-it-Q4_K_M.gguf` | **No — gemma4 arch unsupported** (the big miss — only model that would gain context from H5) |
+| 4 | Qwen 3.5 27B Opus-Distilled Q4_K_M | S | 60.0 tok/s, 25.3/31 avg | `Qwen3.5-27B.Q4_K_M.gguf` | Yes |
+| 5 | Qwopus 3.5 27B-v3 Q6_K | A | 49.6 tok/s, 24.0/31 avg | `Qwopus3.5-27B-v3-Q6_K.gguf` | Yes |
+| 6 | Harmonic 27B Q4_K_M (thinking on) | A | 61.3 tok/s, 30.7/31 avg | `Harmonic-27B-Q4_K_M.gguf` | Yes |
 
-Total: **6 models × 2 configs × 4 benchmarks × 3 runs = 144 runs**. With our existing benchmark infrastructure (start-server, run-benchmarks, kill-server loop per config) this should take ~2-3 hours.
+**Actual runs: 3 models × 2 configs × 4 benchmarks × 3 runs = 72 runs.** ~1-1.5 hours.
 
-Engine: `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache @ 20efe75cf`, built on Windows with CUDA 13.2, Visual Studio 2022. Comparison baselines are the published turbo4 results from MODEL_RANKINGS_5090.md, not re-run for this experiment.
+Engine: `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache @ 20efe75cf`, built on Windows with CUDA 13.2, Visual Studio 2022 (with four patches noted at the top of this document). Comparison baselines are the published turbo4 results from MODEL_RANKINGS_5090.md, not re-run for this experiment.
+
+### What we can and can't learn
+
+Three dense Qwen-family 27B variants all derived from the same base model test **H1 (throughput penalty)** and **H3 (quality noise)** but don't illuminate **H4/H5** meaningfully. All three already hit 262K native context on turbo4, so the "does rotorquant unlock more context" question is pre-answered as no. The one model where rotorquant could actually prove its worth on the 5090 (Gemma 31B-IT) is the one we can't run. This experiment becomes a test of "does rotorquant hurt on models where it can't help" — which is the strictly less interesting half of the hypothesis.
 
 ## Success criteria for "the hypothesis held"
 
