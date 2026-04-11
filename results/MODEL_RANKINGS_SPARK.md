@@ -262,6 +262,38 @@ We tested with Qwen3.5-0.8B Q4_K_M as the draft model (533 MB, same 248K vocab a
 
 ---
 
+## D-Tier: Buggy code at slow speeds
+
+### Mistral-Small-4-119B-2603 Q4_K_M (bartowski) — `reasoning_effort=none`
+Mistral's March 2026 unified release that absorbs the previous Instruct + Magistral (reasoning) + Devstral (coding) lines into one model with togglable `reasoning_effort`. We tested with reasoning effort disabled (the comparable config to all our other measurements). The result is **disappointing for both quality and throughput**.
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0, reasoning off) | **7/17 (41%)** |
+| Throughput (sustained) | **8–10.5 tok/s** |
+| TTFT | 0.6 s |
+| Weight size | 69 GB (2-shard Q4_K_M) |
+| Bandwidth utilization | ~10 GB/token × 10 tok/s = 100 GB/s = 37% of peak |
+| Active params | 6.5B (4 of 128 experts per token) |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 -rea off --no-mmap --jinja` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | 2/5 | 2277 | Impl is doubly broken: errors on valid input (parentheses, unary minus tests fail) AND fails to error on invalid input (`test_error_cases` shows DID NOT RAISE on a malformed expression). |
+| A* Pathfinding | 5/6 | 2628 | One test failure on the algorithmic test. |
+| LRU Cache with TTL | **0/6** | 2597 | Syntax error in the impl: `def get(self, key: str) -> Optional[Any:` (missing closing `]`). The model wrote unbalanced brackets. The test file can't even import the impl. |
+
+**Throughput surprise:** Mistral's 6.5B active params should give it ~76 tok/s theoretical max on Spark (273 GB/s peak / ~3.6 GB read per token), but we measured 10.5 tok/s = ~14% of peak. Compare to Qwen3.5-122B at 26 tok/s = 58% of peak with 10B active params. The "active params" headline number is misleading: Mistral's MoE structure (128 experts → 4 active) plus shared experts plus the standard attention layers means the actual per-token bandwidth is much higher than 6.5B × 4.5 bpw. Or the llama.cpp kernels for this MoE architecture are less optimized than for Qwen's. Either way, the practical decode rate is half of what the marketing-spec math would predict.
+
+**Quality surprise:** A 119B model from a major lab producing syntax errors on a basic LRU cache implementation is unusual. Our hypothesis: `reasoning_effort=none` is genuinely the wrong setting for Mistral-Small-4 — the model is trained primarily for the thinking-mode workflow and the no-thinking path produces low-effort code. This is the opposite of what we wanted (a fast non-thinking model) but it's an honest finding.
+
+**Worth retrying with `reasoning_effort=medium`?** Probably yes, as a follow-up. The model exposes thinking via a [chat-template kwarg](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603), and llama.cpp supports passing it via `--chat-template-kwargs '{"reasoning_effort": "medium"}'`. We have not yet run this experiment. If thinking-on results match the Qwen3.5-122B quality, Mistral becomes a viable A-tier candidate; if they don't, the D-tier rating stands.
+
+**Verdict:** Don't use Mistral-Small-4-119B on Spark with reasoning off. May be a strong A-tier candidate with reasoning on — needs follow-up.
+
+---
+
 ## F-Tier: Bandwidth-bottlenecked
 
 ### Gemma 4 31B-IT Q8_0 (dense)

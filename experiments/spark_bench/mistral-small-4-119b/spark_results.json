@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Mistral-Small-4-119B-2603 Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "throughput",
+    "tok_per_sec": 10.47,
+    "tokens": 1011,
+    "ttft_s": 0.594,
+    "total_s": 97.197
+  },
+  {
+    "model": "Mistral-Small-4-119B-2603 Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "Expression Evaluator",
+    "tok_per_sec": 8.6,
+    "tokens": 2277,
+    "elapsed_s": 264.1,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 9897
+  },
+  {
+    "model": "Mistral-Small-4-119B-2603 Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "A* Pathfinding",
+    "tok_per_sec": 8.1,
+    "tokens": 2628,
+    "elapsed_s": 326.06,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 9859
+  },
+  {
+    "model": "Mistral-Small-4-119B-2603 Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "LRU Cache with TTL",
+    "tok_per_sec": 8.0,
+    "tokens": 2597,
+    "elapsed_s": 323.53,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 9831
+  }
+]
