@@ -1,0 +1,28 @@
+[
+  {
+    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M (planar3/planar3 @ 256K)",
+    "key": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink",
+    "benchmark": "expression_evaluator",
+    "status": "request_failed",
+    "error": "HTTPConnectionPool(host='localhost', port=8765): Read timed out. (read timeout=1800)"
+  },
+  {
+    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M (planar3/planar3 @ 256K)",
+    "key": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink",
+    "benchmark": "astar",
+    "status": "request_failed",
+    "error": "HTTPConnectionPool(host='localhost', port=8765): Read timed out. (read timeout=1800)"
+  },
+  {
+    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M (planar3/planar3 @ 256K)",
+    "key": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink",
+    "benchmark": "lru_cache",
+    "ctk": "planar3",
+    "ctv": "planar3",
+    "tokens": 2094,
+    "tok_per_sec": 1.7,
+    "elapsed_s": 1257.01,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
+  }
+]

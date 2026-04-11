@@ -1,0 +1,132 @@
+[
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-f16-f16-65k-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 1,
+    "status": "collection_error",
+    "stdout": "r0000gp/T/tmpo6p62b7t\nplugins: anyio-4.12.1\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n______________________ ERROR collecting test_combined.py _______________________\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/python.py:498: in importtestmodule\n    mod = import_path(\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/__init__.py:127: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n<frozen importlib._bootstrap>:1030: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1007: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:986: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:680: in _load_unlocked\n    ???\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:177: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ast.py:50: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpo6p62b7t/test_combined.py\", line 147\nE       except ImportError:\nE       ^\nE   SyntaxError: invalid syntax\n=========================== short test summary info ============================\nERROR ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpo6p62b7t/test_combined.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.10s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-fp16-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 1,
+    "status": "collection_error",
+    "stdout": "r0000gp/T/tmpc47bqxev\nplugins: anyio-4.12.1\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n______________________ ERROR collecting test_combined.py _______________________\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/python.py:498: in importtestmodule\n    mod = import_path(\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/__init__.py:127: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n<frozen importlib._bootstrap>:1030: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1007: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:986: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:680: in _load_unlocked\n    ???\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:177: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n/Users/gisenberg/Library/Python/3.9/lib/python/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ast.py:50: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpc47bqxev/test_combined.py\", line 147\nE       except ImportError:\nE       ^\nE   SyntaxError: invalid syntax\n=========================== short test summary info ============================\nERROR ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpc47bqxev/test_combined.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.10s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-65k-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw/test_combined.py::test_simple_path PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw/test_combined.py::test_wall_blocking PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw/test_combined.py::test_optimal_weighted_path PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw/test_combined.py::test_start_equals_end PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw/test_combined.py::test_out_of_bounds_start PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmplmm1mbfw/test_combined.py::test_out_of_bounds_end PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-nothink_astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9/test_combined.py::test_simple_path PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9/test_combined.py::test_wall_blocking PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9/test_combined.py::test_optimal_weighted_path PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9/test_combined.py::test_start_equals_end PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9/test_combined.py::test_out_of_bounds_start PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpwcswpsk9/test_combined.py::test_out_of_bounds_end PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-f16-f16-65k-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpuyv8lore\nplugins: anyio-4.12.1\ncollecting ... collected 5 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpuyv8lore/test_combined.py::TestExpressionEvaluator::test_basic_arithmetic PASSED [ 20%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpuyv8lore/test_combined.py::TestExpressionEvaluator::test_operator_precedence PASSED [ 40%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpuyv8lore/test_combined.py::TestExpressionEvaluator::test_parentheses PASSED [ 60%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpuyv8lore/test_combined.py::TestExpressionEvaluator::test_unary_minus PASSED [ 80%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpuyv8lore/test_combined.py::TestExpressionEvaluator::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-fp16-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpla3w37xw\nplugins: anyio-4.12.1\ncollecting ... collected 5 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpla3w37xw/test_combined.py::TestExpressionEvaluator::test_basic_arithmetic PASSED [ 20%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpla3w37xw/test_combined.py::TestExpressionEvaluator::test_operator_precedence PASSED [ 40%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpla3w37xw/test_combined.py::TestExpressionEvaluator::test_parentheses PASSED [ 60%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpla3w37xw/test_combined.py::TestExpressionEvaluator::test_unary_minus PASSED [ 80%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpla3w37xw/test_combined.py::TestExpressionEvaluator::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-65k-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 4,
+    "failed": 1,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "limiters, then filter out empty strings\n        raw_tokens = re.split(r'(\\s+|[\\+\\-\\*\\/\\(\\)])', expr)\n        self.tokens = [t for t in raw_tokens if t.strip()]\n        self.pos = 0\n    \n        if not self.tokens:\n            raise ValueError(\"Expression cannot be empty.\")\n    \n        # Parse the expression\n        result = self._parse_expression()\n    \n        # Ensure all tokens were consumed\n        if self.pos < len(self.tokens):\n>           raise ValueError(f\"Unexpected token '{self.tokens[self.pos]}' at end of expression.\")\nE           ValueError: Unexpected token ')' at end of expression.\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpjvv00gl3/test_combined.py:46: ValueError\n\nDuring handling of the above exception, another exception occurred:\n\nself = <test_combined.TestExpressionEvaluator object at 0x108ec1340>\n\n    def test_error_cases(self):\n        \"\"\"Test that appropriate ValueErrors are raised.\"\"\"\n        # Empty expression\n        with pytest.raises(ValueError, match=\"empty\"):\n            self.evaluator.evaluate(\"\")\n    \n        # Whitespace only\n        with pytest.raises(ValueError, match=\"empty\"):\n            self.evaluator.evaluate(\"   \")\n    \n        # Mismatched parentheses\n        with pytest.raises(ValueError, match=\"Mismatched\"):\n            self.evaluator.evaluate(\"(2 + 3\")\n    \n        with pytest.raises(ValueError, match=\"Mismatched\"):\n>           self.evaluator.evaluate(\"2 + 3)\")\nE           AssertionError: Regex pattern did not match.\nE            Regex: 'Mismatched'\nE            Input: \"Unexpected token ')' at end of expression.\"\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpjvv00gl3/test_combined.py:220: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpjvv00gl3/test_combined.py::TestExpressionEvaluator::test_error_cases\n========================= 1 failed, 4 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-nothink_expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 4,
+    "failed": 1,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "limiters, then filter out empty strings\n        raw_tokens = re.split(r'(\\s+|[\\+\\-\\*\\/\\(\\)])', expr)\n        self.tokens = [t for t in raw_tokens if t.strip()]\n        self.pos = 0\n    \n        if not self.tokens:\n            raise ValueError(\"Expression cannot be empty.\")\n    \n        # Parse the expression\n        result = self._parse_expression()\n    \n        # Ensure all tokens were consumed\n        if self.pos < len(self.tokens):\n>           raise ValueError(f\"Unexpected token '{self.tokens[self.pos]}' at end of expression.\")\nE           ValueError: Unexpected token ')' at end of expression.\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpidgkki59/test_combined.py:46: ValueError\n\nDuring handling of the above exception, another exception occurred:\n\nself = <test_combined.TestExpressionEvaluator object at 0x10842d3a0>\n\n    def test_error_cases(self):\n        \"\"\"Test that appropriate ValueErrors are raised.\"\"\"\n        # Empty expression\n        with pytest.raises(ValueError, match=\"empty\"):\n            self.evaluator.evaluate(\"\")\n    \n        # Whitespace only\n        with pytest.raises(ValueError, match=\"empty\"):\n            self.evaluator.evaluate(\"   \")\n    \n        # Mismatched parentheses\n        with pytest.raises(ValueError, match=\"Mismatched\"):\n            self.evaluator.evaluate(\"(2 + 3\")\n    \n        with pytest.raises(ValueError, match=\"Mismatched\"):\n>           self.evaluator.evaluate(\"2 + 3)\")\nE           AssertionError: Regex pattern did not match.\nE            Regex: 'Mismatched'\nE            Input: \"Unexpected token ')' at end of expression.\"\n\n/var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpidgkki59/test_combined.py:220: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpidgkki59/test_combined.py::TestExpressionEvaluator::test_error_cases\n========================= 1 failed, 4 passed in 0.03s ==========================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-f16-f16-65k-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01/test_combined.py::TestTTLCache::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01/test_combined.py::TestTTLCache::test_delete PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpqx5qei01/test_combined.py::TestTTLCache::test_update_existing_key PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-fp16-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm/test_combined.py::TestTTLCache::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm/test_combined.py::TestTTLCache::test_delete PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmp1s7fw4bm/test_combined.py::TestTTLCache::test_update_existing_key PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po/test_combined.py::TestTTLCache::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po/test_combined.py::TestTTLCache::test_update_existing_key PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmptb46q8po/test_combined.py::TestTTLCache::test_delete_key PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-65k-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx/test_combined.py::TestTTLCache::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx/test_combined.py::TestTTLCache::test_update_existing_key PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmppuvg5mhx/test_combined.py::TestTTLCache::test_delete_key PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  },
+  {
+    "file": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-nothink_lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Applications/Xcode.app/Contents/Developer/usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98\nplugins: anyio-4.12.1\ncollecting ... collected 6 items\n\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98/test_combined.py::TestTTLCache::test_put_and_get PASSED [ 16%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98/test_combined.py::TestTTLCache::test_lru_eviction PASSED [ 33%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98/test_combined.py::TestTTLCache::test_ttl_expiration PASSED [ 50%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98/test_combined.py::TestTTLCache::test_custom_ttl PASSED [ 66%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98/test_combined.py::TestTTLCache::test_update_existing_key PASSED [ 83%]\n../../../../../../../var/folders/vt/2ns3qwln6g1_grz2_rkybxhr0000gp/T/tmpafjiur98/test_combined.py::TestTTLCache::test_delete_key PASSED [100%]\n\n============================== 6 passed in 0.01s ===============================\n"
+  }
+]
