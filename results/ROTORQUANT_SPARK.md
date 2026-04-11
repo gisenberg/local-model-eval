@@ -4,7 +4,7 @@
 **Hardware:** NVIDIA DGX Spark (GB10 Blackwell, compute cap 12.1, 128 GB LPDDR5X @ ~273 GB/s)
 **Engine:** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` (commit `20efe75cf`), CUDA 13.0, sm_121a, aarch64
 **Build:** `cmake -B build -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=121`
-**Pre-experiment predictions:** [ROTORQUANT_HYPOTHESIS.md](../ROTORQUANT_HYPOTHESIS.md)
+**Pre-experiment predictions:** [ROTORQUANT_HYPOTHESIS_SPARK.md](../ROTORQUANT_HYPOTHESIS_SPARK.md)
 **Prompts, config, test harness:** same as [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md), 32K ctx, `-np 1 --no-mmap --jinja -rea off`, temp 0, single shot
 
 Every hypothesis from the pre-experiment doc was wrong in an interesting way. Headline: **rotorquant is a net-positive quality bump on Qwen3.5-122B at negligible throughput cost, and it is completely broken on GLM-4.5-Air** — producing literal `Hello???????????` garbage even in the "zero PPL loss" K-only mode.

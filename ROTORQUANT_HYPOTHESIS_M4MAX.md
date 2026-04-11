@@ -209,7 +209,7 @@ We'll use the same `tools/m4max_bench.py` script with a new list of configs, the
 
 ## See also
 
-- [ROTORQUANT_HYPOTHESIS.md](ROTORQUANT_HYPOTHESIS.md) — the DGX Spark version of this document (written first). That one predicts rotorquant is net-negative on Spark MoE; this one is genuinely uncertain for M4 Max because of the turbo4-is-slower-than-f16 prior.
+- [ROTORQUANT_HYPOTHESIS_SPARK.md](ROTORQUANT_HYPOTHESIS_SPARK.md) — the DGX Spark version of this document (written first). That one predicts rotorquant is net-negative on Spark MoE; this one is genuinely uncertain for M4 Max because of the turbo4-is-slower-than-f16 prior. The actual experiment results are in [results/ROTORQUANT_SPARK.md](results/ROTORQUANT_SPARK.md).
 - [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md) — baseline measurements we're comparing against.
 - [results/TURBOQUANT_IMPACT_M4MAX.md](results/TURBOQUANT_IMPACT_M4MAX.md) — the underlying story for *why* we expect rotorquant to have a chance on Metal where turbo4 didn't.
 - [results/CONTEXT_CAPACITY_M4MAX.md](results/CONTEXT_CAPACITY_M4MAX.md) — the compute-buffer finding that bounds what any KV quantizer can achieve here.
