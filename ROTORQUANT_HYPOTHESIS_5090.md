@@ -105,6 +105,47 @@ The real 5090 use case for rotorquant is **extending dense Gemma 31B beyond 58K 
 
 We are **not** testing long-context rotorquant in this experiment — the user asked for S/A tier coding benchmarks at 32K context, where turbo4 already fits fine. If the short-context experiment shows "rotorquant is 20% slower but quality matches," the follow-up question becomes "is the quality still matched at 150K context where turbo4 can't even fit?" — that's a different and interesting experiment we're deferring.
 
+## Context math per model
+
+The throughput hypothesis is only half the story — the other half is whether rotorquant buys us any *context* we don't already have. The compression ratios of each config:
+
+| Config | Compression vs f16 | Relative to turbo4 |
+|---|---|---|
+| f16 / f16 | 1.0× | 0.26× |
+| planar3 / f16 (K-only) | **~1.67×** effective | **0.44× — worse than turbo4** |
+| turbo4 / turbo4 | 3.8× | 1.0× (our baseline) |
+| iso3 / iso3 | **10.3×** | **2.71×** |
+
+planar3/f16 is surprising — it compresses K by 5.1× but leaves V unchanged at f16, so the *total* KV cache shrinks by only ~1.67× vs baseline. That is **less** than turbo4's 3.8×, meaning planar3/f16 gives you *less* context headroom than our current standard. It exists purely as a "zero PPL loss" reference config, not as a context-maximizing one.
+
+### Per-model context budget on the 5090
+
+Using our measured turbo4 max context as the anchor, projecting each rotorquant config:
+
+| Model | Native trained | Turbo4 max (measured) | iso3/iso3 projected | planar3/f16 projected | Useful gain |
+|---|---|---|---|---|---|
+| Gemma 4 26B-A4B Q6_K | 262K | ~230K | **262K** (capped by native) | ~101K | **+32K** |
+| Gemma 4 26B-A4B Q4_K_M | 262K | 262K (full) | 262K (already full) | ~115K | **none** |
+| Gemma 4 31B-IT Q4_K_M | 262K | **~58K** | **~157K** | ~26K | **+99K** ← only big win |
+| Qwen 27B Opus-Distilled | 262K | 262K (full) | 262K (already full) | ~115K | **none** |
+| Qwopus 27B Q6_K | 262K | 262K (full) | 262K (already full) | ~115K | **none** |
+| Harmonic 27B Q4_K_M | 262K | 262K (full) | 262K (already full) | ~115K | **none** |
+
+**The headline finding (pre-experiment):** **5 of 6 models already hit the native 262K context ceiling with turbo4.** Rotorquant cannot exceed the trained context window regardless of compression ratio. For these models, iso3/iso3 is a pure throughput tax with zero capability upside — it just makes the same context slower.
+
+**Only Gemma 31B-IT materially benefits.** Its dense architecture burns 870 KB/token on the KV cache, so even turbo4 caps it at 58K. iso3/iso3 should unlock ~157K context — a **+99K** gain that takes this model from "medium-context only" to "true long-context". This is the one result in the experiment where a rotorquant win would matter.
+
+**planar3/f16 is negative across the board.** It gives less context than turbo4 AND is slower. The paper's "zero PPL loss" framing is irrelevant when the alternative (turbo4) has roughly the same PPL impact at higher compression. I include it in the experiment only to validate H2 (that it's the least-slow rotorquant config), not because any model benefits from using it in production.
+
+### What this means for the experiment's verdict
+
+The context math changes the question from "is rotorquant faster than turbo4" to "is rotorquant's **context unlock** on Gemma 31B worth the throughput tax?" For the other 5 models, the right answer is "stay on turbo4 regardless of throughput results" — they don't need more context and rotorquant can't give them more anyway.
+
+The specific decision after this experiment:
+- **If iso3/iso3 on Gemma 31B lands within 20% of turbo4 throughput** (38-40 tok/s vs 50) with ≤3 test quality drop → iso3 becomes the recommended config for Gemma 31B when you need context >58K, which is the only scenario it helps.
+- **If iso3/iso3 is slower than that** → keep using turbo4 at 58K, accept the context ceiling, or switch models if you need longer context (Qwen 27B Opus-Distilled already runs at 262K on turbo4 for the cost of slightly lower quality).
+- **For the other 5 models** → keep turbo4. No configuration of rotorquant can improve their status.
+
 ## The experiment
 
 Two configs per S/A tier model, all on the 4-benchmark coding suite (Expression Evaluator + A* + LRU-TTL + String Processor, 22 tests), temp 0.3, **3 runs best-of-3** (matching our existing methodology), 32K context, `-np 1`, thinking off (`-rea off`) unless the model's existing A-tier ranking uses thinking on.
