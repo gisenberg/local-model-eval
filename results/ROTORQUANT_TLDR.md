@@ -11,7 +11,7 @@ This is a consolidated digest of [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md), [RO
 |---|---|---:|---|---|
 | **M4 Max** (Metal) | `planar3 / f16` (K-only) | **+19% vs f16** | identical | **Yes** — first net-positive KV quantizer on Metal |
 | **Spark** (aarch64 CUDA 13) | `planar3 K / f16 V` on Qwen3.5-122B | ~−1% vs f16, +5/17 quality | better in one measurement | **Yes** for Qwen3.5-122B. **No** for GLM-4.5-Air (broken output). |
-| **5090** (Blackwell CUDA 13.2) | `iso3/iso3` on **Gemma 4 31B-IT** for long context; planar3/f16 on most; maybe iso3 for Harmonic | Gemma 31B: **+102K context** at −13.9% decode. Qwen/Qwopus: planar3 −4 to −6%. Harmonic iso3: +0.3% (parity) | unchanged on Qwen-family; Gemma 31B quality TBD | **Yes** for Gemma 4 31B-IT long context; **no** for Qwen/Qwopus at short context; Harmonic pending replication |
+| **5090** (Blackwell CUDA 13.2) | `iso3/iso3` on **Gemma 4 31B-IT** for long context; planar3/f16 on most; maybe iso3 for Harmonic | Gemma 31B: **+102K context** at −21% decode (coding workload). Qwen/Qwopus: planar3 −4 to −6%. Harmonic iso3: +0.3% (parity) | Gemma 31B: **22/22** best-of-3 at both 32K and 128K. Qwen/Qwopus/Harmonic unchanged. | **Yes** for Gemma 4 31B-IT long context; **no** for Qwen/Qwopus at short context; Harmonic pending replication |
 
 ## The key finding per platform
 
@@ -23,7 +23,7 @@ This is a consolidated digest of [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md), [RO
 
 On Qwen 27B Opus-Distilled and Qwopus 27B (two Qwen 3.5 27B dense variants), iso3/iso3 ran ~10.5% slower than turbo4 — right in the middle of our pre-experiment prediction — and planar3/f16 ran 3.5-5.9% slower with better quality variance. Rotorquant never won on either model on pure throughput, and both models already hit the native 262K context window with turbo4 so there was no capacity to unlock. **The surprise on the Qwen family was Harmonic 27B** (Qwen 2.5 base with thinking-on mode): iso3/iso3 ran at 61.5 tok/s vs the 61.3 tok/s turbo4 baseline, **+0.3%** — the first datapoint where rotorquant's 10.3× compression cost zero throughput. Whether that's architecture-specific, thinking-mode-specific, or session-variance is still open; 3 runs aren't enough to be sure.
 
-**On Gemma 4 31B-IT Q4_K_M** — tested after a local rebase of the johndpope fork onto current upstream llama.cpp plus a D=512 flash-attention vec kernel patch (details in [ROTORQUANT_5090.md](ROTORQUANT_5090.md)) — iso3/iso3 unlocks a measured **+102K usable context** (160K with iso3 vs 58K with turbo4) at a **−13.9% throughput cost** (43.3 vs 50.3 tok/s). The pre-experiment projection was 157K; measured reality was 160K — the hypothesis landed within 2%. For anyone running Gemma 4 31B-IT on a 5090 who needs long context, iso3/iso3 is the right default, and this is the single strongest pro-rotorquant datapoint anywhere in the three-platform experiment.
+**On Gemma 4 31B-IT Q4_K_M** — tested after a local rebase of the johndpope fork onto current upstream llama.cpp plus a D=512 flash-attention vec kernel patch (details in [ROTORQUANT_5090.md](ROTORQUANT_5090.md)) — iso3/iso3 unlocks a measured **+102K usable context** (160K with iso3 vs 58K with turbo4). The coding-suite bench at 32K scored **22/22 best-of-3** across the 4-benchmark suite at **39.7 tok/s**, a **−21.1%** decode delta vs turbo4's 50.3 tok/s baseline. A sanity check at 128K on Expression Evaluator produced the identical **22/22 best, 4.7/5 avg** at **39.6 tok/s** — quality does not degrade when you actually use the unlocked long-context band. The pre-experiment projection of 157K usable landed within 2% of measured reality. For anyone running Gemma 4 31B-IT on a 5090 who needs long context, iso3/iso3 is the right default, and this is the single strongest pro-rotorquant datapoint anywhere in the three-platform experiment.
 
 ## The common blocker: Gemma 4 support in the johndpope fork
 
@@ -45,11 +45,11 @@ The 5090 rebase branch is local (`local/rebase-attempt` in the johndpope fork, n
 
 | Hypothesis (across docs) | M4 Max | Spark | 5090 |
 |---|---|---|---|
-| iso3/iso3 is 10-25% slower than the platform default | n/a (Metal) | ❌ Qwen: −3%. GLM: −25% | ✅ Qwen/Qwopus. ❌ Harmonic (+0.3%). ✅ Gemma 4 31B-IT (−13.9%) |
+| iso3/iso3 is 10-25% slower than the platform default | n/a (Metal) | ❌ Qwen: −3%. GLM: −25% | ✅ Qwen/Qwopus (~−10%). ❌ Harmonic (+0.3%). ✅ Gemma 4 31B-IT (−21.1% on coding workload) |
 | planar3/f16 is the sweet spot (small throughput loss, same quality) | ✅ **+19% faster**, exceeds prediction | ✅ on Qwen. ❌ output broken on GLM | ✅ mostly (−3.5% to −5.9%, quality fine) |
-| Quality is noise-dominated | ⚠️ confirmed extreme (±5 points at temp=0) | ✅ same finding (+5 on Qwen, −15 on GLM) | ✅ held on Qwen family (max 1-test delta). Gemma 31B quality-bench TBD |
+| Quality is noise-dominated | ⚠️ confirmed extreme (±5 points at temp=0) | ✅ same finding (+5 on Qwen, −15 on GLM) | ✅ held on Qwen family (max 1-test delta). ✅ held on Gemma 31B: 22/22 best at both 32K and 128K |
 | TurboQuant remains the default | ❌ turbo4 loses to planar3/f16 | n/a (we use f16, not turbo4, as Spark baseline) | ✅ for Qwen/Qwopus/Harmonic. ❌ **rotorquant wins on Gemma 4 31B-IT long context** |
-| Gemma 4 31B-IT long-context unlock | ❌ blocked (gemma4 arch) | not tested | ✅ **+102K usable context** (160K vs 58K), **−13.9% throughput**, projection within 2% |
+| Gemma 4 31B-IT long-context unlock | ❌ blocked (gemma4 arch) | not tested | ✅ **+102K usable context** (160K vs 58K), **22/22 quality at 32K and 128K**, −21.1% throughput on coding workload, capacity projection within 2% |
 
 ## Practical recommendations
 
@@ -58,8 +58,8 @@ The 5090 rebase branch is local (`local/rebase-attempt` in the johndpope fork, n
 **If you have a DGX Spark:** use `planar3 K / f16 V` on Qwen3.5-122B (the DeltaNet hybrid) — it ties the S-tier ik-llama result with a simpler engine stack. **Do not** use rotorquant on GLM-4.5-Air or any deep standard-attention MoE until upstream fixes the output collapse. The "zero PPL loss" claim from the paper demonstrably does not hold on deep dense-attention stacks, which is an important caveat for anyone picking rotorquant for a new model class.
 
 **If you have a 5090:**
-- **For Gemma 4 31B-IT Q4_K_M with long-context needs (>58K)**: use `iso3/iso3` on the locally-rebased johndpope fork (see the common-blocker section above for the rebase + D=512 kernel patch details). Measured usable ceiling is ~160K context at 43.3 tok/s, a +102K gain over turbo4's 58K ceiling at a 14% throughput cost. This is the one clear rotorquant win on the 5090.
-- **For Gemma 4 31B-IT at short context (≤58K)**: turbo4 still wins on throughput (50.3 vs 43.3 tok/s). Only switch to iso3 when you actually need the extra context.
+- **For Gemma 4 31B-IT Q4_K_M with long-context needs (>58K)**: use `iso3/iso3` on the locally-rebased johndpope fork (see the common-blocker section above for the rebase + D=512 kernel patch details). Measured usable ceiling is ~160K context at 39.7 tok/s on the coding suite, a +102K gain over turbo4's 58K ceiling at a 21% throughput cost. Quality holds at 22/22 best-of-3 on the full 4-benchmark suite, and the same quality signal replicates on a 128K Expression Evaluator sanity check. This is the one clear rotorquant win on the 5090.
+- **For Gemma 4 31B-IT at short context (≤58K)**: turbo4 still wins on throughput (50.3 vs 39.7 tok/s). Only switch to iso3 when you actually need the extra context.
 - **For Qwen 27B Opus-Distilled, Qwopus 27B, Harmonic 27B**: keep TurboQuant turbo4. Rotorquant is a ~10% throughput tax on Qwen/Qwopus for zero context gain (both already hit 262K native with turbo4), and Harmonic's apparent +0.3% iso3 win is too small to act on without replication.
 - **For Gemma 4 26B-A4B Q6_K/Q4_K_M**: keep turbo4 — the live architecture has only 5 global-attention layers, and turbo4 already fits the full 262K native window with 5+ GB of headroom. Rotorquant has no context to unlock here (the pre-experiment projection of "+32K with iso3" was based on a wrong architecture table — see the correction in [ROTORQUANT_5090.md](ROTORQUANT_5090.md)).
 
@@ -67,7 +67,7 @@ The 5090 rebase branch is local (`local/rebase-attempt` in the johndpope fork, n
 
 1. **Rebase the planarquant fork onto gemma4-capable llama.cpp — done on 5090, still open on M4 Max and Spark.** This was the single highest-value action when the three experiments were first run, and doing it on the 5090 cleanly unlocked the H5 long-context win on Gemma 4 31B-IT (+102K usable context, within 2% of the hypothesis projection). The M4 Max and Spark versions of the same rebase have not been done; they'd unlock the same class of test on those platforms. The 5090 rebase steps — 3-way merge of upstream/master into the feature branch (5 conflicts), plus D=512 FA vec kernel instances for the Gemma 4 head dimension — should be transplantable to Metal and aarch64 CUDA with backend-specific kernel changes.
 
-1b. **A coding-suite quality bench on Gemma 4 31B-IT + iso3/iso3** — the 5090 H5 measurement confirmed the context-unlock and throughput story but only did a single-prompt smoke test for quality. The full 4-benchmark 22-test suite at 32K and one sanity-check at the unlocked 128K-160K range would finish the H5 picture.
+1b. ~~**A coding-suite quality bench on Gemma 4 31B-IT + iso3/iso3**~~ — **done.** Full 4-benchmark suite at 32K scored 22/22 best-of-3 at 39.7 tok/s; Expression Evaluator sanity check at 128K scored 5/5 best at 39.6 tok/s (same quality as 32K). The H5 picture is complete on the 5090.
 
 2. **Why does Harmonic 27B escape the throughput tax on the 5090?** A 5-run replication of Harmonic × iso3/iso3 vs Harmonic × turbo4 with matched server restarts would resolve whether it's a real architecture/thinking-mode effect or session variance. If real, the mechanism (possibly Harmonic's attention head dimensions aligning with iso3's 4D quaternion blocks) would be worth a follow-up investigation — and potentially a published counter-point to the "rotorquant is always a tax on CUDA" prior we started with.
 

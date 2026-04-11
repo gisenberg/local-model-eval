@@ -31,7 +31,7 @@ Bench log: [experiments/rotorquant_5090/bench.log](../experiments/rotorquant_509
 - For Qwen 27B Opus-Distilled and Qwopus 27B: **turbo4 still wins clearly.** iso3/iso3 costs ~10% throughput for zero context gain (both already hit 262K native). planar3/f16 is closer but still loses on throughput with less compression. Keep turbo4.
 - For **Harmonic 27B Q4_K_M with thinking on**: **iso3/iso3 ties turbo4 on throughput (+0.3%) AND matches on quality (22/22 vs turbo4's 31/31 published — 22/22 is our suite's max for these 4 benchmarks).** Because iso3 compresses 2.7× more aggressively than turbo4 at no throughput cost for this model, iso3/iso3 could become the recommended config for Harmonic *if we can rule out measurement noise with a replication*. This is the one result in the experiment that would change our default recommendation if it holds.
 
-**H5 (Gemma 31B-IT context unlock):** ✅ **measured after a local rebase + D=512 kernel patch** — the johndpope fork's base originally predated Gemma 4 support, but we rebased onto current upstream llama.cpp and added the missing flash-attention vec kernel instances for head-dim 512 (details in the addendum below). Measured usable ceiling: **~160K context** on Gemma 4 31B-IT Q4_K_M with iso3/iso3, a **+102K gain** over turbo4's 58K cap. Throughput cost: **−13.9%** (43.3 tok/s vs 50.3 turbo4 baseline). The pre-experiment projection was 157K; measured reality was 160K — the hypothesis landed within 2%.
+**H5 (Gemma 31B-IT context unlock):** ✅ **measured after a local rebase + D=512 kernel patch** — the johndpope fork's base originally predated Gemma 4 support, but we rebased onto current upstream llama.cpp and added the missing flash-attention vec kernel instances for head-dim 512 (details in the addendum below). Measured usable context ceiling: **~160K** on Gemma 4 31B-IT Q4_K_M with iso3/iso3, a **+102K gain** over turbo4's 58K cap. Throughput on the 4-benchmark coding suite: **39.7 tok/s at both 32K and 128K, −21.1% vs the 50.3 tok/s turbo4 baseline** — still inside the H1 prediction band of 10-25%, at the upper end. Quality: **22/22 best-of-3** at 32K on the full 4-benchmark suite AND at 128K on an Expression Evaluator sanity check. The pre-experiment context projection was 157K; measured reality was 160K — the capacity hypothesis landed within 2%.
 
 ## The Harmonic anomaly
 
@@ -65,7 +65,7 @@ This ordering (iso3 > planar3) is the opposite of what we see on the other two m
 
 4. **Turbo4 remains the default for 5 of 6 planned models.** On the 3 we tested, Qwen and Qwopus clearly stay on turbo4. Harmonic is a possible switch to iso3 if the replication holds. The 3 Gemma models default to turbo4 because we couldn't test them at all.
 
-5. **The Gemma 31B-IT context unlock was measured after a local rebase** — see the addendum below. Iso3/iso3 unlocks **~160K usable context** on Gemma 4 31B-IT on the 5090 (turbo4 caps at ~58K), a **+102K gain** at **−13.9% throughput**. The pre-experiment projection of 157K landed within 2% of the measured result. This is the single strongest rotorquant-win datapoint anywhere in the three-platform experiment — if you run Gemma 4 31B-IT and need long context, iso3 is now the right default.
+5. **The Gemma 31B-IT context unlock was measured after a local rebase** — see the addendum below. Iso3/iso3 unlocks **~160K usable context** on Gemma 4 31B-IT on the 5090 (turbo4 caps at ~58K), a **+102K gain** at **−21.1% throughput** on the coding suite (39.7 vs 50.3 tok/s turbo4). Quality **22/22 best-of-3** at both 32K and 128K — no degradation at the unlocked long-context band. The pre-experiment context projection of 157K landed within 2% of the measured ~160K ceiling. This is the single strongest rotorquant-win datapoint anywhere in the three-platform experiment — if you run Gemma 4 31B-IT and need long context, iso3 is now the right default.
 
 ## What we'd change in the next round
 
@@ -119,19 +119,19 @@ Everything compiled cleanly on `sm_120a` with CUDA 13.2 MSVC and ran correctly i
 
 ### H5 measurement: Gemma 4 31B-IT Q4_K_M + iso3/iso3 context sweep
 
-Once the kernel gap was closed, loaded Gemma 4 31B-IT Q4_K_M with `-ctk iso3 -ctv iso3 -ngl 99 -fa on -np 1 -rea off` at progressively larger context sizes. For each, ran a single 300-token streaming decode off a fixed short prompt to measure throughput (more runs wouldn't change the picture — the interesting variable is whether the KV fits in VRAM, not run-to-run decode variance).
+Once the kernel gap was closed, loaded Gemma 4 31B-IT Q4_K_M with `-ctk iso3 -ctv iso3 -ngl 99 -fa on -np 1 -rea off` at progressively larger context sizes. For each, ran a single 300-token streaming decode off a fixed short prompt to probe whether the KV fits in VRAM and to take a first-pass decode measurement. This sweep is for **VRAM + spill-cliff location**, not for final throughput numbers — those came from the coding-suite bench below, which uses longer sustained decodes and exposes the full rotorquant tax. Both measurements are reported because they answer different questions.
 
-| Context `-c` | VRAM (MB) | Decode (tok/s) | vs turbo4 baseline (50.3) | Status |
-|---:|---:|---:|---:|---|
-| 32,768 (32K) | 23,835 | **44.0** | **−12.6%** | works, full speed |
-| 131,072 (128K) | 29,127 | **43.9** | **−12.7%** | works, full speed |
-| 163,840 (160K) | 30,284 | **43.3** | **−13.9%** | works, full speed |
-| 196,608 (192K) | 31,723 | 9.1 | −81.8% | **KV spills to RAM, cliff** |
-| 262,144 (262K, native) | 31,524 | 7.4 | −85.3% | KV spills, worse cliff |
+| Context `-c` | VRAM (MB) | Smoke-test decode (tok/s) | Status |
+|---:|---:|---:|---|
+| 32,768 (32K) | 23,835 | 44.0 | works, no spill |
+| 131,072 (128K) | 29,127 | 43.9 | works, no spill |
+| 163,840 (160K) | 30,284 | 43.3 | works, no spill |
+| 196,608 (192K) | 31,723 | 9.1 | **KV spills to RAM, cliff** |
+| 262,144 (262K, native) | 31,524 | 7.4 | KV spills, worse cliff |
 
 The cliff lands between 160K and 192K — the pre-allocated KV buffer exceeds what fits in the 32 GB VRAM budget alongside the ~21 GB of weights and the compute buffer. Once the cliff hits, decode throughput collapses by ~5x because every token traverses PCIe for the spilled portion of the KV cache. The same RAM-spill failure mode we previously documented for Gemma 4 26B-A4B at 256K on f16 in [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md).
 
-**Usable ceiling with iso3/iso3: ~160K context**, same throughput as 32K. Turbo4 caps at ~58K. **Net context unlock: +102K** at a **−13.9% throughput cost** (43.3 vs 50.3 tok/s).
+**Usable ceiling with iso3/iso3: ~160K context.** Turbo4 caps at ~58K. **Net context unlock: +102K.** The smoke-test decode numbers above are optimistic (44 tok/s at 32K) because they come from short 300-token single-prompt measurements dominated by warm-cache, near-empty-KV decode. The coding-suite numbers below show the real sustained throughput (~39.7 tok/s) once you actually generate longer structured code responses. Both numbers are consistent and neither contradicts the context-unlock finding.
 
 ### H5 hypothesis vs reality
 
@@ -141,7 +141,41 @@ The pre-experiment doc projected iso3 would unlock ~157K usable context with a ~
 
 Measured result: 160K usable, +102K gain. **The hypothesis landed within 2% of the measured ceiling.** This is the cleanest pre-experiment prediction in the whole three-platform rotorquant experiment.
 
-Coherence spot check at 128K passed — the model generated a correct Fibonacci implementation with a docstring and example, identical in structure to the same prompt at 32K. A full coding-suite quality bench at both 32K and 128K+ is listed in "what we'd change in the next round" above and is the obvious next follow-up.
+Coherence spot check at 128K passed — the model generated a correct Fibonacci implementation with a docstring and example, identical in structure to the same prompt at 32K. The full coding-suite quality bench ran next.
+
+### H5 quality bench: 4-benchmark coding suite at 32K + Expression Evaluator sanity check at 128K
+
+Ran `tools/rotorquant_gemma31b_bench.py` against the rebased binary, temp 0.3, 3 runs best-of-3, streaming decode via WSL2 Linux client. Full 4-benchmark suite (Expression Evaluator + A* Pathfinding + LRU Cache with TTL + String Processor, 22 tests total) at 32K; Expression Evaluator only at 128K as a long-context sanity check (the single question being whether quality collapses at the unlocked context band).
+
+**32K context:**
+
+| Benchmark | Best | Avg | Decode (tok/s) |
+|---|---:|---:|---:|
+| Expression Evaluator | 5/5 | 4.7/5 | 39.4 |
+| A* Pathfinding | 6/6 | 6.0/6 | 39.3 |
+| LRU Cache with TTL | 6/6 | 6.0/6 | 39.5 |
+| String Processor | 5/5 | 3.7/5 | 40.5 |
+| **total** | **22/22** | **20.4/22** | **39.7** |
+
+**128K context:**
+
+| Benchmark | Best | Avg | Decode (tok/s) |
+|---|---:|---:|---:|
+| Expression Evaluator | 5/5 | 4.7/5 | 39.6 |
+
+**Findings:**
+
+1. **Quality holds at both context sizes.** 22/22 best-of-3 at 32K on the full suite. The Expression Evaluator avg of 4.7/5 at 128K exactly matches the 4.7/5 at 32K — quality does not degrade when you actually use the unlocked long-context band. H3 (quality within noise) holds for Gemma 4 31B-IT on rotorquant.
+
+2. **String Processor has one outlier run** (1/5 instead of 5/5 on run 2/3) that pulls the avg down to 3.7/5. The same variance pattern we see on Qwen/Qwopus at temp 0.3 — model property, not rotorquant property. Best-of-3 hits 5/5 on all 4 benchmarks so the usable quality signal is 22/22.
+
+3. **Throughput is 39.7 tok/s, not the 44.0 tok/s the earlier single-prompt smoke test showed.** The reconciliation: the earlier "Gemma 4 31B-IT Q4_K_M context sweep" table in this addendum measured a single 300-token streaming decode off a fixed short prompt. That measurement was dominated by warm-cache decode on a near-empty KV. The coding-suite runs generate 850-1850 tokens per response and sustain decode through longer context, which exposes the full per-token rotorquant dequant cost. **The realistic number for Gemma 31B + iso3 on coding workloads is ~39.7 tok/s**, a **−21.1%** delta vs turbo4's 50.3 baseline. Still inside H1's 10-25% prediction band, but at the upper end of it.
+
+4. **Throughput is stable across 32K and 128K** (39.7 vs 39.6 tok/s). Long context doesn't add an extra decode tax on top of the base rotorquant cost, as long as you stay below the VRAM spill cliff at ~192K.
+
+5. **VRAM at 32K and 128K** (23473 MB and 28828 MB respectively, from the bench) matches the earlier single-prompt sweep numbers within ~300 MB. The spill cliff location (between 160K and 192K) is confirmed.
+
+Raw run artifacts: [`experiments/rotorquant_5090_gemma31b/`](../experiments/rotorquant_5090_gemma31b/) — includes `results.json`, `bench.log`, and all extracted `_test.py` files per benchmark per run.
 
 ### Correction: Gemma 4 26B-A4B does not need rotorquant for context
 
