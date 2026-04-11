@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-11
 **Hardware:** NVIDIA RTX 5090 32 GB GDDR7, Blackwell sm_120a, Windows 11 + CUDA 13.2
-**Stack:** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` commit `20efe75cf` (Windows build with four MSVC patches described in [ROTORQUANT_HYPOTHESIS_5090.md](ROTORQUANT_HYPOTHESIS_5090.md))
+**Stack:** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` commit `20efe75cf` (Windows build with four MSVC patches described in [ROTORQUANT_HYPOTHESIS_5090.md](../ROTORQUANT_HYPOTHESIS_5090.md))
 **Scope:** 3 models × 2 rotorquant configs × 4 benchmarks × 3 runs = 72 runs. Gemma 4 models excluded (base upstream does not support `gemma4` architecture — see hypothesis doc for the scope cut).
 **Client:** WSL2 Linux `requests` → Windows llama-server (avoids the ~2s urllib3-on-Windows TTFT bug).
 
@@ -17,7 +17,7 @@
 | Harmonic 27B Q4_K_M (think on) | iso3/iso3 | 22/22 | 19.7/22 | 61.5 t/s | 61.3 t/s | **+0.3%** |
 | Harmonic 27B Q4_K_M (think on) | planar3/f16 | 22/22 | 20.3/22 | 59.1 t/s | 61.3 t/s | **−3.5%** |
 
-Bench log: [experiments/rotorquant_5090/bench.log](experiments/rotorquant_5090/bench.log). Raw per-run JSON: [experiments/rotorquant_5090/results.json](experiments/rotorquant_5090/results.json).
+Bench log: [experiments/rotorquant_5090/bench.log](../experiments/rotorquant_5090/bench.log). Raw per-run JSON: [experiments/rotorquant_5090/results.json](../experiments/rotorquant_5090/results.json).
 
 ## Hypothesis verdict
 
@@ -76,4 +76,4 @@ This ordering (iso3 > planar3) is the opposite of what we see on the other two m
 
 ## Not in this experiment
 
-Everything listed in the "Not tested" section of [ROTORQUANT_HYPOTHESIS_5090.md](ROTORQUANT_HYPOTHESIS_5090.md) still applies: no vLLM/NVFP4 comparisons (wrong engine), no turbo3 comparison (we use turbo4), no long-context (≥64K) runs, no 4-bit variants (planar4/iso4 crash on FA dispatch), no PPL measurement.
+Everything listed in the "Not tested" section of [ROTORQUANT_HYPOTHESIS_5090.md](../ROTORQUANT_HYPOTHESIS_5090.md) still applies: no vLLM/NVFP4 comparisons (wrong engine), no turbo3 comparison (we use turbo4), no long-context (≥64K) runs, no 4-bit variants (planar4/iso4 crash on FA dispatch), no PPL measurement.

@@ -11,6 +11,7 @@ This folder is the analysis and reference output for the local-model-eval projec
 | "Which model should I run on my [5090 / M4 Max / DGX Spark]?" | The matching `MODEL_RANKINGS_<platform>.md` file. Each is a self-contained tier list with quality scores, throughput, and quirks. |
 | "How big a context window can I fit on [5090 / M4 Max]?" | The matching `CONTEXT_CAPACITY_<platform>.md` file. |
 | "Should I use TurboQuant KV cache compression on [5090 / M4 Max]?" | The matching `TURBOQUANT_IMPACT_<platform>.md` file. The 5090 answer is "yes always"; the M4 Max answer is "only when forced." |
+| "Should I use RotorQuant (the newer KV quantizer) on my hardware?" | **[ROTORQUANT_TLDR.md](ROTORQUANT_TLDR.md)** — cross-platform digest. Short answer: yes on M4 Max, yes on Spark for hybrid-attention models, mostly no on 5090. |
 
 ## Per-platform docs
 
@@ -21,6 +22,7 @@ The repo benchmarks three machines directly. Every platform-specific analysis fo
 - [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md) — KV cache spill cliff, full 256K context tests
 - [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md) — what TurboQuant unlocks: more context, sometimes faster
 - [TURBO3_RESULTS_5090.md](TURBO3_RESULTS_5090.md) — full TurboQuant turbo3-vs-turbo4 sweep with thinking on/off
+- [ROTORQUANT_5090.md](ROTORQUANT_5090.md) — rotorquant results on 3 Qwen-family 27B models: turbo4 wins on 2 of 3, Harmonic ties
 
 ### MacBook Pro M4 Max 36 GB (Apple Silicon, macOS, Metal)
 - [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — tier list, includes MLX vs llama.cpp comparison
@@ -39,6 +41,7 @@ These docs span hardware rather than focusing on one machine:
 
 - [HARDWARE_SPECS.md](HARDWARE_SPECS.md) — measured spec sheet + side-by-side throughput on the same models, for the 3 machines we benchmarked directly
 - [HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md) — broader buyer's guide, including machines we cite third-party benchmarks for (M5 Max, M3 Ultra Studio, RTX Pro 6000 Blackwell)
+- [ROTORQUANT_TLDR.md](ROTORQUANT_TLDR.md) — one-screen digest of the three per-platform rotorquant experiments (M4 Max: +19% on Metal, Spark: Qwen win + GLM broken, 5090: turbo4 mostly wins)
 
 ## Raw data
 
