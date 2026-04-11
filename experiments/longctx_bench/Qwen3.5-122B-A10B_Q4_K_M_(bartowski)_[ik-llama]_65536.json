@@ -1,0 +1,48 @@
+{
+  "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
+  "ctx_size": 65536,
+  "input_files": [
+    "tools/thinking_ab.py",
+    "tools/ttft_isolation_test.py",
+    "tools/compare_outputs.py",
+    "tools/ttft_session_test.py",
+    "tools/score_combined.py",
+    "tools/combined_poc.py",
+    "tools/nvfp4_gemma_bench.py",
+    "tools/nvfp4_gemma26b_bench.py",
+    "tools/spark_bench.py",
+    "tools/hard_benchmarks.py",
+    "tools/tuning_experiments.py",
+    "tools/triattention_bench.py",
+    "tools/gemma_e4b_bench.py",
+    "tools/qwen3_8b_comparison.py",
+    "tools/m4max_mlx_bench.py",
+    "tools/rebench_5090_throughput.py",
+    "tools/m4max_bench.py",
+    "tools/extract_and_test.py"
+  ],
+  "prompt_chars": 162456,
+  "metrics": {
+    "prompt_tokens": 47177,
+    "completion_tokens": 390,
+    "elapsed_s": 95.35,
+    "prefill_s": 78.2,
+    "decode_s": 17.15,
+    "prefill_tok_per_sec": 603.25,
+    "decode_tok_per_sec": 22.74,
+    "blended_tok_per_sec": 4.09,
+    "finish_reason": "stop"
+  },
+  "score": {
+    "diff_extracted": true,
+    "1_argparse_added": 1,
+    "2_default_none": 1,
+    "3_threads_throughput": 0,
+    "4_threads_code": 1,
+    "5_only_spark_bench": 1,
+    "6_valid_diff_format": 1,
+    "total": 5
+  },
+  "content": "```diff\n--- a/tools/spark_bench.py\n+++ b/tools/spark_bench.py\n@@ -1070,6 +1070,10 @@ def main():\n         \"--kv\", choices=list(KV_CONFIGS.keys()), default=None,\n         help=\"Override the model's default KV cache config (e.g. 'asym-q8' for f16K/q8V)\",\n     )\n+    parser.add_argument(\n+        \"--max-tokens\", type=int, default=None,\n+        help=\"Override the per-model max_tokens default (default: 16384 or model-specific)\",\n+    )\n     args = parser.parse_args()\n \n     os.makedirs(args.output_dir, exist_ok=True)\n@@ -1085,6 +1089,10 @@ def main():\n         # Per-model overrides\n         chat_template = model_cfg.get(\"chat_template\")\n         max_tokens = model_cfg.get(\"max_tokens\", 16384)\n+        if args.max_tokens is not None:\n+            max_tokens = args.max_tokens\n+        else:\n+            max_tokens = model_cfg.get(\"max_tokens\", 16384)\n         request_timeout = model_cfg.get(\"request_timeout\", 600)\n \n         if args.kv:\n@@ -1165,7 +1173,7 @@ def main():\n                 if not args.throughput_only:\n                     bench_results = run_code_benchmarks(\n                         args.port, model_name, kv_label, args.output_dir,\n-                        max_tokens=max_tokens, request_timeout=request_timeout,\n+                        max_tokens=max_tokens, request_timeout=request_timeout\n                     )\n                     all_results.extend(bench_results)\n \n```",
+  "reasoning": ""
+}

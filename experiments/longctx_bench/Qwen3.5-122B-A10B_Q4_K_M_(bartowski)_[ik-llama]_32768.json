@@ -1,0 +1,40 @@
+{
+  "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
+  "ctx_size": 32768,
+  "input_files": [
+    "tools/thinking_ab.py",
+    "tools/ttft_isolation_test.py",
+    "tools/compare_outputs.py",
+    "tools/ttft_session_test.py",
+    "tools/spark_bench.py",
+    "tools/score_combined.py",
+    "tools/combined_poc.py",
+    "tools/nvfp4_gemma_bench.py",
+    "tools/nvfp4_gemma26b_bench.py",
+    "tools/hard_benchmarks.py"
+  ],
+  "prompt_chars": 83368,
+  "metrics": {
+    "prompt_tokens": 23670,
+    "completion_tokens": 448,
+    "elapsed_s": 56.17,
+    "prefill_s": 37.78,
+    "decode_s": 18.39,
+    "prefill_tok_per_sec": 626.6,
+    "decode_tok_per_sec": 24.36,
+    "blended_tok_per_sec": 7.98,
+    "finish_reason": "stop"
+  },
+  "score": {
+    "diff_extracted": true,
+    "1_argparse_added": 1,
+    "2_default_none": 1,
+    "3_threads_throughput": 1,
+    "4_threads_code": 1,
+    "5_only_spark_bench": 1,
+    "6_valid_diff_format": 1,
+    "total": 6
+  },
+  "content": "```diff\n--- a/tools/spark_bench.py\n+++ b/tools/spark_bench.py\n@@ -630,6 +630,10 @@ def main():\n         \"--kv\", choices=list(KV_CONFIGS.keys()), default=None,\n         help=\"Override the model's default KV cache config (e.g. 'asym-q8' for f16K/q8V)\",\n     )\n+    parser.add_argument(\n+        \"--max-tokens\", type=int, default=None,\n+        help=\"Override the per-model max_tokens default from the command line\",\n+    )\n     args = parser.parse_args()\n \n     os.makedirs(args.output_dir, exist_ok=True)\n@@ -643,6 +647,10 @@ def main():\n         chat_template = model_cfg.get(\"chat_template\")\n         max_tokens = model_cfg.get(\"max_tokens\", 16384)\n         request_timeout = model_cfg.get(\"request_timeout\", 600)\n+\n+        # CLI override takes precedence over per-model config\n+        if args.max_tokens is not None:\n+            max_tokens = args.max_tokens\n \n         if args.kv:\n             kv_types = [args.kv]\n@@ -723,7 +731,7 @@ def main():\n                 print(\" ready\")\n \n                 result = run_throughput_benchmark(\n-                    args.port, model_name, kv_label,\n+                    args.port, model_name, kv_label, max_tokens=max_tokens,\n                     request_timeout=request_timeout,\n                 )\n                 all_results.append(result)\n@@ -731,7 +739,7 @@ def main():\n                 if not args.throughput_only:\n                     bench_results = run_code_benchmarks(\n                         args.port, model_name, kv_label, args.output_dir,\n-                        max_tokens=max_tokens, request_timeout=request_timeout,\n+                        max_tokens=max_tokens, request_timeout=request_timeout\n                     )\n                     all_results.extend(bench_results)\n```",
+  "reasoning": ""
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
+    "ctx_size": 32768,
+    "prefill_tok_per_sec": 626.6,
+    "decode_tok_per_sec": 24.36,
+    "blended_tok_per_sec": 7.98,
+    "prompt_tokens": 23670,
+    "completion_tokens": 448,
+    "elapsed_s": 56.17,
+    "finish_reason": "stop",
+    "score": 6,
+    "score_detail": {
+      "diff_extracted": true,
+      "1_argparse_added": 1,
+      "2_default_none": 1,
+      "3_threads_throughput": 1,
+      "4_threads_code": 1,
+      "5_only_spark_bench": 1,
+      "6_valid_diff_format": 1,
+      "total": 6
+    }
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
+    "ctx_size": 65536,
+    "prefill_tok_per_sec": 603.25,
+    "decode_tok_per_sec": 22.74,
+    "blended_tok_per_sec": 4.09,
+    "prompt_tokens": 47177,
+    "completion_tokens": 390,
+    "elapsed_s": 95.35,
+    "finish_reason": "stop",
+    "score": 5,
+    "score_detail": {
+      "diff_extracted": true,
+      "1_argparse_added": 1,
+      "2_default_none": 1,
+      "3_threads_throughput": 0,
+      "4_threads_code": 1,
+      "5_only_spark_bench": 1,
+      "6_valid_diff_format": 1,
+      "total": 5
+    }
+  },
+  {
+    "model": "Qwen3.5-122B-A10B Q4_K_M (bartowski) [ik-llama]",
+    "ctx_size": 131072,
+    "prefill_tok_per_sec": 553.34,
+    "decode_tok_per_sec": 19.57,
+    "blended_tok_per_sec": 2.33,
+    "prompt_tokens": 94147,
+    "completion_tokens": 451,
+    "elapsed_s": 193.19,
+    "finish_reason": "stop",
+    "score": 6,
+    "score_detail": {
+      "diff_extracted": true,
+      "1_argparse_added": 1,
+      "2_default_none": 1,
+      "3_threads_throughput": 1,
+      "4_threads_code": 1,
+      "5_only_spark_bench": 1,
+      "6_valid_diff_format": 1,
+      "total": 6
+    }
+  }
+]

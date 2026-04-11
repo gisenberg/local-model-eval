@@ -55,6 +55,20 @@ The fastest S-tier configuration on Spark. Same model file as our other Qwen3.5-
 
 **Verdict:** This is now the recommended Spark configuration for Qwen3.5-122B. 100% on every benchmark, 26 tok/s, fits comfortably in 128 GB unified memory.
 
+**Long-context performance:** Tested at 32K, 64K, and 128K context with a real coding task (~20–80K tokens of this repo's `tools/*.py` files in the prompt + a specific feature-add request).
+
+| Context | Prefill rate | Decode rate | Total time | Diff quality |
+|---|---|---|---|---|
+| 32K (~24K prompt) | 627 tok/s | **24.4 tok/s** | 56s | **6/6** |
+| 64K (~47K prompt) | 603 tok/s | 22.7 tok/s | 95s | 5/6 |
+| 128K (~94K prompt) | 553 tok/s | **19.6 tok/s** | 193s | **6/6** |
+
+Decode rate degrades only ~20% from 32K to 128K (24.4 → 19.6 tok/s). The 12 full-attention layers in the DeltaNet hybrid are O(n²) but the bandwidth-bound decode dominates over attention compute even at 94K KV positions, so the practical degradation is mild. **Total time at long contexts is dominated by prefill** — at 128K, prefill is 170s of the 193s total. Once the prompt is processed, generation is fast.
+
+Quality is stable: 6/6 at both 32K and 128K, 5/6 at 64K is a single-shot variance (the model wrote a slightly less complete diff for the medium-context run, missing one of the function-call updates). The model successfully reads `spark_bench.py` from the *middle* of the context (positions 5/10, 9/18, and 14/27 respectively across the three sizes) — distant retrieval works, this isn't just a recency-attention shortcut.
+
+**Realistic usage:** A 30K-token codebase context + 400-token diff response is about 50 seconds end-to-end. A 90K-token large codebase is ~3 minutes. Both are interactive enough for a real coding workflow.
+
 ---
 
 ### Qwen3.5-122B-A10B Q4_K_M (unsloth) on mainline llama.cpp
