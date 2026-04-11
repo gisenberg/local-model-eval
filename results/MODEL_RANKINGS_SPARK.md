@@ -25,6 +25,37 @@ The implication: **dense >20B models are not viable for interactive use.** A den
 
 ---
 
+## Summary table
+
+All benchmarks are single-shot at `temperature=0`, `-fa on`, `f16` KV, `--no-mmap`, 32K context. Quality is the 3-benchmark coding suite (Expression Evaluator + A* Pathfinding + LRU Cache with TTL, 17 tests total; some entries show bonus tests above 17). Throughput is sustained tok/s on the coding benchmarks (not peak, not blended with prefill). See per-model sections below for full breakdowns.
+
+| Tier | Model | Engine | Family | Active / Total | Weights | Tok/s | Score | Note |
+|---|---|---|---|---|---|---|---|---|
+| **S** | Qwen3.5-122B-A10B Q4_K_M (bartowski) | **ik-llama** | Qwen | 10B / 122B | 71 GB | **26.0** | **17/17** | Recommended daily driver. Fastest S-tier. |
+| **S** | Qwen3.5-122B-A10B Q4_K_M (unsloth) | mainline | Qwen | 10B / 122B | 72 GB | 21.0 | **18/17** | Highest absolute score (with bonus A* test). |
+| **A** | GLM-4.5-Air Q4_K_M (bartowski) | mainline | Z.AI | 12B / 106B | 70 GB | 21.7 | 15/17 | First non-Qwen A-tier. Cross-family validation. |
+| **A** | Qwen3.5-122B-A10B-REAP-20 Q4_K_M (0xSero) | ik-llama | Qwen | 10B / 99B | **57 GB** | **29.1** | 14/17 | 20% expert-pruned. Faster + smaller, real quality drop on ExprEval. |
+| **A** | Qwen3.5-122B-A10B Q4_K_M (bartowski) | mainline | Qwen | 10B / 122B | 71 GB | 25.8 | 13/17 | Same model file as S-tier ik-llama entry. Engine choice matters. |
+| **B** | Qwen3-Coder-Next UD-Q4_K_M (unsloth) | mainline | Qwen | 3B / 80B | 46 GB | **50.2** | 14/17 | Fastest large model on Spark. "First draft" speed. |
+| **B** | Nemotron-3-Super-120B-A12B Q4_K_M (bartowski) | mainline | NVIDIA | 12B / 120B | 87 GB | 19.7 | 11/17 | Thinking mandatory, restrained. NVIDIA-optimized kernels. |
+| **C** | MiniMax-M2.5 UD-Q3_K_XL (unsloth) | mainline | MiniMaxAI | 10B / 230B | 96 GB | 29.6 | 5/5 + 2 TOs | Capable but thinks too long — A\*/LRU timed out at 25 min. |
+| **D** | Mistral-Small-4-119B-2603 Q4_K_M (bartowski) | mainline | Mistral | 6.5B / 119B | 69 GB | 8.0 | 7/17 | Slow AND buggy with `reasoning_effort=none`. Needs retest with thinking on. |
+| **F** | Gemma 4 31B-IT Q8_0 (unsloth) | mainline | Google | 31B (dense) | 31 GB | 6.7 | n/a | Hits the bandwidth ceiling. Proves the thesis. |
+
+**Quick-pick guide:**
+- **Best daily driver:** Qwen3.5-122B bartowski + ik-llama (17/17 at 26 tok/s)
+- **Fastest good model:** Qwen3-Coder-Next (14/17 at 50 tok/s) — rough first drafts
+- **Memory-constrained:** Qwen3.5-122B REAP-20 (14/17 at 29 tok/s, 14 GB smaller)
+- **Cross-family sanity check:** GLM-4.5-Air (15/17 at 22 tok/s) — different architecture, similar results
+- **Don't use on Spark:** MiniMax-M2.5 (timeouts), Mistral-Small-4 with reasoning off (buggy), Gemma 4 31B or any dense >20B model (bandwidth-bound)
+
+**Experimental / cautionary variants** (not listed above but documented in the A-tier section):
+- Qwen3.5-122B bartowski + `-ctv q8_0` asymmetric KV → **−46% throughput** (14 tok/s) at identical quality
+- Qwen3.5-122B bartowski + mainline + thinking ON → **8/17** (worse than thinking off) — same engine, same model, different deterministic path
+- Speculative decoding on Qwen3.5-122B → **blocked** in mainline (DeltaNet hybrid incompatibility), **broken** in ik-llama (3× slowdown, wrong output)
+
+---
+
 ## S-Tier: Reliable Excellence
 
 ### Qwen3.5-122B-A10B Q4_K_M (bartowski) on ik-llama
