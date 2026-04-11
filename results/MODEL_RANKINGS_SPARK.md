@@ -130,6 +130,34 @@ This **does not** mean unsloth is better than bartowski in general:
 
 ---
 
+### Qwen3.5-122B-A10B-REAP-20 Q4_K_M (0xSero) on ik-llama
+Interesting experiment: 0xSero's REAP-20 variant uses the [REAP (Routing-Enhanced Activation Pruning)](https://arxiv.org/abs/2510.13999) method to drop 20% of experts per layer (256 → 205) without retraining. **Total params drop from 122B to 99B; active params stay at 10B per token.** Direct comparison to the unpruned bartowski base running on the same engine.
+
+| Metric | Base (bartowski) | **REAP-20** (0xSero) | Δ |
+|---|---|---|---|
+| Single-shot (temp 0) | 17/17 | **14/17** | **−3 (−18%)** |
+| Throughput | 26.0 tok/s | **29.1 tok/s** | **+12%** |
+| Weight size | 71 GB (2 shards) | **57 GB** (1 file) | **−14 GB** |
+| KV cache | same (same active params) | same | 0 |
+| Memory headroom freed | — | ~14 GB | — |
+
+**Per-benchmark breakdown:**
+| Benchmark | Base | REAP-20 | Δ | Notes |
+|---|---|---|---|---|
+| Expression Evaluator | 5/5 | **1/5** | **−4** | Real bug: parser adds an `('EOF', None)` sentinel but the termination check `self.pos < len(self.tokens)` doesn't skip it. After parsing a valid expression, the leftover EOF token triggers "Unexpected token at position 2". The base model didn't make this mistake. |
+| A* Pathfinding | 7/6 | 7/6 | 0 | Perfect + bonus. Identical to base. |
+| LRU Cache with TTL | 5/6 | **6/6** | +1 | REAP-20 actually scored slightly *better* on LRU (full 6/6 vs 5/6). |
+
+**The 97.9% retention claim doesn't hold on our benchmarks.** 0xSero's README claims 97.9% capability retention based on HumanEval/MBPP, but our coding benchmarks are more specific and harder. The REAP pruning removed experts that were apparently load-bearing for the careful logic of parser termination. Algorithmic tasks (A* graph search, LRU data structures) were unaffected — those seem to use the retained expert set fine. Expression parsing was the specific failure mode.
+
+**What this tells us about REAP as a technique:** REAP's assumption is that low-activation experts can be dropped with minimal impact. On aggregate benchmarks this is roughly true, but at the individual-prompt level you're rolling dice: some tasks land on experts that got pruned. Our 3 benchmarks happen to hit one (ExprEval) that degrades and two that don't. A multi-run benchmark at temp=0.3 would smooth this out — the base model might land on a different ExprEval impl path on some runs and the pruned model might land on a correct one — but single-shot at temp=0, the REAP variant shows a real 3-point drop.
+
+**When is REAP-20 worth it?** If you specifically need to free ~14 GB of memory for KV cache, another model, or for a tighter-budget deployment, REAP-20 is an A-tier (14/17 = 82%) model running 12% faster than the unpruned base. If you have the memory headroom, the unpruned base at 17/17 is strictly better quality at slightly slower speed.
+
+**Verdict:** Mid A-tier. Useful specifically for memory-constrained scenarios or as a "fast second-opinion" pair with the full model. Not a free win — the quality drop is real and structural, not just noise.
+
+---
+
 ### Qwen3.5-122B-A10B Q4_K_M (bartowski) — asymmetric KV experiment
 Testing [Nauful's KV quantization advice](../../../.claude/projects/-home-gisenberg-git-gisenberg-local-model-eval/memory/feedback_kv_quantization.md): "don't quantize K cache, only V to q8_0 — quantizing K breaks tool calls." Same model, same prompts, same temp=0. Only `-ctv` changed from `f16` to `q8_0`.
 
