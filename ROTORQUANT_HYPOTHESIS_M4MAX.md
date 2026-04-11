@@ -72,9 +72,65 @@ Direction: modestly confident on the *order* (planar3/f16 > planar3/planar3 > tu
 
 **This is falsifiable.** If any rotorquant config lands between 46 and 60 tok/s on this model at 16K context, H1 is supported. If it lands below 46, rotorquant is worse than turbo4 on Metal and our "compute overhead dominates" explanation is wrong (or the Metal kernel quality is poor). If it lands above 60, rotorquant is beating f16 on Metal, which would be the strongest possible result.
 
-### H2 (context) — RotorQuant does NOT fix the `-ub 256` problem
+### H2 (context) — RotorQuant does NOT fix the `-ub 256` problem, but it unlocks new context tiers on dense models where KV cache IS the bottleneck
 
-The compute buffer is sized by `n_ubatch × n_ctx`, independent of KV format. KV savings from planar3 (maybe 200 MiB at 32K on this model class) are two orders of magnitude smaller than the compute buffer (4.2 GB at `-ub 256` 32K). **Gemma 4 26B-A4B Q6_K at 32K will still need `-ub 256`** regardless of KV format. We should test at 32K with `-ub 256` to confirm this isn't accidentally affected.
+The compute buffer is sized by `n_ubatch × n_ctx`, independent of KV format. KV savings from planar3 (maybe 200 MiB at 32K on the Gemma 4 26B-A4B class) are two orders of magnitude smaller than the compute buffer (4.2 GB at `-ub 256` 32K). **Gemma 4 26B-A4B Q6_K at 32K will still need `-ub 256`** regardless of KV format. We should test at 32K with `-ub 256` to confirm this isn't accidentally affected.
+
+**But** — and this is the part we missed initially — the KV cache IS a meaningful share of the working set on the *dense* models in our lineup, and those are the ones where the Metal working set ceiling bites hardest today. Rotorquant's 10.3× KV compression (same as turbo4) unlocks real context headroom there.
+
+#### Per-model context math (projections)
+
+Memory budget: ~28,753 MiB of free Metal working set (`recommendedMaxWorkingSetSize = 30,150 MB` minus macOS overhead). For each model, the per-token KV cost + compute buffer + weights must stay under this.
+
+| Model | Weights | KV/tok (f16) | Compute @ `-ub 256` | **f16 max ctx** | **turbo4 max ctx** | **planar3 max ctx** |
+|---|---|---|---|---|---|---|
+| Nemotron 3 Nano 4B Q4 | 2.8 GB | ~16 KB | scales | 32K+ | 32K+ | 32K+ |
+| Qwen 3.5 9B Q4 | 5.5 GB | ~128 KB | scales | 32K+ | 32K+ | 32K+ |
+| **Gemma 4 26B-A4B Q6_K** (MoE) | 22.6 GB | ~120 KB global-only (sliding window for others) | **dominates** | 32K (measured) | 32K (measured, slower) | 32K (no gain) |
+| **Gemma 4 26B-A4B Q4_K_M** (MoE) | 16.5 GB | same as Q6 | scales | 32K (measured) | ~48K projected | ~48K projected (no material improvement over turbo4) |
+| **Qwen 3.5 27B Opus-Distilled Q4** (dense GQA) | 16.5 GB | ~150 KB | scales | **~32K** (measured) | ~48K projected | **~128K projected with `-ub 128`** |
+| **Gemma 4 31B-IT Q4_K_M** (dense full attention) | 18.3 GB | ~870 KB | scales | **won't fit at 16K** | 32K (measured) | **~48K at `-ub 256`, ~64K at `-ub 128` projected** |
+
+Math for the two headline cases:
+
+**Gemma 4 31B-IT Q4_K_M**:
+- Weights: 18.3 GB fixed
+- f16 KV at 16K: 870 KB × 16,384 = 13.9 GB — plus 18.3 weights + 4.2 compute = 36.4 GB → OOM (matches our earlier measurement)
+- turbo4 KV at 32K: ~2.7 GB — plus weights + compute (at `-ub 256`) = ~25.2 GB → fits (our current config)
+- **planar3 KV at 32K**: ~2.7 GB (same ratio as turbo4) → fits at the same budget as turbo4
+- **planar3 KV at 48K, `-ub 256`**: 4.1 GB KV + 6.3 GB compute + 18.3 weights = **28.7 GB — just under the free budget**
+- **planar3 KV at 64K, `-ub 128`**: 5.4 GB KV + 4.2 GB compute + 18.3 weights = **27.9 GB — comfortable**
+
+Practical gain for Gemma 31B: **32K → 48-64K** if rotorquant Metal backend works. That's enough to fit a realistic coding task with 40 KB of repo context plus room for a diff response, at a model where quality is measured-best (17/17).
+
+**Qwen 3.5 27B Opus-Distilled Q4_K_M**:
+- Weights: 16.5 GB fixed
+- f16 KV at 32K: ~4.8 GB — plus 16.5 + 4.2 = 25.5 GB → fits (our current config)
+- f16 KV at 64K, `-ub 128`: 9.6 + 4.2 + 16.5 = 30.3 GB → OOM (over by 1.5 GB)
+- **planar3 KV at 64K, `-ub 128`**: 0.96 GB KV + 4.2 + 16.5 = **21.7 GB — huge headroom**
+- **planar3 KV at 128K, `-ub 128`**: 1.92 + 8.4 + 16.5 = **26.8 GB — fits comfortably**
+- **planar3 KV at 256K, `-ub 64`**: 3.84 + 8.4 + 16.5 = **28.7 GB — at the edge**
+
+Practical gain for Qwen 27B Opus: **32K → 128K-256K**, a 4-8× expansion of effective context. This is the biggest context win in the entire M4 Max model lineup if rotorquant works — and it's the model where we have a clean f16 baseline to compare against.
+
+#### What rotorquant does NOT help with
+
+- **Gemma 4 26B-A4B** (either Q6_K or Q4_K_M): the KV cache is <1% of the working set because sliding window + MoE. Compression saves literally nothing. Context is bounded by compute buffer, which is unrelated to KV format. Rotorquant is context-neutral here.
+- **Any small model (≤9B)**: already has 20+ GB of headroom at 32K. Rotorquant doesn't move the ceiling.
+- **Any model above ~22 GB of weights**: compute buffer is already bleeding into the margin. Compressing KV saves 1-2 GB at best, not enough to buy a context tier.
+
+#### Summary table (context tiers if rotorquant works on Metal)
+
+| Model | Current max ctx | With planar3 (projected) | Practical win? |
+|---|---|---|---|
+| Nemotron 4B | 32K | 32K | No (already huge) |
+| Qwen 3.5 9B | 32K | 32K | No (already huge) |
+| Gemma 4 26B-A4B Q6_K | 32K | 32K | **No** (compute buffer, not KV) |
+| Gemma 4 26B-A4B Q4_K_M | 32K | 32K-48K | Minor |
+| Qwen 3.5 27B Opus Q4 | 32K | **128K-256K** | **Yes, biggest win** |
+| Gemma 4 31B-IT Q4 | 32K (turbo4) | **48-64K** | **Yes, with quality trade** |
+
+**The actionable story**: rotorquant's context benefit on M4 Max is concentrated in the **dense 27-31B weight class**, which is also the class where we measured the "KV cache actually matters" effect. Everything else is either already big enough or bounded by something rotorquant can't touch.
 
 ### H3 (the Gemma 31B case) — planar3/iso3 as turbo4 replacement
 
