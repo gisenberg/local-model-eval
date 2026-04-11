@@ -34,7 +34,7 @@ Only **Qwen 3.5 27B Opus-Distilled Q4_K_M** (architecture name `qwen35`) ran suc
 
 ## What we measured on Qwen 3.5 27B Opus-Distilled Q4_K_M
 
-Six configurations, all at temp 0, single-shot, `-np 1 --jinja --reasoning-budget 0`, 3-benchmark coding suite (Expression Evaluator + A* Pathfinding + LRU Cache with TTL, 17 tests total). Baseline comes from our existing [MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md) at default `-ub 512`.
+Six configurations, all at temp 0, single-shot, `-np 1 --jinja --reasoning-budget 0`, 3-benchmark coding suite (Expression Evaluator + A* Pathfinding + LRU Cache with TTL, 17 tests total). Baseline comes from our existing [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) at default `-ub 512`.
 
 | Config | Context | `-ub` | Avg tok/s | Score | Δ vs baseline |
 |---|---|---|---|---|---|
@@ -137,14 +137,15 @@ Based on what we measured (and what we couldn't measure), here's the updated adv
 
 ## Raw run artifacts
 
-- Experiment outputs: [`experiments/rotorquant_m4max_bench/`](experiments/rotorquant_m4max_bench/)
-- Bench runner: [`tools/m4max_rotorquant_bench.py`](tools/m4max_rotorquant_bench.py)
-- Scorer: [`tools/score_combined.py`](tools/score_combined.py) (same as other M4 Max runs)
-- Baseline for comparison: [`results/MODEL_RANKINGS_M4MAX.md`](results/MODEL_RANKINGS_M4MAX.md) (Qwen 27B Opus row)
+- Experiment outputs: [`experiments/rotorquant_m4max_bench/`](../experiments/rotorquant_m4max_bench/)
+- Bench runner: [`tools/m4max_rotorquant_bench.py`](../tools/m4max_rotorquant_bench.py)
+- Scorer: [`tools/score_combined.py`](../tools/score_combined.py) (same as other M4 Max runs)
+- Baseline for comparison: [`MODEL_RANKINGS_M4MAX.md`](MODEL_RANKINGS_M4MAX.md) (Qwen 27B Opus row)
 
 ## See also
 
 - [ROTORQUANT_HYPOTHESIS_M4MAX.md](ROTORQUANT_HYPOTHESIS_M4MAX.md) — the pre-experiment hypothesis this doc tests
-- [ROTORQUANT_HYPOTHESIS.md](ROTORQUANT_HYPOTHESIS.md) — Spark version of the pre-experiment hypothesis
-- [ROTORQUANT_HYPOTHESIS_5090.md](ROTORQUANT_HYPOTHESIS_5090.md) — 5090 version
-- [results/TURBOQUANT_IMPACT_M4MAX.md](results/TURBOQUANT_IMPACT_M4MAX.md) — the "turbo4 KV is slower than f16 on Metal" finding that motivated this experiment
+- [ROTORQUANT_HYPOTHESIS_SPARK.md](../ROTORQUANT_HYPOTHESIS_SPARK.md) — Spark version of the pre-experiment hypothesis
+- [ROTORQUANT_SPARK.md](ROTORQUANT_SPARK.md) — Spark post-experiment results (net-negative, as predicted)
+- [ROTORQUANT_HYPOTHESIS_5090.md](../ROTORQUANT_HYPOTHESIS_5090.md) — 5090 version
+- [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) — the "turbo4 KV is slower than f16 on Metal" finding that motivated this experiment

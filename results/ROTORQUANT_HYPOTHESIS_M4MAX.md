@@ -3,7 +3,7 @@
 **Date:** 2026-04-11
 **Hardware:** Apple M4 Max (14C CPU / 32C GPU binning), 36 GB unified LPDDR5X @ 410 GB/s, ~30 GB Metal working set
 **Stack:** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` built for Metal (`-DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON`)
-**Comparator:** our own measured M4 Max baselines in [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md)
+**Comparator:** our own measured M4 Max baselines in [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md)
 
 RotorQuant ships four symmetric KV cache quantizers (`iso3`, `planar3`, `planar4`, `iso4`) and an asymmetric/K-only `planar3 / f16` mode with deferred K-quantization (K stays FP16 during prefill, compresses post-prefill). The technique is Givens 2D or quaternion 4D block-diagonal rotations with ~64× fewer FMAs than TurboQuant's Walsh-Hadamard butterfly — [scrya.com/rotorquant paper](https://www.scrya.com/rotorquant.pdf) claims "better PPL, 28% faster decode, 5× faster prefill" than TurboQuant at the same 10.3× compression ratio, measured on Llama 3.1 8B Q4_K_M on an RTX 5090.
 
@@ -11,7 +11,7 @@ We're running it on our **S and A tier models from MODEL_RANKINGS_M4MAX.md**, on
 
 ## What's different about the M4 Max
 
-Three findings from [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md), [results/CONTEXT_CAPACITY_M4MAX.md](results/CONTEXT_CAPACITY_M4MAX.md), and [results/TURBOQUANT_IMPACT_M4MAX.md](results/TURBOQUANT_IMPACT_M4MAX.md) set the prior:
+Three findings from [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md), [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md), and [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) set the prior:
 
 1. **TurboQuant turbo4 KV is slower than f16 KV on Metal.** Measured, not projected: Gemma 4 26B-A4B Q6_K at 16K context runs at 60.3 tok/s with f16 KV and 46.0 tok/s with turbo4 KV on the same machine. **−23% throughput for a KV format that's supposed to save bandwidth.** The 5090 sees the opposite sign on this comparison. Our working explanation is that Apple Silicon is bandwidth-constrained on a different axis than CUDA — the dominant per-token bandwidth cost is reading the ~22 GB of active weights, so the dequantization compute overhead on each KV read exceeds the bandwidth savings, and the bigger the dequant work per element the worse the tradeoff. **This is the central finding rotorquant is being tested against.**
 
@@ -187,7 +187,7 @@ Four primary runs + one backup, same 3-benchmark coding suite (Expression Evalua
 | 4 | Qwen 3.5 27B Opus-Distilled Q4_K_M | 32K | `planar3 / f16` | 11/17 @ 13 tok/s (f16/f16) | Lowest risk, lowest interest |
 | 5 (fallback) | Gemma 4 26B-A4B Q6_K | 16K | `iso3 / iso3` | if planar3/planar3 crashes — same model, different rotation block size | — |
 
-Engine: `johndpope/llama-cpp-turboquant` at `feature/planarquant-kv-cache`, built for Metal (`-DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON`). Comparison baselines are from [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md) — already in the rankings doc, not rebenched.
+Engine: `johndpope/llama-cpp-turboquant` at `feature/planarquant-kv-cache`, built for Metal (`-DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON`). Comparison baselines are from [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — already in the rankings doc, not rebenched.
 
 We'll use the same `tools/m4max_bench.py` script with a new list of configs, the `-b 2048 -ub 256` workaround where needed for 32K runs, and write outputs to `experiments/rotorquant_m4max_bench/`.
 
@@ -209,7 +209,7 @@ We'll use the same `tools/m4max_bench.py` script with a new list of configs, the
 
 ## See also
 
-- [ROTORQUANT_HYPOTHESIS_SPARK.md](ROTORQUANT_HYPOTHESIS_SPARK.md) — the DGX Spark version of this document (written first). That one predicts rotorquant is net-negative on Spark MoE; this one is genuinely uncertain for M4 Max because of the turbo4-is-slower-than-f16 prior. The actual experiment results are in [results/ROTORQUANT_SPARK.md](results/ROTORQUANT_SPARK.md).
-- [results/MODEL_RANKINGS_M4MAX.md](results/MODEL_RANKINGS_M4MAX.md) — baseline measurements we're comparing against.
-- [results/TURBOQUANT_IMPACT_M4MAX.md](results/TURBOQUANT_IMPACT_M4MAX.md) — the underlying story for *why* we expect rotorquant to have a chance on Metal where turbo4 didn't.
-- [results/CONTEXT_CAPACITY_M4MAX.md](results/CONTEXT_CAPACITY_M4MAX.md) — the compute-buffer finding that bounds what any KV quantizer can achieve here.
+- [ROTORQUANT_HYPOTHESIS_SPARK.md](../ROTORQUANT_HYPOTHESIS_SPARK.md) — the DGX Spark version of this document (written first). That one predicts rotorquant is net-negative on Spark MoE; this one is genuinely uncertain for M4 Max because of the turbo4-is-slower-than-f16 prior. The actual experiment results are in [ROTORQUANT_SPARK.md](ROTORQUANT_SPARK.md).
+- [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — baseline measurements we're comparing against.
+- [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) — the underlying story for *why* we expect rotorquant to have a chance on Metal where turbo4 didn't.
+- [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — the compute-buffer finding that bounds what any KV quantizer can achieve here.

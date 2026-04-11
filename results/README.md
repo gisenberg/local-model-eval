@@ -26,9 +26,12 @@ The repo benchmarks three machines directly. Every platform-specific analysis fo
 - [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — tier list, includes MLX vs llama.cpp comparison
 - [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — Metal working set ceiling, the `n_ubatch` finding, OOM-not-spill failure mode
 - [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) — why TurboQuant turbo4 is *slower* than f16 on Apple Silicon
+- [ROTORQUANT_HYPOTHESIS_M4MAX.md](ROTORQUANT_HYPOTHESIS_M4MAX.md) — pre-experiment prediction for rotorquant on Metal
+- [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) — actual rotorquant results: K-only +19% vs f16, Gemma 4 models blocked by fork base
 
 ### NVIDIA DGX Spark (GB10 Grace Blackwell, 128 GB unified, Linux/aarch64)
 - [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md) — bandwidth-bound model lineup, MoE-favorable
+- [ROTORQUANT_SPARK.md](ROTORQUANT_SPARK.md) — rotorquant results (net-negative on Spark MoE, as predicted)
 
 ## Cross-platform docs
 
@@ -45,8 +48,10 @@ These docs span hardware rather than focusing on one machine:
 
 Files in this folder follow `<TYPE>_<PLATFORM>.md` where:
 
-- `<TYPE>` is one of: `MODEL_RANKINGS`, `CONTEXT_CAPACITY`, `TURBOQUANT_IMPACT`, `TURBO3_RESULTS`
+- `<TYPE>` is one of: `MODEL_RANKINGS`, `CONTEXT_CAPACITY`, `TURBOQUANT_IMPACT`, `TURBO3_RESULTS`, `ROTORQUANT`, `ROTORQUANT_HYPOTHESIS`
 - `<PLATFORM>` is one of: `5090`, `M4MAX`, `SPARK`
+
+Note: the `ROTORQUANT_<PLATFORM>.md` files hold post-experiment results (the folder name provides the "results" context), while `ROTORQUANT_HYPOTHESIS_<PLATFORM>.md` files hold the pre-experiment predictions. The pre-experiment docs for Spark and 5090 are currently still at the repo root; the M4 Max pair live in this folder for the cleaner naming.
 
 Cross-platform docs (`HARDWARE_SPECS.md`, `HARDWARE_SHORTLIST.md`, this `README.md`) don't have a platform suffix.
 
