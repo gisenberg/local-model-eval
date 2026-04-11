@@ -289,6 +289,22 @@ def main():
             blocks = [loosen_pytest_raises(b) for b in blocks]
 
             impl, test = split_impl_and_test(blocks)
+
+            # Multi-block outputs where the test references impl symbols
+            # without importing them (e.g., directly uses `TTLCache(...)`
+            # without `from X import TTLCache`) are also single-file expectations.
+            # The model wrote two blocks but treated them as the same module
+            # at runtime. Detect this and fall back to single-file mode.
+            if (not single_file
+                and impl and test
+                and detect_test_module(test, impl) is None):
+                impl_classes = set(re.findall(r"^class (\w+)", impl, re.MULTILINE))
+                if impl_classes and any(c in test for c in impl_classes):
+                    # Test uses impl classes by name but doesn't import them.
+                    # Treat as single-file: combine impl + test.
+                    single_file = True
+                    blocks = ["\n\n".join([impl, test])]
+
             # Auto-detect module name from the test's import statement.
             # The model may name the module differently than our default
             # (e.g., 'ttl_cache' vs 'lru_cache'). Use what the test expects

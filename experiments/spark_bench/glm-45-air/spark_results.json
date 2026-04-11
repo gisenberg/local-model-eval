@@ -1,0 +1,44 @@
+[
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "throughput",
+    "tok_per_sec": 21.72,
+    "tokens": 875,
+    "ttft_s": 0.539,
+    "total_s": 40.826
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "Expression Evaluator",
+    "tok_per_sec": 21.2,
+    "tokens": 1970,
+    "elapsed_s": 92.73,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 9557
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "A* Pathfinding",
+    "tok_per_sec": 21.1,
+    "tokens": 2115,
+    "elapsed_s": 100.14,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 7690
+  },
+  {
+    "model": "GLM-4.5-Air Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "LRU Cache with TTL",
+    "tok_per_sec": 21.1,
+    "tokens": 1855,
+    "elapsed_s": 87.81,
+    "finish": "stop",
+    "thinking_chars": 0,
+    "content_chars": 7550
+  }
+]

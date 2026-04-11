@@ -8,7 +8,7 @@
     "errors": 0,
     "total": 5,
     "status": "ok",
-    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmp8kkorgr8\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_errors PASSED                         [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/venvs/hf/bin/python\ncachedir: .pytest_cache\nrootdir: /tmp/tmprcdwx2ec\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_errors PASSED                         [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
     "stderr": ""
   }
 ]

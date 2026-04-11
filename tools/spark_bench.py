@@ -133,7 +133,7 @@ MODEL_CONFIGS = {
     },
     "nemotron-3-super": {
         "name": "Nemotron-3-Super-120B-A12B Q4_K_M (bartowski)",
-        "path": f"{MODELS_DIR}/bartowski/Nemotron-3-Super-120B-A12B-GGUF/nvidia_Nemotron-3-Super-120B-A12B-Q4_K_M/nvidia_Nemotron-3-Super-120B-A12B-Q4_K_M-00001-of-00002.gguf",
+        "path": f"{MODELS_DIR}/bartowski/Nemotron-3-Super-120B-A12B-GGUF/nvidia_Nemotron-3-Super-120B-A12B-Q4_K_M/nvidia_Nemotron-3-Super-120B-A12B-Q4_K_M-00001-of-00003.gguf",
         "server": "standard",
         "kv_configs": ["f16"],
         "context_sizes": [32768, 65536, 131072],

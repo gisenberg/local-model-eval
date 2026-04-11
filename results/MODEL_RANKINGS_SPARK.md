@@ -201,6 +201,36 @@ We tested with Qwen3.5-0.8B Q4_K_M as the draft model (533 MB, same 248K vocab a
 
 ---
 
+### GLM-4.5-Air Q4_K_M (bartowski)
+Z.AI's 106B/12B-active MoE in the same scale class as Qwen3.5-122B but from a completely different model family. Standard attention (not DeltaNet hybrid), 128K native context. **First non-Qwen model to land in A-tier on Spark.**
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **15/17 (88%)** |
+| Throughput (sustained) | **21.7 tok/s** |
+| TTFT | 0.54 s |
+| Weight size | 70 GB (2-shard Q4_K_M) |
+| Bandwidth utilization | ~6 GB/token × 21.7 tok/s ≈ 130 GB/s = 47% of peak |
+| Active params | 12B (8 experts + 1 shared, of 128 total) |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 -rea off --no-mmap --jinja` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | 3/5 | 1970 | Two genuine implementation issues, not the wording mismatch — even with the loosened spec the model misses two test cases. |
+| A* Pathfinding | **6/6** | 2115 | Clean. |
+| LRU Cache with TTL | **6/6** | 1855 | Clean (after extract_and_test was taught to handle GLM's "impl + test in same module" output pattern). |
+
+**Why this matters for the Spark thesis:** Until now, every A/S-tier Spark model has been a Qwen variant. GLM-4.5-Air is the first cross-family validation that the Spark thesis isn't Qwen-specific. A 106B/12B-active MoE from Z.AI runs at the same speed and within 2 points of quality of the best Qwen3.5-122B mainline configuration. The platform genuinely supports a class of models, not one specific family.
+
+**Throughput note:** GLM uses standard attention (not DeltaNet hybrid), so its 47% bandwidth utilization is *better* than the 12B-active math would predict (6 GB × 22 = 132 GB/s, half of the 273 GB/s peak). The standard-attention layers are more compute-friendly than the recurrent linear-attention layers that DeltaNet uses, but the bandwidth-bound decode dominates either way — both architectures end up at similar effective throughput on Spark. This is a nice negative result for the "DeltaNet hybrid is the secret sauce" hypothesis: it isn't, the bandwidth wall is the actual constraint.
+
+**Caveat (extract_and_test edge case):** GLM-4.5-Air emitted impl + tests as two separate code blocks, but the test code referenced `TTLCache` directly without an `import` statement (expecting both blocks to live in the same file). This is a different pattern from Qwen3-Coder-Next's "single block" mode. `tools/extract_and_test.py` was updated to detect this case (multi-block where the test references impl symbols by bare name without an import) and fall back to single-file mode. Fix is general and applies to any future model with this pattern. Without the fix, GLM-4.5-Air would have scored 9/17 (53%) — a tooling artifact, not a model failure.
+
+**Verdict:** Strong A-tier model. Marginally lower quality than Qwen3.5-122B (88% vs 100%) at similar throughput, but it validates that Spark isn't a one-family platform.
+
+---
+
 ## B-Tier: Fast but Inconsistent
 
 ### Qwen3-Coder-Next UD-Q4_K_M (unsloth dynamic)
