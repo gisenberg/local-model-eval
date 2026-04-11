@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Nemotron-3-Super-120B-A12B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "throughput",
+    "tok_per_sec": 19.69,
+    "tokens": 1061,
+    "ttft_s": 0.687,
+    "total_s": 54.582
+  },
+  {
+    "model": "Nemotron-3-Super-120B-A12B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "Expression Evaluator",
+    "tok_per_sec": 19.6,
+    "tokens": 3418,
+    "elapsed_s": 174.54,
+    "finish": "stop",
+    "thinking_chars": 6553,
+    "content_chars": 7739
+  },
+  {
+    "model": "Nemotron-3-Super-120B-A12B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "A* Pathfinding",
+    "tok_per_sec": 19.5,
+    "tokens": 3052,
+    "elapsed_s": 156.12,
+    "finish": "stop",
+    "thinking_chars": 3541,
+    "content_chars": 7929
+  },
+  {
+    "model": "Nemotron-3-Super-120B-A12B Q4_K_M (bartowski)",
+    "kv_config": "KV f16 (baseline)",
+    "benchmark": "LRU Cache with TTL",
+    "tok_per_sec": 19.6,
+    "tokens": 5758,
+    "elapsed_s": 294.44,
+    "finish": "stop",
+    "thinking_chars": 11890,
+    "content_chars": 11218
+  }
+]

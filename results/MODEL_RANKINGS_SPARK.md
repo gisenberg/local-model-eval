@@ -261,6 +261,35 @@ Z.AI's 106B/12B-active MoE in the same scale class as Qwen3.5-122B but from a co
 
 ---
 
+### Nemotron-3-Super-120B-A12B Q4_K_M (bartowski)
+NVIDIA's flagship MoE designed specifically for the DGX Spark — explicit support landed in llama.cpp via [PR #20411](https://github.com/ggml-org/llama.cpp/pull/20411), and DGX Spark benchmarks were added in [PR #20652](https://github.com/ggml-org/llama.cpp/pull/20652). 120B/12B-active hybrid Latent MoE + Mamba-2 layers. Thinking model by default. **Engineering investment is real but quality is mid B-tier; slightly slower than Qwen3.5-122B without matching its quality.**
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0, thinking on) | **11/17 (65%)** |
+| Throughput (sustained) | **19.7 tok/s** |
+| TTFT | 0.69 s |
+| Weight size | 87 GB (3-shard Q4_K_M) |
+| Bandwidth utilization | ~7 GB/token × 19.7 tok/s ≈ 138 GB/s = 50% of peak |
+| Active params | 12B |
+| Thinking | Always on, restrained (3.5–11.9 KB per benchmark — not the runaway-thinking pattern that made MiniMax-M2.5 unusable) |
+| Config | `-fa on -ctk f16 -ctv f16 -np 1 --no-mmap --jinja` (no `-rea off`; thinking is integral) |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Thinking | Notes |
+|---|---|---|---|---|
+| Expression Evaluator | 4/5 | 3418 | 6.6 KB | One real test failure beyond the wording issue. |
+| A* Pathfinding | **4/6** | 3052 | 3.5 KB | Two failures: one tie-breaking path mismatch (the test asserts a specific path; multiple paths are equally optimal), one genuine suboptimal path on the obstacle test. Unusual — most other models nail A*. |
+| LRU Cache with TTL | 3/6 | 5758 | 11.9 KB | Half the tests fail. |
+
+**The NVIDIA-engineering-vs-quality gap:** This is a model that NVIDIA explicitly optimized for our exact hardware. The kernels work, the architecture loads cleanly, throughput is in the right class (50% of theoretical peak — same range as Qwen3.5-122B). And yet quality lands at 65%, below GLM-4.5-Air (88%) and Qwen3.5-122B variants (76–106%). This is not a tooling story — the extract_and_test runs cleanly, the model produces well-formed code that just gets parts wrong. Hypothesis: Nemotron-3-Super was trained with a different reasoning data mix than the Qwen and GLM lines, and that data mix is less aligned with our specific benchmark prompts (recursive descent parsing, A*, doubly-linked list LRU).
+
+**Restraint vs runaway thinking:** Worth comparing to MiniMax-M2.5, the only other thinking-mandatory model in our benchmarks. MiniMax thought 51 KB on LRU and never reached content (timed out). Nemotron thinks 11.9 KB on LRU and finishes cleanly with `finish=stop`. NVIDIA's training apparently has a stricter implicit budget — the model self-limits its reasoning to a manageable length. This makes Nemotron usable on Spark in a way MiniMax isn't, even though both are thinking models.
+
+**Verdict:** Solid B-tier. Use it if you want a thinking model that actually finishes in reasonable time; use Qwen3.5-122B or GLM-4.5-Air if you want better one-shot quality at similar speed. The DGX Spark engineering pays off for stability and throughput, not for raw quality.
+
+---
+
 ## C-Tier: Capable but Impractically Slow
 
 ### MiniMax-M2.5 UD-Q3_K_XL (unsloth)
