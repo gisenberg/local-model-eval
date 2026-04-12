@@ -128,6 +128,43 @@ Quality is stable: 6/6 at both 32K and 128K, 5/6 at 64K is a single-shot varianc
 
 ---
 
+### Qwen3.5-122B-A10B AR-INT4+FP8 hybrid on vLLM + MTP speculative decoding
+A different approach to the same model: Intel's AutoRound INT4 quantization with shared-expert layers converted to FP8, served via vLLM 0.19.1 compiled for SM121 (Blackwell) with FlashInfer attention and MTP-2 speculative decoding. Setup from [albond/DGX_Spark_Qwen3.5-122B-A10B-AR-INT4](https://github.com/albond/DGX_Spark_Qwen3.5-122B-A10B-AR-INT4).
+
+| Metric | Value |
+|---|---|
+| Single-shot (temp 0) | **16/17 (94%)** |
+| Throughput (sustained) | **49 tok/s** |
+| Weight size | ~75 GB (hybrid INT4+FP8 checkpoint) |
+| Engine | vLLM 0.19.1 + FlashInfer + MTP-2 spec dec |
+| Context | 256K (262144) |
+| Config | `--attention-backend FLASHINFER --speculative-config '{"method":"mtp","num_speculative_tokens":2}' --reasoning-parser qwen3 --enable-auto-tool-choice --tool-call-parser qwen3_xml` |
+
+**Per-benchmark breakdown:**
+| Benchmark | Pass | Tokens | Notes |
+|---|---|---|---|
+| Expression Evaluator | **5/5** | 5732 | Clean. |
+| A* Pathfinding | **6/6** | 4723 | Clean. |
+| LRU Cache with TTL | **5/6** | 11331 | One test failure on the hardest benchmark. |
+
+**Why this is interesting:** 2.3× the throughput of our llama.cpp baseline (49 vs 21 tok/s) on the same model and hardware. The speedup comes from three stacked optimizations: FlashInfer attention kernels optimized for Blackwell's memory hierarchy (+16%), hybrid INT4+FP8 quantization using native CUTLASS FP8 block-128 kernels (+8.8%), and MTP-2 speculative decoding using Qwen3.5's built-in MTP head to predict 2 additional tokens per step at ~80% acceptance rate (+25%).
+
+**Thinking behavior:** The model thinks under the hood (total token counts of 5K-11K per benchmark vs llama.cpp's 2K-3K without thinking), but vLLM's `--reasoning-parser qwen3` absorbs the thinking tokens transparently — only content appears in the response. This is a different trade than llama.cpp's `-rea off`: instead of suppressing thinking at the template/sampler level, vLLM lets the model think and just hides it from the client. The thinking adds latency per request but the raw throughput is high enough that wall-clock time per coding task is similar or better than llama.cpp without thinking.
+
+**Quality:** 16/17 vs llama.cpp unsloth's 18/17 — a 2-point gap from LRU (5/6 vs 6/6). Likely a minor generation path difference from the hybrid quantization or MTP speculative tokens affecting the logit distribution. ExprEval and A* are perfect on both engines.
+
+**Setup cost:** ~41 min automated build (Docker image compilation for SM121), ~13 min cold start (model load + warmup + graph capture). Requires Docker with nvidia-container-toolkit. The build is a one-time cost; re-launches take ~5-7 min.
+
+**Caveats:**
+- Requires Docker (llama.cpp is a single binary)
+- 13 min cold start vs llama.cpp's ~60s
+- Thinking cannot be disabled — the model always thinks, vLLM just hides it. This means each request generates 2-5× more tokens than the visible output, consuming more compute per request than the tok/s number implies.
+- MTP spec dec has a warning: "num_speculative_tokens > 1 will run multiple times of forward on same MTP layer, which may result in lower acceptance rate"
+
+**Verdict:** If you're willing to accept the Docker + cold-start complexity, this is the fastest high-quality configuration on the Spark. For opencode's agent loop, 49 tok/s at 16/17 quality is a compelling upgrade over 21 tok/s at 18/17 — the throughput more than doubles while quality stays near-perfect.
+
+---
+
 ## A-Tier: Strong Quality at Interactive Speed
 
 ### Qwen3.5-122B-A10B Q4_K_M (bartowski) on mainline llama.cpp

@@ -1,0 +1,38 @@
+[
+  {
+    "file": "lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 5,
+    "failed": 1,
+    "errors": 0,
+    "total": 6,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmpf4p91nne\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_ttl_cache_impl.py::test_basic_get_put PASSED                        [ 16%]\ntest_ttl_cache_impl.py::test_capacity_eviction_lru_order PASSED          [ 33%]\ntest_ttl_cache_impl.py::test_ttl_expiry PASSED                           [ 50%]\ntest_ttl_cache_impl.py::test_custom_per_key_ttl PASSED                   [ 66%]\ntest_ttl_cache_impl.py::test_delete PASSED                               [ 83%]\ntest_ttl_cache_impl.py::test_size_with_mixed_expired FAILED              [100%]\n\n=================================== FAILURES ===================================\n_________________________ test_size_with_mixed_expired _________________________\n\n    def test_size_with_mixed_expired():\n        with patch('time.monotonic') as mock_time:\n            mock_time.return_value = 0.0\n            cache = TTLCache(capacity=3, default_ttl=5.0)\n            cache.put(\"a\", 1)\n            cache.put(\"b\", 2)\n            cache.put(\"c\", 3)\n            assert cache.size() == 3\n            mock_time.return_value = 6.0\n            cache.get(\"c\")\n            assert cache.get(\"a\") is None\n            assert cache.get(\"b\") is None\n>           assert cache.size() == 1\nE           assert 0 == 1\nE            +  where 0 = size()\nE            +    where size = <test_ttl_cache_impl.TTLCache object at 0xe53f9c87aae0>.size\n\ntest_ttl_cache_impl.py:266: AssertionError\n=========================== short test summary info ============================\nFAILED test_ttl_cache_impl.py::test_size_with_mixed_expired - assert 0 == 1\n========================= 1 failed, 5 passed in 0.02s ==========================\n",
+    "stderr": ""
+  },
+  {
+    "file": "astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "total": 6,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmpe31xqrz7\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_optimality PASSED                      [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+    "stderr": ""
+  },
+  {
+    "file": "expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "total": 5,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmpnchzy8rz\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_operator_precedence PASSED            [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+    "stderr": ""
+  }
+]

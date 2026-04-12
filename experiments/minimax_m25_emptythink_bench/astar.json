@@ -1,0 +1,17 @@
+{
+  "bench": "astar",
+  "toks": 2291,
+  "elapsed": 82.6,
+  "tps": 27.7,
+  "think_chars": 0,
+  "content_chars": 8751,
+  "finish": "stop",
+  "usage": {
+    "completion_tokens": 2291,
+    "prompt_tokens": 313,
+    "total_tokens": 2604,
+    "prompt_tokens_details": {
+      "cached_tokens": 31
+    }
+  }
+}

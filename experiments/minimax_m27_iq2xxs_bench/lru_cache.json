@@ -1,0 +1,17 @@
+{
+  "bench": "lru_cache",
+  "toks": 3962,
+  "elapsed": 113.7,
+  "tps": 34.8,
+  "think_chars": 0,
+  "content_chars": 16491,
+  "finish": "stop",
+  "usage": {
+    "completion_tokens": 3962,
+    "prompt_tokens": 345,
+    "total_tokens": 4307,
+    "prompt_tokens_details": {
+      "cached_tokens": 32
+    }
+  }
+}

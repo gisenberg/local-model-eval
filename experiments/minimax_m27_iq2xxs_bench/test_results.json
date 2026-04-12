@@ -1,0 +1,38 @@
+[
+  {
+    "file": "lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 1,
+    "total": 1,
+    "status": "collection_error",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmp15_3_3xq\nplugins: anyio-4.13.0\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n______________________ ERROR collecting test_lru_cache.py ______________________\ntest_lru_cache.py:1: in <module>\n    class _Node:\ntest_lru_cache.py:4: in _Node\n    value: Any\n           ^^^\nE   NameError: name 'Any' is not defined\n=========================== short test summary info ============================\nERROR test_lru_cache.py - NameError: name 'Any' is not defined\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.05s ===============================\n",
+    "stderr": ""
+  },
+  {
+    "file": "astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 5,
+    "failed": 1,
+    "errors": 0,
+    "total": 6,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmpnqe0jfpc\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::TestAStarGrid::test_simple_path_on_uniform_grid PASSED    [ 16%]\ntest_astar.py::TestAStarGrid::test_path_around_obstacles PASSED          [ 33%]\ntest_astar.py::TestAStarGrid::test_weighted_grid_prefers_lower_cost FAILED [ 50%]\ntest_astar.py::TestAStarGrid::test_no_path_exists_fully_blocked PASSED   [ 66%]\ntest_astar.py::TestAStarGrid::test_start_equals_end PASSED               [ 83%]\ntest_astar.py::TestAStarGrid::test_invalid_coordinates PASSED            [100%]\n\n=================================== FAILURES ===================================\n_____________ TestAStarGrid.test_weighted_grid_prefers_lower_cost ______________\n\nself = <test_astar.TestAStarGrid object at 0xfdfc5f70c9b0>\n\n    def test_weighted_grid_prefers_lower_cost(self) -> None:\n        \"\"\"\n        Test that the path prefers lower-cost cells when given a choice.\n        \"\"\"\n        grid = [\n            [1, 10, 1, 1, 1],\n            [1, 10, 1, 1, 1],\n            [1, 10, 1, 1, 1],\n            [1, 10, 1, 1, 1],\n            [1, 1, 1, 1, 1],\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (4, 4))\n    \n        assert path is not None\n        assert path[0] == (0, 0)\n        assert path[-1] == (4, 4)\n    \n        # Verify path avoids the expensive column (col 1)\n        for pos in path:\n>           assert pos[1] != 1, f\"Path should avoid expensive column 1: found {pos}\"\nE           AssertionError: Path should avoid expensive column 1: found (4, 1)\nE           assert 1 != 1\n\ntest_astar.py:302: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::TestAStarGrid::test_weighted_grid_prefers_lower_cost - ...\n========================= 1 failed, 5 passed in 0.02s ==========================\n",
+    "stderr": ""
+  },
+  {
+    "file": "expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 23,
+    "failed": 0,
+    "errors": 0,
+    "total": 23,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmp9_jlxnzc\nplugins: anyio-4.13.0\ncollecting ... collected 23 items\n\ntest_expression_evaluator.py::test_basic_addition PASSED                 [  4%]\ntest_expression_evaluator.py::test_basic_subtraction PASSED              [  8%]\ntest_expression_evaluator.py::test_basic_multiplication PASSED           [ 13%]\ntest_expression_evaluator.py::test_basic_division PASSED                 [ 17%]\ntest_expression_evaluator.py::test_precedence_mul_over_add PASSED        [ 21%]\ntest_expression_evaluator.py::test_precedence_div_over_sub PASSED        [ 26%]\ntest_expression_evaluator.py::test_precedence_mixed PASSED               [ 30%]\ntest_expression_evaluator.py::test_parentheses_grouping PASSED           [ 34%]\ntest_expression_evaluator.py::test_nested_parentheses PASSED             [ 39%]\ntest_expression_evaluator.py::test_parentheses_with_precedence PASSED    [ 43%]\ntest_expression_evaluator.py::test_unary_minus_simple PASSED             [ 47%]\ntest_expression_evaluator.py::test_unary_minus_in_expression PASSED      [ 52%]\ntest_expression_evaluator.py::test_unary_minus_with_parentheses PASSED   [ 56%]\ntest_expression_evaluator.py::test_double_unary_minus PASSED             [ 60%]\ntest_expression_evaluator.py::test_floating_point PASSED                 [ 65%]\ntest_expression_evaluator.py::test_floating_point_arithmetic PASSED      [ 69%]\ntest_expression_evaluator.py::test_floating_point_precedence PASSED      [ 73%]\ntest_expression_evaluator.py::test_mismatched_parentheses_left PASSED    [ 78%]\ntest_expression_evaluator.py::test_mismatched_parentheses_right PASSED   [ 82%]\ntest_expression_evaluator.py::test_division_by_zero PASSED               [ 86%]\ntest_expression_evaluator.py::test_invalid_token PASSED                  [ 91%]\ntest_expression_evaluator.py::test_empty_expression PASSED               [ 95%]\ntest_expression_evaluator.py::test_invalid_syntax PASSED                 [100%]\n\n============================== 23 passed in 0.01s ==============================\n",
+    "stderr": ""
+  }
+]

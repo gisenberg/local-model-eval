@@ -1,0 +1,17 @@
+{
+  "bench": "expression_evaluator",
+  "toks": 2126,
+  "elapsed": 75.2,
+  "tps": 28.3,
+  "think_chars": 0,
+  "content_chars": 9824,
+  "finish": "stop",
+  "usage": {
+    "completion_tokens": 2126,
+    "prompt_tokens": 203,
+    "total_tokens": 2329,
+    "prompt_tokens_details": {
+      "cached_tokens": 31
+    }
+  }
+}

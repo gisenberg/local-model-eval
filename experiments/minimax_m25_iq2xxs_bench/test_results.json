@@ -1,0 +1,38 @@
+[
+  {
+    "file": "lru_cache.md",
+    "benchmark": "lru_cache",
+    "expected": 6,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "status": "no_code",
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "file": "astar.md",
+    "benchmark": "astar",
+    "expected": 6,
+    "passed": 8,
+    "failed": 0,
+    "errors": 0,
+    "total": 8,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmpuowcp6t1\nplugins: anyio-4.13.0\ncollecting ... collected 8 items\n\ntest_astar.py::TestAStarGrid::test_simple_path_uniform_grid PASSED       [ 12%]\ntest_astar.py::TestAStarGrid::test_path_around_obstacles PASSED          [ 25%]\ntest_astar.py::TestAStarGrid::test_weighted_grid_prefers_lower_cost PASSED [ 37%]\ntest_astar.py::TestAStarGrid::test_no_path_exists PASSED                 [ 50%]\ntest_astar.py::TestAStarGrid::test_start_equals_end PASSED               [ 62%]\ntest_astar.py::TestAStarGrid::test_invalid_coordinates PASSED            [ 75%]\ntest_astar.py::TestAStarGrid::test_start_or_end_is_wall PASSED           [ 87%]\ntest_astar.py::TestAStarGrid::test_optimality_on_weighted_grid PASSED    [100%]\n\n============================== 8 passed in 0.01s ===============================\n",
+    "stderr": ""
+  },
+  {
+    "file": "expression_evaluator.md",
+    "benchmark": "expression_evaluator",
+    "expected": 5,
+    "passed": 5,
+    "failed": 0,
+    "errors": 0,
+    "total": 5,
+    "status": "ok",
+    "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nrootdir: /tmp/tmprs02d9t0\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+    "stderr": ""
+  }
+]
