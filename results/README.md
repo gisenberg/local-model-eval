@@ -23,6 +23,7 @@ The repo benchmarks three machines directly. Every platform-specific analysis fo
 - [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md) — what TurboQuant unlocks: more context, sometimes faster
 - [TURBO3_RESULTS_5090.md](TURBO3_RESULTS_5090.md) — full TurboQuant turbo3-vs-turbo4 sweep with thinking on/off
 - [ROTORQUANT_5090.md](ROTORQUANT_5090.md) — rotorquant results on 3 Qwen-family 27B models: turbo4 wins on 2 of 3, Harmonic ties
+- [API_BENCH_5090.md](API_BENCH_5090.md) — free-tier API models (GPT-OSS 120B, MiniMax M2.5/M2.7) benchmarked on the same coding suite from the 5090 client
 
 ### MacBook Pro M4 Max 36 GB (Apple Silicon, macOS, Metal)
 - [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — tier list, includes MLX vs llama.cpp comparison
