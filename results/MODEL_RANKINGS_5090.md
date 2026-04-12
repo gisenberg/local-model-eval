@@ -38,12 +38,14 @@ The most consistent model tested. Average score nearly equals best-of-3 — prod
 | Throughput | **138.9 tok/s** |
 | TTFT | **61 ms** |
 | VRAM (32K ctx) | 26,739 MB |
-| Max context (turbo4) | ~230K |
+| Max context (turbo4) | **262K (full native)** |
 | Backend | llama.cpp (TurboQuant fork) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
-**Strengths:** Fastest S-tier, extremely consistent, reaches near-full context window with TurboQuant.
+**Strengths:** Fastest S-tier, extremely consistent, reaches the full 262K native context window with TurboQuant at ~5 GB of VRAM headroom.
 **Weakness:** ExprEval caps at 4/5 at temp 0.3 (test wording mismatch, not implementation quality).
+
+> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~230K" based on an architecture table in `CONTEXT_CAPACITY_5090.md` that recorded 15 global-attention layers at head_dim 256. The live gemma4 loader on the rebased johndpope fork shows the correct architecture: **5 global-attention layers at head_dim 512** (plus 25 SWA layers at head_dim 256). Recomputing the per-token KV cost from the live architecture shows turbo4 fits the full 262K native window with ~5 GB of headroom on 32 GB, so rotorquant compression would give only extra VRAM headroom (no additional usable context) on this model. See the addendum in [ROTORQUANT_5090.md](ROTORQUANT_5090.md) for the full correction.
 
 ---
 
@@ -72,8 +74,8 @@ Same base model, NVFP4 quantization, served via vLLM. Quality matches the llama.
 
 ---
 
-### Gemma 4 31B-IT Q4_K_M (llama.cpp + TurboQuant)
-Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run without TurboQuant** — only 16K context with f16 KV.
+### Gemma 4 31B-IT Q4_K_M (llama.cpp + TurboQuant, short context)
+Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run without KV compression** — only 16K context with f16 KV. Use this config for workloads that fit under 58K context; for anything longer, see the iso3/iso3 subcard below.
 
 | Metric | Value |
 |---|---|
@@ -87,8 +89,36 @@ Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run
 | Backend | llama.cpp (TurboQuant fork) |
 | Config | `-ctk turbo4 -ctv turbo4 -rea off` |
 
-**Strengths:** Most consistent across all benchmarks and runs. Dense architecture produces very stable output.
-**Weakness:** 50 tok/s (dense arch penalty), limited to ~58K context even with turbo4 (870 KB/token KV cache).
+**Strengths:** Most consistent across all benchmarks and runs. Dense architecture produces very stable output. Fastest config for short-context dense coding on the 5090.
+**Weakness:** 50 tok/s (dense arch penalty), limited to ~58K context even with turbo4 (870 KB/token KV cache). If you need longer context, switch to the iso3/iso3 config below.
+
+---
+
+### Gemma 4 31B-IT Q4_K_M (llama.cpp + RotorQuant, long context)
+Same model, different KV backend. Iso3/iso3 compresses KV ~10.3× vs f16 (vs turbo4's 3.8×), which turns Gemma 31B-IT's 58K context ceiling into ~160K usable context on the same 32 GB VRAM budget. Quality is identical to the turbo4 subcard above; throughput drops ~21% on sustained coding workloads. Runs on a **locally-rebased** johndpope fork — see [ROTORQUANT_5090.md](ROTORQUANT_5090.md) for the build recipe (upstream merge + D=512 FA vec kernel patch).
+
+| Metric | Value |
+|---|---|
+| Best-of-3 (temp 0.3, 4-benchmark suite @ 32K) | **22/22 (100%)** |
+| Average (temp 0.3 @ 32K) | 20.4/22 (93%) |
+| Quality sanity check @ 128K | **5/5 best, 4.7/5 avg** (Expression Evaluator) |
+| Throughput (coding workload, 32K and 128K) | **39.7 tok/s** (−21.1% vs turbo4) |
+| VRAM @ 32K | 23.5 GB |
+| VRAM @ 128K | 29.1 GB |
+| VRAM @ 160K | 30.3 GB |
+| VRAM @ 192K | 31.7 GB → **spill cliff, decode collapses to ~9 tok/s** |
+| Max **usable** context | **~160K** (+102K vs turbo4's 58K) |
+| Max loadable context | 262K native, but unusable due to RAM spill |
+| Backend | llama.cpp (locally-rebased planarquant-kv-cache branch @ johndpope fork) |
+| Config | `-ctk iso3 -ctv iso3 -rea off` |
+
+**Strengths:** 2.76× more usable context than turbo4 at the same VRAM budget, with zero quality regression at either 32K or 128K. Only config in the 5090 tier list that can run Gemma 4 31B-IT at >58K context with usable throughput.
+**Weaknesses:**
+- Requires a **locally rebased** fork build. Not available on the official feature/planarquant-kv-cache branch as of commit `20efe75cf` — the rebase merges upstream llama.cpp master (for Gemma 4 architecture support) and adds D=512 flash-attention vec kernel instances (because Gemma 4's full-attention layers use head_dim 512, which rotorquant's vec kernel didn't originally instantiate).
+- Sustained coding-workload decode is 39.7 tok/s vs turbo4's 50.3 — a 21% tax. Short-prompt smoke tests measure ~44 tok/s but that's not representative of sustained code generation.
+- VRAM spill cliff between 160K and 192K. You have to cap `-c` at ≤163,840 to stay below the cliff; asking for more will load but collapse decode by ~5×.
+
+**When to use this over the turbo4 subcard:** anytime the prompt + response exceeds 58K tokens. Below 58K, stay on turbo4 — same quality, 27% more throughput, no custom build required.
 
 ---
 
@@ -118,6 +148,8 @@ Same base model, NVFP4 quantization with aggressive attention compression ("turb
 - Warmup-sensitive: the first 2-3 requests after server start run at ~half speed due to CUDA graph compilation. Benchmarks that only run a few requests per model will understate NVFP4's steady-state performance.
 
 **Verdict:** For dense 31B on the 5090, llama.cpp + turbo4 still wins on throughput, VRAM, max context, and average-case quality. NVFP4-turbo is useful if you need vLLM features (batched serving, OpenAI API) or are on hardware where TurboQuant doesn't apply (datacenter Blackwell, ARM).
+
+> **Superseded for single-stream long context (2026-04-11):** as of the rotorquant rebase described in [ROTORQUANT_5090.md](ROTORQUANT_5090.md), the llama.cpp + iso3/iso3 subcard for Gemma 4 31B-IT Q4_K_M reaches **~160K usable context** with 22/22 quality and 39.7 tok/s — better than this NVFP4-turbo entry on every single-stream axis (quality, context, throughput, VRAM overhead). The NVFP4-turbo row stays in this tier list as a reference point for vLLM-specific needs (batched serving, OpenAI API compatibility), but for single-stream coding on a 5090 the llama.cpp + iso3 config now dominates it.
 
 ---
 
@@ -331,14 +363,15 @@ For reference — these were tested before TurboQuant and use LM Studio's defaul
 
 ## Quick Reference: Choosing a Model
 
-| Priority | Pick | Thinking | Why |
-|---|---|---|---|
-| **Best quality** | Gemma 26B Q6_K | off | 100% single-shot, 97% avg, fastest S-tier |
-| **Best consistency** | Harmonic 27B Q4_K_M | on | 30.7/31 avg (99%), 20 GB VRAM |
-| **Best consistency (fast)** | Gemma 31B Q4_K_M | off | 30.4/31 avg, requires TurboQuant |
-| **Lowest VRAM** | Opus-Distilled 27B Q4_K_M | on | 20 GB, 100% single-shot, full 262K ctx |
-| **Fastest** | Qwen 35B Q4_K_M | off | 188 tok/s, 65% quality |
-| **Best value** | Harmonic 27B Q4_K_M | on | 20 GB, 99% avg, best all-rounder |
+| Priority | Pick | Thinking | KV | Why |
+|---|---|---|---|---|
+| **Best quality** | Gemma 26B Q6_K | off | turbo4 | 100% single-shot, 97% avg, fastest S-tier, full 262K native |
+| **Best consistency** | Harmonic 27B Q4_K_M | on | turbo4 | 30.7/31 avg (99%), 20 GB VRAM |
+| **Best consistency (fast)** | Gemma 31B Q4_K_M | off | turbo4 | 30.4/31 avg, 50.3 tok/s, 58K max — best pick under 58K ctx |
+| **Longest context (dense model)** | Gemma 31B Q4_K_M | off | **iso3** (rebased fork) | ~160K usable context, 22/22 quality, 39.7 tok/s — the only dense S-tier model that reaches >58K usable on a 5090 |
+| **Lowest VRAM** | Opus-Distilled 27B Q4_K_M | on | turbo4 | 20 GB, 100% single-shot, full 262K ctx |
+| **Fastest** | Qwen 35B Q4_K_M | off | turbo4 | 174 tok/s, 65% quality |
+| **Best value** | Harmonic 27B Q4_K_M | on | turbo4 | 20 GB, 99% avg, best all-rounder |
 
 ## A Note on TTFT — *Our Numbers Were Measuring the Wrong Thing*
 
@@ -423,6 +456,11 @@ llama-server -m gemma-model.gguf --port 8080 -c 32768 -ngl 99 \
 # Reasoning fine-tunes: Harmonic, Qwopus, Opus-distilled (thinking on)
 llama-server -m harmonic-model.gguf --port 8080 -c 32768 -ngl 99 \
   -fa on -ctk turbo4 -ctv turbo4 -np 1 -rea on --reasoning-budget 16384
+
+# Gemma 4 31B-IT long context (requires rebased johndpope fork, see ROTORQUANT_5090.md)
+# Use -c up to 163840 — beyond that the KV buffer spills to RAM and decode collapses
+llama-server -m gemma-4-31B-it-Q4_K_M.gguf --port 8080 -c 163840 -ngl 99 \
+  -fa on -ctk iso3 -ctv iso3 -np 1 -rea off
 ```
 
 See [TURBO3_RESULTS_5090.md](TURBO3_RESULTS_5090.md) for full experimental data across 8+ benchmark runs.
