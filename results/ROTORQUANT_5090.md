@@ -31,7 +31,7 @@ Bench log: [experiments/rotorquant_5090/bench.log](../experiments/rotorquant_509
 - For Qwen 27B Opus-Distilled and Qwopus 27B: **turbo4 still wins clearly.** iso3/iso3 costs ~10% throughput for zero context gain (both already hit 262K native). planar3/f16 is closer but still loses on throughput with less compression. Keep turbo4.
 - For **Harmonic 27B Q4_K_M with thinking on**: **iso3/iso3 ties turbo4 on throughput (+0.3%) AND matches on quality (22/22 vs turbo4's 31/31 published — 22/22 is our suite's max for these 4 benchmarks).** Because iso3 compresses 2.7× more aggressively than turbo4 at no throughput cost for this model, iso3/iso3 could become the recommended config for Harmonic *if we can rule out measurement noise with a replication*. This is the one result in the experiment that would change our default recommendation if it holds.
 
-**H5 (Gemma 31B-IT context unlock):** ✅ **measured after a local rebase + D=512 kernel patch** — the johndpope fork's base originally predated Gemma 4 support, but we rebased onto current upstream llama.cpp and added the missing flash-attention vec kernel instances for head-dim 512 (details in the addendum below). Measured usable context ceiling: **~160K** on Gemma 4 31B-IT Q4_K_M with iso3/iso3, a **+102K gain** over turbo4's 58K cap. Throughput on the 4-benchmark coding suite: **39.7 tok/s at both 32K and 128K, −21.1% vs the 50.3 tok/s turbo4 baseline** — still inside the H1 prediction band of 10-25%, at the upper end. Quality: **22/22 best-of-3** at 32K on the full 4-benchmark suite AND at 128K on an Expression Evaluator sanity check. The pre-experiment context projection was 157K; measured reality was 160K — the capacity hypothesis landed within 2%.
+**H5 (Gemma 31B-IT context unlock):** ❌ **invalidated — turbo4 already fits the full 262K native window.** After rebasing onto current upstream (details in the addendum below), we measured turbo4 on Gemma 4 31B-IT at 96K/160K/262K context. Turbo4 fits **262K at 28 GB VRAM** (4 GB headroom) and **46.4 tok/s** — no spill cliff. The pre-experiment "~58K turbo4 ceiling" projection was based on a ~10× overestimate of per-token KV cost (870 KB/token f16 assumed all 60 layers are full-attention; reality is 10 non-SWA layers with ~4 shared-KV heads each, yielding ~22 KB/token turbo4). Since turbo4 already reaches the native ceiling, rotorquant iso3/iso3 provides **zero context gain** and is strictly slower (39.7 vs 46.4 tok/s). The rebase and D=512 kernel work proved the fork *can* support Gemma 4 models with rotorquant, but the H5 motivation (context unlock) doesn't exist.
 
 ## The Harmonic anomaly
 
@@ -65,7 +65,7 @@ This ordering (iso3 > planar3) is the opposite of what we see on the other two m
 
 4. **Turbo4 remains the default for 5 of 6 planned models.** On the 3 we tested, Qwen and Qwopus clearly stay on turbo4. Harmonic is a possible switch to iso3 if the replication holds. The 3 Gemma models default to turbo4 because we couldn't test them at all.
 
-5. **The Gemma 31B-IT context unlock was measured after a local rebase** — see the addendum below. Iso3/iso3 unlocks **~160K usable context** on Gemma 4 31B-IT on the 5090 (turbo4 caps at ~58K), a **+102K gain** at **−21.1% throughput** on the coding suite (39.7 vs 50.3 tok/s turbo4). Quality **22/22 best-of-3** at both 32K and 128K — no degradation at the unlocked long-context band. The pre-experiment context projection of 157K landed within 2% of the measured ~160K ceiling. This is the single strongest rotorquant-win datapoint anywhere in the three-platform experiment — if you run Gemma 4 31B-IT and need long context, iso3 is now the right default.
+5. **The Gemma 31B-IT "context unlock" hypothesis was invalidated.** After rebasing onto current upstream, we measured turbo4 on Gemma 4 31B-IT at 96K / 160K / 262K and found it fits the **full 262K native window at 28 GB VRAM, 46.4 tok/s, no spill cliff.** The "~58K turbo4 ceiling" in the hypothesis was based on a ~10× overestimate of per-token KV cost (wrong architecture assumption: 870 KB/tok f16 assumed all layers are full-attention, but Gemma 4 31B has only 10 non-SWA layers with shared-KV ~4 heads each, yielding ~80 KB/tok f16 = ~22 KB/tok turbo4). Since turbo4 already saturates the native window, rotorquant iso3 gives zero context advantage and is strictly slower (39.7 vs 46.4 tok/s at 262K). The rebase + D=512 kernel work proved the fork *can* support Gemma 4 with rotorquant, but the use case it was built for doesn't exist on the 5090.
 
 ## What we'd change in the next round
 
@@ -133,13 +133,25 @@ The cliff lands between 160K and 192K — the pre-allocated KV buffer exceeds wh
 
 **Usable ceiling with iso3/iso3: ~160K context.** Turbo4 caps at ~58K. **Net context unlock: +102K.** The smoke-test decode numbers above are optimistic (44 tok/s at 32K) because they come from short 300-token single-prompt measurements dominated by warm-cache, near-empty-KV decode. The coding-suite numbers below show the real sustained throughput (~39.7 tok/s) once you actually generate longer structured code responses. Both numbers are consistent and neither contradicts the context-unlock finding.
 
-### H5 hypothesis vs reality
+### H5 hypothesis vs reality: invalidated by turbo4 context sweep
 
 The pre-experiment doc projected iso3 would unlock ~157K usable context with a ~99K gain:
 
 > At 10.3× compression, Gemma 31B's 870 KB/token KV drops to ~84 KB/token, which could push the 5090 to 150-200K usable context on that model. Turbo4's 3.8× compression only gets us to ~230 KB/token, capping at 58K.
 
-Measured result: 160K usable, +102K gain. **The hypothesis landed within 2% of the measured ceiling.** This is the cleanest pre-experiment prediction in the whole three-platform rotorquant experiment.
+The iso3 side of this checked out (160K usable ceiling, within 2% of the 157K projection). But **the turbo4 "58K ceiling" was never measured and turns out to be wrong.** After completing the iso3 sweep and quality bench, we went back and tested turbo4 at the same context sizes on the same rebased binary:
+
+| Context `-c` | Config | VRAM (MB) | Decode (tok/s) | Status |
+|---:|---|---:|---:|---|
+| 98,304 (96K) | turbo4 | 24,323 | 46.3 | works, no spill |
+| 163,840 (160K) | turbo4 | 25,724 | 46.9 | works, no spill |
+| 262,144 (262K, native) | turbo4 | **28,025** | **46.4** | **works, no spill, 4 GB headroom** |
+
+**Turbo4 fits the full 262K native window** at 28 GB VRAM with ~46 tok/s decode and 4 GB of headroom. There is no 58K ceiling, no spill cliff, no context constraint for turbo4 on this model on the 5090.
+
+The 870 KB/token f16 estimate was ~10× too high because it assumed all 60 layers scale with context. In reality, Gemma 4 31B-IT has only **10 non-SWA layers with ~4 shared-KV heads each** — the other 50 are SWA at a fixed 1536-cell window that doesn't scale. From the turbo4 VRAM sweep (96K→262K delta = 3,702 MB for 166K tokens), the real per-token turbo4 cost is **~22 KB/token** — which puts 262K at 22 × 262K = 5.6 GB KV, well within the budget.
+
+**H5 is invalidated.** Rotorquant iso3 on Gemma 4 31B-IT provides zero context gain over turbo4 and is strictly slower (39.7 vs 46.4 tok/s at 262K, 39.7 vs 50.3 at 32K). The "+102K context unlock" we initially reported was built on a projection that was never verified and turned out to be wrong. The iso3 quality and throughput data below are still valid measurements (they prove rotorquant works on Gemma 4 and characterize its overhead), but the context-unlock motivation that drove the rebase effort no longer exists.
 
 Coherence spot check at 128K passed — the model generated a correct Fibonacci implementation with a docstring and example, identical in structure to the same prompt at 32K. The full coding-suite quality bench ran next.
 
