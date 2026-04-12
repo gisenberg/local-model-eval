@@ -12,7 +12,7 @@ For the 5090 story, see [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md).
 >
 > 3. **Turbo4 is still useful on the new base — for long context on Gemma 4 31B-IT.** Measured on the new base: turbo4 fits Gemma 31B at 128K (21 GB) and 256K (24 GB) with default ub, where f16 OOMs at 128K. So on the new base, turbo4 becomes an optional context-extender instead of a mandatory workaround.
 >
-> 4. **Rotorquant's planar3/f16 K-only mode is now the speed leader on this hardware**, not turbo4 OR f16. Measured +13% to +20% vs the best previous config on three test models. See [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md).
+> 4. **Rotorquant's planar3/f16 K-only mode is the speed leader only on dense GQA 27B+** (Qwen 27B Opus-Distilled: +19% vs f16 on matched base/ub). On Gemma 4 (both 26B-A4B and 31B-IT), matched-base/matched-ub retest shows rotorquant K-only is **tied with plain f16** (within 1.5%). The original "+13% to +20% on three models" claim was a cross-base comparison artifact — see the matched-base correction in [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md).
 >
 > The sections below are preserved as the historical analysis for the old base. The mechanism I attributed them to — "turbo4's dequant compute dominates on Apple Silicon" — is probably still broadly correct (rotorquant's much cheaper Givens rotation beats turbo4's WHT butterfly on Metal by a lot). But the specific "mandatory at 16K" and "−23% always" numbers should be read as data points from a specific pinned commit, not as permanent Apple-Silicon properties.
 

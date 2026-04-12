@@ -29,7 +29,7 @@ The repo benchmarks three machines directly. Every platform-specific analysis fo
 - [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — Metal working set ceiling, the `n_ubatch` finding, OOM-not-spill failure mode
 - [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) — why TurboQuant turbo4 is *slower* than f16 on Apple Silicon
 - [ROTORQUANT_HYPOTHESIS_M4MAX.md](ROTORQUANT_HYPOTHESIS_M4MAX.md) — pre-experiment prediction for rotorquant on Metal
-- [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) — rotorquant measurements: K-only planar3/f16 is a clean win on all 3 test models (+13% to +20% over prior best config at identical quality, Gemma 4 arch support cherry-picked post-hoc)
+- [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) — rotorquant measurements (with 2026-04-12 correction): K-only planar3/f16 is a clean +19% win on dense GQA (Qwen 27B Opus-Distilled), tied with f16 on Gemma 4 26B-A4B Q6_K and Gemma 4 31B-IT Q4_K_M at matched base/ub. Original "three-for-three wins" was a cross-base artifact.
 
 ### NVIDIA DGX Spark (GB10 Grace Blackwell, 128 GB unified, Linux/aarch64)
 - [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md) — bandwidth-bound model lineup, MoE-favorable
@@ -41,7 +41,7 @@ These docs span hardware rather than focusing on one machine:
 
 - [HARDWARE_SPECS.md](HARDWARE_SPECS.md) — measured spec sheet + side-by-side throughput on the same models, for the 3 machines we benchmarked directly
 - [HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md) — broader buyer's guide, including machines we cite third-party benchmarks for (M5 Max, M3 Ultra Studio, RTX Pro 6000 Blackwell)
-- [ROTORQUANT_TLDR.md](ROTORQUANT_TLDR.md) — one-screen digest of the three per-platform rotorquant experiments (M4 Max: +19% on Metal, Spark: Qwen win + GLM broken, 5090: turbo4 mostly wins)
+- [ROTORQUANT_TLDR.md](ROTORQUANT_TLDR.md) — one-screen digest of the three per-platform rotorquant experiments (M4 Max: +19% on Qwen 27B Opus, tied on Gemma 4; Spark: Qwen win + GLM broken; 5090: turbo4 mostly wins, iso3 unlocks Gemma 31B long context)
 
 ## Raw data
 

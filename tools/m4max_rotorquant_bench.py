@@ -46,6 +46,52 @@ MODELS = [
         "no_think": True,
         "hypothesis": "H1 low-risk K-only: 56-60 tok/s projected (≤7% below f16 baseline)",
     },
+    # Tier-list refresh verification runs at 32K default ub (new base has
+    # no compute buffer bug). Added after the doc refresh to establish
+    # current ceilings on gemma 4 family.
+    {
+        "key": "gemma-4-26b-a4b-q6k-f16-32k-refresh-nothink",
+        "name": "Gemma 4 26B-A4B Q6_K (f16 @ 32K, new base default ub)",
+        "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q6_K.gguf",
+        "context_length": 32768,
+        "ctk": "f16", "ctv": "f16",
+        "ub": None,
+        "no_think": True,
+        "hypothesis": "Refresh baseline: f16 at 32K works on new base without -ub 256",
+    },
+    {
+        "key": "gemma-4-26b-a4b-q6k-planar3-fp16-32k-refresh-nothink",
+        "name": "Gemma 4 26B-A4B Q6_K (planar3/f16 @ 32K, new base default ub)",
+        "path": MODELS_DIR / "lmstudio-community/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-Q6_K.gguf",
+        "context_length": 32768,
+        "ctk": "planar3", "ctv": "f16",
+        "ub": None,
+        "no_think": True,
+        "hypothesis": "Refresh recommended: rotorquant K-only at 32K at default ub",
+    },
+    {
+        "key": "gemma-4-31b-q4km-f16-32k-refresh-nothink",
+        "name": "Gemma 4 31B-IT Q4_K_M (f16 @ 32K, new base default ub)",
+        "path": MODELS_DIR / "unsloth/gemma-4-31B-it-GGUF/gemma-4-31B-it-Q4_K_M.gguf",
+        "context_length": 32768,
+        "ctk": "f16", "ctv": "f16",
+        "ub": None,
+        "no_think": True,
+        "hypothesis": "Refresh baseline: f16 at 32K works on new base. Is this faster or slower than turbo4's 11.8?",
+    },
+    # Clean same-base rotorquant comparison for Gemma 31B at default ub.
+    # Previous planar3/f16 measurement used -ub 256 which confounds the comparison
+    # with the new 15.3 tok/s f16 default-ub result.
+    {
+        "key": "gemma-4-31b-q4km-planar3-fp16-32k-refresh-nothink",
+        "name": "Gemma 4 31B-IT Q4_K_M (planar3/f16 @ 32K, new base default ub)",
+        "path": MODELS_DIR / "unsloth/gemma-4-31B-it-GGUF/gemma-4-31B-it-Q4_K_M.gguf",
+        "context_length": 32768,
+        "ctk": "planar3", "ctv": "f16",
+        "ub": None,
+        "no_think": True,
+        "hypothesis": "Refresh clean comparison: is rotorquant K-only still faster than f16 at default ub on Gemma 31B?",
+    },
     # H1 primary: symmetric planar3/planar3. Moderate risk — Metal V-dequant fix
     # is listed as TODO in rotorquant CLAUDE.md, may produce broken output.
     {

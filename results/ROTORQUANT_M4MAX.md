@@ -1,10 +1,24 @@
 # RotorQuant on M4 Max — Post-experiment Results
 
-**Date:** 2026-04-11
+**Date:** 2026-04-11 (original) / 2026-04-12 (matched-base correction)
 **Hardware:** Apple M4 Max (14C CPU / 32C GPU binning), 36 GB unified LPDDR5X @ 410 GB/s, ~28.6 GB Metal free working set
 **Stack (first pass):** `johndpope/llama-cpp-turboquant @ feature/planarquant-kv-cache` commit `20efe75cf`, Metal build (ggml 0.9.8)
 **Stack (second pass, with cherry-picks):** same branch, cherry-picked `63f8fe0ef` (gemma4 architecture from upstream #21309, mtmd bits reverted) and `5208e2d5b` (gemma4 chat template fix from #21326) from the TheTom turboquant branch to get gemma4 support
 **Pre-experiment doc:** [ROTORQUANT_HYPOTHESIS_M4MAX.md](ROTORQUANT_HYPOTHESIS_M4MAX.md)
+
+> **⚠ CORRECTION 2026-04-12: the "three-for-three K-only wins" headline was wrong.** The original "+13% to +20% K-only win across three models" claim in the sections below compared **new-base planar3/f16** against **old-base f16 or turbo4**. That comparison double-counts the llama.cpp base upgrade that came in with the Gemma 4 cherry-picks. On matched-base + matched-ub measurements (all on the planarquant fork + cherry-picks at default `-ub 512`):
+>
+> | Model | f16/f16 | planar3/f16 | Δ |
+> |---|---|---|---|
+> | Qwen 3.5 27B Opus-Distilled Q4_K_M (dense GQA) | 13.0 tok/s | **15.5 tok/s** | **+19%** ✅ clean win |
+> | Gemma 4 26B-A4B Q6_K (MoE sliding window) | **65.6 tok/s** | 64.5 tok/s | −1.5% (noise, tied) |
+> | Gemma 4 31B-IT Q4_K_M (dense full attention ISWA) | **15.3 tok/s** | 15.17 tok/s | −1.0% (noise, tied) |
+>
+> Revised H1 verdict: **one-for-three, not three-for-three.** Rotorquant K-only is a clean +19% win on dense GQA (Qwen 27B Opus-Distilled), and tied with f16 on both Gemma 4 architectures when tested on the same base at the same ubatch. The mechanism is still "cheap Givens rotation beats expensive WHT butterfly on Metal", but it only pays out when KV bandwidth is a meaningful fraction of per-token cost — which is the dense-GQA case, not Gemma 4 MoE (sliding-window keeps KV tiny) or Gemma 4 31B (ISWA keeps average KV/token moderate and the extra dequant per decode eats the bandwidth savings).
+>
+> The **base-upgrade win is still huge**. Gemma 4 31B-IT went from 11.8 tok/s @ turbo4/ub=256 (old base) to 15.3 tok/s @ f16/default ub (new base) — a +30% improvement that has nothing to do with rotorquant and everything to do with the compute-buffer bug fix that was bundled into the Gemma 4 cherry-picks. Gemma 4 26B-A4B Q6_K went from a 16K ceiling at default ub (old base, OOMed at 32K) to comfortable 32K at default ub on the new base.
+>
+> The sections below are preserved as the original analysis. Read them as "here's what I measured and what I thought it meant in pass 1 and pass 2" — the specific numbers are all real, but the "+13%/+20% Gemma 4 K-only wins" are cross-base artifacts that evaporated on matched-base retest. See the MODEL_RANKINGS_M4MAX.md refresh for the current tier list.
 
 The hypothesis predicted rotorquant could be the first KV quantizer that's net-positive on Metal, because our earlier measurements showed TurboQuant turbo4 is *slower* than f16 on this hardware (60.3 → 46.0 tok/s on Gemma 4 26B-A4B Q6_K). The mechanism: rotorquant's Givens 2D rotation does ~64× less dequant compute per element than TurboQuant's Walsh-Hadamard butterfly, and Metal's bottleneck on KV quantization is apparently the dequant compute, not the KV bandwidth.
 
@@ -137,17 +151,19 @@ Three reasons, one per model:
 
 **Compare to the 5090**, where the context unlock on Gemma 4 31B-IT was the headline win of that platform's rotorquant experiment: 58K ctx turbo4 → **160K ctx iso3** (+102K usable) at 22/22 quality. That gain came from symmetric `iso3/iso3` working cleanly on CUDA — the same path that hangs on Metal for Gemma 4 today. **If the Metal symmetric V-dequant port ever lands upstream, H2/H3's context-expansion predictions should replicate here**. Until then, rotorquant on M4 Max is **a pure throughput win at the same context tiers we already had**.
 
-### Summary — the K-only mode wins consistently
+### Summary — K-only wins on dense GQA, ties on Gemma 4 (matched-base correction)
 
-All three tested models show the same pattern: **K-only `planar3 / f16` is faster than the best prior config at identical quality.**
+The original version of this section claimed "three-for-three K-only wins." That was wrong — it compared new-base planar3/f16 against old-base f16 or turbo4, so the +13% and +20% Gemma 4 speedups were mostly the base upgrade, not rotorquant. On **matched-base, matched-ub** retest:
 
-| Model | Prior best config | New best config | Speedup | Quality |
+| Model | f16/f16 @ default ub | planar3/f16 @ default ub | Δ | Quality |
 |---|---|---|---|---|
-| Qwen 3.5 27B Opus Q4_K_M (dense) | f16/f16 @ 13.0 tok/s | **planar3/f16 @ 15.5 tok/s** | **+19%** | 11/17 → 11/17 (identical) |
-| Gemma 4 26B-A4B Q6_K (MoE) | f16/f16 @ 60.3 tok/s | **planar3/f16 @ 68.2 tok/s** | **+13%** | 15/17 → 15/17 (identical) |
-| Gemma 4 31B-IT Q4_K_M (dense) | turbo4/turbo4 @ 11.8 tok/s | **planar3/f16 @ 14.2 tok/s** | **+20%** | 17/17 → 17/17 (identical) |
+| Qwen 3.5 27B Opus Q4_K_M (dense GQA) | 13.0 tok/s | **15.5 tok/s** | **+19%** ✅ | 11/17 → 11/17 (identical) |
+| Gemma 4 26B-A4B Q6_K (MoE sliding window) | **65.6 tok/s** | 64.5 tok/s | **−1.5%** (noise) | 15/17 → 15/17 (identical) |
+| Gemma 4 31B-IT Q4_K_M (dense full attention, ISWA) | **15.3 tok/s** | 15.17 tok/s | **−1.0%** (noise) | 17/17 → 17/17 (identical) |
 
-Three-for-three. This is the first KV cache format we've tested that's strictly better than f16 on every model where both fit, and strictly better than turbo4 on the one model where turbo4 was mandatory. On Metal specifically, rotorquant's deferred-K quantization (F16 during prefill + planar3 compression on decode insertion) produces a real, reproducible decode-throughput win across dense GQA, MoE sliding-window, and dense full-attention architectures.
+**One-for-three, not three-for-three.** Rotorquant K-only is still a genuine +19% Pareto improvement over f16 on dense GQA 27B+ models (where KV bandwidth is a meaningful fraction of per-token cost), and still deterministic at temp 0 (identical quality on all three models). But the Gemma 4 wins I originally reported evaporated when I retested on the new base at matched ubatch: rotorquant and f16 are within 1.5% of each other on both Gemma 4 architectures.
+
+The model-class pattern: rotorquant K-only pays out when the KV cache generates meaningful decode bandwidth (dense attention, full GQA heads, large contexts). On Gemma 4 26B-A4B the sliding-window attention keeps KV tiny; on Gemma 4 31B-IT the ISWA mix keeps averaged KV moderate and the Givens dequant compute cancels the bandwidth win. **Metal's cheap bandwidth / expensive compute asymmetry still matters** — but for rotorquant to exploit it, the model has to actually be KV-bandwidth-bound, which Gemma 4 isn't.
 
 ### Why K-only works and symmetric doesn't on Gemma 4
 
@@ -162,15 +178,15 @@ Additional data point from a single short decode test (not scored):
 
 ## Hypothesis verdicts
 
-### H1 — rotorquant recovers from the turbo4 slowdown ✅✅ (confirmed on all three test models after rebase)
+### H1 — rotorquant recovers from the turbo4 slowdown ⚠️ (holds on dense GQA only, refuted on Gemma 4 after matched-base retest)
 
-The prediction was planar3 would recover most of the gap between turbo4 (−23% vs f16) and f16. Actual results across three model architectures:
+The prediction was planar3 would recover most of the gap between turbo4 (−23% vs f16) and f16. The original "three-for-three confirmed" verdict was wrong — it compared new-base planar3/f16 numbers against old-base f16/turbo4 numbers and thereby credited rotorquant for the llama.cpp base upgrade. Matched-base results:
 
-- **Qwen 27B Opus (dense GQA) K-only: +19% vs f16, same quality** (15.5 vs 13.0 tok/s, both 11/17). First pass, before rebase.
-- **Gemma 4 26B-A4B Q6_K (MoE sliding window) K-only: +13% vs f16, same quality** (68.2 vs 60.3 tok/s, both 15/17). Second pass, after rebase. **+48% vs turbo4's 46 tok/s on the same model.**
-- **Gemma 4 31B-IT Q4_K_M (dense full attention) K-only: +20% vs turbo4, same quality** (14.2 vs 11.8 tok/s, both 17/17). Second pass, after rebase.
+- **Qwen 27B Opus (dense GQA) K-only: +19% vs f16, same quality** (15.5 vs 13.0 tok/s, both 11/17). ✅ Clean win. First pass, but both measurements are on the same fork commit.
+- **Gemma 4 26B-A4B Q6_K (MoE sliding window) K-only: −1.5% vs f16, same quality** (64.5 vs 65.6 tok/s, both 15/17 @ 32K default ub). ❌ Tied — the "+13% vs 60.3 tok/s" was comparing new base against old-base f16 at 16K.
+- **Gemma 4 31B-IT Q4_K_M (dense full attention ISWA) K-only: −1.0% vs f16, same quality** (15.17 vs 15.3 tok/s, both 17/17 @ 32K default ub). ❌ Tied — the "+20% vs 11.8 tok/s turbo4" was comparing new base against old-base turbo4 with the compute-buffer-bug workaround `-ub 256`.
 
-**Three-for-three. H1 holds unambiguously.** The K-only `planar3 / f16` mode is the first KV quantizer we've tested that is strictly better than f16 on every model where f16 fits, and strictly better than turbo4 on the one model where turbo4 was mandatory. The deferred-K deferred quantization path (f16 during prefill, quantized-on-insertion during decode) is a genuine Pareto improvement for Metal-backend inference on this hardware.
+**One-for-three. H1 holds only on dense GQA 27B.** Rotorquant K-only is a Pareto improvement over f16 when the KV cache generates meaningful decode bandwidth (dense GQA at 32K+ starts to see real per-token KV reads). On Gemma 4 MoE (sliding window keeps KV tiny) and Gemma 4 31B (ISWA mix keeps averaged KV moderate), Metal's cheap-bandwidth-expensive-compute asymmetry goes the other way: the extra Givens dequant compute per decode cancels the bandwidth savings, and rotorquant K-only ties f16 instead of beating it.
 
 Symmetric `planar3/planar3` is slower across the board (Qwen 27B: −15%, Gemma 4: **runaway generation bug**). Direction is correct for the speed axis on Qwen 27B (better than turbo4's −23%), but K-only is strictly the right config for a speed-focused run on every model. Symmetric mode on Gemma 4 is effectively broken by what looks like a missing Metal V-dequant port.
 
@@ -201,15 +217,18 @@ So the picture is:
 
 **Practical usable context ceiling on Qwen 27B Opus with rotorquant: ~128K.** Same as f16 with `-ub 256`. Rotorquant doesn't help on this specific model class.
 
-### H3 — Gemma 4 31B-IT context unlock ⚠️ (unblocked, partial confirmation)
+### H3 — Gemma 4 31B-IT context unlock ❌ (unblocked, but the throughput win belongs to the base upgrade, not rotorquant)
 
 After the gemma4 cherry-pick, H3 became testable. The highest-value prediction was "planar3/iso3 should match turbo4's capacity AND beat its throughput on Gemma 31B."
 
-Result: **K-only `planar3 / f16` on Gemma 31B at 32K context = 14.2 tok/s, 17/17 quality.** That's +20% over turbo4's 11.8 tok/s at the same quality, fits comfortably in the 28.6 GB Metal budget (~26 GB total used), and avoids the symmetric-mode runaway-generation bug. **This is the single best measured result of the entire rotorquant experiment.**
+Original result (pre-correction): **K-only `planar3 / f16` at 32K ub=256 = 14.2 tok/s, 17/17 quality.** I compared this to the old-base turbo4 ub=256 result (11.8 tok/s) and called it "+20% at same quality." But that comparison was unfair — the 11.8 tok/s baseline is from a different llama.cpp base with a compute-buffer bug that required `-ub 256`.
 
-The original H3 also projected context expansion (32K → 48-64K) on Gemma 31B via more aggressive KV compression. That part is NOT confirmed because K-only mode doesn't compress V (V stays at f16), so per-token KV cost at longer contexts grows from the f16 V side. We didn't push past 32K. Symmetric mode would be needed for the context expansion win, and symmetric mode is currently broken on Gemma 4 Metal.
+Matched-base retest (2026-04-12): f16/f16 at 32K default ub on the new base runs at **15.3 tok/s, 17/17**, and planar3/f16 at 32K default ub runs at **15.17 tok/s, 17/17**. The two are tied within noise. The actual "+30% Gemma 31B throughput win" is **15.3 vs 11.8 tok/s = +30%**, and it's entirely from the new base eliminating the old `-ub 256` workaround, not from rotorquant K-only.
 
-**Summary:** H3's throughput prediction holds (+20% vs turbo4 at 17/17). H3's context-expansion prediction is unresolved — the infrastructure gate (Metal V-dequant fix) is still in front of the bigger win.
+**Corrected H3 summary:**
+- Throughput at 32K: **new-base f16 and planar3/f16 are tied at ~15.2 tok/s**, both +30% over old-base turbo4/ub=256. Rotorquant contribution = 0.
+- Context expansion at 48-64K: not tested with planar3/f16. f16/f16 fits 64K at 24.3 GB on the new base; K-only is deferred quantization and wouldn't fit more than that. For 128K+, use turbo4/turbo4 (compresses at allocation time), not planar3.
+- The "single best measured result" framing from the pre-correction version was wrong on two axes: the comparison was unfair, and there's no rotorquant win here to report once the comparison is matched.
 
 ### H4 — quality is noise-dominated at temp 0, single-shot ✅ (confirmed, dramatically)
 
@@ -238,15 +257,20 @@ The hypothesis predicted that symmetric planar3/planar3 on Metal might produce b
 
 ## Revised recommendations for M4 Max
 
-After the gemma4 rebase, the recommendation is simple and strong: **use `-ctk planar3 -ctv f16` on M4 Max for any model where the standard turboquant fork currently uses f16 or turbo4 KV**. Measured on all three test models, three-for-three, at +13% to +20% speed over the best prior config with identical coding-benchmark quality.
+After the matched-base correction, the recommendation is narrower than the pre-correction version: **use `-ctk planar3 -ctv f16` on dense GQA ≥27B models** (Qwen 3.5 27B Opus-Distilled), where it's a clean +19% over f16. **On Gemma 4 (26B-A4B or 31B-IT), default to plain `-ctk f16 -ctv f16`** — rotorquant K-only is tied with f16 at matched ub on the new base, and the extra complexity isn't worth it.
 
-### Where rotorquant wins (measured)
+### Where rotorquant wins (measured on matched base + matched ub)
 
-- **Gemma 4 31B-IT Q4_K_M** — +20% vs turbo4 at same 17/17 quality. The single highest-value win. Previously blocked by the fork's arch gap; now unblocked.
-- **Gemma 4 26B-A4B Q6_K** — +13% vs f16 at same 15/17 quality. The "S-tier coding model on a laptop" class gets a free speed boost.
-- **Qwen 3.5 27B Opus-Distilled Q4_K_M** — +19% vs f16 at same 11/17 quality. Dense 27B with GQA, the model class where KV bandwidth is a meaningful fraction of per-token cost.
+- **Qwen 3.5 27B Opus-Distilled Q4_K_M** — **+19% vs f16 at same 11/17 quality**. Dense 27B with GQA, the model class where KV bandwidth is a meaningful fraction of per-token cost. This is the one clean rotorquant K-only win on M4 Max.
 
-In all three cases: **use `-ctk planar3 -ctv f16`**. Do not use symmetric `planar3/planar3` on Gemma 4 (see below).
+### Where rotorquant is tied with f16 (originally claimed wins, corrected)
+
+- **Gemma 4 31B-IT Q4_K_M** — planar3/f16 at 15.17 tok/s vs f16/f16 at 15.3 tok/s at matched 32K default ub. Tied, noise-level. The original "+20% vs turbo4" finding was a cross-base comparison against 11.8 tok/s from the old-base compute-buffer-bug workaround.
+- **Gemma 4 26B-A4B Q6_K** — planar3/f16 at 64.5 tok/s vs f16/f16 at 65.6 tok/s at matched 32K default ub. Tied, noise-level. The original "+13% vs f16" was comparing new-base planar3/f16 at 16K against old-base f16 at 16K.
+
+**On Gemma 4**: use plain `-ctk f16 -ctv f16`. Default ub=512 works fine on the new base; no `-ub 256` workaround needed. If you need 128K+ context on Gemma 4 31B-IT, switch to `-ctk turbo4 -ctv turbo4` (compresses at allocation time, unlike K-only which is deferred).
+
+Do not use symmetric `planar3/planar3` on Gemma 4 (see below).
 
 ### Where rotorquant doesn't help (or is broken)
 

@@ -112,16 +112,18 @@ Real numbers from `m4max_bench/`, llama.cpp turboquant fork build 8590cbff9, sin
 | Model | Quant | KV | Ctx | Tok/s | Code score | Notes |
 |---|---|---|---|---|---|---|
 | Nemotron 3 Nano 4B | Q4_K_M | f16 | 32K | **65** | 7/17 | Smallest, fastest. Default `-ub 512` is fine. |
-| Gemma 4 26B-A4B (MoE, 4B active) | Q6_K | f16 | **32K** | **61** | 15/17 | Needs `-ub 256` to fit at 32K (default OOMs) |
+| Gemma 4 26B-A4B (MoE, 4B active) | Q6_K | f16 | **32K** | **66** | 15/17 | Default ub works on new planarquant base |
 | Gemma 4 26B-A4B | Q4_K_M | f16 | 32K | 59 | 11/17 | Q4 quality drop is real |
-| Gemma 4 26B-A4B | Q6_K | turbo4 | **32K** | 45 | 16/17 | Turbo4 *slower* than f16 even at same ctx |
+| Gemma 4 26B-A4B | Q6_K | turbo4 | 32K | 45 | 16/17 | Turbo4 *slower* than f16 on Metal |
 | Qwen 3.5 9B (dense) | Q4_K_M | f16 | 32K | 35 | 9/17 | Thinking off |
-| Qwen 3.5 27B Opus-Distilled (dense) | Q4_K_M | f16 | 32K | 13 | 11/17 | Bandwidth-limited |
-| Gemma 4 31B-IT (dense) | Q4_K_M | turbo4 | **32K** | **11.8** | **17/17** | Needs both turbo4 KV (mandatory) AND `-ub 256` |
+| Qwen 3.5 27B Opus-Distilled (dense) | Q4_K_M | planar3/f16 | 32K | **15.5** | 11/17 | +19% rotorquant K-only win (the one clean rotorquant speedup on Metal) |
+| Gemma 4 31B-IT (dense ISWA) | Q4_K_M | f16 | **32K** (64K also fits) | **15.3** | **17/17** | Plain f16 default ub on the new base; turbo4 only needed for 128K+ |
 
-**Reality check:** the bandwidth-math projections (deleted from this section) overestimated by 30-40% for everything ≥27B. A dense 27B at Q4 actually runs at 13 tok/s, not the projected 18. A dense 31B at Q4 (turbo4 KV) runs at 11.5 tok/s, not 16-18. The bandwidth ceiling is real, but kernel efficiency and KV-cache compute overhead eat more of the budget than the back-of-envelope formula assumed.
+**Reality check:** the bandwidth-math projections (deleted from this section) overestimated by 30-40% for everything ≥27B. A dense 27B at Q4 actually runs at 13 tok/s f16 or 15.5 tok/s planar3/f16, not the projected 18. A dense 31B at Q4 (f16 KV on the new base) runs at 15.3 tok/s, not 16-18. The bandwidth ceiling is real, but kernel efficiency and KV-cache compute overhead eat more of the budget than the back-of-envelope formula assumed.
 
-**Interactive zone:** Up to ~26B-A4B (MoE) and ~9B (dense) at Q4 with f16 KV. 27B+ dense models cross into "wait for it" territory at 11-13 tok/s.
+**Update (2026-04-12):** The Gemma 4 31B-IT row previously said 11.8 tok/s with turbo4 KV + `-ub 256` mandatory. Both are obsolete. On the planarquant fork + Gemma 4 cherry-picks (upstream PR #21309 + #21326), plain f16 KV at default ub hits **15.3 tok/s at 32K and fits at 64K**, a +30% speedup over the old turbo4/ub=256 workaround. The ~870 KB/token KV math I originally used assumed full attention on every layer; Gemma 4 31B actually uses ISWA (9 of 62 layers global), so real KV at 32K f16 is ~3.7 GB, not 14 GB.
+
+**Interactive zone:** Up to ~26B-A4B (MoE) and ~9B (dense) at Q4 with f16 KV. 27B+ dense models cross into "wait for it" territory at 13-15 tok/s.
 
 ### What this machine is good at
 
@@ -263,7 +265,7 @@ For the broader hardware decision tree (which now covers M4 Max Studio, M3 Ultra
 - → RTX 5090 + Gemma 4 31B-IT Q4_K_M with TurboQuant turbo4 KV. 17/17 score, 50 tok/s, 24 GB VRAM, 58K context.
 
 **"I want the same quality but on a laptop I can actually carry."**
-- → M4 Max + Gemma 4 31B-IT Q4_K_M with the **TurboQuant fork's turbo4 KV** (which builds on Metal) AND `-ub 256`. Same 17/17 quality, 11.8 tok/s instead of 50. **Both** flags are required: turbo4 because dense f16 KV at 16K = 14 GB on top of 18 GB of weights blows the 30 GB Metal working set, and `-ub 256` because the default `-ub 512` makes the compute buffer too big to reach 32K. Full config: `-c 32768 -b 2048 -ub 256 -ctk turbo4 -ctv turbo4`.
+- → M4 Max + Gemma 4 31B-IT Q4_K_M with **plain f16 KV at default ub** on the planarquant fork (after the Gemma 4 cherry-picks). Same 17/17 quality, **15.3 tok/s** instead of 50. Full config: `-c 32768 -ctk f16 -ctv f16 --jinja --reasoning-budget 0`. If you need 128K+ context, switch to `-ctk turbo4 -ctv turbo4` at ~20% throughput penalty. The earlier recommendation of "turbo4 + `-ub 256` mandatory" was based on a compute-buffer bug in the old turboquant fork base; the new base doesn't need either workaround.
 
 **"I want to run the biggest model possible at interactive speed."**
 - → DGX Spark + Qwen 3.5 122B-A10B Q4_K_M. 21 tok/s (just barely interactive), full 256K context, 16/17 quality.

@@ -88,10 +88,10 @@ Three sources of data, marked separately. Decode tok/s unless otherwise noted.
 
 | Model | M4 Max 36 GB (410) | M4 Max Studio 128 GB (546) | M3 Ultra Studio 256-512 GB (819) | M5 Max MBP 128 GB (614) | RTX 5090 (1792) |
 |---|---|---|---|---|---|
-| Gemma 26B-A4B Q6_K (4B active MoE) | **60** ✅ | ~80 ⚠️ | ~120 ⚠️ | ~90 ⚠️ | **142** ✅ |
-| Gemma 31B-IT Q4_K_M (dense) | **11.8** ✅ (turbo4) | ~16 ⚠️ (f16) | ~24 ⚠️ (f16) | ~18 ⚠️ | **50** ✅ |
+| Gemma 26B-A4B Q6_K (4B active MoE) | **66** ✅ | ~87 ⚠️ | ~132 ⚠️ | ~99 ⚠️ | **142** ✅ |
+| Gemma 31B-IT Q4_K_M (dense ISWA) | **15.3** ✅ (f16, new base) | ~20 ⚠️ (f16) | ~30 ⚠️ (f16) | ~23 ⚠️ | **50** ✅ |
 | Gemma 3 27B Q4 (dense) | not tested | not tested | **~41** 📰 [1] | not tested | not in baseline |
-| Qwen 27B Opus Q4_K_M (dense) | **13** ✅ | ~17 ⚠️ | ~26 ⚠️ | ~20 ⚠️ | not in baseline |
+| Qwen 27B Opus Q4_K_M (dense) | **15.5** ✅ (planar3/f16) | ~21 ⚠️ | ~31 ⚠️ | ~23 ⚠️ | not in baseline |
 | Qwen 3.5 9B Q4_K_M | **35** ✅ | ~47 ⚠️ | ~70 ⚠️ | ~52 ⚠️ | not in baseline |
 | Qwen 3 235B FP8 (22B active MoE) | OOM | OOM | **~25-35** 📰 [2] | OOM (>128 GB) | OOM |
 | Qwen3.5-35B-A3B Q4_K_M (3B active MoE) | not tested | ~150 ⚠️ | ~225 ⚠️ | ~165 ⚠️ (Ollama 0.18) / **~134** 📰 [3] (Ollama 0.19+MLX) | **188** ✅ |
