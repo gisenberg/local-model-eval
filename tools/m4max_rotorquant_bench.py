@@ -83,6 +83,19 @@ MODELS = [
         "no_think": True,
         "hypothesis": "H3 highest-value: 13-15 tok/s projected vs turbo4=11.8 (if Metal works)",
     },
+    # K-only fallback on Gemma 31B — planar3/f16 barely fits the 28.6 GB
+    # Metal budget (18 weights + 1.5 planar3 K + 7 f16 V + 2 compute = 28.5 GB).
+    # Added after the symmetric configs on Gemma 4 hit a runaway-generation bug.
+    {
+        "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
+        "name": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
+        "path": MODELS_DIR / "unsloth/gemma-4-31B-it-GGUF/gemma-4-31B-it-Q4_K_M.gguf",
+        "context_length": 32768,
+        "ctk": "planar3", "ctv": "f16",
+        "ub": 256,
+        "no_think": True,
+        "hypothesis": "H3 K-only: could match turbo4 capacity while avoiding the symmetric runaway-gen bug",
+    },
     # H3 alternate: iso3/iso3 on Gemma 31B.
     {
         "key": "gemma-4-31b-q4km-iso3-iso3-nothink",

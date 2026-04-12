@@ -1,27 +1,37 @@
 [
   {
-    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M (planar3/planar3 @ 256K)",
-    "key": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink",
+    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
+    "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
     "benchmark": "expression_evaluator",
-    "status": "request_failed",
-    "error": "HTTPConnectionPool(host='localhost', port=8765): Read timed out. (read timeout=1800)"
+    "ctk": "planar3",
+    "ctv": "f16",
+    "tokens": 1425,
+    "tok_per_sec": 15.4,
+    "elapsed_s": 92.7,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
   },
   {
-    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M (planar3/planar3 @ 256K)",
-    "key": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink",
+    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
+    "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
     "benchmark": "astar",
-    "status": "request_failed",
-    "error": "HTTPConnectionPool(host='localhost', port=8765): Read timed out. (read timeout=1800)"
+    "ctk": "planar3",
+    "ctv": "f16",
+    "tokens": 1864,
+    "tok_per_sec": 14.9,
+    "elapsed_s": 124.86,
+    "thinking_chars": 0,
+    "finish_reason": "stop"
   },
   {
-    "model": "Qwen 3.5 27B Opus-Distilled Q4_K_M (planar3/planar3 @ 256K)",
-    "key": "qwen3.5-27b-opus-distill-q4km-planar3-planar3-256k-nothink",
+    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
+    "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
     "benchmark": "lru_cache",
     "ctk": "planar3",
-    "ctv": "planar3",
-    "tokens": 2094,
-    "tok_per_sec": 1.7,
-    "elapsed_s": 1257.01,
+    "ctv": "f16",
+    "tokens": 1926,
+    "tok_per_sec": 12.4,
+    "elapsed_s": 155.18,
     "thinking_chars": 0,
     "finish_reason": "stop"
   }
