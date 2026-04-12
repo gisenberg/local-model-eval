@@ -4,6 +4,32 @@ Tested April 2026.
 
 For the RTX 5090 equivalent, see [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md). The Mac story is fundamentally different — capacity is limited by Metal's working set ceiling, not VRAM, and there's no graceful degradation when you go over.
 
+> **⚠ UPDATE 2026-04-11 (after rotorquant rebase):** Much of the original analysis below was **base-version specific** to the turboquant fork commit `8590cbff9` we were building from, NOT a fundamental Metal property. Specifically:
+>
+> 1. **The "compute buffer scales at ~260 MiB per 1024 tokens for sliding-window models" formula was a bug in the old base**, not a Metal characteristic. A newer llama.cpp base (obtained by cherry-picking upstream PR #21309 for Gemma 4 support) has a compute buffer of **~523 MiB at 32K context regardless of `n_ubatch` or model** — a **16× reduction**. The `-ub 256` workaround we documented extensively is now unnecessary on the newer base.
+>
+> 2. **The claim "Gemma 4 31B-IT has ~870 KB/token KV at f16" was wrong math.** I assumed every layer of the 62-layer network uses full attention; actually Gemma 4 31B uses ISWA (Interleaved Sliding Window Attention) where only ~9 layers are global attention and the rest are sliding-window. Measured actual KV at 32K f16 is **~3.7 GB total** (~120 KB/token averaged), not the 27.8 GB my math predicted. The same "KV cache is the bottleneck" framing was therefore also wrong: Gemma 4 31B f16 KV at 32K fits comfortably at 3.7 GB.
+>
+> 3. **Turbo4 KV was never "mandatory" for Gemma 31B.** It was mandatory on the old base (because of the compute buffer bug), not because of KV math. On the new base, Gemma 31B f16 fits at 64K with default `-ub`, and turbo4 at 128K+ with default `-ub`.
+>
+> **What's still true**: the Metal working set ceiling IS ~30 GB (not 36 GB), OOMs are still OOM-not-spill, and there's no PCIe fallback. The per-token KV cost numbers for specific architectures are correct (except the Gemma 4 31B row which was based on bad math). The sections below that discuss "what fits at what context" are accurate for the old-base build at the time of testing — all those measurements were real. But the **mechanism** I attributed them to (compute-buffer-scales-with-`n_ubatch`) was a base-version-specific artifact, and the `-ub 256` workaround advice only applies if you're stuck on that old base.
+>
+> **If you're on a current llama.cpp base**: stop worrying about `-ub 256`, it's not needed. Use default flags and the context ceilings below that are based on the old compute-buffer formula will roughly **4× as many tokens** at the same memory budget.
+>
+> The updated numbers for Gemma 4 31B-IT on the new base:
+>
+> | Config | 32K | 64K | 128K | 256K |
+> |---|---|---|---|---|
+> | f16 / f16 (default ub) | ✅ 21.7 GB | ✅ 24.3 GB | ❌ 29.4 GB (OOM by ~700 MB) | — |
+> | planar3 / f16 K-only (default ub) | ✅ 20.9 GB | — | ❌ 30.5 GB (K-only is deferred — no memory savings at allocation) | — |
+> | turbo4 / turbo4 (default ub) | ✅ ~18.5 GB | ✅ — | ✅ 21.0 GB | ✅ 24.1 GB (loads; decode unverified) |
+>
+> Details in [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) under "Context window gains" — the rebase that unblocked Gemma 4 testing also surfaced these base-version issues.
+
+---
+
+## Original analysis (old-base-specific, preserved for historical reference)
+
 ## The Defining Constraint: Compute Buffer Sized by `n_ubatch × n_ctx` (Not the KV Cache!)
 
 The Mac advertises 36 GB of unified memory but **the GPU can only address ~30 GB** of it. This is `recommendedMaxWorkingSetSize` from Metal device init, ~30150 MB on this binning. macOS reserves the rest for the system, the display, and other Metal clients.

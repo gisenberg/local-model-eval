@@ -82,9 +82,44 @@ Baseline from [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) is 11.8 tok/s @
 | **planar3 / f16** (K-only, rotorquant) | 32K | 256 | **14.2** | **17/17** | **+20% speed, IDENTICAL quality** |
 | planar3 / planar3 (symmetric) | 32K | 256 | — (aborted) | — | Same runaway bug as Gemma 4 26B-A4B symmetric. Never completed a benchmark. |
 
-### Context window gains: **zero on M4 Max**
+### Context window gains: **zero from rotorquant alone, big from the base upgrade it came with**
 
-Despite the clean throughput wins, **rotorquant unlocked no additional usable context on any of the three test models on this hardware.** The reasons differ per model and each reason points at a different (un)fixable obstacle:
+Rotorquant K-only (`planar3 / f16`) unlocked **no additional usable context** on any of the three test models on this hardware. The apparent context gains we hit while testing (e.g. "Gemma 4 26B-A4B Q6_K now reaches 32K at default `-ub`") turned out to be **side effects of the llama.cpp base upgrade** that came with the Gemma 4 cherry-pick, not anything rotorquant did.
+
+**The full picture after some follow-up measurements:**
+
+1. **K-only planar3/f16 is deferred quantization.** The K cache is allocated at **f16 size at load time**, and only converted to planar3 at insertion during decode. So it saves **bandwidth** (compressed reads during decode) but **not memory** (allocation footprint is identical to f16 at load time). The bandwidth savings explain the +13% to +20% throughput wins; they do not buy more context. Measured: at 128K context on Gemma 4 31B-IT, f16 KV allocates 11,440 MiB and planar3/f16 KV allocates **12,557 MiB** (slightly larger, not smaller).
+
+2. **The base upgrade was the real context unlock.** We cherry-picked upstream PR #21309 onto the planarquant branch to get `LLM_ARCH_GEMMA4` support, and that commit (or something close to it) also dramatically shrank the Metal FA compute buffer for sliding-window attention models. Measured on the same Gemma 4 31B-IT Q4_K_M at 32K default ub:
+   - **Old base** (turboquant fork @ `8590cbff9`): compute buffer = **16,689 MiB (16.7 GB)**, total projected = 37.9 GB → OOM
+   - **New base** (planarquant @ `20efe75cf` + cherry-picks): compute buffer = **523 MiB**, total projected = 21.7 GB → fits
+   - **That's a 32× reduction** in compute buffer, and the only reason Gemma 4 31B-IT now fits at 32K with default settings. Rotorquant did nothing here.
+
+3. **My earlier "Gemma 4 31B-IT has 870 KB/token KV" math was also wrong.** I assumed every layer uses full attention; actually Gemma 4 31B uses ISWA where only ~9 of 62 layers are global attention and the rest are sliding-window. Real KV at 32K f16 = **3.7 GB total** (~120 KB/token averaged), not the 27.8 GB I projected. So "turbo4 is mandatory for Gemma 31B" was never based on a measurement — it was based on bad math plus the (real) compute-buffer-bug OOM.
+
+**What the context ceilings on Gemma 4 31B-IT actually look like now (new base, default ub):**
+
+| KV config | 32K | 64K | 128K | 256K |
+|---|---|---|---|---|
+| f16 / f16 | ✅ 21.7 GB | ✅ 24.3 GB | ❌ 29.4 GB | — |
+| **planar3 / f16 K-only** | ✅ **+20% tok/s vs turbo4** | likely ✅ | ❌ 30.5 GB (no mem savings from K-only) | — |
+| turbo4 / turbo4 (new base) | ✅ ~18.5 GB | ✅ — | ✅ 21.0 GB | ✅ 24.1 GB (loads) |
+
+**So the actual picture of "what gives you more context on Gemma 4 31B-IT":**
+- From 16K to 64K: the base upgrade (4× gain for free)
+- From 64K to 128K+: turbo4 KV on the new base (because turbo4 compresses at allocation time, not deferred)
+- Rotorquant K-only stays at 64K ceiling (deferred quantization = no memory savings)
+
+**On the other two test models:**
+
+- **Gemma 4 26B-A4B Q6_K**: KV is <1% of working set on MoE sliding window; compute buffer was the cap. New base fixes compute buffer; the 32K→64K+ window opens for f16, not because of rotorquant. K-only still wins on throughput at any context it fits at.
+- **Qwen 3.5 27B Opus-Distilled**: f16 already reached 128K on both bases (Qwen 27B's compute buffer doesn't have the sliding-window bug). Symmetric planar3/planar3 nominally fits 256K but decode collapses to 1.7 tok/s. No usable context gain.
+
+**Bottom line:** rotorquant on M4 Max is a **pure throughput win** (+13% to +20% across three models), not a context-capacity win. The context wins I initially attributed to rotorquant came from the llama.cpp base upgrade bundled into the cherry-picks. **For actual context-capacity gains on Gemma 4 31B-IT on the new base, use turbo4 KV** — it compresses at allocation time where rotorquant K-only doesn't.
+
+### Detailed per-model obstacles (the original analysis, corrected)
+
+Despite the overall story shift, each model still has a distinct reason rotorquant specifically didn't extend its context:
 
 | Model | Max usable ctx before rotorquant | Max usable ctx with rotorquant | Gain |
 |---|---|---|---|

@@ -1,38 +1,23 @@
 [
   {
-    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
-    "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
+    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only @ 128K)",
+    "key": "gemma-4-31b-q4km-planar3-fp16-128k-nothink",
     "benchmark": "expression_evaluator",
-    "ctk": "planar3",
-    "ctv": "f16",
-    "tokens": 1425,
-    "tok_per_sec": 15.4,
-    "elapsed_s": 92.7,
-    "thinking_chars": 0,
-    "finish_reason": "stop"
+    "status": "request_failed",
+    "error": "500 Server Error: Internal Server Error for url: http://localhost:8765/v1/chat/completions"
   },
   {
-    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
-    "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
+    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only @ 128K)",
+    "key": "gemma-4-31b-q4km-planar3-fp16-128k-nothink",
     "benchmark": "astar",
-    "ctk": "planar3",
-    "ctv": "f16",
-    "tokens": 1864,
-    "tok_per_sec": 14.9,
-    "elapsed_s": 124.86,
-    "thinking_chars": 0,
-    "finish_reason": "stop"
+    "status": "request_failed",
+    "error": "500 Server Error: Internal Server Error for url: http://localhost:8765/v1/chat/completions"
   },
   {
-    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only)",
-    "key": "gemma-4-31b-q4km-planar3-fp16-nothink",
+    "model": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only @ 128K)",
+    "key": "gemma-4-31b-q4km-planar3-fp16-128k-nothink",
     "benchmark": "lru_cache",
-    "ctk": "planar3",
-    "ctv": "f16",
-    "tokens": 1926,
-    "tok_per_sec": 12.4,
-    "elapsed_s": 155.18,
-    "thinking_chars": 0,
-    "finish_reason": "stop"
+    "status": "request_failed",
+    "error": "500 Server Error: Internal Server Error for url: http://localhost:8765/v1/chat/completions"
   }
 ]

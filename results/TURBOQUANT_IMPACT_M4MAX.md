@@ -4,6 +4,18 @@ The short version: **TurboQuant on Apple Silicon is the opposite of TurboQuant o
 
 For the 5090 story, see [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md).
 
+> **⚠ UPDATE 2026-04-11: Most of the "turbo4 is mandatory" claims below are base-version artifacts.** When we later rebased the planarquant rotorquant fork onto a newer llama.cpp base (via cherry-picking upstream PR #21309), we discovered:
+>
+> 1. **The "Gemma 4 31B-IT Q4_K_M f16 OOMs at 16K, requires turbo4" claim was wrong math.** I computed Gemma 4 31B's KV at ~870 KB/token assuming full attention on every layer; actually Gemma 4 31B uses ISWA with ~9 of 62 layers as global. The real KV is **~120 KB/token averaged, ~3.7 GB at 32K f16**, not the 27.8 GB I projected. On a current llama.cpp base, **Gemma 4 31B-IT f16 fits at 64K context with default `-ub 512`** — no turbo4 needed.
+>
+> 2. **The "turbo4 speed penalty" numbers (−23% vs f16 on Gemma 4 26B-A4B) were measured on an old base with a buggy compute buffer.** On a newer base (post cherry-pick), both f16 and turbo4 paths get a 16× smaller compute buffer, which changes the bandwidth math underneath both configs.
+>
+> 3. **Turbo4 is still useful on the new base — for long context on Gemma 4 31B-IT.** Measured on the new base: turbo4 fits Gemma 31B at 128K (21 GB) and 256K (24 GB) with default ub, where f16 OOMs at 128K. So on the new base, turbo4 becomes an optional context-extender instead of a mandatory workaround.
+>
+> 4. **Rotorquant's planar3/f16 K-only mode is now the speed leader on this hardware**, not turbo4 OR f16. Measured +13% to +20% vs the best previous config on three test models. See [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md).
+>
+> The sections below are preserved as the historical analysis for the old base. The mechanism I attributed them to — "turbo4's dequant compute dominates on Apple Silicon" — is probably still broadly correct (rotorquant's much cheaper Givens rotation beats turbo4's WHT butterfly on Metal by a lot). But the specific "mandatory at 16K" and "−23% always" numbers should be read as data points from a specific pinned commit, not as permanent Apple-Silicon properties.
+
 ## TL;DR
 
 | Model | Without TurboQuant (f16 KV) | With TurboQuant (turbo4 KV) | Net |

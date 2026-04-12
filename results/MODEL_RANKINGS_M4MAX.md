@@ -6,6 +6,14 @@
 
 Tested April 2026.
 
+> **⚠ UPDATE 2026-04-11 — the `-ub 256` story is wrong on newer llama.cpp bases.** When we later rebased the planarquant rotorquant fork onto a newer llama.cpp base (via cherry-picking upstream PR #21309 for Gemma 4 support), the compute buffer for Gemma 4 models **dropped from ~8 GB at 32K default ub to ~523 MiB** — a 16× reduction. That change makes most of the "`-ub 256` is mandatory" advice below obsolete for anyone building on a current llama.cpp. Specifically:
+>
+> - **Gemma 4 26B-A4B Q6_K** at 32K f16 fits comfortably on the new base at default `-ub 512` (23 GB total). The 16K ceiling was a compute-buffer bug in the old base.
+> - **Gemma 4 31B-IT Q4_K_M** at 32K f16 fits at 21.7 GB and reaches 64K at 24.3 GB, both with default `-ub 512` on the new base. **Turbo4 KV is no longer "mandatory"** — f16 works fine up to 64K. Turbo4 pushes it to 128K+ if you need longer context, but it's not a fit requirement.
+> - **My "Gemma 4 31B has 870 KB/token KV at f16" math was wrong**: I assumed every layer uses full attention, but Gemma 4 31B uses ISWA with only ~9 of 62 layers as global. Actual KV at 32K f16 is ~3.7 GB, not the 27.8 GB my projection said.
+>
+> The measured **throughput numbers** in the tables below are still correct for the specific build we tested on. The **context and memory footprint numbers** are base-version-specific and should be taken as lower bounds on current bases. See [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) and [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) for the corrected analysis. The sections below are preserved for historical reference.
+
 ## The M4 Max's defining constraint: compute buffer is sized by `n_ubatch × n_ctx`
 
 Three things conspire to limit context length on this machine, but the dominant one has a config-level workaround that took us a while to find:

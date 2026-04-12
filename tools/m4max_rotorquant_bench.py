@@ -96,6 +96,21 @@ MODELS = [
         "no_think": True,
         "hypothesis": "H3 K-only: could match turbo4 capacity while avoiding the symmetric runaway-gen bug",
     },
+    # H3 context-unlock test on the new base: f16 reaches 64K default ub,
+    # hits OOM at 128K (29.4 GB projected > 28.7 GB free). With planar3 K,
+    # the 10 GB global-attention KV at 128K drops to ~1 GB, leaving ~20 GB
+    # total — plenty of headroom. If this bench succeeds, it's a REAL
+    # context gain: rotorquant pushes Gemma 31B from 64K (f16) to 128K+.
+    {
+        "key": "gemma-4-31b-q4km-planar3-fp16-128k-nothink",
+        "name": "Gemma 4 31B-IT Q4_K_M (planar3/f16 K-only @ 128K)",
+        "path": MODELS_DIR / "unsloth/gemma-4-31B-it-GGUF/gemma-4-31B-it-Q4_K_M.gguf",
+        "context_length": 131072,
+        "ctk": "planar3", "ctv": "f16",
+        "ub": None,  # default works on the new base — no -ub tuning needed
+        "no_think": True,
+        "hypothesis": "H3 REAL context unlock: 128K fits with K-only where f16 OOMs. First real rotorquant context gain on M4 Max.",
+    },
     # H3 alternate: iso3/iso3 on Gemma 31B.
     {
         "key": "gemma-4-31b-q4km-iso3-iso3-nothink",
