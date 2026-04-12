@@ -29,7 +29,7 @@ The repo benchmarks three machines directly. Every platform-specific analysis fo
 - [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — Metal working set ceiling, the `n_ubatch` finding, OOM-not-spill failure mode
 - [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) — why TurboQuant turbo4 is *slower* than f16 on Apple Silicon
 - [ROTORQUANT_HYPOTHESIS_M4MAX.md](ROTORQUANT_HYPOTHESIS_M4MAX.md) — pre-experiment prediction for rotorquant on Metal
-- [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) — actual rotorquant results: K-only +19% vs f16, Gemma 4 models blocked by fork base
+- [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) — rotorquant measurements: K-only planar3/f16 is a clean win on all 3 test models (+13% to +20% over prior best config at identical quality, Gemma 4 arch support cherry-picked post-hoc)
 
 ### NVIDIA DGX Spark (GB10 Grace Blackwell, 128 GB unified, Linux/aarch64)
 - [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md) — bandwidth-bound model lineup, MoE-favorable

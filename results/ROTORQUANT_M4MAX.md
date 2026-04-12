@@ -82,6 +82,26 @@ Baseline from [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) is 11.8 tok/s @
 | **planar3 / f16** (K-only, rotorquant) | 32K | 256 | **14.2** | **17/17** | **+20% speed, IDENTICAL quality** |
 | planar3 / planar3 (symmetric) | 32K | 256 | — (aborted) | — | Same runaway bug as Gemma 4 26B-A4B symmetric. Never completed a benchmark. |
 
+### Context window gains: **zero on M4 Max**
+
+Despite the clean throughput wins, **rotorquant unlocked no additional usable context on any of the three test models on this hardware.** The reasons differ per model and each reason points at a different (un)fixable obstacle:
+
+| Model | Max usable ctx before rotorquant | Max usable ctx with rotorquant | Gain |
+|---|---|---|---|
+| Gemma 4 26B-A4B Q6_K (MoE sliding window) | 32K with f16 + `-ub 256` | **32K** (same — K-only, no V compression) | **0** |
+| Gemma 4 31B-IT Q4_K_M (dense full attention) | 32K with turbo4 KV + `-ub 256` | **32K** (K-only; symmetric would extend but has the runaway bug) | **0** |
+| Qwen 3.5 27B Opus-Distilled Q4_K_M (dense GQA) | 128K with f16 + `-ub 256` | 128K fine; 256K nominally loads (27 GB) but decode collapses to 1.7 tok/s | **0 usable** |
+
+Three reasons, one per model:
+
+1. **Gemma 4 26B-A4B**: the KV cache was already <1% of the 28.6 GB Metal working set thanks to sliding-window attention. There was nothing meaningful to compress. Context cap is bounded by weights + compute buffer, not KV — a rotorquant problem rotorquant can't solve.
+
+2. **Gemma 4 31B-IT**: this is the one model in our set where KV is genuinely the bottleneck (f16 V cache is ~14 GB at 16K, dominating the budget). K-only `planar3 / f16` compresses only the K half, leaving V at f16. That gets the +20% throughput win at the current 32K ceiling but doesn't buy new context. The path to unlocking 48-64K would be symmetric `planar3 / planar3`, which compresses V too — but symmetric hits the runaway-generation bug on Gemma 4 on this Metal backend. Almost certainly the Metal V-dequant inverse-rotation TODO from rotorquant's CLAUDE.md. Fixable upstream, not fixable by us.
+
+3. **Qwen 3.5 27B Opus-Distilled**: f16 already reaches 128K on this model — the pre-experiment projections in this repo were too conservative (we had assumed the Gemma 4 compute buffer formula was universal, but Qwen 27B Opus has a near-constant 250-420 MiB compute buffer regardless of context). Symmetric `planar3 / planar3` nominally fits at 256K (27 GB projected, below the 28.6 GB budget), but decode collapses from 11 → 1.7 tok/s somewhere between 128K and 256K, and two of three coding benchmarks timed out at 30 minutes. The nominal +4× capacity isn't usable in practice; the practical ceiling is the same 128K f16 already reaches.
+
+**Compare to the 5090**, where the context unlock on Gemma 4 31B-IT was the headline win of that platform's rotorquant experiment: 58K ctx turbo4 → **160K ctx iso3** (+102K usable) at 22/22 quality. That gain came from symmetric `iso3/iso3` working cleanly on CUDA — the same path that hangs on Metal for Gemma 4 today. **If the Metal symmetric V-dequant port ever lands upstream, H2/H3's context-expansion predictions should replicate here**. Until then, rotorquant on M4 Max is **a pure throughput win at the same context tiers we already had**.
+
 ### Summary — the K-only mode wins consistently
 
 All three tested models show the same pattern: **K-only `planar3 / f16` is faster than the best prior config at identical quality.**

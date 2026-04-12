@@ -9,13 +9,19 @@ This is a consolidated digest of [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md), [RO
 
 | Platform | Best rotorquant config | Δ vs existing default | Quality | Recommend switch? |
 |---|---|---:|---|---|
-| **M4 Max** (Metal) | `planar3 / f16` (K-only) | **+19% vs f16** | identical | **Yes** — first net-positive KV quantizer on Metal |
+| **M4 Max** (Metal) | `planar3 / f16` (K-only) — three-for-three wins | **+13% to +20%** across Qwen 27B, Gemma 26B-A4B, Gemma 31B | identical across all three models | **Yes** — first net-positive KV quantizer on Metal, measured on dense GQA, MoE sliding-window, and dense full-attention |
 | **Spark** (aarch64 CUDA 13) | `planar3 K / f16 V` on Qwen3.5-122B | ~−1% vs f16, +5/17 quality | better in one measurement | **Yes** for Qwen3.5-122B. **No** for GLM-4.5-Air (broken output). |
 | **5090** (Blackwell CUDA 13.2) | `iso3/iso3` on **Gemma 4 31B-IT** for long context; planar3/f16 on most; maybe iso3 for Harmonic | Gemma 31B: **+102K context** at −21% decode (coding workload). Qwen/Qwopus: planar3 −4 to −6%. Harmonic iso3: +0.3% (parity) | Gemma 31B: **22/22** best-of-3 at both 32K and 128K. Qwen/Qwopus/Harmonic unchanged. | **Yes** for Gemma 4 31B-IT long context; **no** for Qwen/Qwopus at short context; Harmonic pending replication |
 
 ## The key finding per platform
 
-**M4 Max.** Rotorquant is the first KV quantizer we have tested that is *faster than f16* on Metal. We had previously measured TurboQuant turbo4 as 23% *slower* than f16 on this hardware (the WHT dequant cost beats the bandwidth savings when the GPU has cheap LPDDR5X and expensive compute). Rotorquant's Givens rotation is ~64× less dequant compute per element than turbo4's WHT butterfly, and that gap was exactly what Metal needed. K-only planar3/f16 on Qwen 27B Opus-Distilled ran at 15.5 tok/s vs 13.0 tok/s f16 baseline — **+19% speedup at the same quality**. This is by far the strongest pro-rotorquant finding across all three platforms.
+**M4 Max.** Rotorquant is the first KV quantizer we have tested that is *faster than f16* on Metal. We had previously measured TurboQuant turbo4 as 23% *slower* than f16 on this hardware (the WHT dequant cost beats the bandwidth savings when the GPU has cheap LPDDR5X and expensive compute). Rotorquant's Givens rotation is ~64× less dequant compute per element than turbo4's WHT butterfly, and that gap was exactly what Metal needed. Measured K-only `planar3 / f16` results across all three test models (second pass after a gemma4 cherry-pick unblocked the Gemma tests):
+
+- **Qwen 3.5 27B Opus-Distilled Q4_K_M** (dense GQA): 15.5 tok/s vs 13.0 f16 baseline = **+19%**, 11/17 → 11/17 (identical)
+- **Gemma 4 26B-A4B Q6_K** (MoE sliding window): 68.2 tok/s vs 60.3 f16 baseline = **+13%**, 15/17 → 15/17 (identical)
+- **Gemma 4 31B-IT Q4_K_M** (dense full attention): 14.2 tok/s vs 11.8 turbo4 baseline = **+20%**, 17/17 → 17/17 (identical)
+
+Three-for-three, spanning three distinct attention patterns. This is by far the strongest pro-rotorquant finding across all three platforms. Symmetric `planar3/planar3` on Gemma 4 hits a runaway-generation bug (model emits 16K tokens without reaching a stop token) that looks like the Metal V-dequant inverse-rotation TODO from rotorquant's CLAUDE.md — K-only dodges it by leaving V at f16.
 
 **Spark.** Rotorquant's throughput cost on Spark is negligible (~1% for K-only, 3-8% for symmetric on MoE) but its **quality behavior is bimodal**. On Qwen3.5-122B (DeltaNet hybrid: only 12 of 48 layers use full attention, the rest are linear attention outside the KV quantization path), planar3K/f16V produced **18/17 tests** — a +5 point jump over the f16 baseline's 13/17. On GLM-4.5-Air (standard attention in every one of 46 layers), all three rotorquant configs produced **literal `Hello?????????...` garbage** — the model stopped emitting coherent tokens or stop tokens at all. The rotorquant paper's "zero PPL loss" guarantee validated on Llama 3.1 8B did **not** transfer to GLM-4.5-Air's much deeper dense-attention stack. **Deep full-attention stacks break rotorquant**; hybrid-attention or sparse-attention architectures tolerate it fine.
 
@@ -27,7 +33,7 @@ On Qwen 27B Opus-Distilled and Qwopus 27B (two Qwen 3.5 27B dense variants), iso
 
 ## The common blocker: Gemma 4 support in the johndpope fork
 
-**Status as of 2026-04-11 afternoon: resolved on the 5090 via a local rebase + kernel patch, still open on M4 Max and Spark.**
+**Status as of 2026-04-11 evening: resolved on 5090 and M4 Max via local cherry-picks, still open on Spark.**
 
 The M4 Max and Spark rotorquant experiments ran against the johndpope fork at commit `20efe75cf`, which was based on upstream llama.cpp from 2026-03-25 (ggml 0.9.8). That base predates the upstream addition of `LLM_ARCH_GEMMA4`, so every Gemma 4 test case on every platform crashed with `unknown model architecture: 'gemma4'` before generating a single token. Both per-platform writeups ([ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) and [ROTORQUANT_SPARK.md](ROTORQUANT_SPARK.md)) record this as the biggest scope cut.
 
@@ -39,21 +45,29 @@ On the 5090, we went back and fixed it. The steps:
 
 The 5090 rebase branch is local (`local/rebase-attempt` in the johndpope fork, not pushed). The D=512 kernel patch in particular is small, additive, and should be safe to upstream if anyone wants to.
 
-**The M4 Max and Spark experiments would still need the same rebase applied on their respective build setups** (Metal and aarch64 CUDA). The rebase steps are the same; only the kernel patch differs — M4 Max needs the D=512 Metal FA instances instead of CUDA, and Spark needs the CUDA instances for sm_121a. Neither has been done; both would unlock Gemma 4 models on those platforms and, in particular, would let us test whether the M4 Max K-only-planar3 +19% win generalizes from the Qwen 27B Opus-Distilled dense model to the Gemma 4 family.
+**On M4 Max**, we took a simpler path than the 5090's full rebase: cherry-pick just the two commits that matter for Gemma 4 text support:
+
+1. **`63f8fe0ef`** (upstream PR #21309) — adds `LLM_ARCH_GEMMA4`, `src/models/gemma4-iswa.cpp`, and the rest of the Gemma 4 text-model infrastructure. One conflict in `tools/mtmd/mtmd.cpp` (multimodal image code, unrelated to text benchmarks) — reverted to planarquant's version. Also reverted the other `tools/mtmd/*` bits from the same commit because they reference `mtmd-image.h` which doesn't exist on the planarquant base.
+2. **`5208e2d5b`** (upstream PR #21326) — Gemma 4 chat-template fix. Needed because without it, `--reasoning-budget 0` leaks ~43 KB of reasoning content into output. Cherry-picks cleanly, no conflicts.
+
+No kernel patch was needed on M4 Max — the Metal FA kernels already handle the head dimensions Gemma 4 uses. The rebuilt binary at `~/git/TheTom/llama-cpp-planarquant` (branch `local/planarquant-gemma4-cherrypick`) loads Gemma 4 models and all four rotorquant cache types (`planar3`, `iso3`, `planar4`, `iso4`) still register. **Gemma 4 K-only results on M4 Max are included in the table above and the per-platform deep-dive section.**
+
+**Spark is still open.** Same two cherry-picks should in principle work there too, plus possibly a D=512 CUDA kernel patch similar to the 5090's if iso3/iso3 is used for symmetric configs. Not attempted in this session.
 
 ## Hypothesis outcome summary (composite)
 
 | Hypothesis (across docs) | M4 Max | Spark | 5090 |
 |---|---|---|---|
-| iso3/iso3 is 10-25% slower than the platform default | n/a (Metal) | ❌ Qwen: −3%. GLM: −25% | ✅ Qwen/Qwopus (~−10%). ❌ Harmonic (+0.3%). ✅ Gemma 4 31B-IT (−21.1% on coding workload) |
-| planar3/f16 is the sweet spot (small throughput loss, same quality) | ✅ **+19% faster**, exceeds prediction | ✅ on Qwen. ❌ output broken on GLM | ✅ mostly (−3.5% to −5.9%, quality fine) |
-| Quality is noise-dominated | ⚠️ confirmed extreme (±5 points at temp=0) | ✅ same finding (+5 on Qwen, −15 on GLM) | ✅ held on Qwen family (max 1-test delta). ✅ held on Gemma 31B: 22/22 best at both 32K and 128K |
-| TurboQuant remains the default | ❌ turbo4 loses to planar3/f16 | n/a (we use f16, not turbo4, as Spark baseline) | ✅ for Qwen/Qwopus/Harmonic. ❌ **rotorquant wins on Gemma 4 31B-IT long context** |
-| Gemma 4 31B-IT long-context unlock | ❌ blocked (gemma4 arch) | not tested | ✅ **+102K usable context** (160K vs 58K), **22/22 quality at 32K and 128K**, −21.1% throughput on coding workload, capacity projection within 2% |
+| iso3/iso3 is 10-25% slower than the platform default | ❌ Gemma 4: runaway-generation bug (Metal V-dequant TODO). ⚠️ Qwen 27B Opus: symmetric planar3 −15% vs f16 | ❌ Qwen: −3%. GLM: −25% | ✅ Qwen/Qwopus (~−10%). ❌ Harmonic (+0.3%). ✅ Gemma 4 31B-IT (−21.1% on coding workload) |
+| planar3/f16 is the sweet spot (small throughput loss, same quality) | ✅✅ **three-for-three +13% to +20% FASTER**, not "small loss" — exceeds prediction dramatically | ✅ on Qwen. ❌ output broken on GLM | ✅ mostly (−3.5% to −5.9%, quality fine) |
+| Quality is noise-dominated | ✅ K-only is clean (no noise on any model). ⚠️ symmetric on Qwen 27B did show the path-flip effect (+5 points) | ✅ same finding (+5 on Qwen, −15 on GLM) | ✅ held on Qwen family (max 1-test delta). ✅ held on Gemma 31B: 22/22 best at both 32K and 128K |
+| TurboQuant remains the default | ❌ planar3/f16 beats turbo4 on Gemma 4 31B-IT by +20%, and beats f16 on every other model | n/a (we use f16, not turbo4, as Spark baseline) | ✅ for Qwen/Qwopus/Harmonic. ❌ **rotorquant wins on Gemma 4 31B-IT long context** |
+| Gemma 4 31B-IT throughput unlock | ✅ **+20% vs turbo4 at 17/17** with K-only planar3/f16 at 32K (after cherry-pick) | not tested | ✅ separately, via context unlock: iso3/iso3 gets +102K context at −21% decode |
+| Gemma 4 31B-IT long-context unlock | ⚠️ blocked on symmetric V-dequant bug — K-only can't extend context because V stays at f16 | not tested | ✅ **+102K usable context** (160K vs 58K), **22/22 quality at 32K and 128K**, −21.1% throughput on coding workload, capacity projection within 2% |
 
 ## Practical recommendations
 
-**If you have an M4 Max:** use `planar3 / f16` K-only rotorquant as a drop-in replacement for f16 on dense GQA models (measured on Qwen 3.5 27B Opus-Distilled). You'll get +19% decode throughput at the same quality and the same context limits. For MoE sliding-window models (Gemma 4 family), this fork can't load them at all — keep the turboquant fork for those.
+**If you have an M4 Max:** use `-ctk planar3 -ctv f16` as a drop-in replacement for f16 or turbo4 on any of the models we benchmarked. Measured on dense GQA (Qwen 3.5 27B Opus-Distilled: +19%), MoE sliding window (Gemma 4 26B-A4B Q6_K: +13%), and dense full attention (Gemma 4 31B-IT Q4_K_M: +20% vs turbo4). Quality is identical to the best prior config in all three cases. Apply the two cherry-picks from the "common blocker" section above if you want to use it on Gemma 4 models — the stock planarquant fork base doesn't have gemma4 text support. Symmetric `planar3/planar3` on Gemma 4 has a runaway-generation bug — stick to K-only until the Metal V-dequant fix lands upstream.
 
 **If you have a DGX Spark:** use `planar3 K / f16 V` on Qwen3.5-122B (the DeltaNet hybrid) — it ties the S-tier ik-llama result with a simpler engine stack. **Do not** use rotorquant on GLM-4.5-Air or any deep standard-attention MoE until upstream fixes the output collapse. The "zero PPL loss" claim from the paper demonstrably does not hold on deep dense-attention stacks, which is an important caveat for anyone picking rotorquant for a new model class.
 
