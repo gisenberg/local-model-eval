@@ -45,11 +45,37 @@ For comparison, the closest local equivalent is **Qwen 3.5 35B-A3B Q4_K_M** (C-t
 
 ## MiniMax M2.5 (OpenRouter Free)
 
-*Benchmark in progress. Preliminary finding: ~8-minute queue times per request on the free tier, and the model's 8,192 max output token cap is too short for its verbose thinking+code output style — the first run hit the cap and scored 0/5 on Expression Evaluator because the implementation was cut off before tests were written. Full results will be added when the bench completes.*
+Model ID: `minimax/minimax-m2.5:free`. Context window: 196K. Max output: **8,192 tokens** (free tier cap).
+
+**Benchmark abandoned after 2 of 12 runs.** The OpenRouter free tier for this model is not viable for our coding benchmark:
+
+| Run | TTFT | Decode | Tokens | Score | Issue |
+|---|---:|---:|---:|---:|---|
+| ExprEval run 1 | **492s** (8 min queue) | 50.8 tok/s | 8,192 (hit cap) | 0/5 | Output truncated mid-implementation |
+| ExprEval run 2 | **1,397s** (23 min queue) | 2.9 tok/s | 5,004 | 0/5 | Truncated, also very slow decode |
+
+**Three compounding problems:**
+
+1. **Free tier queue times are extreme** — 8 to 23 minutes per request. At this rate, the full 12-run bench would take 4-8 hours.
+2. **The 8,192 max output cap truncates the model's output.** MiniMax M2.5 is a thinking model that emits reasoning tokens before code. With a long thinking preamble + verbose implementation, 8K tokens is not enough to fit a complete implementation + pytest tests. Run 1 hit the cap exactly (8,192 tokens) with the implementation cut off before tests were written.
+3. **Decode throughput is inconsistent** — 50.8 tok/s on run 1 but only 2.9 tok/s on run 2, suggesting the free tier infrastructure has variable performance.
+
+**Verdict:** MiniMax M2.5 on OpenRouter Free is not benchmarkable with our methodology. The output cap is the fundamental issue — even with zero queue time, 8K tokens is too short for this model's thinking+code output style on our prompts. The model may perform well on a paid tier with higher output limits, but we can't assess that from the free tier. Scored 0/5 on both runs we completed — not a model capability judgment, just a truncation artifact.
 
 ## MiniMax M2.7 (NVIDIA)
 
-*Benchmark in progress. The NVIDIA NIM endpoint has ~90-second cold start latency but does respond. The model is a thinking model that emits `<think>` tokens in its content output. Full results will be added when the bench completes.*
+Model ID: `minimaxai/minimax-m2.7`. Context window: 200K. Max output: 16,384 tokens. Served via NVIDIA NIM at `integrate.api.nvidia.com`.
+
+**Benchmark abandoned — every run timed out or disconnected.** The NVIDIA free-tier endpoint for this model cannot complete a coding-benchmark request within 300 seconds:
+
+| Run | Result |
+|---|---|
+| ExprEval runs 1-3 | All 3 timed out at 300s (no response bytes received) |
+| A* run 1 | "Response ended prematurely" (connection dropped mid-stream) |
+
+A short "Say one word" test (max_tokens=5) did succeed at ~90 seconds, confirming the endpoint is alive and the model can generate. But coding prompts that require thousands of thinking + code tokens exceed the free-tier compute budget or time limit. The model is a thinking model that emits `<think>` tokens before code output, which multiplies the generation length.
+
+**Verdict:** MiniMax M2.7 on NVIDIA's free NIM API is not benchmarkable with our coding suite. The endpoint works for trivial prompts but times out on anything that requires sustained generation. Unlike the M2.5 issue (queue + output cap), this is a pure infrastructure timeout — the 16K output cap would be sufficient if the endpoint could stay connected long enough to generate.
 
 ## Raw artifacts
 
