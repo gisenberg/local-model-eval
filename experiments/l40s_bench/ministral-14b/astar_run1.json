@@ -1,0 +1,22 @@
+{
+  "bench": "astar",
+  "model": "Ministral-3-14B-Instruct-2512-BF16",
+  "platform": "L40S 46GB (vLLM)",
+  "run": 1,
+  "temperature": 0,
+  "toks": 2524,
+  "elapsed": 90.912,
+  "tps": 27.83,
+  "ttft": 0.204,
+  "think_chars": 0,
+  "content_chars": 8625,
+  "finish": "stop",
+  "usage": {
+    "prompt_tokens": 283,
+    "total_tokens": 2807,
+    "completion_tokens": 2524
+  },
+  "test_passed": 5,
+  "test_failed": 2,
+  "test_errors": 0
+}

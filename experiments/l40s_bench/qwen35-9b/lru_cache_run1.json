@@ -1,0 +1,22 @@
+{
+  "bench": "lru_cache",
+  "model": "Qwen3.5-9B",
+  "platform": "L40S 46GB (vLLM)",
+  "run": 1,
+  "temperature": 0,
+  "toks": 5589,
+  "elapsed": 130.53,
+  "tps": 42.89,
+  "ttft": 0.223,
+  "think_chars": 0,
+  "content_chars": 22490,
+  "finish": "stop",
+  "usage": {
+    "prompt_tokens": 321,
+    "total_tokens": 5910,
+    "completion_tokens": 5589
+  },
+  "test_passed": 0,
+  "test_failed": 7,
+  "test_errors": 0
+}

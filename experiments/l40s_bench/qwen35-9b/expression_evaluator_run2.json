@@ -1,0 +1,22 @@
+{
+  "bench": "expression_evaluator",
+  "model": "Qwen3.5-9B",
+  "platform": "L40S 46GB (vLLM)",
+  "run": 2,
+  "temperature": 0.3,
+  "toks": 2313,
+  "elapsed": 53.292,
+  "tps": 43.56,
+  "ttft": 0.189,
+  "think_chars": 0,
+  "content_chars": 9932,
+  "finish": "stop",
+  "usage": {
+    "prompt_tokens": 180,
+    "total_tokens": 2493,
+    "completion_tokens": 2313
+  },
+  "test_passed": 3,
+  "test_failed": 2,
+  "test_errors": 0
+}
