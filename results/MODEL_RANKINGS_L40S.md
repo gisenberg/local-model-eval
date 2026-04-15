@@ -33,12 +33,12 @@ All benchmarks use the 3-benchmark coding suite (Expression Evaluator 5 tests + 
 | Tier | Model | Precision | VRAM (est.) | Tok/s | Best | Avg | Note |
 |---|---|---|---|---|---|---|---|
 | **B** | Ministral-3-14B-Instruct-2512 | BF16 | ~33 GB | 28.0 | **13/17 (76%)** | 8.7/17 | Best overall score. LRU rock-solid, ExprEval fragile at temp>0. |
-| **B** | Qwen3.5-9B | BF16 | ~25 GB | **44.2** | 11/17 (65%) | 8.0/17 | 1.6x faster. Fails LRU entirely. |
-| **—** | Qwen3.5-35B-A3B | FP8 | ~35+ GB | — | — | — | Startup timeout (15 min). Did not load. |
+| **C** | Qwen3.5-9B | BF16 | ~25 GB | **44.3** | 9/17 (53%) | 6.0/17 | 1.6x faster but highly inconsistent. |
+| **—** | Qwen3.5-35B-A3B | FP8 | ~35+ GB | — | — | — | Startup timeout (30 min). Did not load. |
 
 **Quick-pick guide:**
 - **Higher quality:** Ministral-3-14B (13/17 best, consistent LRU)
-- **Higher speed:** Qwen3.5-9B (44 tok/s, 1.6x faster, but 0/6 on hardest benchmark)
+- **Higher speed:** Qwen3.5-9B (44 tok/s, 1.6x faster, but unreliable quality)
 - **Don't attempt on L40S with vLLM:** Qwen3.5-27B-FP8 (OOM), Qwen3.5-35B-A3B FP8 (timeout), any dense >20B at BF16
 
 ---
@@ -76,32 +76,41 @@ Best overall score on L40S. The only model to pass any LRU Cache tests. ExprEval
 
 ### Qwen3.5-9B BF16 (vLLM, thinking OFF)
 
-Fastest model tested. Good at ExprEval and A*, but completely fails LRU Cache — zero passes across all 3 runs.
+Fastest model tested but **highly inconsistent across sessions**. Two full 3-run benchmarks produced very different results (best-of-3 ranged from 9/17 to 11/17). Throughput is rock-solid at ~44 tok/s; code quality is a coin flip.
 
 | Metric | Value |
 |---|---|
-| Single-shot (temp 0) | 9/17 (53%) |
-| Best-of-3 (temp 0.3) | 9/12 (75%) |
-| Average (temp 0.3) | 5.3/12 |
-| Throughput | **44.2 tok/s** |
+| Single-shot (temp 0) | 6/17 (35%) |
+| Best-of-3 (temp 0.3) | 5/12 (42%) |
+| Average (temp 0.3) | 4.0/12 |
+| Throughput | **44.3 tok/s** |
 | TTFT | 189–233 ms |
 | Weights | ~19 GB (BF16) |
 | Context | 32768 |
 | Backend | vLLM 0.19.0 |
 | Config | `--max-model-len 32768 --gpu-memory-utilization 0.90`, thinking OFF via `chat_template_kwargs` |
 
-**Per-benchmark breakdown:**
+**Per-benchmark breakdown (latest run):**
 
 | Benchmark | Expected | Run 1 (t=0) | Run 2 (t=0.3) | Run 3 (t=0.3) | Best | Avg |
 |---|---|---|---|---|---|---|
-| Expression Evaluator | 5 | **5/5** | 3/5 | 3/5 | 5 | 3.7 |
-| A* Pathfinding | 6 | 4/6 | **6/6** | 3/6 | 6 | 4.3 |
-| LRU Cache with TTL | 6 | 0/6 | 0/6 | 0/6 | 0 | 0.0 |
+| Expression Evaluator | 5 | 1/5 | 1/5 | 1/5 | 1 | 1.0 |
+| A* Pathfinding | 6 | **5/6** | 4/6 | 3/6 | 5 | 4.0 |
+| LRU Cache with TTL | 6 | 0/6 | 0/6 | **3/6** | 3 | 1.0 |
 
-**Strengths:** Fast — 44 tok/s with low TTFT (~200ms). Perfect ExprEval at temp 0. A* can hit 6/6 on a good run. Small memory footprint (~25 GB with vLLM overhead) leaves headroom for longer contexts.
-**Weaknesses:** Complete LRU Cache failure (0/6 across all runs) — the model cannot produce correct TTL expiration logic at 9B parameters. A* is inconsistent (3–6 range). ExprEval drops from 5/5 to 3/5 at temp 0.3.
+**Cross-session variance (two separate 3-run benchmarks):**
 
-> **Note:** This is the same Qwen3.5 family tested on the 5090 as Qwen3.5-35B-A3B (the MoE variant). The 9B dense version is a different model — smaller, faster, but less capable. The 35B-A3B scored 11/17 on the 5090 with llama.cpp Q6_K; it could not load on L40S via vLLM FP8 within the 15-minute timeout.
+| Benchmark | Session 1 Best | Session 2 Best | Range |
+|---|---|---|---|
+| Expression Evaluator | **5/5** | 1/5 | Extremely high variance |
+| A* Pathfinding | **6/6** | 5/6 | Moderate |
+| LRU Cache with TTL | 0/6 | **3/6** | Flipped — zero vs partial |
+| **Total Best** | **11/17** | **9/17** | |
+
+**Strengths:** Fast — 44 tok/s with low TTFT (~200ms). Small memory footprint (~25 GB with vLLM overhead) leaves headroom for longer contexts. A* Pathfinding is the most stable benchmark (3–6 range, averaging ~4).
+**Weaknesses:** Extremely inconsistent between sessions. ExprEval went from 5/5 to 1/5 across two runs. LRU Cache is unreliable (0 or 3, never consistent). At 9B parameters with thinking OFF, the model simply doesn't have enough capacity for reliable complex code generation.
+
+> **Note:** The 35B-A3B MoE variant of the same Qwen3.5 family scored 11/17 on the 5090 with llama.cpp Q6_K but could not load on L40S via vLLM FP8 (weight loading hung for >30 minutes).
 
 ---
 
@@ -125,9 +134,9 @@ Same-family models across hardware platforms (all thinking OFF):
 |---|---|---|---|---|
 | Qwen3.5-35B-A3B Q6_K | RTX 5090 32GB | llama.cpp (TurboQuant) | 60.1 | 11/17 |
 | Qwen3.5-35B-A3B FP8 | L40S 46GB | vLLM | — | Did not load |
-| Qwen3.5-9B BF16 | L40S 46GB | vLLM | 44.2 | 11/17 |
+| Qwen3.5-9B BF16 | L40S 46GB | vLLM | 44.3 | 9–11/17 (high variance) |
 
-The 5090 can run the 35B MoE at Q6_K via llama.cpp because TurboQuant KV compression fits the MoE within 32 GB. vLLM on the L40S cannot — FP8 online quantization is slower to initialize and the MoE expert mapping adds overhead. The 9B dense model on L40S matches the 35B-A3B's best score (11/17) but at different benchmarks — the 9B passes A* more reliably but fails LRU entirely.
+The 5090 can run the 35B MoE at Q6_K via llama.cpp because TurboQuant KV compression fits the MoE within 32 GB. vLLM on the L40S cannot — FP8 online quantization hangs during weight loading for the MoE architecture. The 9B dense model on L40S achieves similar throughput but far less reliable quality — its best score ranged from 9/17 to 11/17 across two separate benchmark sessions.
 
 ---
 

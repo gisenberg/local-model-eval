@@ -15,11 +15,12 @@ For Qwen3.5 models, thinking is disabled via chat_template_kwargs.
 
 Models tested (all cached on Lustre NVMe at /nvmepool2/.cache/huggingface):
 - Qwen3.5-9B (BF16) -- thinking OFF, ~19GB
-- Qwen3.5-35B-A3B (FP8) -- MoE, 3B active, thinking OFF, ~35GB
 - Ministral-3-14B-Instruct-2512-BF16 -- non-thinking, ~27GB
 
-NOTE: Qwen3.5-27B-FP8 OOMs on L40S (model+CUDA graphs fill 42.5/44.4 GB).
-NOTE: Gemma 4 deadlocks on vLLM Triton backend (heterogeneous head dims).
+Models that do NOT work on L40S 46GB + vLLM 0.19.0:
+- Qwen3.5-27B-FP8: OOMs (model+CUDA graphs fill 42.5/44.4 GB, no room for KV cache)
+- Qwen3.5-35B-A3B (FP8 online): weight loading hangs >30min (MoE + GDN + FP8 online quant)
+- Gemma 4: deadlocks on vLLM Triton backend (heterogeneous head dims 256/512)
 
 Usage:
     python tools/vllm_l40s_bench.py                          # all models
@@ -52,17 +53,9 @@ MODEL_CONFIGS = {
         "nothink": True,  # disable thinking via chat_template_kwargs
         "notes": "9B dense, BF16 (~19GB). Thinking OFF per repo methodology.",
     },
-    "qwen35-35b-a3b": {
-        "name": "Qwen3.5-35B-A3B",
-        "hf_id": "Qwen/Qwen3.5-35B-A3B",
-        "quantization": "fp8",
-        "max_model_len": 16384,
-        "gpu_mem_util": 0.95,
-        "dtype": "auto",
-        "enforce_eager": True,  # MoE + FP8 online = CUDA graph capture takes >15min
-        "nothink": True,
-        "notes": "35B MoE (3B active), FP8 online (~35GB). Same model tested on 5090 (11/17). Thinking OFF.",
-    },
+    # Qwen3.5-35B-A3B (MoE, FP8 online) removed: weight loading hangs >30min on
+    # vLLM 0.19.0. Tested with --enforce-eager, reduced context (4096), 30min
+    # timeout — still hangs. GDN layers + FP8 online quant + MoE seems broken.
     "ministral-14b": {
         "name": "Ministral-3-14B-Instruct-2512-BF16",
         "hf_id": "mistralai/Ministral-3-14B-Instruct-2512-BF16",

@@ -4,19 +4,19 @@
   "platform": "L40S 46GB (vLLM)",
   "run": 1,
   "temperature": 0,
-  "toks": 5589,
-  "elapsed": 130.53,
-  "tps": 42.89,
-  "ttft": 0.223,
+  "toks": 3301,
+  "elapsed": 75.74,
+  "tps": 43.7,
+  "ttft": 0.196,
   "think_chars": 0,
-  "content_chars": 22490,
+  "content_chars": 13316,
   "finish": "stop",
   "usage": {
     "prompt_tokens": 321,
-    "total_tokens": 5910,
-    "completion_tokens": 5589
+    "total_tokens": 3622,
+    "completion_tokens": 3301
   },
   "test_passed": 0,
-  "test_failed": 7,
+  "test_failed": 6,
   "test_errors": 0
 }

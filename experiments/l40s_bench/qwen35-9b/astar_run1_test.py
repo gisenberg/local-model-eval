@@ -17,12 +17,12 @@ class AStarGrid:
             grid: A 2D list where grid[r][c] is the cost to enter cell (r, c).
                   0 represents a wall (impassable). Positive integers represent costs.
         """
-        self.grid = grid
+        if not grid or not grid[0]:
+            raise ValueError("Grid cannot be empty.")
+        
         self.rows = len(grid)
-        if self.rows == 0:
-            self.cols = 0
-        else:
-            self.cols = len(grid[0])
+        self.cols = len(grid[0])
+        self.grid = grid
 
     def _is_valid(self, r: int, c: int) -> bool:
         """Check if coordinates are within grid bounds."""
@@ -37,6 +37,7 @@ class AStarGrid:
         """
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         neighbors = []
+        
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
             if self._is_valid(nr, nc):
@@ -45,30 +46,37 @@ class AStarGrid:
                     neighbors.append((nr, nc))
         return neighbors
 
-    def find_path(
-        self, 
-        start: Tuple[int, int], 
-        end: Tuple[int, int]
-    ) -> Optional[List[Tuple[int, int]]]:
+    def _heuristic(self, a: Tuple[int, int], b: Tuple[int, int]) -> int:
+        """
+        Calculate Manhattan distance heuristic.
+        
+        Args:
+            a: Current cell (row, col).
+            b: Target cell (row, col).
+            
+        Returns:
+            Manhattan distance: |a[0] - b[0]| + |a[1] - b[1]|
+        """
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    def find_path(self, start: Tuple[int, int], end: Tuple[int, int]) -> Optional[List[Tuple[int, int]]]:
         """
         Find the shortest path from start to end using A* algorithm.
         
         Args:
-            start: Tuple (row, col) of the starting cell.
-            end: Tuple (row, col) of the target cell.
+            start: Starting coordinates (row, col).
+            end: Target coordinates (row, col).
             
         Returns:
-            List of (row, col) coordinates from start to end inclusive, 
-            or None if no path exists.
-            
-        Raises:
-            ValueError: If start or end coordinates are out of bounds.
+            List of (row, col) coordinates representing the path from start to end inclusive.
+            Returns None if no path exists.
+            Raises ValueError if start or end are out of bounds.
         """
         # Validate bounds
         if not self._is_valid(start[0], start[1]):
-            raise ValueError(f"Start coordinates {start} are out of bounds.")
+            raise ValueError(f"Start position {start} is out of bounds.")
         if not self._is_valid(end[0], end[1]):
-            raise ValueError(f"End coordinates {end} are out of bounds.")
+            raise ValueError(f"End position {end} is out of bounds.")
 
         # Check if start or end is a wall
         if self.grid[start[0]][start[1]] == 0:
@@ -80,59 +88,50 @@ class AStarGrid:
         if start == end:
             return [start]
 
-        # Heuristic: Manhattan distance
-        def heuristic(a: Tuple[int, int], b: Tuple[int, int]) -> int:
-            return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-        # Priority Queue: (f_score, g_score, row, col)
-        # We use a counter to break ties deterministically if f_scores are equal
+        # Priority Queue: (f_score, counter, g_score, current_node)
+        # Counter is used to break ties in f_score to ensure deterministic behavior
+        # and to handle the case where f_scores are identical.
         open_set = []
-        start_cost = 0  # Cost to reach start is 0 (we are already there)
-        # Note: The problem says "cost to enter". Usually start cost is 0 unless specified otherwise.
-        # We assume start cost is 0 for the path calculation, but the heuristic guides us.
+        counter = 0
         
-        # f = g + h
-        # g is cost from start to current
-        # h is estimated cost from current to end
+        start_cost = self.grid[start[0]][start[1]]
+        g_score = {start: start_cost}
+        f_score = {start: start_cost + self._heuristic(start, end)}
         
-        heapq.heappush(open_set, (heuristic(start, end) + start_cost, start_cost, start[0], start[1]))
-        
+        heapq.heappush(open_set, (f_score[start], counter, start[0], start[1]))
+        counter += 1
+
         came_from = {}
-        g_score = {start: 0}
-        closed_set = set()
 
         while open_set:
-            current_f, current_g, curr_r, curr_c = heapq.heappop(open_set)
+            _, _, current_r, current_c = heapq.heappop(open_set)
+            current = (current_r, current_c)
 
-            # If we reached the target
-            if (curr_r, curr_c) == end:
+            if current == end:
                 # Reconstruct path
-                path = []
-                while (curr_r, curr_c) in came_from:
-                    path.append((curr_r, curr_c))
-                    curr_r, curr_c = came_from[(curr_r, curr_c)]
-                path.append(start)
+                path = [current]
+                while current in came_from:
+                    current = came_from[current]
+                    path.append(current)
                 path.reverse()
                 return path
 
-            if (curr_r, curr_c) in closed_set:
+            # If we found a better path to this node already, skip
+            if current in g_score and g_score[current] < g_score.get(current, float('inf')):
                 continue
-            closed_set.add((curr_r, curr_c))
 
-            # Explore neighbors
-            for neighbor_r, neighbor_c in self._get_neighbors(curr_r, curr_c):
-                if neighbor_r in closed_set:
-                    continue
-
-                # Cost to move to neighbor
+            for neighbor in self._get_neighbors(current_r, current_c):
+                neighbor_r, neighbor_c = neighbor
                 move_cost = self.grid[neighbor_r][neighbor_c]
-                tentative_g = current_g + move_cost
+                tentative_g = g_score[current] + move_cost
 
-                if (neighbor_r, neighbor_c) not in g_score or tentative_g < g_score[(neighbor_r, neighbor_c)]:
-                    came_from[(neighbor_r, neighbor_c)] = (curr_r, curr_c)
-                    g_score[(neighbor_r, neighbor_c)] = tentative_g
-                    f_score = tentative_g + heuristic((neighbor_r, neighbor_c), end)
-                    heapq.heappush(open_set, (f_score, tentative_g, neighbor_r, neighbor_c))
+                if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g
+                    f = tentative_g + self._heuristic(neighbor, end)
+                    f_score[neighbor] = f
+                    heapq.heappush(open_set, (f, counter, neighbor_r, neighbor_c))
+                    counter += 1
 
         return None
 
@@ -140,79 +139,69 @@ import pytest
 from typing import List, Tuple, Optional
 
 def calculate_path_cost(path: List[Tuple[int, int]], grid: List[List[int]]) -> int:
-    """Helper to calculate total cost of a path based on grid values."""
+    """Helper to calculate total cost of a path."""
     if not path:
         return 0
-    # Cost is sum of entering cells. 
-    # Start cell cost is usually 0 in this context unless specified, 
-    # but based on "cost to enter", we sum from index 1 to end.
-    # However, standard A* on weighted grids often includes start cost if defined.
-    # Given the prompt "cost to enter that cell", start is already entered.
-    total = 0
+    total_cost = grid[path[0][0]][path[0][1]]
     for r, c in path[1:]:
-        total += grid[r][c]
-    return total
+        total_cost += grid[r][c]
+    return total_cost
 
 class TestAStarGrid:
     
     def test_simple_path_uniform_grid(self):
-        """Test 1: Simple path on a uniform grid."""
+        """Test 1: Simple path on a uniform grid (no obstacles)."""
         grid = [
+            [1, 1, 1, 1],
             [1, 1, 1, 1],
             [1, 1, 1, 1],
             [1, 1, 1, 1]
         ]
         astar = AStarGrid(grid)
         start = (0, 0)
-        end = (2, 3)
+        end = (3, 3)
         
         path = astar.find_path(start, end)
         
         assert path is not None
         assert path[0] == start
         assert path[-1] == end
-        assert len(path) == 4  # (0,0)->(0,1)->(0,2)->(0,3)->(1,3)->(2,3) is 5 steps? 
-        # Wait, shortest is (0,0)->(1,0)->(2,0)->(2,1)->(2,2)->(2,3) (5 steps)
-        # Or (0,0)->(0,1)->(0,2)->(0,3)->(1,3)->(2,3) (5 steps)
-        # Manhattan distance is |2-0| + |3-0| = 5. So path length must be 6 (including start).
-        assert len(path) == 6
+        assert len(path) == 7  # 4 rows + 3 cols steps
         
-        # Verify optimality (Manhattan distance * cost 1)
-        expected_cost = 5
-        actual_cost = calculate_path_cost(path, grid)
-        assert actual_cost == expected_cost
+        # Verify optimality: Manhattan distance * cost (1) = 6 steps + start cost = 7
+        expected_cost = 7
+        assert calculate_path_cost(path, grid) == expected_cost
 
     def test_path_around_obstacles(self):
-        """Test 2: Path around obstacles."""
+        """Test 2: Path finding around obstacles (walls)."""
         grid = [
+            [1, 0, 1, 1],
             [1, 1, 1, 1],
-            [1, 0, 0, 1],
+            [1, 1, 0, 1],
             [1, 1, 1, 1]
         ]
         astar = AStarGrid(grid)
         start = (0, 0)
-        end = (0, 3)
+        end = (3, 3)
         
         path = astar.find_path(start, end)
         
         assert path is not None
-        # Must go down, right, right, up
-        assert path == [(0, 0), (1, 0), (1, 3), (0, 3)]
+        assert path[0] == start
+        assert path[-1] == end
         
-        # Cost: Enter (1,0)=1, (1,3)=1, (0,3)=1. Total = 3.
-        # Direct path blocked.
-        actual_cost = calculate_path_cost(path, grid)
-        assert actual_cost == 3
+        # The path must go around the walls at (0,1) and (2,2)
+        # One valid optimal path: (0,0)->(1,0)->(1,1)->(1,2)->(1,3)->(2,3)->(3,3)
+        # Cost: 1+1+1+1+1+1+1 = 7
+        assert calculate_path_cost(path, grid) == 7
 
     def test_weighted_grid_prefers_lower_cost(self):
         """Test 3: Weighted grid where path prefers lower-cost cells."""
-        # Grid:
+        # Grid layout:
         # 1 10 1
         # 1  1 1
         # 1 10 1
-        # Start (0,0), End (0,2).
-        # Path A: (0,0)->(0,1)->(0,2) Cost: 10 + 1 = 11
-        # Path B: (0,0)->(1,0)->(1,1)->(1,2)->(0,2) Cost: 1 + 1 + 1 + 1 = 4
+        # Direct right then down is expensive (10). Going down first is cheap.
         grid = [
             [1, 10, 1],
             [1,  1, 1],
@@ -220,34 +209,36 @@ class TestAStarGrid:
         ]
         astar = AStarGrid(grid)
         start = (0, 0)
-        end = (0, 2)
+        end = (2, 2)
         
         path = astar.find_path(start, end)
         
         assert path is not None
-        # Should take the bottom route
-        assert path == [(0, 0), (1, 0), (1, 1), (1, 2), (0, 2)]
+        # Expected path: (0,0) -> (1,0) -> (1,1) -> (1,2) -> (2,2)
+        # Avoids the 10s.
+        expected_path = [(0, 0), (1, 0), (1, 1), (1, 2), (2, 2)]
+        assert path == expected_path
         
-        actual_cost = calculate_path_cost(path, grid)
-        assert actual_cost == 4
+        # Cost: 1 + 1 + 1 + 1 + 1 = 5
+        assert calculate_path_cost(path, grid) == 5
 
     def test_no_path_exists_fully_blocked(self):
-        """Test 4: No path exists (fully blocked)."""
+        """Test 4: No path exists (start/end separated by walls)."""
         grid = [
-            [1, 0, 1],
+            [1, 0, 0],
             [0, 0, 0],
-            [1, 0, 1]
+            [0, 0, 1]
         ]
         astar = AStarGrid(grid)
         start = (0, 0)
-        end = (0, 2)
+        end = (2, 2)
         
         path = astar.find_path(start, end)
         
         assert path is None
 
     def test_start_equals_end(self):
-        """Test 5: Start equals end."""
+        """Test 5: Start position is the same as end position."""
         grid = [
             [1, 1],
             [1, 1]
@@ -260,7 +251,7 @@ class TestAStarGrid:
         
         assert path is not None
         assert path == [start]
-        assert len(path) == 1
+        assert calculate_path_cost(path, grid) == 1
 
     def test_invalid_coordinates(self):
         """Test 6: Invalid coordinates raise ValueError."""
@@ -281,9 +272,9 @@ class TestAStarGrid:
         # Start is a wall
         grid_with_wall = [[0, 1], [1, 1]]
         astar_wall = AStarGrid(grid_with_wall)
-        result = astar_wall.find_path((0, 0), (0, 1))
-        assert result is None
-        
+        with pytest.raises(ValueError):
+            astar_wall.find_path((0, 0), (1, 1))
+            
         # End is a wall
-        result = astar_wall.find_path((0, 1), (0, 0))
-        assert result is None
+        with pytest.raises(ValueError):
+            astar_wall.find_path((1, 1), (0, 0))
