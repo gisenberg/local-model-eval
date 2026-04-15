@@ -11,50 +11,46 @@
   },
   "throughput": {
     "benchmark": "throughput",
-    "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9752E42F0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
+    "tok_per_sec": 44.2,
+    "tokens": 1095,
+    "ttft_s": 1.506,
+    "total_s": 26.262,
+    "thinking_tokens": 0,
+    "content_tokens": 1094
   },
   "code_results": {
     "expression_evaluator": {
+      "best": 5,
+      "avg": 3.7,
+      "expected": 5,
+      "avg_tps": 42.2,
       "runs": [
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9751C7750>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        },
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9751C6FD0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        },
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9752DC770>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        }
-      ],
-      "error": "all runs failed"
+        {"run": 1, "temperature": 0, "passed": 5, "failed": 0, "errors": 0, "tps": 40.93, "toks": 1999, "ttft_s": 0.219},
+        {"run": 2, "temperature": 0.3, "passed": 3, "failed": 2, "errors": 0, "tps": 43.56, "toks": 2313, "ttft_s": 0.189},
+        {"run": 3, "temperature": 0.3, "passed": 3, "failed": 2, "errors": 0, "tps": 42.19, "toks": 2539, "ttft_s": 0.189}
+      ]
     },
     "astar": {
+      "best": 6,
+      "avg": 4.3,
+      "expected": 6,
+      "avg_tps": 40.5,
       "runs": [
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9752DC770>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        },
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A975295EB0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        },
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9752B4AF0>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        }
-      ],
-      "error": "all runs failed"
+        {"run": 1, "temperature": 0, "passed": 4, "failed": 2, "errors": 0, "tps": 40.66, "toks": 3162, "ttft_s": 0.224},
+        {"run": 2, "temperature": 0.3, "passed": 6, "failed": 0, "errors": 0, "tps": 40.53, "toks": 3093, "ttft_s": 0.233},
+        {"run": 3, "temperature": 0.3, "passed": 3, "failed": 3, "errors": 0, "tps": 40.44, "toks": 2937, "ttft_s": 0.233}
+      ]
     },
     "lru_cache": {
+      "best": 0,
+      "avg": 0.0,
+      "expected": 6,
+      "avg_tps": 43.2,
       "runs": [
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A9752B4E20>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        },
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A97529E750>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        },
-        {
-          "error": "HTTPConnectionPool(host='miami.local.lan', port=8000): Max retries exceeded with url: /v1/chat/completions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A97529E150>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))"
-        }
-      ],
-      "error": "all runs failed"
+        {"run": 1, "temperature": 0, "passed": 0, "failed": 7, "errors": 0, "tps": 42.89, "toks": 5589, "ttft_s": 0.223},
+        {"run": 2, "temperature": 0.3, "passed": 0, "failed": 0, "errors": 13, "tps": 43.38, "toks": 4291, "ttft_s": 0.195},
+        {"run": 3, "temperature": 0.3, "passed": 0, "failed": 0, "errors": 13, "tps": 43.45, "toks": 2982, "ttft_s": 0.196}
+      ]
     }
   }
 }
