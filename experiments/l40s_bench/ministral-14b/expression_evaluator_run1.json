@@ -1,0 +1,22 @@
+{
+  "bench": "expression_evaluator",
+  "model": "Ministral-3-14B-Instruct-2512-BF16",
+  "platform": "L40S 46GB (vLLM)",
+  "run": 1,
+  "temperature": 0,
+  "toks": 1660,
+  "elapsed": 59.627,
+  "tps": 27.93,
+  "ttft": 0.197,
+  "think_chars": 0,
+  "content_chars": 7485,
+  "finish": "stop",
+  "usage": {
+    "prompt_tokens": 174,
+    "total_tokens": 1834,
+    "completion_tokens": 1660
+  },
+  "test_passed": 5,
+  "test_failed": 0,
+  "test_errors": 0
+}

@@ -1,0 +1,22 @@
+{
+  "bench": "lru_cache",
+  "model": "Ministral-3-14B-Instruct-2512-BF16",
+  "platform": "L40S 46GB (vLLM)",
+  "run": 2,
+  "temperature": 0.3,
+  "toks": 2079,
+  "elapsed": 75.01,
+  "tps": 27.79,
+  "ttft": 0.191,
+  "think_chars": 0,
+  "content_chars": 7975,
+  "finish": "stop",
+  "usage": {
+    "prompt_tokens": 326,
+    "total_tokens": 2405,
+    "completion_tokens": 2079
+  },
+  "test_passed": 3,
+  "test_failed": 3,
+  "test_errors": 0
+}

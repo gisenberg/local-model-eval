@@ -1,0 +1,22 @@
+{
+  "bench": "astar",
+  "model": "Qwen3.5-9B",
+  "platform": "L40S 46GB (vLLM)",
+  "run": 3,
+  "temperature": 0.3,
+  "toks": 3077,
+  "elapsed": 71.06,
+  "tps": 43.44,
+  "ttft": 0.232,
+  "think_chars": 0,
+  "content_chars": 10598,
+  "finish": "stop",
+  "usage": {
+    "prompt_tokens": 289,
+    "total_tokens": 3366,
+    "completion_tokens": 3077
+  },
+  "test_passed": 3,
+  "test_failed": 3,
+  "test_errors": 0
+}
