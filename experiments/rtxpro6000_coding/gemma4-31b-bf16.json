@@ -1,0 +1,62 @@
+{
+  "model": "Gemma-4-31B-it BF16",
+  "key": "gemma4-31b-bf16",
+  "ctx": 32768,
+  "vram_mb": 63222,
+  "backend": "vulkan",
+  "total_score": "22/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpplzh571n\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 4547,
+      "expected": 5,
+      "elapsed_s": 89.27
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpbjoql3nw\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 7299,
+      "expected": 5,
+      "elapsed_s": 112.41
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp68a99pod\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_uniform_grid PASSED                           [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_optimality PASSED                      [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6074,
+      "expected": 6,
+      "elapsed_s": 124.19
+    },
+    "lru_cache_ttl": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp8penz94f\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction PASSED                         [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_ttl PASSED                                [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_mixed_expiry PASSED                         [100%]\n\n============================== 6 passed in 0.05s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6474,
+      "expected": 6,
+      "elapsed_s": 162.53
+    }
+  }
+}

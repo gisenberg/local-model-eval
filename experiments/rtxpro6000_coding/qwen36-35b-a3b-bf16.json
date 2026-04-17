@@ -1,0 +1,62 @@
+{
+  "model": "Qwen3.6-35B-A3B BF16",
+  "key": "qwen36-35b-a3b-bf16",
+  "ctx": 32768,
+  "vram_mb": 66845,
+  "backend": "vulkan",
+  "total_score": "14/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpqohxmq7m\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 3856,
+      "expected": 5,
+      "elapsed_s": 70.78
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpdnshqzpz\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 7640,
+      "expected": 5,
+      "elapsed_s": 127.05
+    },
+    "astar_pathfinding": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 1,
+      "total": 1,
+      "status": "collection_error",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpjkuedwmw\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n________________________ ERROR collecting test_astar.py ________________________\ntest_astar.py:4: in <module>\n    def calculate_path_cost(grid: List[List[int]], path: List[Tuple[int, int]]) -> int:\n                                  ^^^^\nE   NameError: name 'List' is not defined\n=========================== short test summary info ============================\nERROR test_astar.py - NameError: name 'List' is not defined\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.04s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 6210,
+      "expected": 6,
+      "elapsed_s": 116.78
+    },
+    "lru_cache_ttl": {
+      "passed": 4,
+      "failed": 2,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "= FAILURES ===================================\n___________________________ test_custom_per_key_ttl ____________________________\n\nmock_monotonic = <MagicMock name='monotonic' id='135578745247248'>\n\n    @patch('time.monotonic')\n    def test_custom_per_key_ttl(mock_monotonic):\n        \"\"\"Test custom TTL overriding the default for a specific key.\"\"\"\n        mock_monotonic.side_effect = [0.0, 0.0, 5.0, 11.0]\n        cache = TTLCache(2, 10.0)\n        cache.put(\"a\", 1, ttl=5.0)\n        assert cache.get(\"a\") == 1\n>       assert cache.get(\"a\") is None  # Time advanced past custom TTL\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert 1 is None\nE        +  where 1 = get('a')\nE        +    where get = <lru_cache.TTLCache object at 0x7b4ee2f0f1d0>.get\n\ntest_lru_cache.py:42: AssertionError\n______________________ test_size_with_mixed_expired_valid ______________________\n\nmock_monotonic = <MagicMock name='monotonic' id='135578745246384'>\n\n    @patch('time.monotonic')\n    def test_size_with_mixed_expired_valid(mock_monotonic):\n        \"\"\"Test size() accurately reflects non-expired items after lazy cleanup.\"\"\"\n        mock_monotonic.side_effect = [0.0, 0.0, 0.0, 11.0, 11.0, 11.0]\n        cache = TTLCache(3, 10.0)\n        cache.put(\"a\", 1)\n        cache.put(\"b\", 2)\n        cache.put(\"c\", 3)\n        assert cache.size() == 3\n    \n        # Advance time so 'a' expires, 'b' and 'c' remain valid\n        assert cache.get(\"a\") is None\n>       assert cache.get(\"b\") == 2\nE       AssertionError: assert None == 2\nE        +  where None = get('b')\nE        +    where get = <lru_cache.TTLCache object at 0x7b4ee2f30320>.get\n\ntest_lru_cache.py:66: AssertionError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_custom_per_key_ttl - AssertionError: assert 1 ...\nFAILED test_lru_cache.py::test_size_with_mixed_expired_valid - AssertionError...\n========================= 2 failed, 4 passed in 0.03s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 6883,
+      "expected": 6,
+      "elapsed_s": 144.09
+    }
+  }
+}

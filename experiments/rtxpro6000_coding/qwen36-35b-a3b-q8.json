@@ -1,0 +1,62 @@
+{
+  "model": "Qwen3.6-35B-A3B Q8_0",
+  "key": "qwen36-35b-a3b-q8",
+  "ctx": 32768,
+  "vram_mb": 36329,
+  "backend": "vulkan",
+  "total_score": "15/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpr776hs1h\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 4302,
+      "expected": 5,
+      "elapsed_s": 34.01
+    },
+    "expression_evaluator": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpx_erhauy\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_operator_precedence FAILED            [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n=================================== FAILURES ===================================\n___________________________ test_operator_precedence ___________________________\n\n    def test_operator_precedence():\n        \"\"\"Test that * and / bind tighter than + and -.\"\"\"\n        assert evaluator.evaluate(\"2 + 3 * 4\") == 14.0\n>       assert evaluator.evaluate(\"10 - 2 * 3 + 4 / 2\") == 8.0\nE       AssertionError: assert 6.0 == 8.0\nE        +  where 6.0 = evaluate('10 - 2 * 3 + 4 / 2')\nE        +    where evaluate = <expression_evaluator.ExpressionEvaluator object at 0x71127503ac30>.evaluate\n\ntest_expression_evaluator.py:17: AssertionError\n=========================== short test summary info ============================\nFAILED test_expression_evaluator.py::test_operator_precedence - AssertionErro...\n========================= 1 failed, 4 passed in 0.01s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 6971,
+      "expected": 5,
+      "elapsed_s": 49.62
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpxipcs3nz\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_uniform_path PASSED                           [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid PASSED                                 [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 6386,
+      "expected": 6,
+      "elapsed_s": 61.14
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 6,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "____________________\n\n    def test_custom_per_key_ttl():\n        \"\"\"Test that per-key TTL overrides the default TTL.\"\"\"\n        times = iter([100.0, 100.0, 100.0, 100.0, 102.0, 102.0, 102.0, 102.0])\n        with patch('time.monotonic', side_effect=lambda: next(times)):\n>           cache = TTLCache(capacity=2, default_ttl=10.0)\n                    ^^^^^^^^\nE           NameError: name 'TTLCache' is not defined\n\ntest_lru_cache.py:48: NameError\n_________________________________ test_delete __________________________________\n\n    def test_delete():\n        \"\"\"Test key deletion and return value.\"\"\"\n        with patch('time.monotonic', return_value=100.0):\n>           cache = TTLCache(capacity=2, default_ttl=10.0)\n                    ^^^^^^^^\nE           NameError: name 'TTLCache' is not defined\n\ntest_lru_cache.py:62: NameError\n______________________ test_size_with_mixed_expired_valid ______________________\n\n    def test_size_with_mixed_expired_valid():\n        \"\"\"Test size() correctly reflects only non-expired items after lazy cleanup.\"\"\"\n        times = iter([100.0, 100.0, 100.0, 105.1, 105.1])\n        with patch('time.monotonic', side_effect=lambda: next(times)):\n>           cache = TTLCache(capacity=3, default_ttl=5.0)\n                    ^^^^^^^^\nE           NameError: name 'TTLCache' is not defined\n\ntest_lru_cache.py:73: NameError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_basic_get_put - NameError: name 'TTLCache' is ...\nFAILED test_lru_cache.py::test_capacity_eviction_lru_order - NameError: name ...\nFAILED test_lru_cache.py::test_ttl_expiry - NameError: name 'TTLCache' is not...\nFAILED test_lru_cache.py::test_custom_per_key_ttl - NameError: name 'TTLCache...\nFAILED test_lru_cache.py::test_delete - NameError: name 'TTLCache' is not def...\nFAILED test_lru_cache.py::test_size_with_mixed_expired_valid - NameError: nam...\n============================== 6 failed in 0.03s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 7713,
+      "expected": 6,
+      "elapsed_s": 54.25
+    }
+  }
+}

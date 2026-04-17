@@ -1,0 +1,52 @@
+{
+  "model": "Gemopus-4-31B-it BF16",
+  "key": "gemopus-31b-bf16",
+  "ctx": 32768,
+  "vram_mb": 63222,
+  "backend": "vulkan",
+  "total_score": "16/16",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpstwrlb1g\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 4857,
+      "expected": 5,
+      "elapsed_s": 100.84
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp7jsw33wb\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6920,
+      "expected": 5,
+      "elapsed_s": 114.03
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp2wnz3pzw\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path PASSED                                   [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid PASSED                                 [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6437,
+      "expected": 6,
+      "elapsed_s": 125.72
+    },
+    "lru_cache_ttl": {
+      "error": "timed out"
+    }
+  }
+}

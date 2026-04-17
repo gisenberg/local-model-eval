@@ -1,0 +1,45 @@
+{
+  "model": "Gemopus-4-31B-it Q8_0",
+  "key": "gemopus-31b-q8",
+  "path": "/home/gisenberg/models/gemopus-4-31b-q8/Gemopus-4-31B-it-Q8_0.gguf",
+  "ctx": 262144,
+  "vram_mb": 54550,
+  "load_seconds": 6.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.2342,
+      "decode_tps": 43.77,
+      "n_tokens": 253,
+      "total_s": 6.014
+    },
+    {
+      "ttft_s": 0.1816,
+      "decode_tps": 43.77,
+      "n_tokens": 253,
+      "total_s": 5.962
+    },
+    {
+      "ttft_s": 0.182,
+      "decode_tps": 43.77,
+      "n_tokens": 253,
+      "total_s": 5.962
+    },
+    {
+      "ttft_s": 0.1816,
+      "decode_tps": 43.77,
+      "n_tokens": 253,
+      "total_s": 5.962
+    },
+    {
+      "ttft_s": 0.1825,
+      "decode_tps": 43.77,
+      "n_tokens": 253,
+      "total_s": 5.963
+    }
+  ],
+  "ttft_mean": 0.1924,
+  "ttft_median": 0.182,
+  "decode_mean": 43.77,
+  "decode_median": 43.77
+}

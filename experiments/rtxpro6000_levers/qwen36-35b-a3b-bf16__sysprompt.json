@@ -1,0 +1,60 @@
+{
+  "model": "Qwen3.6-35B-A3B BF16",
+  "key": "qwen36-35b-a3b-bf16",
+  "mode": "sysprompt",
+  "total_score": "15/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmprqas84pv\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher FAILED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n=================================== FAILURES ===================================\n______________________________ test_caesar_cipher ______________________________\n\nsp = <string_processor.StringProcessor object at 0x736d43f17350>\n\n    def test_caesar_cipher(sp):\n        # Basic positive shift\n        assert sp.caesar_cipher(\"abc\", 1) == \"bcd\"\n        # Wrap around end of alphabet\n        assert sp.caesar_cipher(\"xyz\", 3) == \"abc\"\n        # Negative shift\n>       assert sp.caesar_cipher(\"Hello, World!\", -5) == \"Czggj, Rmjgy!\"\nE       AssertionError: assert 'Czggj, Rjmgy!' == 'Czggj, Rmjgy!'\nE         \nE         - Czggj, Rmjgy!\nE         ?          -\nE         + Czggj, Rjmgy!\nE         ?         +\n\ntest_string_processor.py:54: AssertionError\n=========================== short test summary info ============================\nFAILED test_string_processor.py::test_caesar_cipher - AssertionError: assert ...\n========================= 1 failed, 4 passed in 0.01s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 5911,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpbh8fsib5\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::TestExpressionEvaluator::test_basic_arithmetic PASSED [ 20%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_operator_precedence PASSED [ 40%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_parentheses PASSED [ 60%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_unary_minus PASSED [ 80%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 8416,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpjevcz8g1\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_uniform_grid PASSED                           [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_low_cost PASSED                [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 7584,
+      "expected": 6,
+      "n_rounds": 1
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 6,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "ib/python3.12/unittest/mock.py:1451: in __enter__\n    self.target = self.getter()\n                  ^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/pkgutil.py:513: in resolve_name\n    mod = importlib.import_module(modname)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'ttl_cache', package = None\n\n    def import_module(name, package=None):\n        \"\"\"Import a module.\n    \n        The 'package' argument is required when performing a relative import. It\n        specifies the package to use as the anchor point from which to resolve the\n        relative import to an absolute import.\n    \n        \"\"\"\n        level = 0\n        if name.startswith('.'):\n            if not package:\n                raise TypeError(\"the 'package' argument is required to perform a \"\n                                f\"relative import for {name!r}\")\n            for character in name:\n                if character != '.':\n                    break\n                level += 1\n>       return _bootstrap._gcd_import(name[level:], package, level)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ModuleNotFoundError: No module named 'ttl_cache'\n\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::TestTTLCache::test_basic_get_put - ModuleNotFoundEr...\nFAILED test_lru_cache.py::TestTTLCache::test_capacity_eviction_lru_order - Mo...\nFAILED test_lru_cache.py::TestTTLCache::test_ttl_expiry - ModuleNotFoundError...\nFAILED test_lru_cache.py::TestTTLCache::test_custom_per_key_ttl - ModuleNotFo...\nFAILED test_lru_cache.py::TestTTLCache::test_delete - ModuleNotFoundError: No...\nFAILED test_lru_cache.py::TestTTLCache::test_size_with_mixed_expired_valid - ...\n============================== 6 failed in 0.17s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 12955,
+      "expected": 6,
+      "n_rounds": 1
+    }
+  }
+}

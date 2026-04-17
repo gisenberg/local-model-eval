@@ -1,0 +1,45 @@
+{
+  "model": "Qwen3.6-35B-A3B BF16",
+  "key": "qwen36-35b-a3b-bf16",
+  "path": "/home/gisenberg/models/qwen36-35b-a3b-bf16/Qwen3.6-35B-A3B-BF16-00001-of-00002.gguf",
+  "ctx": 262144,
+  "vram_mb": 72070,
+  "load_seconds": 12.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.0743,
+      "decode_tps": 135.11,
+      "n_tokens": 256,
+      "total_s": 1.969
+    },
+    {
+      "ttft_s": 0.0577,
+      "decode_tps": 135.09,
+      "n_tokens": 256,
+      "total_s": 1.953
+    },
+    {
+      "ttft_s": 0.0579,
+      "decode_tps": 134.95,
+      "n_tokens": 256,
+      "total_s": 1.955
+    },
+    {
+      "ttft_s": 0.058,
+      "decode_tps": 135.03,
+      "n_tokens": 256,
+      "total_s": 1.954
+    },
+    {
+      "ttft_s": 0.0579,
+      "decode_tps": 135.05,
+      "n_tokens": 256,
+      "total_s": 1.953
+    }
+  ],
+  "ttft_mean": 0.0612,
+  "ttft_median": 0.0579,
+  "decode_mean": 135.05,
+  "decode_median": 135.05
+}
