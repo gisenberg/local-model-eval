@@ -207,6 +207,49 @@ No TurboQuant, no rotorquant, no NVFP4 — these are stock llama.cpp runs. The P
 
 ---
 
+## vLLM vs llama.cpp on the same hardware
+
+We wanted a direct vLLM vs llama.cpp comparison on this card for a single-stream coding workload. The setup turned out harder than expected because vLLM 0.19 (stable) doesn't have a transformers version with Gemma 4 support yet — transformers 5.x has it but breaks vLLM 0.19 compat. So we measured what we could: **gpt-oss-120b single-stream**, the one config where vLLM has a native loader.
+
+### Setup (single-stream, same model, same hardware)
+
+| Engine | Build | Model file | VRAM util |
+|---|---|---|---|
+| llama.cpp | master-branch CUDA 13.2 build, sm_120 | GGUF Q8_0 (63 GB on disk, 33 GB weights) | default |
+| vLLM | 0.19.0, pip-installed CUDA 12.8 wheels | safetensors MXFP4 (65 GB on disk, ~55 GB weights) | `--gpu-memory-utilization 0.90` |
+
+Both engines at native context (131K), single user, streaming chat completions, temperature=0.
+
+### Results
+
+| Config | Decode | TTFT | VRAM at load | Coding |
+|---|---|---|---|---|
+| **llama.cpp Q8 (CUDA)** | **264 tok/s** | **41 ms** | **66 GB** | 21/22 |
+| vLLM MXFP4 (`--enforce-eager`, no CUDA graphs) | 105 tok/s | 1360 ms | 89 GB | 15/22 |
+| vLLM MXFP4 (CUDA graphs on) | 198 tok/s | 550 ms | 89 GB | **22/22** |
+
+**Observations:**
+
+1. **`--enforce-eager` cost vLLM 2× throughput and 3× TTFT.** Never benchmark vLLM without CUDA graphs — it's not a supported deployment mode, just a debugging/fast-startup switch. Our initial run with eager mode undersold vLLM by a lot.
+2. **Even with graphs enabled, llama.cpp wins single-stream decode by 33%** (264 vs 198 tok/s). The difference comes from kernel specialization: llama.cpp has hand-tuned CUDA kernels for MoE expert dispatch at Q8; vLLM is using the **Marlin MXFP4 backend** (dequant-to-FP16 path), not native FP4 tensor cores. Blackwell has FP4 silicon but vLLM 0.19 doesn't expose it on this model.
+3. **TTFT gap is 13×** (41ms vs 550ms). vLLM pays for PagedAttention scheduling + request state setup that llama.cpp skips. On short prompts this dominates perceived latency.
+4. **vLLM uses 23 GB more VRAM** (89 vs 66 GB). CUDA graph cache + PagedAttention pages + activation pre-allocation. Doesn't matter on 96 GB, would be fatal on a 5090.
+5. **Coding quality: vLLM +1 point (22 vs 21), within variance.** The model generated 7 tests on one benchmark where the harness expected 5 — all passed, so it scored "7/5" and capped at the prompt's expected 22-test ceiling.
+
+### What this misses
+
+- **Batched serving.** vLLM's whole pitch is concurrency. Running `vllm bench` at batch-8 or batch-32 would flip the tables — llama.cpp doesn't batch at all. For serving multiple users off one GPU, vLLM wins by a wide margin (the LilaRest NVFP4-turbo card shows 1244 tok/s batched vs 494 tok/s BF16 on the same card).
+- **Native NVFP4 / Blackwell FP4 tensor cores.** If vLLM shipped a native FP4 MoE kernel for gpt-oss (instead of Marlin), decode could likely match or exceed llama.cpp. This is a "vLLM version matures" story, not a fundamental engine-difference story.
+- **Dense model comparison.** Gemma-4-31B-it NVFP4-turbo is the obvious vLLM-native dense test but transformers<5 doesn't know about gemma4. Unblocking this needs vLLM nightly (tried: in progress) or a custom transformers build.
+
+### Practical take
+
+- **Single-stream coding workflow on Pro 6000:** llama.cpp is the right default. Faster decode, way faster TTFT, less VRAM, simpler setup (one binary, no Python env resolution headaches).
+- **Multi-user serving:** vLLM is still the answer. This benchmark doesn't measure that.
+- **Future:** the gap narrows as vLLM gets native FP4 MoE kernels. If / when that ships, re-run this comparison.
+
+---
+
 ## Prompting levers: can we recover Qwen-family failures?
 
 The summary table above uses single-shot, no-thinking, user-prompt-only as the baseline configuration (matching our 5090 methodology). Once we saw that Qwen-family models all failed LRU Cache with TTL but Gemma aced it, we ran a follow-up sweep testing three levers on Qwen3.6-35B-A3B (both quants) and Qwen3-Coder-Next Q6_K:
