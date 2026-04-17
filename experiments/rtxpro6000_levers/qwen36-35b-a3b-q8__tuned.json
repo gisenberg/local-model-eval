@@ -1,0 +1,60 @@
+{
+  "model": "Qwen3.6-35B-A3B Q8_0",
+  "key": "qwen36-35b-a3b-q8",
+  "mode": "tuned",
+  "total_score": "21/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpo6kh_dha\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 4028,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmplaaep2x1\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_operator_precedence PASSED            [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 6734,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "astar_pathfinding": {
+      "passed": 5,
+      "failed": 1,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpa7aeazck\ncollecting ... collected 6 items\n\ntest_astar.py::TestAStarGrid::test_simple_path_uniform_grid PASSED       [ 16%]\ntest_astar.py::TestAStarGrid::test_path_around_obstacles FAILED          [ 33%]\ntest_astar.py::TestAStarGrid::test_weighted_grid_prefers_low_cost PASSED [ 50%]\ntest_astar.py::TestAStarGrid::test_no_path_exists PASSED                 [ 66%]\ntest_astar.py::TestAStarGrid::test_start_equals_end PASSED               [ 83%]\ntest_astar.py::TestAStarGrid::test_invalid_coordinates_and_walls PASSED  [100%]\n\n=================================== FAILURES ===================================\n___________________ TestAStarGrid.test_path_around_obstacles ___________________\n\nself = <test_astar.TestAStarGrid object at 0x79c7ea70aa50>\n\n    def test_path_around_obstacles(self):\n        \"\"\"Test pathfinding around a 2x2 wall block.\"\"\"\n        grid = [[1, 1, 1, 1], [1, 0, 0, 1], [1, 1, 1, 1]]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (0, 3))\n    \n        assert path is not None\n        # Must navigate around the wall: 5 cells entered, all cost 1\n>       assert calculate_path_cost(grid, path) == 5\nE       assert 3 == 5\nE        +  where 3 = calculate_path_cost([[1, 1, 1, 1], [1, 0, 0, 1], [1, 1, 1, 1]], [(0, 0), (0, 1), (0, 2), (0, 3)])\n\ntest_astar.py:125: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::TestAStarGrid::test_path_around_obstacles - assert 3 == 5\n========================= 1 failed, 5 passed in 0.01s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 7390,
+      "expected": 6,
+      "n_rounds": 1
+    },
+    "lru_cache_ttl": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp7zxcg4tx\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction PASSED                         [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_per_key_ttl PASSED                        [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_mixed_expired_valid PASSED                  [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 7088,
+      "expected": 6,
+      "n_rounds": 1
+    }
+  }
+}
