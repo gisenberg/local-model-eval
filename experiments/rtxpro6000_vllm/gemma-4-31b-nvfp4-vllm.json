@@ -1,0 +1,103 @@
+{
+  "model": "Gemma-4-31B-it NVFP4-turbo (vLLM)",
+  "key": "gemma-4-31b-nvfp4-vllm",
+  "path": "/home/gisenberg/models-vllm/gemma-4-31b-nvfp4",
+  "ctx": 32768,
+  "backend": "vllm",
+  "vram_mb": 89894,
+  "load_seconds": 705.1,
+  "served_model_id": "/home/gisenberg/models-vllm/gemma-4-31b-nvfp4",
+  "throughput": {
+    "runs": [
+      {
+        "ttft_s": 0.0743,
+        "decode_tps": 43.93,
+        "n_tokens": 256,
+        "total_s": 5.902
+      },
+      {
+        "ttft_s": 0.0743,
+        "decode_tps": 43.93,
+        "n_tokens": 256,
+        "total_s": 5.902
+      },
+      {
+        "ttft_s": 0.0744,
+        "decode_tps": 43.93,
+        "n_tokens": 256,
+        "total_s": 5.902
+      },
+      {
+        "ttft_s": 0.0744,
+        "decode_tps": 43.9,
+        "n_tokens": 256,
+        "total_s": 5.906
+      },
+      {
+        "ttft_s": 0.0746,
+        "decode_tps": 43.89,
+        "n_tokens": 256,
+        "total_s": 5.907
+      }
+    ],
+    "ttft_mean": 0.0744,
+    "ttft_median": 0.0744,
+    "decode_mean": 43.92,
+    "decode_median": 43.93
+  },
+  "coding": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmplm573pwm\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 4335,
+      "expected": 5,
+      "elapsed_s": 27.59
+    },
+    "expression_evaluator": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 1,
+      "total": 1,
+      "status": "collection_error",
+      "single_file": true,
+      "stdout_tail": "12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpwd70ze6b\ncollecting ... collected 0 items / 1 error\n\n==================================== ERRORS ====================================\n________________ ERROR collecting test_expression_evaluator.py _________________\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/tmp/tmpwd70ze6b/test_expression_evaluator.py\", line 34\nE       escapes would be used.\nE               ^^^^^\nE   SyntaxError: invalid syntax\n=========================== short test summary info ============================\nERROR test_expression_evaluator.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n=============================== 1 error in 0.06s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 5361,
+      "expected": 5,
+      "elapsed_s": 33.12
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp0dp1rtwk\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path PASSED                                   [ 16%]\ntest_astar.py::test_obstacles PASSED                                     [ 33%]\ntest_astar.py::test_weighted_grid PASSED                                 [ 50%]\ntest_astar.py::test_no_path PASSED                                       [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 5202,
+      "expected": 6,
+      "elapsed_s": 42.05
+    },
+    "lru_cache_ttl": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpcpqch2jc\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction PASSED                         [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_ttl PASSED                                [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_mixed_expiry PASSED                         [100%]\n\n============================== 6 passed in 0.04s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 5505,
+      "expected": 6,
+      "elapsed_s": 40.0
+    }
+  },
+  "coding_total": "17/22"
+}

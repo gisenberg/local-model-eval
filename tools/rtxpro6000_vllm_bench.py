@@ -22,7 +22,7 @@ import urllib.request
 from pathlib import Path
 
 REPO = Path("/home/gisenberg/git/gisenberg/local-model-eval")
-VLLM_BIN = "/home/gisenberg/.micromamba/envs/vllm/bin/vllm"
+VLLM_BIN = os.environ.get("VLLM_BIN", "/home/gisenberg/.micromamba/envs/vllm/bin/vllm")
 MODELS_ROOT = "/home/gisenberg/models-vllm"
 PORT = 8081  # different from llama-server default to avoid collisions
 OUTPUT_ROOT = REPO / "experiments/rtxpro6000_vllm"
@@ -70,9 +70,17 @@ def start_server(cfg, ctx_override=None):
     log_f = open(log_path, "w")
     env = os.environ.copy()
     # Triton JIT needs a C compiler available
-    env["CC"] = "/home/gisenberg/.micromamba/envs/vllm/bin/x86_64-conda-linux-gnu-gcc"
+    env_bin = os.path.dirname(VLLM_BIN)
+    gcc = f"{env_bin}/x86_64-conda-linux-gnu-gcc"
+    if os.path.isfile(gcc):
+        env["CC"] = gcc
     env.setdefault("PATH", "")
-    env["PATH"] = "/home/gisenberg/.micromamba/envs/vllm/bin:" + env["PATH"]
+    env["PATH"] = env_bin + ":" + env["PATH"]
+    # vLLM runtime kernels need nvcc; use the CUDA env we set up earlier
+    cuda_home = "/home/gisenberg/.micromamba/envs/cuda"
+    if os.path.isfile(f"{cuda_home}/bin/nvcc"):
+        env["CUDA_HOME"] = cuda_home
+        env["PATH"] = f"{cuda_home}/bin:" + env["PATH"]
     proc = subprocess.Popen(cmd, env=env, stdout=log_f, stderr=subprocess.STDOUT)
     return proc, log_path
 

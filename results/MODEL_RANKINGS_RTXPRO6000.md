@@ -240,7 +240,49 @@ Both engines at native context (131K), single user, streaming chat completions, 
 
 - **Batched serving.** vLLM's whole pitch is concurrency. Running `vllm bench` at batch-8 or batch-32 would flip the tables — llama.cpp doesn't batch at all. For serving multiple users off one GPU, vLLM wins by a wide margin (the LilaRest NVFP4-turbo card shows 1244 tok/s batched vs 494 tok/s BF16 on the same card).
 - **Native NVFP4 / Blackwell FP4 tensor cores.** If vLLM shipped a native FP4 MoE kernel for gpt-oss (instead of Marlin), decode could likely match or exceed llama.cpp. This is a "vLLM version matures" story, not a fundamental engine-difference story.
-- **Dense model comparison.** Gemma-4-31B-it NVFP4-turbo is the obvious vLLM-native dense test but transformers<5 doesn't know about gemma4. Unblocking this needs vLLM nightly (tried: in progress) or a custom transformers build.
+### Dense comparison: Gemma-4-31B-it (vLLM nightly + NVFP4 vs llama.cpp Q8)
+
+Picked up with vLLM nightly (`0.19.1rc1.dev378`, transformers 5.5.4) to get Gemma 4 support. Ran `LilaRest/gemma-4-31B-it-NVFP4-turbo` (18.5 GB weights, native Blackwell FP4 tensor cores) against our llama.cpp Q8_0 baseline.
+
+| Metric | vLLM NVFP4 | llama.cpp Q8 | Δ |
+|---|---|---|---|
+| Decode | 43.92 tok/s | 43.76 tok/s | **tied** (1%) |
+| TTFT | **74 ms** | 193 ms | **vLLM 2.6× faster** |
+| VRAM @ 32K ctx | 89.9 GB | 54.5 GB | llama.cpp −35 GB |
+| Coding | 17/22 | **22/22** | llama.cpp +5 pts |
+| Cold load | 705 s (FlashInfer JIT compile) | 12 s | llama.cpp 60× faster cold-start |
+
+**Observations:**
+
+1. **Dense vLLM NVFP4 beats its own MoE MXFP4 outcome.** On gpt-oss, vLLM fell back to Marlin MXFP4 kernels and got crushed by llama.cpp. On dense Gemma 4, vLLM uses native Blackwell FP4 tensor cores and **matches llama.cpp on decode, beats it 2.6× on TTFT.** The engine gap narrows dramatically when the model architecture has mature vLLM kernels.
+
+2. **Quality regression from quantization, not engine.** The 17/22 score is 100% caused by ExprEval scoring 0/5 — and the reason is a model-generated Python **syntax error** in the NVFP4-quantized output. The response contains a broken comment:
+   ```python
+               # This is a simple check; in a production system, a proper lexer
+               escapes would be used.      # ← unterminated statement, not a comment
+               raise ValueError("Expression contains invalid tokens")
+   ```
+   The base Gemma 4 31B at Q8 (llama.cpp) produces perfectly valid code on the same prompt. The 1-3% NVFP4 quantization quality loss materialized as one wrong-token prediction that cascaded into a SyntaxError on a whole benchmark. This is a real risk of NVFP4 for coding workloads — quality loss is small in aggregate but can manifest catastrophically on a single benchmark.
+
+3. **VRAM pressure: 89.9 GB out of 96 GB available.** vLLM's PagedAttention + CUDA graph cache + activation pre-allocation burns 35 GB more than llama.cpp for the same dense model. On a 5090 this would be fatal; on the Pro 6000 it's a tight fit (6 GB free).
+
+4. **Cold load is painful.** vLLM nightly JIT-compiles FlashInfer kernels on first load — 12 minutes on this box. Subsequent loads from cache are much faster, but the first-run tax is real. llama.cpp loads in 12 seconds, no compilation.
+
+### Combined vLLM picture
+
+Putting the two comparisons together:
+
+| Model class | vLLM kernel path | Decode vs llama.cpp | TTFT vs llama.cpp | Coding |
+|---|---|---|---|---|
+| **MoE** (gpt-oss-120b MXFP4) | Marlin (dequant→FP16) | **−33% (loses)** | 13× slower | tied |
+| **Dense** (Gemma-4-31B NVFP4) | Native Blackwell FP4 | tied (±1%) | **2.6× faster** | −5 pts (quant artifact) |
+
+**Summary of where each engine wins on this hardware:**
+
+- **Single-stream dense, cold-start matters:** llama.cpp (fast load, valid code, less VRAM).
+- **Single-stream dense, warm server, latency-sensitive:** vLLM NVFP4 (2.6× faster TTFT).
+- **Single-stream MoE:** llama.cpp by a wide margin (vLLM's Marlin fallback doesn't leverage FP4 silicon here).
+- **Batched serving of either type:** vLLM (untested here; model card numbers show ~2.5× concurrent throughput over BF16).
 
 ### Practical take
 
