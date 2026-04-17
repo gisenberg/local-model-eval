@@ -1,0 +1,103 @@
+{
+  "model": "Gemma-4-31B-it BF16->FP8 (vLLM, on-the-fly)",
+  "key": "gemma-4-31b-fp8-vllm",
+  "path": "/home/gisenberg/models-vllm/gemma-4-31b-bf16-hf",
+  "ctx": 32768,
+  "backend": "vllm",
+  "vram_mb": 90960,
+  "load_seconds": 55.1,
+  "served_model_id": "/home/gisenberg/models-vllm/gemma-4-31b-bf16-hf",
+  "throughput": {
+    "runs": [
+      {
+        "ttft_s": 0.0753,
+        "decode_tps": 43.65,
+        "n_tokens": 256,
+        "total_s": 5.94
+      },
+      {
+        "ttft_s": 0.0752,
+        "decode_tps": 43.63,
+        "n_tokens": 256,
+        "total_s": 5.942
+      },
+      {
+        "ttft_s": 0.0756,
+        "decode_tps": 43.62,
+        "n_tokens": 256,
+        "total_s": 5.944
+      },
+      {
+        "ttft_s": 0.0754,
+        "decode_tps": 43.63,
+        "n_tokens": 256,
+        "total_s": 5.943
+      },
+      {
+        "ttft_s": 0.0751,
+        "decode_tps": 43.64,
+        "n_tokens": 256,
+        "total_s": 5.941
+      }
+    ],
+    "ttft_mean": 0.0753,
+    "ttft_median": 0.0753,
+    "decode_mean": 43.63,
+    "decode_median": 43.63
+  },
+  "coding": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmppi7knibo\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 4609,
+      "expected": 5,
+      "elapsed_s": 28.93
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpmu9r5k22\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 5483,
+      "expected": 5,
+      "elapsed_s": 33.25
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp8uzsaep3\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path PASSED                                   [ 16%]\ntest_astar.py::test_obstacles PASSED                                     [ 33%]\ntest_astar.py::test_weighted_grid PASSED                                 [ 50%]\ntest_astar.py::test_no_path PASSED                                       [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 4605,
+      "expected": 6,
+      "elapsed_s": 37.32
+    },
+    "lru_cache_ttl": {
+      "passed": 5,
+      "failed": 1,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp07edy2oi\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction FAILED                         [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_ttl PASSED                                [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_mixed_expiry PASSED                         [100%]\n\n=================================== FAILURES ===================================\n____________________________ test_capacity_eviction ____________________________\n\n    def test_capacity_eviction():\n        # Capacity 2, no expiry for this test\n        cache = TTLCache(2, 100.0)\n        cache.put(\"a\", 1)\n        cache.put(\"b\", 2)\n        cache.get(\"a\") # 'a' is now MRU, 'b' is LRU\n        cache.put(\"c\", 3) # Should evict 'b'\n>       assert cache.get(\"a\") == 1\nE       AssertionError: assert None == 1\nE        +  where None = get('a')\nE        +    where get = <test_lru_cache.TTLCache object at 0x7a2341a92540>.get\n\ntest_lru_cache.py:133: AssertionError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_capacity_eviction - AssertionError: assert Non...\n========================= 1 failed, 5 passed in 0.05s ==========================\n",
+      "n_code_blocks": 1,
+      "response_len": 5793,
+      "expected": 6,
+      "elapsed_s": 42.29
+    }
+  },
+  "coding_total": "21/22"
+}

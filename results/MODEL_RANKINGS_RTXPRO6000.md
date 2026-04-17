@@ -240,49 +240,58 @@ Both engines at native context (131K), single user, streaming chat completions, 
 
 - **Batched serving.** vLLM's whole pitch is concurrency. Running `vllm bench` at batch-8 or batch-32 would flip the tables — llama.cpp doesn't batch at all. For serving multiple users off one GPU, vLLM wins by a wide margin (the LilaRest NVFP4-turbo card shows 1244 tok/s batched vs 494 tok/s BF16 on the same card).
 - **Native NVFP4 / Blackwell FP4 tensor cores.** If vLLM shipped a native FP4 MoE kernel for gpt-oss (instead of Marlin), decode could likely match or exceed llama.cpp. This is a "vLLM version matures" story, not a fundamental engine-difference story.
-### Dense comparison: Gemma-4-31B-it (vLLM nightly + NVFP4 vs llama.cpp Q8)
+### Dense comparison: Gemma-4-31B-it (llama.cpp Q8 vs vLLM FP8 vs vLLM NVFP4)
 
-Picked up with vLLM nightly (`0.19.1rc1.dev378`, transformers 5.5.4) to get Gemma 4 support. Ran `LilaRest/gemma-4-31B-it-NVFP4-turbo` (18.5 GB weights, native Blackwell FP4 tensor cores) against our llama.cpp Q8_0 baseline.
+Picked up with vLLM nightly (`0.19.1rc1.dev378`, transformers 5.5.4) to get Gemma 4 support. Ran three configurations on the same model at 32K context:
 
-| Metric | vLLM NVFP4 | llama.cpp Q8 | Δ |
+1. **llama.cpp Q8_0 GGUF** — our baseline (8-bit integer, dequant-to-FP16 compute).
+2. **vLLM FP8 on-the-fly** — downloaded `google/gemma-4-31B-it` BF16 safetensors (62 GB), let vLLM quantize at load via `--quantization fp8 --kv-cache-dtype fp8_e4m3`. Uses native Blackwell FP8 tensor cores.
+3. **vLLM NVFP4-turbo** — pre-quantized `LilaRest/gemma-4-31B-it-NVFP4-turbo` (18.5 GB, 4-bit). Uses native Blackwell FP4 tensor cores.
+
+| Metric | llama.cpp Q8 | vLLM FP8 | vLLM NVFP4 |
 |---|---|---|---|
-| Decode | 43.92 tok/s | 43.76 tok/s | **tied** (1%) |
-| TTFT | **74 ms** | 193 ms | **vLLM 2.6× faster** |
-| VRAM @ 32K ctx | 89.9 GB | 54.5 GB | llama.cpp −35 GB |
-| Coding | 17/22 | **22/22** | llama.cpp +5 pts |
-| Cold load | 705 s (FlashInfer JIT compile) | 12 s | llama.cpp 60× faster cold-start |
+| Decode | 43.76 tok/s | 43.63 tok/s | 43.92 tok/s |
+| TTFT | 193 ms | **75 ms** | **74 ms** |
+| VRAM reported (90% util) | 54.5 GB | 91.0 GB | 89.9 GB |
+| VRAM actual working set* | **~37 GB** | ~25 GB | ~25 GB |
+| Coding | **22/22** | 21/22 | 17/22 |
+| Cold load | **12 s** | 55 s (FlashInfer cached) | 705 s (first run, JIT compile) |
+
+_*Working set = weights + KV-cache-in-use + activations + CUDA graphs. vLLM reports higher because `--gpu-memory-utilization 0.90` pre-allocates the PagedAttention page pool (~60 GB reserved for concurrent-request KV). For single-stream workloads that reservation is unused._
 
 **Observations:**
 
-1. **Dense vLLM NVFP4 beats its own MoE MXFP4 outcome.** On gpt-oss, vLLM fell back to Marlin MXFP4 kernels and got crushed by llama.cpp. On dense Gemma 4, vLLM uses native Blackwell FP4 tensor cores and **matches llama.cpp on decode, beats it 2.6× on TTFT.** The engine gap narrows dramatically when the model architecture has mature vLLM kernels.
+1. **Decode is bandwidth-bound and effectively tied** across all three configs (43.6–43.9 tok/s, within 1%). The GPU hits the bandwidth ceiling regardless of weight precision. 4-bit should have been faster from the weight-read math (half the bytes), but NVFP4's per-block scaling overhead eats the gain at single-stream. This is a great example of "bandwidth-bound doesn't mean smaller weights = more tok/s" when scaling metadata offsets the savings.
 
-2. **Quality regression from quantization, not engine.** The 17/22 score is 100% caused by ExprEval scoring 0/5 — and the reason is a model-generated Python **syntax error** in the NVFP4-quantized output. The response contains a broken comment:
+2. **TTFT: vLLM 2.6× faster than llama.cpp** whether at FP8 or NVFP4. Native Blackwell tensor cores (FP8 or FP4) do the attention matmul in a single kernel pass; llama.cpp's CUDA backend dequants to FP16 first and runs standard BF16 kernels. For coding agents with big prompts, the prefill difference compounds.
+
+3. **Quality: 8-bit preserves everything; 4-bit introduces a single-token error** that cascades. The NVFP4 run scored 17/22 entirely because ExprEval went 0/5 — the response contained a model-generated **Python syntax error**:
    ```python
                # This is a simple check; in a production system, a proper lexer
                escapes would be used.      # ← unterminated statement, not a comment
                raise ValueError("Expression contains invalid tokens")
    ```
-   The base Gemma 4 31B at Q8 (llama.cpp) produces perfectly valid code on the same prompt. The 1-3% NVFP4 quantization quality loss materialized as one wrong-token prediction that cascaded into a SyntaxError on a whole benchmark. This is a real risk of NVFP4 for coding workloads — quality loss is small in aggregate but can manifest catastrophically on a single benchmark.
+   The same base Gemma 4 31B produces valid code at Q8 (llama.cpp) AND at FP8 (vLLM). The 1-3% NVFP4 quantization loss manifested as one wrong-token prediction that broke an entire benchmark. **This is the catastrophic-failure mode that quality-loss averages hide**: small average impact, occasional full-benchmark failure.
 
-3. **VRAM pressure: 89.9 GB out of 96 GB available.** vLLM's PagedAttention + CUDA graph cache + activation pre-allocation burns 35 GB more than llama.cpp for the same dense model. On a 5090 this would be fatal; on the Pro 6000 it's a tight fit (6 GB free).
+4. **"vLLM uses more VRAM" was misleading.** The reported 89-91 GB is what `--gpu-memory-utilization 0.90` reserves — most of that is a pre-allocated PagedAttention page pool (~60 GB) meant for concurrent KV cache. The vLLM log confirms the actual working set: weights + KV-in-use + CUDA graphs ≈ 25 GB, about 33% smaller than llama.cpp's 37 GB at Q8. For single-stream workloads the reservation is wasted; for batched serving it's exactly what delivers concurrency.
 
-4. **Cold load is painful.** vLLM nightly JIT-compiles FlashInfer kernels on first load — 12 minutes on this box. Subsequent loads from cache are much faster, but the first-run tax is real. llama.cpp loads in 12 seconds, no compilation.
+5. **Cold load tax: 12s (llama.cpp) → 55s (vLLM with cache) → 705s (vLLM first-run FlashInfer JIT).** The first vLLM launch on a new model or config pays 10+ minutes of kernel compilation. Subsequent loads read from `~/.cache/flashinfer/` and are much faster, but the tax appears every time you change quant mode or model arch.
 
 ### Combined vLLM picture
-
-Putting the two comparisons together:
 
 | Model class | vLLM kernel path | Decode vs llama.cpp | TTFT vs llama.cpp | Coding |
 |---|---|---|---|---|
 | **MoE** (gpt-oss-120b MXFP4) | Marlin (dequant→FP16) | **−33% (loses)** | 13× slower | tied |
-| **Dense** (Gemma-4-31B NVFP4) | Native Blackwell FP4 | tied (±1%) | **2.6× faster** | −5 pts (quant artifact) |
+| **Dense 8-bit** (Gemma FP8) | Native Blackwell FP8 | tied (±0.3%) | **2.6× faster** | −1 (noise) |
+| **Dense 4-bit** (Gemma NVFP4) | Native Blackwell FP4 | tied (±0.4%) | **2.6× faster** | −5 (quant artifact) |
 
 **Summary of where each engine wins on this hardware:**
 
-- **Single-stream dense, cold-start matters:** llama.cpp (fast load, valid code, less VRAM).
-- **Single-stream dense, warm server, latency-sensitive:** vLLM NVFP4 (2.6× faster TTFT).
-- **Single-stream MoE:** llama.cpp by a wide margin (vLLM's Marlin fallback doesn't leverage FP4 silicon here).
-- **Batched serving of either type:** vLLM (untested here; model card numbers show ~2.5× concurrent throughput over BF16).
+- **Single-stream dense, 8-bit quality:** vLLM FP8 matches llama.cpp Q8 on throughput and quality, beats it 2.6× on TTFT. **This is the pick** if you can tolerate the longer cold start and care about latency.
+- **Single-stream dense, simplest deploy:** llama.cpp Q8 — one binary, 12-second load, perfect coding score, less actual VRAM.
+- **Single-stream MoE:** llama.cpp wins decisively (vLLM's MoE Marlin path doesn't leverage FP4 silicon yet).
+- **Batched serving of any type:** vLLM (untested here; model card numbers show ~2.5× concurrent throughput over BF16 and ~36% over NVIDIA's stock NVFP4).
+- **When NOT to use NVFP4:** any single-stream workload where you'll actually use the model for coding. The quality floor drops noticeably and the decode speedup is 0% on this card. It only makes sense for batched serving where you get the concurrent-throughput bonus.
 
 ### Practical take
 

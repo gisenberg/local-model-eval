@@ -53,6 +53,12 @@ MODELS = {
         "ctx": 32768,  # NVFP4 at 90% gpu util caps context
         "extra": [],
     },
+    "gemma-4-31b-fp8-vllm": {
+        "name": "Gemma-4-31B-it BF16->FP8 (vLLM, on-the-fly)",
+        "path": f"{MODELS_ROOT}/gemma-4-31b-bf16-hf",
+        "ctx": 32768,
+        "extra": ["--quantization", "fp8", "--kv-cache-dtype", "fp8_e4m3"],
+    },
 }
 
 
