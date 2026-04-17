@@ -1,0 +1,62 @@
+{
+  "model": "Qwen3-Coder-Next Q6_K",
+  "key": "qwen3-coder-next-q6",
+  "ctx": 32768,
+  "vram_mb": 64376,
+  "backend": "vulkan",
+  "total_score": "15/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpfmmv0ip6\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word FAILED                   [100%]\n\n=================================== FAILURES ===================================\n____________________________ test_most_common_word _____________________________\n\nprocessor = <string_processor.StringProcessor object at 0x79191d727350>\n\n    def test_most_common_word(processor):\n        assert processor.most_common_word(\"apple banana apple\") == \"apple\"\n        assert processor.most_common_word(\"Apple apple BANANA\") == \"apple\"\n>       assert processor.most_common_word(\"one two three\") is None  # all tie \u2192 return first: \"one\"\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert 'one' is None\nE        +  where 'one' = most_common_word('one two three')\nE        +    where most_common_word = <string_processor.StringProcessor object at 0x79191d727350>.most_common_word\n\ntest_string_processor.py:42: AssertionError\n=========================== short test summary info ============================\nFAILED test_string_processor.py::test_most_common_word - AssertionError: asse...\n========================= 1 failed, 4 passed in 0.01s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 5119,
+      "expected": 5,
+      "elapsed_s": 6.44
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp2_4eagv5\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::TestExpressionEvaluator::test_basic_arithmetic PASSED [ 20%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_operator_precedence PASSED [ 40%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_parentheses PASSED [ 60%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_unary_minus PASSED [ 80%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 10045,
+      "expected": 5,
+      "elapsed_s": 11.66
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmph_0qfna3\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid PASSED                                 [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 11052,
+      "expected": 6,
+      "elapsed_s": 15.53
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 6,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "duleNotFoundError\n________________________ test_size_mixed_expired_valid _________________________\n\n    def test_size_mixed_expired_valid():\n>       with patch('ttl_cache.time.monotonic', side_effect=[0, 0, 0, 0, 5, 5, 5]):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntest_lru_cache.py:57: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1451: in __enter__\n    self.target = self.getter()\n                  ^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/pkgutil.py:513: in resolve_name\n    mod = importlib.import_module(modname)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'ttl_cache', import_ = <function _gcd_import at 0x7f2a8afa40e0>\n\n>   ???\nE   ModuleNotFoundError: No module named 'ttl_cache'\n\n<frozen importlib._bootstrap>:1324: ModuleNotFoundError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_basic_get_put - ModuleNotFoundError: No module...\nFAILED test_lru_cache.py::test_capacity_eviction_lru_order - ModuleNotFoundEr...\nFAILED test_lru_cache.py::test_ttl_expiry - ModuleNotFoundError: No module na...\nFAILED test_lru_cache.py::test_custom_per_key_ttl - ModuleNotFoundError: No m...\nFAILED test_lru_cache.py::test_delete - ModuleNotFoundError: No module named ...\nFAILED test_lru_cache.py::test_size_mixed_expired_valid - ModuleNotFoundError...\n============================== 6 failed in 0.13s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 8605,
+      "expected": 6,
+      "elapsed_s": 12.21
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "model": "Gemma-4-31B-it Q8_0",
+  "key": "gemma4-31b-q8",
+  "path": "/home/gisenberg/models/gemma-4-31b-it-q8/gemma-4-31B-it-Q8_0.gguf",
+  "ctx": 262144,
+  "vram_mb": 54550,
+  "load_seconds": 6.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.2355,
+      "decode_tps": 43.77,
+      "n_tokens": 253,
+      "total_s": 6.016
+    },
+    {
+      "ttft_s": 0.182,
+      "decode_tps": 43.76,
+      "n_tokens": 253,
+      "total_s": 5.963
+    },
+    {
+      "ttft_s": 0.1825,
+      "decode_tps": 43.76,
+      "n_tokens": 253,
+      "total_s": 5.964
+    },
+    {
+      "ttft_s": 0.1822,
+      "decode_tps": 43.75,
+      "n_tokens": 253,
+      "total_s": 5.965
+    },
+    {
+      "ttft_s": 0.1822,
+      "decode_tps": 43.75,
+      "n_tokens": 253,
+      "total_s": 5.965
+    }
+  ],
+  "ttft_mean": 0.1929,
+  "ttft_median": 0.1822,
+  "decode_mean": 43.76,
+  "decode_median": 43.76
+}

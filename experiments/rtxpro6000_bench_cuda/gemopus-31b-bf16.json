@@ -1,0 +1,45 @@
+{
+  "model": "Gemopus-4-31B-it BF16",
+  "key": "gemopus-31b-bf16",
+  "path": "/home/gisenberg/models/gemopus-4-31b-bf16/Gemopus-4-31B-it-BF16.gguf",
+  "ctx": 262144,
+  "vram_mb": 81996,
+  "load_seconds": 12.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.352,
+      "decode_tps": 25.13,
+      "n_tokens": 253,
+      "total_s": 10.42
+    },
+    {
+      "ttft_s": 0.2973,
+      "decode_tps": 25.13,
+      "n_tokens": 253,
+      "total_s": 10.364
+    },
+    {
+      "ttft_s": 0.2976,
+      "decode_tps": 25.13,
+      "n_tokens": 253,
+      "total_s": 10.365
+    },
+    {
+      "ttft_s": 0.2976,
+      "decode_tps": 25.13,
+      "n_tokens": 253,
+      "total_s": 10.367
+    },
+    {
+      "ttft_s": 0.2975,
+      "decode_tps": 25.13,
+      "n_tokens": 253,
+      "total_s": 10.367
+    }
+  ],
+  "ttft_mean": 0.3084,
+  "ttft_median": 0.2976,
+  "decode_mean": 25.13,
+  "decode_median": 25.13
+}

@@ -1,0 +1,45 @@
+{
+  "model": "Gemma-4-31B-it BF16",
+  "key": "gemma4-31b-bf16",
+  "path": "/home/gisenberg/models/gemma-4-31b-it-bf16/gemma-4-31B-it-BF16-00001-of-00002.gguf",
+  "ctx": 262144,
+  "backend": "vulkan",
+  "vram_mb": 81483,
+  "load_seconds": 12.0,
+  "runs": [
+    {
+      "ttft_s": 0.3703,
+      "decode_tps": 24.82,
+      "n_tokens": 253,
+      "total_s": 10.564
+    },
+    {
+      "ttft_s": 0.3019,
+      "decode_tps": 24.82,
+      "n_tokens": 253,
+      "total_s": 10.494
+    },
+    {
+      "ttft_s": 0.3016,
+      "decode_tps": 24.83,
+      "n_tokens": 253,
+      "total_s": 10.491
+    },
+    {
+      "ttft_s": 0.302,
+      "decode_tps": 24.82,
+      "n_tokens": 253,
+      "total_s": 10.496
+    },
+    {
+      "ttft_s": 0.3021,
+      "decode_tps": 24.83,
+      "n_tokens": 253,
+      "total_s": 10.493
+    }
+  ],
+  "ttft_mean": 0.3156,
+  "ttft_median": 0.302,
+  "decode_mean": 24.82,
+  "decode_median": 24.82
+}

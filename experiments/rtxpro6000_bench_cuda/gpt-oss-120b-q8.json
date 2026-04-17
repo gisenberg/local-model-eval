@@ -1,0 +1,45 @@
+{
+  "model": "gpt-oss-120b Q8_0",
+  "key": "gpt-oss-120b-q8",
+  "path": "/home/gisenberg/models/gpt-oss-120b-q8/gpt-oss-120b-Q8_0-00001-of-00002.gguf",
+  "ctx": 131072,
+  "vram_mb": 65802,
+  "load_seconds": 12.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.0446,
+      "decode_tps": 264.51,
+      "n_tokens": 247,
+      "total_s": 0.978
+    },
+    {
+      "ttft_s": 0.046,
+      "decode_tps": 264.54,
+      "n_tokens": 247,
+      "total_s": 0.98
+    },
+    {
+      "ttft_s": 0.0387,
+      "decode_tps": 264.17,
+      "n_tokens": 247,
+      "total_s": 0.974
+    },
+    {
+      "ttft_s": 0.0387,
+      "decode_tps": 264.26,
+      "n_tokens": 247,
+      "total_s": 0.973
+    },
+    {
+      "ttft_s": 0.0384,
+      "decode_tps": 264.4,
+      "n_tokens": 247,
+      "total_s": 0.973
+    }
+  ],
+  "ttft_mean": 0.0413,
+  "ttft_median": 0.0387,
+  "decode_mean": 264.38,
+  "decode_median": 264.4
+}
