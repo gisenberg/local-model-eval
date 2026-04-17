@@ -1,0 +1,60 @@
+{
+  "model": "Qwen3-Coder-Next Q6_K",
+  "key": "qwen3-coder-next-q6",
+  "mode": "sysprompt",
+  "total_score": "14/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmprwubpr2b\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 4760,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp5g89iz15\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_operator_precedence PASSED            [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 7917,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "astar_pathfinding": {
+      "passed": 4,
+      "failed": 2,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "star.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost FAILED              [ 50%]\ntest_astar.py::test_no_path_exists FAILED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n=================================== FAILURES ===================================\n____________________ test_weighted_grid_prefers_lower_cost _____________________\n\n    def test_weighted_grid_prefers_lower_cost():\n        grid_data = [\n            [1, 100, 1],\n            [1, 100, 1],\n            [1, 100, 1]\n        ]\n        astar = AStarGrid(grid_data)\n        path = astar.find_path((0, 0), (2, 2))\n        assert path is not None\n        # Should go around the high-cost column (col=1)\n        # Path: (0,0)\u2192(1,0)\u2192(2,0)\u2192(2,1)\u2192(2,2) \u2192 cost = 1+1+1+1 = 4\n        # vs (0,0)\u2192(0,1)\u2192(0,2)\u2192(1,2)\u2192(2,2) \u2192 cost = 100+1+100+1 = 202\n>       assert path_cost(astar, path) == 4\nE       assert 103 == 4\nE        +  where 103 = path_cost(<astar.AStarGrid object at 0x79b5f75381a0>, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)])\n\ntest_astar.py:60: AssertionError\n_____________________________ test_no_path_exists ______________________________\n\n    def test_no_path_exists():\n        grid_data = [\n            [1, 0, 1],\n            [1, 0, 1],\n            [1, 1, 1]\n        ]\n        astar = AStarGrid(grid_data)\n        path = astar.find_path((0, 0), (0, 2))\n>       assert path is None\nE       assert [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (1, 2), ...] is None\n\ntest_astar.py:73: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_weighted_grid_prefers_lower_cost - assert 103 == 4\nFAILED test_astar.py::test_no_path_exists - assert [(0, 0), (1, 0), (2, 0), (...\n========================= 2 failed, 4 passed in 0.02s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 9020,
+      "expected": 6,
+      "n_rounds": 1
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 6,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "______________ test_size_mixed_expired_valid _________________________\n\n    def test_size_mixed_expired_valid():\n>       with patch('ttl_cache.time.monotonic', side_effect=[0.0, 0.0, 0.0, 5.0, 5.0, 5.0, 6.0]):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntest_lru_cache.py:58: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1451: in __enter__\n    self.target = self.getter()\n                  ^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/pkgutil.py:513: in resolve_name\n    mod = importlib.import_module(modname)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'ttl_cache', import_ = <function _gcd_import at 0x79bfa3ba40e0>\n\n>   ???\nE   ModuleNotFoundError: No module named 'ttl_cache'\n\n<frozen importlib._bootstrap>:1324: ModuleNotFoundError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_basic_get_put - ModuleNotFoundError: No module...\nFAILED test_lru_cache.py::test_capacity_eviction_lru_order - ModuleNotFoundEr...\nFAILED test_lru_cache.py::test_ttl_expiry - ModuleNotFoundError: No module na...\nFAILED test_lru_cache.py::test_custom_per_key_ttl - ModuleNotFoundError: No m...\nFAILED test_lru_cache.py::test_delete - ModuleNotFoundError: No module named ...\nFAILED test_lru_cache.py::test_size_mixed_expired_valid - ModuleNotFoundError...\n============================== 6 failed in 0.10s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 9954,
+      "expected": 6,
+      "n_rounds": 1
+    }
+  }
+}

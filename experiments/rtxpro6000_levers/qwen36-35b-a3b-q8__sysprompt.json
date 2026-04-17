@@ -1,0 +1,58 @@
+{
+  "model": "Qwen3.6-35B-A3B Q8_0",
+  "key": "qwen36-35b-a3b-q8",
+  "mode": "sysprompt",
+  "total_score": "15/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpq9wmnoqv\ncollecting ... collected 5 items\n\ntest_string_processor.py::TestStringProcessor::test_reverse_words PASSED [ 20%]\ntest_string_processor.py::TestStringProcessor::test_count_vowels PASSED  [ 40%]\ntest_string_processor.py::TestStringProcessor::test_is_palindrome PASSED [ 60%]\ntest_string_processor.py::TestStringProcessor::test_caesar_cipher PASSED [ 80%]\ntest_string_processor.py::TestStringProcessor::test_most_common_word PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 6287,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpe337axlf\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::TestExpressionEvaluator::test_basic_arithmetic PASSED [ 20%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_precedence PASSED [ 40%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_parentheses PASSED [ 60%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_unary_minus PASSED [ 80%]\ntest_expression_evaluator.py::TestExpressionEvaluator::test_error_cases PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 6728,
+      "expected": 5,
+      "n_rounds": 1
+    },
+    "astar_pathfinding": {
+      "passed": 5,
+      "failed": 1,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp5fapuskj\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost PASSED              [ 50%]\ntest_astar.py::test_no_path_exists FAILED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n=================================== FAILURES ===================================\n_____________________________ test_no_path_exists ______________________________\n\n    def test_no_path_exists():\n        \"\"\"Return None when start and end are separated by impassable walls.\"\"\"\n        grid = [[1, 1, 1],\n                [1, 0, 1],\n                [1, 0, 1]]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (0, 2))\n    \n>       assert path is None\nE       assert [(0, 0), (0, 1), (0, 2)] is None\n\ntest_astar.py:141: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_no_path_exists - assert [(0, 0), (0, 1), (0, 2)] i...\n========================= 1 failed, 5 passed in 0.01s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 6932,
+      "expected": 6,
+      "n_rounds": 1
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "total": 0,
+      "status": "no_code",
+      "n_code_blocks": 0,
+      "response_len": 3211,
+      "expected": 6,
+      "n_rounds": 1
+    }
+  }
+}

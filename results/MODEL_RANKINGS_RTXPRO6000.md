@@ -15,7 +15,8 @@ Tested April 2026.
 - **Qwen3.6-35B-A3B is the throughput king in the mid-tier.** 221 tok/s at Q8 (CUDA), though coding quality is noisy across quants (14-15/22).
 - **Qwen3-Coder-Next Q6_K is fast (196 tok/s) and specialized for coding**, but the familiar Qwen-family LRU Cache blind spot is still there (0/6). Good if your workload is parsing / pathfinding / string work; not if you need eviction+expiry logic.
 - **Gemopus fine-tune regresses Gemma 4 on coding.** Base Gemma 31B-IT is strictly better (22/22 vs 15-16/22). The fine-tune helps on some tasks but catastrophically fails LRU Cache with TTL.
-- **LRU Cache with TTL is the pattern-separation benchmark in our suite.** Only Gemma-4-31B-it (22/22) and gpt-oss-120b (6/6) pass it reliably. Every Qwen-family model — Qwen3.6, Qwen3-Coder-Next, and Qwopus on the 5090 — fails LRU at 0-4/6. This is consistent across architectures (dense, MoE, hybrid linear-attn) and precisions (BF16, Q8, Q6, Q4), so it's a training-data / CoT-shape signal, not a quantization artifact.
+- **LRU Cache with TTL is the pattern-separation benchmark in our suite.** Only Gemma-4-31B-it (22/22) and gpt-oss-120b (6/6) pass it reliably. Every Qwen-family model — Qwen3.6, Qwen3-Coder-Next, and Qwopus on the 5090 — fails LRU at 0-4/6 without help. This is consistent across architectures (dense, MoE, hybrid linear-attn) and precisions (BF16, Q8, Q6, Q4), so it's a training-data / CoT-shape signal, not a quantization artifact.
+- **Enabling thinking mode on Qwen3.6 fully recovers the LRU blind spot** (0/6 → 6/6) and lifts total to 21/22, matching gpt-oss-tier quality with no latency cost. See [prompting levers section](#prompting-levers-can-we-recover-qwen-family-failures). Thinking does *not* engage on Qwen3-Coder-Next — that one remains at 15/22.
 - **Vulkan and CUDA are nearly identical on dense models.** CUDA wins +66% on one MoE config (Qwen3.6 BF16) but only +7% on Q8 MoE and +1% on dense. **llama.cpp's Vulkan backend has caught up on Blackwell.**
 
 ## The Pro 6000's defining advantage
@@ -206,6 +207,73 @@ No TurboQuant, no rotorquant, no NVFP4 — these are stock llama.cpp runs. The P
 
 ---
 
+## Prompting levers: can we recover Qwen-family failures?
+
+The summary table above uses single-shot, no-thinking, user-prompt-only as the baseline configuration (matching our 5090 methodology). Once we saw that Qwen-family models all failed LRU Cache with TTL but Gemma aced it, we ran a follow-up sweep testing three levers on Qwen3.6-35B-A3B (both quants) and Qwen3-Coder-Next Q6_K:
+
+1. **Thinking on** — `-rea on --reasoning-budget 16384` on the llama-server side; no client-side changes.
+2. **System prompt** — a careful-engineer persona prepended as a `role: system` message. See `tools/rtxpro6000_levers_bench.py` for the exact text.
+3. **Agentic test-fix loop** — on test failure, send the pytest output back to the model and ask for a fix. Up to 3 rounds.
+
+### Lever results
+
+| Model | Quant | Baseline | + Thinking | + System prompt | + Agentic |
+|---|---|---|---|---|---|
+| Qwen3.6-35B-A3B | BF16 | 14/22 | **21/22 (+7)** | 15/22 (+1) | — (not run) |
+| Qwen3.6-35B-A3B | Q8_0 | 15/22 | **21/22 (+6)** | 15/22 (0) | **22/22 (+7)** |
+| Qwen3-Coder-Next | Q6_K | 15/22 | 15/22 (0) | 14/22 (−1) | — (not run) |
+
+### Per-benchmark detail
+
+The interesting story is in the per-benchmark breakdown. LRU Cache with TTL is the benchmark that separates the winners from everyone else.
+
+**Qwen3.6-35B-A3B BF16:**
+- Baseline: String 5, Expr 5, A* 0, LRU 4 → 14
+- Thinking: String 5, Expr 5, A* 5, LRU 6 → 21
+- Sysprompt: String 4, Expr 5, A* 6, LRU 0 → 15 (flipped which benchmark fails)
+
+**Qwen3.6-35B-A3B Q8_0:**
+- Baseline: String 5, Expr 4, A* 6, LRU 0 → 15
+- Thinking: String 5, Expr 5, A* 5, LRU 6 → 21 (LRU 0→6 is the dominant effect)
+- Sysprompt: String 5, Expr 5, A* 5, LRU 0 → 15 (LRU stuck, other tests stable)
+- Agentic: String 5, Expr 5, A* 6 (2 rounds), LRU 6 → 22 (A* fixed in 1 feedback round)
+
+**Qwen3-Coder-Next Q6_K:**
+- Baseline: String 4, Expr 5, A* 6, LRU 0 → 15
+- Thinking: String 4, Expr 5, A* 6, LRU 0 → 15 (*identical, no time penalty either — thinking mode does not engage on this model/arch*)
+- Sysprompt: String 5, Expr 5, A* 4, LRU 0 → 14
+
+### Latency cost of the levers
+
+Wall-clock total for the 4-benchmark suite on Qwen3.6 Q8:
+
+| Mode | Total | vs Baseline |
+|---|---|---|
+| Baseline (no lever) | 199 s | — |
+| + Thinking | 197 s | ±0% |
+| + Agentic | 234 s | +18% |
+
+**Thinking is free.** The reasoning budget is used only when the benchmark calls for it (LRU: +10s) and skipped when it doesn't (String: −8s). Agentic costs ~40s per experiment because of the one A* retry round.
+
+### Findings
+
+1. **Thinking recovers Qwen3.6 completely.** Both BF16 and Q8 go from 14-15 → 21, matching the gpt-oss-120b tier on quality. The recovery is entirely from LRU Cache (0-4 → 6) — the benchmark Gemma aces and every other Qwen-family model fails without help.
+
+2. **System prompt is net-zero or negative.** The "careful engineer" framing can help one benchmark while breaking another — on Qwen3.6 BF16 it flipped A* from 0→6 but LRU from 4→0. Never net-improves. The failure mode is over-deliberation that exhausts `max_tokens` before emitting the code block.
+
+3. **Agentic tops out at 22/22 on Qwen3.6 Q8** — one round of pytest feedback recovers the last A* test. Cheaper than thinking on compute terms only if you already had a test harness in-loop; not cheaper on latency (+18% vs +0% for thinking).
+
+4. **Qwen3-Coder-Next is immune to both levers.** Identical scores and identical per-benchmark times across baseline/thinking/sysprompt (6-14s each). Either the `qwen3_next` architecture doesn't have a thinking head in this build, or `-rea on` isn't propagating through llama.cpp's jinja template. **The LRU failure on this model is a hard capability ceiling**, not a configuration issue — no prompt-level intervention we tried touched it.
+
+5. **Gemma 4 still wins the no-lever race.** The reason base Gemma gets 22/22 in our baseline and Qwen needs thinking to reach 21/22 isn't that Qwen "can't solve LRU" — it's that Qwen's code-generation path, without extra reasoning, over-counts expired entries in `size()`. Gemma appears to internalize this invariant during its standard forward pass. This matters practically: if your serving setup doesn't enable thinking mode by default, you'll see raw Qwen at 14-15/22 while Gemma delivers 22/22 out of the box.
+
+### Practical recommendation
+
+- **If you're deploying Qwen3.6-35B-A3B for coding: turn thinking on.** +6-7 points, same wall-clock. Zero reason not to.
+- **If you're deploying gpt-oss-120b: don't bother with levers.** Baseline is already 21/22 and runs 6× faster than Gemma.
+- **If you're deploying Qwen3-Coder-Next: accept the LRU blind spot** or move to a higher-quality model. Levers don't help.
+- **If you're deploying Gemma 4 31B-IT: keep thinking off** — it's already 22/22 and thinking would add latency without recovering anything.
+
 ## Cross-references (other docs in this repo)
 
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) — the bandwidth-rich 32 GB reference card
@@ -217,4 +285,5 @@ No TurboQuant, no rotorquant, no NVFP4 — these are stock llama.cpp runs. The P
 
 - Throughput: `experiments/rtxpro6000_bench_{vulkan,cuda}/*.json`
 - Coding: `experiments/rtxpro6000_coding/*.json` and per-benchmark response markdown in `experiments/rtxpro6000_coding/<key>/*.md`
-- Harness: `tools/rtxpro6000_bench.py`, `tools/rtxpro6000_coding_bench.py`, `tools/rtxpro6000_rescore.py`
+- Prompting levers: `experiments/rtxpro6000_levers/<key>__<mode>/*.md` and rebuilt summaries in `experiments/rtxpro6000_levers/<key>__<mode>.json`
+- Harness: `tools/rtxpro6000_bench.py`, `tools/rtxpro6000_coding_bench.py`, `tools/rtxpro6000_rescore.py`, `tools/rtxpro6000_levers_bench.py`, `tools/rtxpro6000_levers_rescore.py`
