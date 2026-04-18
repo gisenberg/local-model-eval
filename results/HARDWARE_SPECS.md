@@ -228,6 +228,10 @@ Anything above ~10B active parameters becomes painfully slow on this machine.
 
 ### Measured throughput on the same model class
 
+![Same model, different hardware — decode tok/s](charts/04_hardware_bars.png)
+
+*Grouped bars of decode throughput for the handful of models we've run on ≥2 platforms (llama.cpp / ik-llama defaults per platform, thinking off). Regenerate via `python3 ../tools/generate_charts.py`.*
+
 Where we have comparable runs:
 
 | Model | RTX 5090 | M4 Max | DGX Spark | Notes |

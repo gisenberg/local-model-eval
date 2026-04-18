@@ -50,6 +50,10 @@ With turbo4 KV:
 
 ## Throughput Impact
 
+![f16 vs planar3 vs turbo4 throughput, per hardware+model](charts/03_kv_compression.png)
+
+*Decode throughput for same hardware + model + weight quant with KV format varied. On the 5090 the turbo4 cost over f16 is single-digit percent; on the M4 Max the same compression eats 30% of throughput (different kernel story, see [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md)).*
+
 TurboQuant isn't free — the dequantization overhead costs ~8-10% throughput at 32K context:
 
 | Model | f16 KV (tok/s) | turbo4 KV (tok/s) | Delta |
