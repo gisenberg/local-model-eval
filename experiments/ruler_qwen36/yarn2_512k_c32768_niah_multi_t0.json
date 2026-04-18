@@ -1,0 +1,48 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 32768,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 65878096,
+  "prompt_tokens": 14970,
+  "completion_tokens": 451,
+  "ttft_s": 2.136,
+  "decode_s": 2.144,
+  "total_s": 4.28,
+  "prefill_tps": 7008.44,
+  "decode_tps": 210.32,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "729585",
+      "251220",
+      "664844"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "gapet",
+      "xaher",
+      "qirew"
+    ],
+    "values": [
+      729585,
+      251220,
+      664844
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 36510,
+  "content_preview": "gapet 729585\nxaher 251220\nqirew 664844",
+  "reasoning_preview": "The user wants to find the magic numbers for three keys: 'gapet', 'xaher', and 'qirew' from the provided text.\nI will scan the text for these keys and extract the corresponding numbers.\n\nLooking for \"gapet\":\n\"Archivist memo: the magic number for gapet is 729585, recorded on the registry.\" -> 729585\n\nLooking for \"xaher\":\n\"Archivist memo: the magic number for xaher is 251220, recorded on the registry.\" -> 251220\n\nLooking for \"qirew\":\n\"Archivist memo: the magic number for qirew is 664844, recorded on the registry.\" -> 664844\n\nThe requested format is:\ngapet [number]\nxaher [number]\nqirew [number]\non separate lines, labelled by key, nothing else.\n\nSo:\ngapet 729585\nxaher 251220\nqirew 664844\n\nDouble check the text to ensure accuracy.\nText segment 1: \"Archivist memo: the magic number for gapet is 729585, recorded on the registry.\"\nText segment 2: \"Archivist memo: the magic number for xaher is 251220, recorded on the registry.\"\nText segment 3: \"Archivist memo: the magic number for qirew is 664844, recorded on the registry.\"\n\nAll match. Format exactly as requested.\n\"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\ngapet 729585\nxaher 251220\nqirew 664844\nDone.\u2705\n"
+}

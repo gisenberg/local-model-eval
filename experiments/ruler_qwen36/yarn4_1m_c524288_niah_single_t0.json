@@ -1,0 +1,34 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 524288,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 983891694,
+  "prompt_tokens": 388179,
+  "completion_tokens": 333,
+  "ttft_s": 110.092,
+  "decode_s": 3.209,
+  "total_s": 113.301,
+  "prefill_tps": 3525.95,
+  "decode_tps": 103.78,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "893599"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "dufol",
+    "value": 893599,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 47192,
+  "content_preview": "893599",
+  "reasoning_preview": "The user wants to find the \"magic number for dufol\" from the provided text.\nI will search the text for \"dufol\" or \"magic number\".\n\nScanning the text...\n\"Internal note to archivists: the magic number for dufol is 893599, and this should be remembered carefully.\"\n\nFound it. The number is 893599.\nThe user requested: \"Answer with just the number, nothing else.\"\nSo the answer should be \"893599\".\nDouble-checking the exact wording in the text: \"the magic number for dufol is 893599\"\nMatches perfectly.\nOutput just the number.\nDone. \nAnswer: 893599. \nProceeding. \nSelf-Correction/Verification: \nIs there any other mention? No. \nThe prompt says \"Answer with just the number, nothing else.\"\nI will output exactly \"893599\".\nDone. \nOutput matches requirement. \nProceeds. \n[Final Check]\nText: \"...Internal note to archivists: the magic number for dufol is 893599, and this should be remembered carefully. . On the following day...\"\nQuestion: What is the magic number for dufol? Answer with just the number, nothing else.\nAnswer: 893599\nAll good. \nOutput Generation. \n[Done] \n893599\n"
+}

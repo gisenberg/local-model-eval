@@ -1,0 +1,34 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 1048576,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 3997225223,
+  "prompt_tokens": 786811,
+  "completion_tokens": 328,
+  "ttft_s": 371.13,
+  "decode_s": 4.956,
+  "total_s": 376.086,
+  "prefill_tps": 2120.04,
+  "decode_tps": 66.19,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "436507"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "giwup",
+    "value": 436507,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 58970,
+  "content_preview": "436507",
+  "reasoning_preview": "The user wants to find the \"magic number for giwup\" from the provided text.\nI will search the text for the phrase \"magic number for giwup\" or \"giwup\".\nScanning the text...\n\"Internal note to archivists: the magic number for giwup is 436507, and this should be remembered carefully.\"\nFound it. The number is 436507.\nThe user requested: \"Answer with just the number, nothing else.\"\nSo the answer should be 436507.\nDouble-checking the exact wording: \"Internal note to archivists: the magic number for giwup is 436507, and this should be remembered carefully.\"\nMatches perfectly.\nOutput: 436507.\nDone. \nI will generate just the number as requested.\nCheck constraints: \"Answer with just the number, nothing else.\"\nResult: 436507.\nReady. \nProceeds. \nOutput matches request.\nDone. \n[Final Check]\nText: \"Internal note to archivists: the magic number for giwup is 436507, and this should be remembered carefully.\"\nQuestion: What is the magic number for giwup? Answer with just the number, nothing else.\nAnswer: 436507\nMatches perfectly. No extra text. All good. \nOutput Generation. \n[Done]\n"
+}

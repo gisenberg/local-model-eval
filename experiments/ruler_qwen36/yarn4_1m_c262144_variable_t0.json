@@ -1,0 +1,34 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 262144,
+  "task": "variable",
+  "trial": 0,
+  "seed": 1423583256,
+  "prompt_tokens": 189223,
+  "completion_tokens": 1147,
+  "ttft_s": 38.863,
+  "decode_s": 8.171,
+  "total_s": 47.034,
+  "prefill_tps": 4868.98,
+  "decode_tps": 140.37,
+  "finish": "stop",
+  "score": {
+    "task": "variable",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "717138"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "base": 717131,
+    "chain_len": 8,
+    "answer": 717138
+  },
+  "vram_mb": 41304,
+  "content_preview": "717138",
+  "reasoning_preview": "The user wants to find the numerical value of `v7` based on the provided passage.\nI need to scan the passage for the definitions of `v0`, `v1`, ..., `v7`.\nLet's search for \"Archivist shorthand: v0 :=\"\nFound: \"Archivist shorthand: v0 := 717131.\"\nThen \"Archivist shorthand: v1 := v0 + 1.\" -> v1 = 717131 + 1 = 717132\nThen \"Archivist shorthand: v2 := v1 + 1.\" -> v2 = 717132 + 1 = 717133\nThen \"Archivist shorthand: v3 := v2 + 1.\" -> v3 = 717133 + 1 = 717134\nThen \"Archivist shorthand: v4 := v3 + 1.\" -> v4 = 717134 + 1 = 717135\nThen \"Archivist shorthand: v5 := v4 + 1.\" -> v5 = 717135 + 1 = 717136\nThen \"Archivist shorthand: v6 := v5 + 1.\" -> v6 = 717136 + 1 = 717137\nThen \"Archivist shorthand: v7 := v6 + 1.\" -> v7 = 717137 + 1 = 717138\n\nLet's double check the exact text in the passage to ensure no tricks.\nSearch for \"Archivist shorthand: v0 :=\"\n\"Archivist shorthand: v0 := 717131.\"\nSearch for \"Archivist shorthand: v1 :=\"\n\"Archivist shorthand: v1 := v0 + 1.\"\nSearch for \"Archivist shorthand: v2 :=\"\n\"Archivist shorthand: v2 := v1 + 1.\"\nSearch for \"Archivist shorthand: v3 :=\"\n\"Archivist shorthand: v3 := v2 + 1.\"\nSearch for \"Archivist shorthand: v4 :=\"\n\"Archivist shorthand: v4 := v3 + 1.\"\nSearch for \"Archivist shorthand: v5 :=\"\n\"Archivist shorthand: v5 := v4 + 1.\"\nSearch for \"Archivist shorthand: v6 :=\"\n\"Archivist shorthand: v6 := v5 + 1.\"\nSearch for \"Archivist shorthand: v7 :=\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nSo v0 = 717131\nv1 = 717132\nv2 = 717133\nv3 = 717134\nv4 = 717135\nv5 = 717136\nv6 = 717137\nv7 = 717138\n\nThe question asks for the numerical value of v7.\nAnswer: 717138.\nCheck calculation: 717131 + 7 = 717138.\nMatches.\nOutput should be just the number.\nDone. \nI will formulate the response. \nNo extra text.\nJust \"717138\".\nLet's quickly verify if there are any other definitions or modifications. The prompt says \"Several sentences in the passage define variables of the form `v0 := N`, `v1 := v0 + 1`, \u2026, `v7 := v6 + 1`. What is the numerical value of v7?\"\nIt's a straightforward ar"
+}

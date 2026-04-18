@@ -1,0 +1,34 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 131072,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 4217435,
+  "prompt_tokens": 89710,
+  "completion_tokens": 274,
+  "ttft_s": 14.2,
+  "decode_s": 1.564,
+  "total_s": 15.764,
+  "prefill_tps": 6317.45,
+  "decode_tps": 175.23,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "463926"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "sejet",
+    "value": 463926,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 38432,
+  "content_preview": "463926",
+  "reasoning_preview": "The user wants to find the \"magic number for sejet\" from the provided text.\nI will scan the text for the keyword \"sejet\" or \"magic number\".\nLooking through the text:\n\"...Internal note to archivists: the magic number for sejet is 463926, and this should be remembered carefully. .  A travelling merchant recorded...\"\nFound it: 463926.\nThe question asks for just the number, nothing else.\nAnswer: 463926.\nDouble check: \"the magic number for sejet is 463926\" -> matches exactly.\nOutput matches requirement.\nDone. \nProceeding. \nOutput: 463926. \nNo extra text. \nReady. \n[Final Check]\nText: \"Internal note to archivists: the magic number for sejet is 463926, and this should be remembered carefully.\"\nQuestion: What is the magic number for sejet? Answer with just the number, nothing else.\nAnswer: 463926.\nMatches perfectly. All constraints met.\nDone. \nOutput Generation. \n[Output] 463926\n"
+}

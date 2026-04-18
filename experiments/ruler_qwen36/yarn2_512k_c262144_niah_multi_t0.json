@@ -1,0 +1,48 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 262144,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 287846678,
+  "prompt_tokens": 189263,
+  "completion_tokens": 766,
+  "ttft_s": 38.642,
+  "decode_s": 5.43,
+  "total_s": 44.072,
+  "prefill_tps": 4897.92,
+  "decode_tps": 141.06,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "235560",
+      "180124",
+      "796633"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "hajic",
+      "cemoz",
+      "xeyab"
+    ],
+    "values": [
+      235560,
+      180124,
+      796633
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 41304,
+  "content_preview": "hajic 235560\ncemoz 180124\nxeyab 796633",
+  "reasoning_preview": "The user wants to find the magic numbers for three specific names: hajic, cemoz, and xeyab.\nI need to scan the text for these names and extract the corresponding magic numbers.\n\nScanning the text:\n1. \"hajic\":\nLooking for \"hajic\" in the passage.\nFound: \"Archivist memo: the magic number for hajic is 235560, recorded on the registry.\"\nSo, hajic = 235560.\n\n2. \"cemoz\":\nLooking for \"cemoz\" in the passage.\nFound: \"Archivist memo: the magic number for cemoz is 180124, recorded on the registry.\"\nSo, cemoz = 180124.\n\n3. \"xeyab\":\nLooking for \"xeyab\" in the passage.\nFound: \"Archivist memo: the magic number for xeyab is 796633, recorded on the registry.\"\nSo, xeyab = 796633.\n\nFormat the answer as requested: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nhajic 235560\ncemoz 180124\nxeyab 796633\n\nCheck the exact wording: \"labelled by key\" -> e.g., hajic: 235560 or just hajic 235560.\nI will use the format:\nhajic 235560\ncemoz 180124\nxeyab 796633\n\nWait, the prompt says \"labelled by key\". I'll output:\nhajic 235560\ncemoz 180124\nxeyab 796633\n\nLet's double check the text to ensure accuracy.\nSearch \"hajic\": \"Archivist memo: the magic number for hajic is 235560, recorded on the registry.\"\nSearch \"cemoz\": \"Archivist memo: the magic number for cemoz is 180124, recorded on the registry.\"\nSearch \"xeyab\": \"Archivist memo: the magic number for xeyab is 796633, recorded on the registry.\"\n\nAll match.\nFormat:\nhajic 235560\ncemoz 180124\nxeyab 796633\n\nReady. Output matches exactly. No extra text.\nCheck constraint: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nI will write:\nhajic 235560\ncemoz 180124\nxeyab 796633\nDone. \nSelf-Correction/Verification during thought:\nCould \"labelled by key\" mean \"hajic: 235560\"? Usually either is fine. I'll stick to \"hajic 235560\".\nThe prompt says \"labelled by key\". I'll use \"hajic 235560\".\nEverything looks solid.\nProceed. \nOutput matches exactly. \nFinal Answer Generation. \n[Done]\n"
+}

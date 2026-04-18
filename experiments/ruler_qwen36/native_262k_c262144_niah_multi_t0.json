@@ -1,0 +1,48 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 262144,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 2454453530,
+  "prompt_tokens": 189461,
+  "completion_tokens": 605,
+  "ttft_s": 39.179,
+  "decode_s": 4.283,
+  "total_s": 43.462,
+  "prefill_tps": 4835.74,
+  "decode_tps": 141.26,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "122930",
+      "399455",
+      "939240"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "dapih",
+      "dunay",
+      "sahal"
+    ],
+    "values": [
+      122930,
+      399455,
+      939240
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 41304,
+  "content_preview": "dapih 122930\ndunay 399455\nsahal 939240",
+  "reasoning_preview": "The user wants to find the magic numbers for three specific names: dapih, dunay, and sahal, from the provided text.\nI will search the text for \"dapih\", \"dunay\", and \"sahal\" to locate their associated magic numbers.\n\nSearching for \"dapih\":\n\"Archivist memo: the magic number for dapih is 122930, recorded on the registry.\"\nSo, dapih = 122930\n\nSearching for \"dunay\":\n\"Archivist memo: the magic number for dunay is 399455, recorded on the registry.\"\nSo, dunay = 399455\n\nSearching for \"sahal\":\n\"Archivist memo: the magic number for sahal is 939240, recorded on the registry.\"\nSo, sahal = 939240\n\nThe requested format is:\ndapih 122930\ndunay 399455\nsahal 939240\nwith three numbers on separate lines, labelled by key, nothing else.\n\nCheck exact wording: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\ndapih 122930\ndunay 399455\nsahal 939240\n\nDouble check the text to ensure accuracy.\nText snippet 1: \"Archivist memo: the magic number for dapih is 122930, recorded on the registry.\" -> 122930\nText snippet 2: \"Archivist memo: the magic number for dunay is 399455, recorded on the registry.\" -> 399455\nText snippet 3: \"Archivist memo: the magic number for sahal is 939240, recorded on the registry.\" -> 939240\n\nAll match. Output matches requirement.\nReady. \nFormat:\ndapih 122930\ndunay 399455\nsahal 939240\nDone. \nProceeds. \nSelf-Correction/Verification during thought: \nCheck for exact key names: \"dapih\", \"dunay\", \"sahal\".\nCheck numbers: 122930, 399455, 939240.\nOutput matches exactly. No extra text.\nDone. \nOutput Generation. \n[Output matches response]\n"
+}

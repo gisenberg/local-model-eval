@@ -1,0 +1,43 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 32768,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 1915860531,
+  "prompt_tokens": 15591,
+  "completion_tokens": 8206,
+  "ttft_s": 2.213,
+  "decode_s": 40.078,
+  "total_s": 42.292,
+  "prefill_tps": 7043.84,
+  "decode_tps": 204.75,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 36510,
+  "content_preview": "zephyrine\nquondamly\nverdacious",
+  "reasoning_preview": "The user wants to find three invented words scattered throughout the passage.\nThese words appear many more times than any other invented or unusual word.\nI need to list them in order of frequency (most frequent first).\nThe output should be just the three words on separate lines.\n\nLet's scan the passage for unusual/invented words pinned to the margin.\nI see:\n\"A single word was pinned to the margin: quondamly.\"\n\"A single word was pinned to the margin: zephyrine.\"\n\"A single word was pinned to the margin: verdacious.\"\n\nLet's count the occurrences of each.\nI will search the text for \"quondamly\", \"zephyrine\", and \"verdacious\".\n\nText scan:\n1. quondamly\n2. zephyrine\n3. verdacious\n4. verdacious\n5. zephyrine\n6. zephyrine\n7. quondamly\n8. quondamly\n9. zephyrine\n10. verdacious\n11. zephyrine\n12. zephyrine\n13. quondamly\n14. zephyrine\n15. quondamly\n16. verdacious\n17. quondamly\n18. zephyrine\n19. quondamly\n20. verdacious\n21. zephyrine\n22. zephyrine\n23. quondamly\n24. quondamly\n25. verdacious\n26. zephyrine\n27. verdacious\n28. zephyrine\n29. quondamly\n30. quondamly\n31. verdacious\n32. zephyrine\n33. quondamly\n34. zephyrine\n35. verdacious\n36. zephyrine\n37. zephyrine\n38. verdacious\n39. quondamly\n40. quondamly\n41. zephyrine\n42. verdacious\n43. zephyrine\n44. quondamly\n45. zephyrine\n46. verdacious\n47. quondamly\n48. zephyrine\n49. verdacious\n50. quondamly\n51. quondamly\n52. verdacious\n53. zephyrine\n54. quondamly\n55. zephyrine\n56. verdacious\n57. quondamly\n58. zephyrine\n59. verdacious\n60. quondamly\n61. zephyrine\n62. verdacious\n63. zephyrine\n64. quondamly\n65. zephyrine\n66. verdacious\n67. quondamly\n68. zephyrine\n69. verdacious\n70. quondamly\n71. zephyrine\n72. verdacious\n73. quondamly\n74. zephyrine\n75. verdacious\n76. quondamly\n77. zephyrine\n78. verdacious\n79. quondamly\n80. zephyrine\n81. verdacious\n82. quondamly\n83. zephyrine\n84. verdacious\n85. quondamly\n86. zephyrine\n87. verdacious\n88. quondamly\n89. zephyrine\n90. verdacious\n91. quondamly\n92. zephyrine\n93. verdacious\n94. quondamly\n95. zephyrine\n96. verdaci"
+}

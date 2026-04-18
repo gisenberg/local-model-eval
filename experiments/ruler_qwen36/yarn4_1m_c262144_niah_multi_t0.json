@@ -1,0 +1,48 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 262144,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 3159220045,
+  "prompt_tokens": 189284,
+  "completion_tokens": 533,
+  "ttft_s": 39.259,
+  "decode_s": 3.771,
+  "total_s": 43.03,
+  "prefill_tps": 4821.43,
+  "decode_tps": 141.34,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "912096",
+      "876147",
+      "938383"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "hured",
+      "goheb",
+      "zigoz"
+    ],
+    "values": [
+      912096,
+      876147,
+      938383
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 41304,
+  "content_preview": "hured 912096\ngoheb 876147\nzigoz 938383",
+  "reasoning_preview": "The user wants to find the magic numbers for three keys: hured, goheb, and zigoz.\nI need to scan the text for these keys and extract the corresponding numbers.\nLooking through the text:\n1. \"Archivist memo: the magic number for hured is 912096, recorded on the registry.\"\n2. \"Archivist memo: the magic number for goheb is 876147, recorded on the registry.\"\n3. \"Archivist memo: the magic number for zigoz is 938383, recorded on the registry.\"\n\nSo the numbers are:\nhured: 912096\ngoheb: 876147\nzigoz: 938383\n\nFormat required: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nhured 912096\ngoheb 876147\nzigoz 938383\n\nWait, let's verify the exact wording in the prompt: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nI will output:\nhured 912096\ngoheb 876147\nzigoz 938383\n\nLet's double check the text to ensure accuracy.\nSearching for \"hured\": \"Archivist memo: the magic number for hured is 912096, recorded on the registry.\" -> 912096\nSearching for \"goheb\": \"Archivist memo: the magic number for goheb is 876147, recorded on the registry.\" -> 876147\nSearching for \"zigoz\": \"Archivist memo: the magic number for zigoz is 938383, recorded on the registry.\" -> 938383\n\nEverything matches. I will format the output exactly as requested.\n\"hured 912096\ngoheb 876147\nzigoz 938383\"\nDone. \nCheck constraint: \"labelled by key, nothing else.\" -> I will provide exactly that.\nReady. \nOutput matches expectation.\u2705\n"
+}

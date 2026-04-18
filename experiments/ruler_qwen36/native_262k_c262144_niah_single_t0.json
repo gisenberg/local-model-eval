@@ -1,0 +1,34 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 262144,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 879167830,
+  "prompt_tokens": 188933,
+  "completion_tokens": 224,
+  "ttft_s": 37.251,
+  "decode_s": 1.549,
+  "total_s": 38.8,
+  "prefill_tps": 5071.93,
+  "decode_tps": 144.6,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "269549"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "posiw",
+    "value": 269549,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 41304,
+  "content_preview": "269549",
+  "reasoning_preview": "The user wants to find the \"magic number for posiw\" from the provided text.\nI will scan the text for the phrase \"magic number for posiw\" or similar.\nLooking through the text:\n\"...Internal note to archivists: the magic number for posiw is 269549, and this should be remembered carefully.\"\nFound it. The number is 269549.\nThe user requested \"Answer with just the number, nothing else.\"\nSo the output should be \"269549\".\nDouble check the exact phrasing: \"the magic number for posiw is 269549\"\nMatches perfectly.\nOutput: 269549.\nDone. \nI will produce exactly that. \nNo extra text.\nCheck constraints: \"Answer with just the number, nothing else.\" -> 269549.\nReady. \nProceeds. \nOutput matches response. \nDone. \n[End of reasoning]\n"
+}

@@ -1,0 +1,48 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 131072,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 3793728000,
+  "prompt_tokens": 89621,
+  "completion_tokens": 587,
+  "ttft_s": 14.601,
+  "decode_s": 3.384,
+  "total_s": 17.985,
+  "prefill_tps": 6138.2,
+  "decode_tps": 173.44,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "900151",
+      "740022",
+      "484248"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "fegaz",
+      "fihim",
+      "picas"
+    ],
+    "values": [
+      900151,
+      740022,
+      484248
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 38432,
+  "content_preview": "fegaz: 900151\nfihim: 740022\npicas: 484248",
+  "reasoning_preview": "The user wants to find the magic numbers for three specific keys: 'fegaz', 'fihim', and 'picas' from the provided text.\nI will search the text for these keys and extract the corresponding numbers.\n\nSearching for \"fegaz\":\n\"Archivist memo: the magic number for fegaz is 900151, recorded on the registry.\"\nNumber for fegaz: 900151\n\nSearching for \"fihim\":\n\"Archivist memo: the magic number for fihim is 740022, recorded on the registry.\"\nNumber for fihim: 740022\n\nSearching for \"picas\":\n\"Archivist memo: the magic number for picas is 484248, recorded on the registry.\"\nNumber for picas: 484248\n\nThe question asks for the answer in the format:\nfegaz: [number]\nfihim: [number]\npicas: [number]\n\"Answer with three numbers on separate lines, labelled by key, nothing else.\"\n\nSo the output should be:\nfegaz: 900151\nfihim: 740022\npicas: 484248\n\nDouble-checking the text to ensure accuracy.\n- \"Archivist memo: the magic number for fegaz is 900151, recorded on the registry.\" -> 900151\n- \"Archivist memo: the magic number for fihim is 740022, recorded on the registry.\" -> 740022\n- \"Archivist memo: the magic number for picas is 484248, recorded on the registry.\" -> 484248\n\nAll match. Format matches request. Proceed. \nOutput exactly as requested.\nfegaz: 900151\nfihim: 740022\npicas: 484248\nDone. \nSelf-Correction/Verification during thought: \nCheck exact wording: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nI will format it exactly as:\nfegaz: 900151\nfihim: 740022\npicas: 484248\nMatches perfectly. No extra text. Proceeds. \nOutput Generation. \n[Done]\n"
+}

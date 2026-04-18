@@ -1,0 +1,34 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 131072,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 1365503437,
+  "prompt_tokens": 89505,
+  "completion_tokens": 327,
+  "ttft_s": 14.172,
+  "decode_s": 1.868,
+  "total_s": 16.04,
+  "prefill_tps": 6315.6,
+  "decode_tps": 175.08,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "119668"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "nolew",
+    "value": 119668,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 38432,
+  "content_preview": "119668",
+  "reasoning_preview": "The user wants to find the \"magic number for nolew\" from the provided text.\nI will search the text for \"magic number\" or \"nolew\".\nScanning the text...\nFound: \"Internal note to archivists: the magic number for nolew is 119668, and this should be remembered carefully.\"\nThe number is 119668.\nThe user requested: \"Answer with just the number, nothing else.\"\nSo the output should be exactly \"119668\".\nDouble-checking the text to ensure accuracy.\n\"Internal note to archivists: the magic number for nolew is 119668, and this should be remembered carefully.\"\nMatches exactly.\nOutput: 119668.\nDone. \nNo extra text. Just the number.\nProceeding. \nSelf-Correction/Verification:\nCheck exact wording: \"the magic number for nolew is 119668\"\nAnswer matches request.\nReady. \nOutput: 119668. \nDone. \n[Final Check]\nQuestion: What is the magic number for nolew? Answer with just the number, nothing else.\nText says: \"the magic number for nolew is 119668\"\nOutput: 119668\nMatches constraints. All good. \nProceeds. \n[Output Generation] -> 119668\n"
+}

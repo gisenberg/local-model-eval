@@ -1,0 +1,43 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 262144,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 3042488850,
+  "prompt_tokens": 189403,
+  "completion_tokens": 8206,
+  "ttft_s": 39.383,
+  "decode_s": 59.066,
+  "total_s": 98.449,
+  "prefill_tps": 4809.32,
+  "decode_tps": 138.93,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 41304,
+  "content_preview": "quondamly\nzephyrine\nverdacious",
+  "reasoning_preview": "The user wants to find three invented words that appear frequently in the provided text.\nI need to scan the text for words that stand out as invented or unusual, count their frequencies, and list the top three in descending order.\n\nLet's search for \"pinned to the margin:\" in the text, as this phrase usually introduces a unique word.\nScanning the text:\n- \"A single word was pinned to the margin: quondamly.\"\n- \"A single word was pinned to the margin: zephyrine.\"\n- \"A single word was pinned to the margin: verdacious.\"\n\nLet's count how many times each appears.\nI will do a quick mental search or simulate counting.\nThe prompt says: \"Three invented words are scattered through the passage. They appear many more times than any other invented or unusual word. List the three invented words, ordered by frequency (most frequent first).\"\n\nLet's count occurrences of \"quondamly\", \"zephyrine\", and \"verdacious\".\nI'll scan through the text to find them.\n\n1. `A single word was pinned to the margin: quondamly.` (appears multiple times)\n2. `A single word was pinned to the margin: zephyrine.` (appears multiple times)\n3. `A single word was pinned to the margin: verdacious.` (appears multiple times)\n\nLet's count them roughly.\nI'll search the text for each word.\n\"quondamly\":\n1. Near the beginning: \"A single word was pinned to the margin: quondamly.\"\n2. \"A single word was pinned to the margin: quondamly.\"\n3. \"A single word was pinned to the margin: quondamly.\"\n4. \"A single word was pinned to the margin: quondamly.\"\n5. \"A single word was pinned to the margin: quondamly.\"\n6. \"A single word was pinned to the margin: quondamly.\"\n7. \"A single word was pinned to the margin: quondamly.\"\n8. \"A single word was pinned to the margin: quondamly.\"\n9. \"A single word was pinned to the margin: quondamly.\"\n10. \"A single word was pinned to the margin: quondamly.\"\n11. \"A single word was pinned to the margin: quondamly.\"\n12. \"A single word was pinned to the margin: quondamly.\"\n13. \"A single word was pinned to the"
+}

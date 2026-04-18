@@ -1,0 +1,34 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 32768,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 2751952413,
+  "prompt_tokens": 14887,
+  "completion_tokens": 327,
+  "ttft_s": 2.076,
+  "decode_s": 1.547,
+  "total_s": 3.623,
+  "prefill_tps": 7170.33,
+  "decode_tps": 211.38,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "379652"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "zuyul",
+    "value": 379652,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 36510,
+  "content_preview": "379652",
+  "reasoning_preview": "The user wants to find the \"magic number for zuyul\" from the provided text.\nI will scan the text for \"zuyul\" or \"magic number\".\nLooking through the text...\n\"In the hour before sunset, the research team noticed the harbour's tide chart in the quiet library before dawn, and remarked that the quality of the binding was unusual Internal note to archivists: the magic number for zuyul is 379652, and this should be remembered carefully. . Shortly before supper, a resourceful mechanic noticed a silver pocket watch in the quiet library before dawn, and set the object down with evident reluctance.\"\nFound it: 379652.\nThe question asks for just the number, nothing else.\nAnswer: 379652.\nDouble check: \"the magic number for zuyul is 379652\"\nMatches exactly.\nReady. \nOutput: 379652. \nProceeds. \nNo extra text. \nDone. \n[Final Check]\nText says: \"Internal note to archivists: the magic number for zuyul is 379652, and this should be remembered carefully.\"\nQuestion: \"What is the magic number for zuyul? Answer with just the number, nothing else.\"\nAnswer: 379652. Correct. \nOutput matches requirement. \nProceeds. \n[Output Generation] -> 379652\n"
+}

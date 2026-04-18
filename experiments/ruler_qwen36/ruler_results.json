@@ -1,0 +1,797 @@
+[
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 32768,
+    "task": "niah_single",
+    "trial": 0,
+    "seed": 2751952413,
+    "prompt_tokens": 14887,
+    "completion_tokens": 327,
+    "ttft_s": 2.076,
+    "decode_s": 1.547,
+    "total_s": 3.623,
+    "prefill_tps": 7170.33,
+    "decode_tps": 211.38,
+    "finish": "stop",
+    "score": {
+      "task": "niah_single",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "379652"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "key": "zuyul",
+      "value": 379652,
+      "depth_frac": 0.5
+    },
+    "vram_mb": 36510,
+    "content_preview": "379652",
+    "reasoning_preview": "The user wants to find the \"magic number for zuyul\" from the provided text.\nI will scan the text for \"zuyul\" or \"magic number\".\nLooking through the text...\n\"In the hour before sunset, the research team noticed the harbour's tide chart in the quiet library before dawn, and remarked that the quality of the binding was unusual Internal note to archivists: the magic number for zuyul is 379652, and this should be remembered carefully. . Shortly before supper, a resourceful mechanic noticed a silver pocket watch in the quiet library before dawn, and set the object down with evident reluctance.\"\nFound it: 379652.\nThe question asks for just the number, nothing else.\nAnswer: 379652.\nDouble check: \"the magic number for zuyul is 379652\"\nMatches exactly.\nReady. \nOutput: 379652. \nProceeds. \nNo extra text. \nDone. \n[Final Check]\nText says: \"Internal note to archivists: the magic number for zuyul is 379652, and this should be remembered carefully.\"\nQuestion: \"What is the magic number for zuyul? Answer with just the number, nothing else.\"\nAnswer: 379652. Correct. \nOutput matches requirement. \nProceeds. \n[Output Generation] -> 379652\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 32768,
+    "task": "niah_multi",
+    "trial": 0,
+    "seed": 3760655562,
+    "prompt_tokens": 14941,
+    "completion_tokens": 582,
+    "ttft_s": 2.129,
+    "decode_s": 2.779,
+    "total_s": 4.909,
+    "prefill_tps": 7016.26,
+    "decode_tps": 209.41,
+    "finish": "stop",
+    "score": {
+      "task": "niah_multi",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "745607",
+        "284697",
+        "857424"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "keys": [
+        "rifep",
+        "dusob",
+        "zajud"
+      ],
+      "values": [
+        745607,
+        284697,
+        857424
+      ],
+      "depths": [
+        0.15,
+        0.5,
+        0.85
+      ]
+    },
+    "vram_mb": 36510,
+    "content_preview": "rifep: 745607\ndusob: 284697\nzajud: 857424",
+    "reasoning_preview": "The user wants to find the magic numbers for 'rifep', 'dusob', and 'zajud' from the provided text.\nI will scan the text for these keywords.\n\n1. \"rifep\"\nScanning...\nFound: \"Archivist memo: the magic number for rifep is 745607, recorded on the registry.\"\nSo, rifep = 745607\n\n2. \"dusob\"\nScanning...\nFound: \"Archivist memo: the magic number for dusob is 284697, recorded on the registry.\"\nSo, dusob = 284697\n\n3. \"zajud\"\nScanning...\nFound: \"Archivist memo: the magic number for zajud is 857424, recorded on the registry.\"\nSo, zajud = 857424\n\nThe user wants the answer formatted as:\nkey: number\nkey: number\nkey: number\non separate lines, labelled by key, nothing else.\n\nLet's verify the exact wording requested: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nrifep: 745607\ndusob: 284697\nzajud: 857424\n\nCheck the text again to be absolutely sure.\n\"Archivist memo: the magic number for rifep is 745607, recorded on the registry.\" -> matches.\n\"Archivist memo: the magic number for dusob is 284697, recorded on the registry.\" -> matches.\n\"Archivist memo: the magic number for zajud is 857424, recorded on the registry.\" -> matches.\n\nFormat:\nrifep: 745607\ndusob: 284697\nzajud: 857424\n\nEverything looks correct. I will generate the output exactly as requested.\nNo extra text. Just the three lines.\nDone. \nSelf-Correction/Verification during thought:\nCheck if there are any other instances or tricks. The prompt says \"labelled by key, nothing else.\"\nI will output exactly:\nrifep: 745607\ndusob: 284697\nzajud: 857424\nMatches request. Proceeds. \nOutput Generation. \n[Done]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 32768,
+    "task": "variable",
+    "trial": 0,
+    "seed": 2830339623,
+    "prompt_tokens": 14952,
+    "completion_tokens": 723,
+    "ttft_s": 2.139,
+    "decode_s": 3.465,
+    "total_s": 5.605,
+    "prefill_tps": 6989.55,
+    "decode_tps": 208.64,
+    "finish": "stop",
+    "score": {
+      "task": "variable",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "798159"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "base": 798152,
+      "chain_len": 8,
+      "answer": 798159
+    },
+    "vram_mb": 36510,
+    "content_preview": "798159",
+    "reasoning_preview": "The user wants to find the numerical value of v7 based on the passage.\nI need to scan the passage for the variable definitions.\nThe passage mentions:\n\"Archivist shorthand: v0 := 798152.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nLet's calculate:\nv0 = 798152\nv1 = v0 + 1 = 798153\nv2 = v1 + 1 = 798154\nv3 = v2 + 1 = 798155\nv4 = v3 + 1 = 798156\nv5 = v4 + 1 = 798157\nv6 = v5 + 1 = 798158\nv7 = v6 + 1 = 798159\n\nThe question asks for the numerical value of v7.\nAnswer should be just the number: 798159.\n\nDouble check the text to ensure no trick.\n\"Archivist shorthand: v0 := 798152.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nCalculations:\n798152 + 7 = 798159.\nMatches.\nOutput just the number.\nDone. \nCheck format: \"Answer with just the number, nothing else.\"\nSo \"798159\" is correct.\nNo extra text.\nReady. \nProceed. \nSelf-Correction/Verification during thought:\nLet's quickly scan the text to make sure I didn't miss any other definitions or modifications.\nThe text is very long and repetitive. I will trust the explicit definitions.\nv0 := 798152\nv1 := v0 + 1\nv2 := v1 + 1\nv3 := v2 + 1\nv4 := v3 + 1\nv5 := v4 + 1\nv6 := v5 + 1\nv7 := v6 + 1\nSo v7 = 798152 + 7 = 798159.\nCorrect.\nOutput matches requirement.\nDone. \nProceeds. \nFinal Answer: 798159. \nEverything is consistent.\nDone. \nOutput Generation. \n[End of thought process]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 32768,
+    "task": "common_words",
+    "trial": 0,
+    "seed": 2718074005,
+    "prompt_tokens": 15644,
+    "completion_tokens": 8206,
+    "ttft_s": 2.211,
+    "decode_s": 40.141,
+    "total_s": 42.352,
+    "prefill_tps": 7076.04,
+    "decode_tps": 204.43,
+    "finish": "stop",
+    "score": {
+      "task": "common_words",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "targets": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "counts": [
+        24,
+        19,
+        15
+      ]
+    },
+    "vram_mb": 36510,
+    "content_preview": "verdacious\nzephyrine\nquondamly",
+    "reasoning_preview": "The user wants to find three invented words scattered through the passage.\nThey appear many more times than any other invented or unusual word.\nI need to list them in order of frequency (most frequent first).\nThe answer should just be the three words on separate lines.\n\nLet's scan the passage for words that are pinned to the margin.\nThe passage repeatedly says: \"A single word was pinned to the margin: [word].\"\nLet's extract these words:\n1. verdacious\n2. quondamly\n3. zephyrine\n4. verdacious\n5. zephyrine\n6. verdacious\n7. zephyrine\n8. verdacious\n9. quondamly\n10. zephyrine\n11. verdacious\n12. zephyrine\n13. verdacious\n14. quondamly\n15. verdacious\n16. zephyrine\n17. quondamly\n18. zephyrine\n19. verdacious\n20. quondamly\n21. zephyrine\n22. verdacious\n23. zephyrine\n24. quondamly\n25. verdacious\n26. zephyrine\n27. quondamly\n28. verdacious\n29. zephyrine\n30. verdacious\n31. quondamly\n32. verdacious\n33. zephyrine\n34. verdacious\n35. zephyrine\n36. verdacious\n37. quondamly\n38. zephyrine\n39. verdacious\n40. zephyrine\n41. quondamly\n42. verdacious\n43. zephyrine\n44. quondamly\n45. verdacious\n46. zephyrine\n47. quondamly\n48. verdacious\n49. zephyrine\n50. quondamly\n51. verdacious\n52. zephyrine\n53. quondamly\n54. verdacious\n55. zephyrine\n56. quondamly\n57. verdacious\n58. zephyrine\n59. quondamly\n60. verdacious\n61. zephyrine\n62. quondamly\n63. verdacious\n64. zephyrine\n65. quondamly\n66. verdacious\n67. zephyrine\n68. quondamly\n69. verdacious\n70. zephyrine\n71. quondamly\n72. verdacious\n73. zephyrine\n74. quondamly\n75. verdacious\n76. zephyrine\n77. quondamly\n78. verdacious\n79. zephyrine\n80. quondamly\n\nWait, let's count exactly.\nI will search for \"verdacious\", \"quondamly\", \"zephyrine\" in the text.\nActually, I can just count them mentally or approximate.\nLet's do a quick scan of the text for these three words.\n\"verdacious\"\n\"quondamly\"\n\"zephyrine\"\n\nLet's count occurrences:\nverdacious:\n1. A single word was pinned to the margin: verdacious. (line 10)\n2. A single word was pinned to the margin: verdacious. (line 23)\n3."
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 131072,
+    "task": "niah_single",
+    "trial": 0,
+    "seed": 1342307718,
+    "prompt_tokens": 89550,
+    "completion_tokens": 306,
+    "ttft_s": 14.283,
+    "decode_s": 1.751,
+    "total_s": 16.033,
+    "prefill_tps": 6269.9,
+    "decode_tps": 174.79,
+    "finish": "stop",
+    "score": {
+      "task": "niah_single",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "464747"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "key": "desoj",
+      "value": 464747,
+      "depth_frac": 0.5
+    },
+    "vram_mb": 38432,
+    "content_preview": "464747",
+    "reasoning_preview": "The user wants to know the \"magic number for desoj\" from the provided text.\nI will scan the text for the phrase \"magic number for desoj\" or similar.\nLooking through the text:\n\"... Internal note to archivists: the magic number for desoj is 464747, and this should be remembered carefully. . ...\"\nFound it. The number is 464747.\nThe user asked for just the number, nothing else.\nSo the answer should be \"464747\".\nDouble-checking the context: \"Internal note to archivists: the magic number for desoj is 464747, and this should be remembered carefully.\"\nMatches exactly.\nOutput: 464747.\nDone. \nI will formulate the response. \nNo extra text. Just the number.\nCheck constraint: \"Answer with just the number, nothing else.\"\nResult: 464747.\nProceeds. \nAll good. \nOutput matches requirement. \nDone. \n[Final check of the prompt] \"What is the magic number for desoj? Answer with just the number, nothing else.\"\nText says: \"the magic number for desoj is 464747\"\nAnswer: 464747.\nReady. \nOutput generation. \n[Done]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 131072,
+    "task": "niah_multi",
+    "trial": 0,
+    "seed": 1008848069,
+    "prompt_tokens": 89510,
+    "completion_tokens": 659,
+    "ttft_s": 14.757,
+    "decode_s": 3.819,
+    "total_s": 18.576,
+    "prefill_tps": 6065.56,
+    "decode_tps": 172.58,
+    "finish": "stop",
+    "score": {
+      "task": "niah_multi",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "247370",
+        "413122",
+        "680216"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "keys": [
+        "ganej",
+        "cuqot",
+        "divox"
+      ],
+      "values": [
+        247370,
+        413122,
+        680216
+      ],
+      "depths": [
+        0.15,
+        0.5,
+        0.85
+      ]
+    },
+    "vram_mb": 38432,
+    "content_preview": "ganej: 247370\ncuqot: 413122\ndivox: 680216",
+    "reasoning_preview": "The user wants to find the magic numbers for 'ganej', 'cuqot', and 'divox' from the provided text.\nI will scan the text for these names and extract the corresponding numbers.\n\nSearching for \"ganej\":\n\"Archivist memo: the magic number for ganej is 247370, recorded on the registry.\" -> 247370\n\nSearching for \"cuqot\":\n\"Archivist memo: the magic number for cuqot is 413122, recorded on the registry.\" -> 413122\n\nSearching for \"divox\":\n\"Archivist memo: the magic number for divox is 680216, recorded on the registry.\" -> 680216\n\nFormat required:\nganej: 247370\ncuqot: 413122\ndivox: 680216\n(Answer with three numbers on separate lines, labelled by key, nothing else.)\n\nLet's double check the exact wording in the prompt:\n\"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nganej: 247370\ncuqot: 413122\ndivox: 680216\n\nCheck the text again to be sure.\n\"Archivist memo: the magic number for ganej is 247370, recorded on the registry.\"\n\"Archivist memo: the magic number for cuqot is 413122, recorded on the registry.\"\n\"Archivist memo: the magic number for divox is 680216, recorded on the registry.\"\n\nAll match. Output exactly as requested.\nDone. \nI will generate the response now. \nFormat:\nganej: 247370\ncuqot: 413122\ndivox: 680216\nMatches instructions. No extra text.\nProceeds. \nSelf-Correction/Verification during thought:\nWait, let's verify the exact strings in the text.\n1. \"Archivist memo: the magic number for ganej is 247370, recorded on the registry.\"\n2. \"Archivist memo: the magic number for cuqot is 413122, recorded on the registry.\"\n3. \"Archivist memo: the magic number for divox is 680216, recorded on the registry.\"\nAll correct.\nOutput matches exactly.\nDone. \nProceeds. \nFinal answer matches requested format.\nganej: 247370\ncuqot: 413122\ndivox: 680216\nReady. \nOutput Generation. \n[Done]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 131072,
+    "task": "variable",
+    "trial": 0,
+    "seed": 567756065,
+    "prompt_tokens": 89618,
+    "completion_tokens": 1064,
+    "ttft_s": 14.816,
+    "decode_s": 6.192,
+    "total_s": 21.008,
+    "prefill_tps": 6048.76,
+    "decode_tps": 171.82,
+    "finish": "stop",
+    "score": {
+      "task": "variable",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "598170"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "base": 598163,
+      "chain_len": 8,
+      "answer": 598170
+    },
+    "vram_mb": 38432,
+    "content_preview": "598170",
+    "reasoning_preview": "The user wants to find the numerical value of `v7` based on the provided passage.\nI need to scan the passage for the definitions of `v0`, `v1`, ..., `v7`.\nLet's search for \"Archivist shorthand:\" or \"v0 :=\".\n\nScanning the text:\n1. `Archivist shorthand: v0 := 598163.`\n2. `Archivist shorthand: v1 := v0 + 1.`\n3. `Archivist shorthand: v2 := v1 + 1.`\n4. `Archivist shorthand: v3 := v2 + 1.`\n5. `Archivist shorthand: v4 := v3 + 1.`\n6. `Archivist shorthand: v5 := v4 + 1.`\n7. `Archivist shorthand: v6 := v5 + 1.`\n8. `Archivist shorthand: v7 := v6 + 1.`\n\nSo, `v0 = 598163`.\n`v1 = v0 + 1 = 598164`\n`v2 = v1 + 1 = 598165`\n`v3 = v2 + 1 = 598166`\n`v4 = v3 + 1 = 598167`\n`v5 = v4 + 1 = 598168`\n`v6 = v5 + 1 = 598169`\n`v7 = v6 + 1 = 598170`\n\nLet's double check the exact text to ensure no other modifications.\n\"Archivist shorthand: v0 := 598163.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nEach subsequent variable is just the previous one plus 1.\nSo v7 = v0 + 7.\n598163 + 7 = 598170.\n\nThe question asks for the numerical value of v7.\nAnswer should be just the number.\nCheck calculation: 598163 + 7 = 598170.\nEverything matches.\nI will output 598170.\nDone. \nLet's quickly verify if there are any tricks. The prompt says \"Several sentences in the passage define variables of the form `v0 := N`, `v1 := v0 + 1`, \u2026, `v7 := v6 + 1`. What is the numerical value of v7? Answer with just the number, nothing else.\"\nYes, straightforward.\nResult: 598170.\nDone. \nOutput matches requirement. \nProceed. \n[Final Check]\nv0 = 598163\nv1 = 598164\nv2 = 598165\nv3 = 598166\nv4 = 598167\nv5 = 598168\nv6 = 598169\nv7 = 598170\nCorrect. \nOutput: 598170. \nDone. \n(Self-Correction/Verification during thought)\nWait, let's search the text exactly for \"v0 :=\" to be absolutely sure.\n\"Archivist shorthand: v0 := 598163. . Not l"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 131072,
+    "task": "common_words",
+    "trial": 0,
+    "seed": 3455912958,
+    "prompt_tokens": 90009,
+    "completion_tokens": 7129,
+    "ttft_s": 14.761,
+    "decode_s": 42.055,
+    "total_s": 56.816,
+    "prefill_tps": 6097.8,
+    "decode_tps": 169.51,
+    "finish": "stop",
+    "score": {
+      "task": "common_words",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "targets": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "counts": [
+        24,
+        19,
+        15
+      ]
+    },
+    "vram_mb": 38432,
+    "content_preview": "zephyrine\nquondamly\nverdacious",
+    "reasoning_preview": "The user wants to identify three invented words scattered throughout the provided passage.\nThese words appear many more times than any other invented or unusual word.\nI need to list them in order of frequency (most frequent first).\nThe output should just be the three words on separate lines.\n\nFirst, I will scan the passage to find words that stand out as invented or unusual.\nLooking through the text, I see several instances of:\n- \"quondamly\"\n- \"zephyrine\"\n- \"verdacious\"\n\nLet's verify their occurrences.\nI'll search the text for these words.\n\"quondamly\" appears multiple times.\n\"zephyrine\" appears multiple times.\n\"verdacious\" appears multiple times.\n\nLet's count them roughly or just note that they are the only unusual/invented words repeated.\nWait, let's look for exact matches in the text.\n\"A single word was pinned to the margin: quondamly.\"\n\"A single word was pinned to the margin: zephyrine.\"\n\"A single word was pinned to the margin: verdacious.\"\n\nI will count the occurrences of each to determine the order.\nLet's do a quick mental scan or systematic count.\nI'll read through and tally:\nquondamly:\n1. A single word was pinned to the margin: quondamly.\n2. A single word was pinned to the margin: quondamly.\n3. A single word was pinned to the margin: quondamly.\n4. A single word was pinned to the margin: quondamly.\n5. A single word was pinned to the margin: quondamly.\n6. A single word was pinned to the margin: quondamly.\n7. A single word was pinned to the margin: quondamly.\n8. A single word was pinned to the margin: quondamly.\n9. A single word was pinned to the margin: quondamly.\n\nzephyrine:\n1. A single word was pinned to the margin: zephyrine.\n2. A single word was pinned to the margin: zephyrine.\n3. A single word was pinned to the margin: zephyrine.\n4. A single word was pinned to the margin: zephyrine.\n5. A single word was pinned to the margin: zephyrine.\n6. A single word was pinned to the margin: zephyrine.\n7. A single word was pinned to the margin: zephyrine.\n8. A single wo"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 262144,
+    "task": "niah_single",
+    "trial": 0,
+    "seed": 2150516896,
+    "prompt_tokens": 189049,
+    "completion_tokens": 214,
+    "ttft_s": 38.042,
+    "decode_s": 1.484,
+    "total_s": 39.527,
+    "prefill_tps": 4969.43,
+    "decode_tps": 144.18,
+    "finish": "stop",
+    "score": {
+      "task": "niah_single",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "570452"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "key": "cubes",
+      "value": 570452,
+      "depth_frac": 0.5
+    },
+    "vram_mb": 41304,
+    "content_preview": "570452",
+    "reasoning_preview": "The user wants to find the \"magic number for cubes\" from the provided text.\nI will scan the text for the phrase \"magic number for cubes\".\nLooking through the text...\n\"Internal note to archivists: the magic number for cubes is 570452, and this should be remembered carefully.\"\nFound it. The number is 570452.\nThe user asks to answer with just the number, nothing else.\nSo the answer should be 570452.\nDouble checking the exact phrase: \"the magic number for cubes is 570452\"\nMatches perfectly.\nOutput: 570452.\nDone. \nProceeding. \nNo extra text. Just the number.\nCheck constraints: \"Answer with just the number, nothing else.\"\nResult: 570452.\nReady. \nOutput matches. \nDone. \n[End of reasoning]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 262144,
+    "task": "niah_multi",
+    "trial": 0,
+    "seed": 3159220045,
+    "prompt_tokens": 189284,
+    "completion_tokens": 533,
+    "ttft_s": 39.259,
+    "decode_s": 3.771,
+    "total_s": 43.03,
+    "prefill_tps": 4821.43,
+    "decode_tps": 141.34,
+    "finish": "stop",
+    "score": {
+      "task": "niah_multi",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "912096",
+        "876147",
+        "938383"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "keys": [
+        "hured",
+        "goheb",
+        "zigoz"
+      ],
+      "values": [
+        912096,
+        876147,
+        938383
+      ],
+      "depths": [
+        0.15,
+        0.5,
+        0.85
+      ]
+    },
+    "vram_mb": 41304,
+    "content_preview": "hured 912096\ngoheb 876147\nzigoz 938383",
+    "reasoning_preview": "The user wants to find the magic numbers for three keys: hured, goheb, and zigoz.\nI need to scan the text for these keys and extract the corresponding numbers.\nLooking through the text:\n1. \"Archivist memo: the magic number for hured is 912096, recorded on the registry.\"\n2. \"Archivist memo: the magic number for goheb is 876147, recorded on the registry.\"\n3. \"Archivist memo: the magic number for zigoz is 938383, recorded on the registry.\"\n\nSo the numbers are:\nhured: 912096\ngoheb: 876147\nzigoz: 938383\n\nFormat required: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nhured 912096\ngoheb 876147\nzigoz 938383\n\nWait, let's verify the exact wording in the prompt: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nI will output:\nhured 912096\ngoheb 876147\nzigoz 938383\n\nLet's double check the text to ensure accuracy.\nSearching for \"hured\": \"Archivist memo: the magic number for hured is 912096, recorded on the registry.\" -> 912096\nSearching for \"goheb\": \"Archivist memo: the magic number for goheb is 876147, recorded on the registry.\" -> 876147\nSearching for \"zigoz\": \"Archivist memo: the magic number for zigoz is 938383, recorded on the registry.\" -> 938383\n\nEverything matches. I will format the output exactly as requested.\n\"hured 912096\ngoheb 876147\nzigoz 938383\"\nDone. \nCheck constraint: \"labelled by key, nothing else.\" -> I will provide exactly that.\nReady. \nOutput matches expectation.\u2705\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 262144,
+    "task": "variable",
+    "trial": 0,
+    "seed": 1423583256,
+    "prompt_tokens": 189223,
+    "completion_tokens": 1147,
+    "ttft_s": 38.863,
+    "decode_s": 8.171,
+    "total_s": 47.034,
+    "prefill_tps": 4868.98,
+    "decode_tps": 140.37,
+    "finish": "stop",
+    "score": {
+      "task": "variable",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "717138"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "base": 717131,
+      "chain_len": 8,
+      "answer": 717138
+    },
+    "vram_mb": 41304,
+    "content_preview": "717138",
+    "reasoning_preview": "The user wants to find the numerical value of `v7` based on the provided passage.\nI need to scan the passage for the definitions of `v0`, `v1`, ..., `v7`.\nLet's search for \"Archivist shorthand: v0 :=\"\nFound: \"Archivist shorthand: v0 := 717131.\"\nThen \"Archivist shorthand: v1 := v0 + 1.\" -> v1 = 717131 + 1 = 717132\nThen \"Archivist shorthand: v2 := v1 + 1.\" -> v2 = 717132 + 1 = 717133\nThen \"Archivist shorthand: v3 := v2 + 1.\" -> v3 = 717133 + 1 = 717134\nThen \"Archivist shorthand: v4 := v3 + 1.\" -> v4 = 717134 + 1 = 717135\nThen \"Archivist shorthand: v5 := v4 + 1.\" -> v5 = 717135 + 1 = 717136\nThen \"Archivist shorthand: v6 := v5 + 1.\" -> v6 = 717136 + 1 = 717137\nThen \"Archivist shorthand: v7 := v6 + 1.\" -> v7 = 717137 + 1 = 717138\n\nLet's double check the exact text in the passage to ensure no tricks.\nSearch for \"Archivist shorthand: v0 :=\"\n\"Archivist shorthand: v0 := 717131.\"\nSearch for \"Archivist shorthand: v1 :=\"\n\"Archivist shorthand: v1 := v0 + 1.\"\nSearch for \"Archivist shorthand: v2 :=\"\n\"Archivist shorthand: v2 := v1 + 1.\"\nSearch for \"Archivist shorthand: v3 :=\"\n\"Archivist shorthand: v3 := v2 + 1.\"\nSearch for \"Archivist shorthand: v4 :=\"\n\"Archivist shorthand: v4 := v3 + 1.\"\nSearch for \"Archivist shorthand: v5 :=\"\n\"Archivist shorthand: v5 := v4 + 1.\"\nSearch for \"Archivist shorthand: v6 :=\"\n\"Archivist shorthand: v6 := v5 + 1.\"\nSearch for \"Archivist shorthand: v7 :=\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nSo v0 = 717131\nv1 = 717132\nv2 = 717133\nv3 = 717134\nv4 = 717135\nv5 = 717136\nv6 = 717137\nv7 = 717138\n\nThe question asks for the numerical value of v7.\nAnswer: 717138.\nCheck calculation: 717131 + 7 = 717138.\nMatches.\nOutput should be just the number.\nDone. \nI will formulate the response. \nNo extra text.\nJust \"717138\".\nLet's quickly verify if there are any other definitions or modifications. The prompt says \"Several sentences in the passage define variables of the form `v0 := N`, `v1 := v0 + 1`, \u2026, `v7 := v6 + 1`. What is the numerical value of v7?\"\nIt's a straightforward ar"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 262144,
+    "task": "common_words",
+    "trial": 0,
+    "seed": 2116638488,
+    "prompt_tokens": 189324,
+    "completion_tokens": 6246,
+    "ttft_s": 39.436,
+    "decode_s": 44.916,
+    "total_s": 84.352,
+    "prefill_tps": 4800.73,
+    "decode_tps": 139.06,
+    "finish": "stop",
+    "score": {
+      "task": "common_words",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "targets": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "counts": [
+        24,
+        19,
+        15
+      ]
+    },
+    "vram_mb": 41304,
+    "content_preview": "verdacious\nzephyrine\nquondamly",
+    "reasoning_preview": "The user wants to identify three invented words that appear frequently in the passage.\nThe passage is a long, repetitive text describing various characters interacting with objects in different settings.\nI need to scan the text for \"invented words\" or \"unusual words\" that stand out.\nLooking at the text, I see phrases like:\n\"A single word was pinned to the margin: verdacious.\"\n\"A single word was pinned to the margin: quondamly.\"\n\"A single word was pinned to the margin: zephyrine.\"\n\nLet's check the frequency of these three words: \"verdacious\", \"quondamly\", \"zephyrine\".\nI will count how many times each appears in the text.\nSearching for \"verdacious\":\n1. \"A single word was pinned to the margin: verdacious.\"\n2. \"A single word was pinned to the margin: verdacious.\"\n3. \"A single word was pinned to the margin: verdacious.\"\n4. \"A single word was pinned to the margin: verdacious.\"\n5. \"A single word was pinned to the margin: verdacious.\"\n6. \"A single word was pinned to the margin: verdacious.\"\n7. \"A single word was pinned to the margin: verdacious.\"\n8. \"A single word was pinned to the margin: verdacious.\"\n9. \"A single word was pinned to the margin: verdacious.\"\n10. \"A single word was pinned to the margin: verdacious.\"\n11. \"A single word was pinned to the margin: verdacious.\"\nLet's do a quick mental count or just assume they are roughly similar but I need to order them by frequency.\nWait, the prompt says \"Three invented words are scattered through the passage. They appear many more times than any other invented or unusual word. List the three invented words, ordered by frequency (most frequent first).\"\n\nLet's search the text carefully for these words.\n\"verdacious\" appears multiple times.\n\"quondamly\" appears multiple times.\n\"zephyrine\" appears multiple times.\n\nI will count them exactly.\nText scan:\n1. verdacious\n2. quondamly\n3. zephyrine\n4. verdacious\n5. verdacious\n6. quondamly\n7. verdacious\n8. zephyrine\n9. verdacious\n10. quondamly\n11. zephyrine\n12. verdacious\n13. zephyrine\n14. v"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 524288,
+    "task": "niah_single",
+    "trial": 0,
+    "seed": 983891694,
+    "prompt_tokens": 388179,
+    "completion_tokens": 333,
+    "ttft_s": 110.092,
+    "decode_s": 3.209,
+    "total_s": 113.301,
+    "prefill_tps": 3525.95,
+    "decode_tps": 103.78,
+    "finish": "stop",
+    "score": {
+      "task": "niah_single",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "893599"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "key": "dufol",
+      "value": 893599,
+      "depth_frac": 0.5
+    },
+    "vram_mb": 47192,
+    "content_preview": "893599",
+    "reasoning_preview": "The user wants to find the \"magic number for dufol\" from the provided text.\nI will search the text for \"dufol\" or \"magic number\".\n\nScanning the text...\n\"Internal note to archivists: the magic number for dufol is 893599, and this should be remembered carefully.\"\n\nFound it. The number is 893599.\nThe user requested: \"Answer with just the number, nothing else.\"\nSo the answer should be \"893599\".\nDouble-checking the exact wording in the text: \"the magic number for dufol is 893599\"\nMatches perfectly.\nOutput just the number.\nDone. \nAnswer: 893599. \nProceeding. \nSelf-Correction/Verification: \nIs there any other mention? No. \nThe prompt says \"Answer with just the number, nothing else.\"\nI will output exactly \"893599\".\nDone. \nOutput matches requirement. \nProceeds. \n[Final Check]\nText: \"...Internal note to archivists: the magic number for dufol is 893599, and this should be remembered carefully. . On the following day...\"\nQuestion: What is the magic number for dufol? Answer with just the number, nothing else.\nAnswer: 893599\nAll good. \nOutput Generation. \n[Done] \n893599\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 524288,
+    "task": "niah_multi",
+    "trial": 0,
+    "seed": 4239417378,
+    "prompt_tokens": 388755,
+    "completion_tokens": 431,
+    "ttft_s": 112.853,
+    "decode_s": 4.171,
+    "total_s": 117.024,
+    "prefill_tps": 3444.79,
+    "decode_tps": 103.33,
+    "finish": "stop",
+    "score": {
+      "task": "niah_multi",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "517831",
+        "604577",
+        "381501"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "keys": [
+        "jaxuw",
+        "rumaj",
+        "buvuf"
+      ],
+      "values": [
+        517831,
+        604577,
+        381501
+      ],
+      "depths": [
+        0.15,
+        0.5,
+        0.85
+      ]
+    },
+    "vram_mb": 47192,
+    "content_preview": "jaxuw 517831\nrumaj 604577\nbuvuf 381501",
+    "reasoning_preview": "The user wants to find the magic numbers for three specific keys: 'jaxuw', 'rumaj', and 'buvuf'.\nI will scan the text for these keys and extract their corresponding numbers.\n\nSearching for \"jaxuw\":\n\"Archivist memo: the magic number for jaxuw is 517831, recorded on the registry.\" -> 517831\n\nSearching for \"rumaj\":\n\"Archivist memo: the magic number for rumaj is 604577, recorded on the registry.\" -> 604577\n\nSearching for \"buvuf\":\n\"Archivist memo: the magic number for buvuf is 381501, recorded on the registry.\" -> 381501\n\nCheck format: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\njaxuw 517831\nrumaj 604577\nbuvuf 381501\n\nLet's verify the exact wording in the text.\n\"Archivist memo: the magic number for jaxuw is 517831, recorded on the registry.\"\n\"Archivist memo: the magic number for rumaj is 604577, recorded on the registry.\"\n\"Archivist memo: the magic number for buvuf is 381501, recorded on the registry.\"\n\nAll match. I will output exactly as requested.\nFormat:\njaxuw 517831\nrumaj 604577\nbuvuf 381501\nDone. \nDouble check constraints: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nMatches exactly.\nProceed. \nOutput generation. \n[Done]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 524288,
+    "task": "variable",
+    "trial": 0,
+    "seed": 2404441702,
+    "prompt_tokens": 388571,
+    "completion_tokens": 891,
+    "ttft_s": 113.098,
+    "decode_s": 8.693,
+    "total_s": 121.791,
+    "prefill_tps": 3435.7,
+    "decode_tps": 102.49,
+    "finish": "stop",
+    "score": {
+      "task": "variable",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "768374"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "base": 768367,
+      "chain_len": 8,
+      "answer": 768374
+    },
+    "vram_mb": 47192,
+    "content_preview": "768374",
+    "reasoning_preview": "The user wants to find the numerical value of v7 based on the provided text.\nI need to scan the text for variable definitions of the form `v0 := N`, `v1 := v0 + 1`, etc.\nLet's search for \"Archivist shorthand:\".\n\nScanning the text...\nFound: \"Archivist shorthand: v0 := 768367. .\"\nFound: \"Archivist shorthand: v1 := v0 + 1. .\"\nFound: \"Archivist shorthand: v2 := v1 + 1. .\"\nFound: \"Archivist shorthand: v3 := v2 + 1. .\"\nFound: \"Archivist shorthand: v4 := v3 + 1. .\"\nFound: \"Archivist shorthand: v5 := v4 + 1. .\"\nFound: \"Archivist shorthand: v6 := v5 + 1. .\"\nFound: \"Archivist shorthand: v7 := v6 + 1. .\"\n\nSo, v0 = 768367.\nv1 = v0 + 1 = 768368\nv2 = v1 + 1 = 768369\nv3 = v2 + 1 = 768370\nv4 = v3 + 1 = 768371\nv5 = v4 + 1 = 768372\nv6 = v5 + 1 = 768373\nv7 = v6 + 1 = 768374\n\nLet's double check.\nv0 = 768367\nv1 = 768368\nv2 = 768369\nv3 = 768370\nv4 = 768371\nv5 = 768372\nv6 = 768373\nv7 = 768374\n\nThe question asks for the numerical value of v7.\nAnswer should be just the number: 768374.\nCheck the exact wording in the text:\n\"Archivist shorthand: v0 := 768367. .\"\n\"Archivist shorthand: v1 := v0 + 1. .\"\n\"Archivist shorthand: v2 := v1 + 1. .\"\n\"Archivist shorthand: v3 := v2 + 1. .\"\n\"Archivist shorthand: v4 := v3 + 1. .\"\n\"Archivist shorthand: v5 := v4 + 1. .\"\n\"Archivist shorthand: v6 := v5 + 1. .\"\n\"Archivist shorthand: v7 := v6 + 1. .\"\n\nCalculation: 768367 + 7 = 768374.\nEverything matches.\nOutput is just the number.\nDone. \nI will produce the answer \"768374\".\nCheck if there are any tricks. The prompt says \"Several sentences in the passage define variables of the form `v0 := N`, `v1 := v0 + 1`, \u2026, `v7 := v6 + 1`. What is the numerical value of v7? Answer with just the number, nothing else.\"\nSo 768374 is correct.\nDone. \nProceed. \nOutput: 768374. \nSelf-Correction/Verification:\nv0 = 768367\nv1 = 768368\nv2 = 768369\nv3 = 768370\nv4 = 768371\nv5 = 768372\nv6 = 768373\nv7 = 768374\nMatches exactly.\nFinal answer: 768374. \nReady. \nOutput matches request. \nDone. \n[End of reasoning]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 524288,
+    "task": "common_words",
+    "trial": 0,
+    "seed": 3196835821,
+    "prompt_tokens": 388272,
+    "completion_tokens": 8206,
+    "ttft_s": 115.066,
+    "decode_s": 80.926,
+    "total_s": 195.992,
+    "prefill_tps": 3374.33,
+    "decode_tps": 101.4,
+    "finish": "stop",
+    "score": {
+      "task": "common_words",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "targets": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "counts": [
+        24,
+        19,
+        15
+      ]
+    },
+    "vram_mb": 47192,
+    "content_preview": "zephyrine\nquondamly\nverdacious",
+    "reasoning_preview": "The user wants to find three invented words that appear frequently in the text.\nI need to scan the text for words that stand out as invented or unusual, count their frequencies, and list the top three in descending order of frequency.\n\nLet's search for words that might be invented. The prompt mentions \"Three invented words are scattered through the passage. They appear many more times than any other invented or unusual word.\"\nLooking through the text, I see phrases like \"A single word was pinned to the margin: zephyrine.\" and \"A single word was pinned to the margin: quondamly.\" and \"A single word was pinned to the margin: verdacious.\"\n\nLet's count the occurrences of these three words:\n1. zephyrine\n2. quondamly\n3. verdacious\n\nI will do a quick mental scan or search simulation to count them.\nActually, I can just look for the pattern \"A single word was pinned to the margin: [word].\"\nLet's count them in the text:\n\"zephyrine\" appears many times.\n\"quondamly\" appears many times.\n\"verdacious\" appears many times.\n\nLet's count roughly or exactly.\nI'll search the text for each word.\n\"zephyrine\":\n1. \"A single word was pinned to the margin: zephyrine.\"\n2. \"A single word was pinned to the margin: zephyrine.\"\n3. \"A single word was pinned to the margin: zephyrine.\"\n4. \"A single word was pinned to the margin: zephyrine.\"\n5. \"A single word was pinned to the margin: zephyrine.\"\n6. \"A single word was pinned to the margin: zephyrine.\"\n7. \"A single word was pinned to the margin: zephyrine.\"\n8. \"A single word was pinned to the margin: zephyrine.\"\n9. \"A single word was pinned to the margin: zephyrine.\"\n10. \"A single word was pinned to the margin: zephyrine.\"\n11. \"A single word was pinned to the margin: zephyrine.\"\n12. \"A single word was pinned to the margin: zephyrine.\"\n13. \"A single word was pinned to the margin: zephyrine.\"\n14. \"A single word was pinned to the margin: zephyrine.\"\n15. \"A single word was pinned to the margin: zephyrine.\"\n16. \"A single word was pinned to the margin: zephyri"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 1048576,
+    "task": "niah_single",
+    "trial": 0,
+    "seed": 3997225223,
+    "prompt_tokens": 786811,
+    "completion_tokens": 328,
+    "ttft_s": 371.13,
+    "decode_s": 4.956,
+    "total_s": 376.086,
+    "prefill_tps": 2120.04,
+    "decode_tps": 66.19,
+    "finish": "stop",
+    "score": {
+      "task": "niah_single",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "436507"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "key": "giwup",
+      "value": 436507,
+      "depth_frac": 0.5
+    },
+    "vram_mb": 58970,
+    "content_preview": "436507",
+    "reasoning_preview": "The user wants to find the \"magic number for giwup\" from the provided text.\nI will search the text for the phrase \"magic number for giwup\" or \"giwup\".\nScanning the text...\n\"Internal note to archivists: the magic number for giwup is 436507, and this should be remembered carefully.\"\nFound it. The number is 436507.\nThe user requested: \"Answer with just the number, nothing else.\"\nSo the answer should be 436507.\nDouble-checking the exact wording: \"Internal note to archivists: the magic number for giwup is 436507, and this should be remembered carefully.\"\nMatches perfectly.\nOutput: 436507.\nDone. \nI will generate just the number as requested.\nCheck constraints: \"Answer with just the number, nothing else.\"\nResult: 436507.\nReady. \nProceeds. \nOutput matches request.\nDone. \n[Final Check]\nText: \"Internal note to archivists: the magic number for giwup is 436507, and this should be remembered carefully.\"\nQuestion: What is the magic number for giwup? Answer with just the number, nothing else.\nAnswer: 436507\nMatches perfectly. No extra text. All good. \nOutput Generation. \n[Done]\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 1048576,
+    "task": "niah_multi",
+    "trial": 0,
+    "seed": 2005505861,
+    "prompt_tokens": 787313,
+    "completion_tokens": 415,
+    "ttft_s": 368.325,
+    "decode_s": 6.276,
+    "total_s": 374.6,
+    "prefill_tps": 2137.55,
+    "decode_tps": 66.13,
+    "finish": "stop",
+    "score": {
+      "task": "niah_multi",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "246112",
+        "717293",
+        "524715"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "keys": [
+        "noqiz",
+        "gegik",
+        "yikut"
+      ],
+      "values": [
+        246112,
+        717293,
+        524715
+      ],
+      "depths": [
+        0.15,
+        0.5,
+        0.85
+      ]
+    },
+    "vram_mb": 58970,
+    "content_preview": "noqiz: 246112\ngegik: 717293\nyikut: 524715",
+    "reasoning_preview": "The user wants to extract the magic numbers for three specific keys: noqiz, gegik, and yikut from the provided text.\nI will search the text for these keys and their corresponding numbers.\n\n1. Search for \"noqiz\":\nLooking through the text...\nFound: \"Archivist memo: the magic number for noqiz is 246112, recorded on the registry.\"\nSo, noqiz = 246112.\n\n2. Search for \"gegik\":\nLooking through the text...\nFound: \"Archivist memo: the magic number for gegik is 717293, recorded on the registry.\"\nSo, gegik = 717293.\n\n3. Search for \"yikut\":\nLooking through the text...\nFound: \"Archivist memo: the magic number for yikut is 524715, recorded on the registry.\"\nSo, yikut = 524715.\n\nFormat the output as requested:\nnoqiz: 246112\ngegik: 717293\nyikut: 524715\nCheck for any other occurrences or tricks. The prompt says \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo I will output exactly:\nnoqiz: 246112\ngegik: 717293\nyikut: 524715\n\nDouble check the numbers:\nnoqiz -> 246112\ngegik -> 717293\nyikut -> 524715\nAll match. Ready. \nOutput matches requirement.\u2705\n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 1048576,
+    "task": "variable",
+    "trial": 0,
+    "seed": 1075189922,
+    "prompt_tokens": 786970,
+    "completion_tokens": 1097,
+    "ttft_s": 375.317,
+    "decode_s": 16.77,
+    "total_s": 392.087,
+    "prefill_tps": 2096.82,
+    "decode_tps": 65.42,
+    "finish": "stop",
+    "score": {
+      "task": "variable",
+      "pass": true,
+      "partial": 1,
+      "n_expected": 1,
+      "hits": [
+        "812363"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "base": 812356,
+      "chain_len": 8,
+      "answer": 812363
+    },
+    "vram_mb": 58970,
+    "content_preview": "812363",
+    "reasoning_preview": "The user wants to find the value of `v7` based on the definitions provided in the text.\nI need to scan the text for the definitions of `v0`, `v1`, ..., `v7`.\nThe definitions are given in the format:\n`Archivist shorthand: v0 := 812356.`\n`v1 := v0 + 1`\n`v2 := v1 + 1`\n...\n`v7 := v6 + 1`\n\nLet's find them in the text.\nSearching for \"v0 :=\" -> \"Archivist shorthand: v0 := 812356.\"\nSearching for \"v1 :=\" -> \"Archivist shorthand: v1 := v0 + 1.\"\nSearching for \"v2 :=\" -> \"Archivist shorthand: v2 := v1 + 1.\"\nSearching for \"v3 :=\" -> \"Archivist shorthand: v3 := v2 + 1.\"\nSearching for \"v4 :=\" -> \"Archivist shorthand: v4 := v3 + 1.\"\nSearching for \"v5 :=\" -> \"Archivist shorthand: v5 := v4 + 1.\"\nSearching for \"v6 :=\" -> \"Archivist shorthand: v6 := v5 + 1.\"\nSearching for \"v7 :=\" -> \"Archivist shorthand: v7 := v6 + 1.\"\n\nSo the sequence is:\nv0 = 812356\nv1 = v0 + 1 = 812357\nv2 = v1 + 1 = 812358\nv3 = v2 + 1 = 812359\nv4 = v3 + 1 = 812360\nv5 = v4 + 1 = 812361\nv6 = v5 + 1 = 812362\nv7 = v6 + 1 = 812363\n\nTherefore, v7 = 812356 + 7 = 812363.\n\nLet's double check the exact wording in the prompt to ensure no tricks.\n\"Archivist shorthand: v0 := 812356.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nCalculation: 812356 + 7 = 812363.\nThe answer should be just the number.\nI will output 812363.\nCheck arithmetic:\n812356 + 1 = 812357\n+1 = 812358\n+1 = 812359\n+1 = 812360\n+1 = 812361\n+1 = 812362\n+1 = 812363.\nCorrect.\nFinal answer: 812363.\nNo extra text.\nDone. \nLet's quickly verify if there are any other definitions that might override or change it. The prompt says \"Several sentences in the passage define variables... What is the numerical value of v7?\". It's a straightforward arithmetic progression.\nv0 = 812356\nv7 = v0 + 7 = 812363.\nAll good.\nOutput matches requirement.\nProceed. \nAnswer: 812363. \n"
+  },
+  {
+    "config": "yarn4_1m",
+    "config_name": "YaRN factor=4 (1M)",
+    "ctx": 1048576,
+    "task": "common_words",
+    "trial": 0,
+    "seed": 3209746839,
+    "prompt_tokens": 785246,
+    "completion_tokens": 8206,
+    "ttft_s": 366.828,
+    "decode_s": 126.142,
+    "total_s": 492.97,
+    "prefill_tps": 2140.64,
+    "decode_tps": 65.05,
+    "finish": "stop",
+    "score": {
+      "task": "common_words",
+      "pass": true,
+      "partial": 3,
+      "n_expected": 3,
+      "hits": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "missed": []
+    },
+    "meta": {
+      "targets": [
+        "zephyrine",
+        "quondamly",
+        "verdacious"
+      ],
+      "counts": [
+        24,
+        19,
+        15
+      ]
+    },
+    "vram_mb": 58970,
+    "content_preview": "quondamly\nzephyrine\nverdacious",
+    "reasoning_preview": "The user wants to find three invented words that appear frequently in the passage.\nI need to scan the passage for words that stand out as invented or unusual, count their frequencies, and list the top three in descending order of frequency.\n\nLet's look for \"A single word was pinned to the margin:\" which appears multiple times in the text.\nSearching the text for this phrase:\n1. \"A single word was pinned to the margin: quondamly.\"\n2. \"A single word was pinned to the margin: zephyrine.\"\n3. \"A single word was pinned to the margin: verdacious.\"\n4. \"A single word was pinned to the margin: quondamly.\"\n5. \"A single word was pinned to the margin: zephyrine.\"\n6. \"A single word was pinned to the margin: verdacious.\"\n7. \"A single word was pinned to the margin: quondamly.\"\n8. \"A single word was pinned to the margin: zephyrine.\"\n9. \"A single word was pinned to the margin: verdacious.\"\n10. \"A single word was pinned to the margin: quondamly.\"\n11. \"A single word was pinned to the margin: zephyrine.\"\n12. \"A single word was pinned to the margin: verdacious.\"\n13. \"A single word was pinned to the margin: quondamly.\"\n14. \"A single word was pinned to the margin: zephyrine.\"\n15. \"A single word was pinned to the margin: verdacious.\"\n16. \"A single word was pinned to the margin: quondamly.\"\n17. \"A single word was pinned to the margin: zephyrine.\"\n18. \"A single word was pinned to the margin: verdacious.\"\n19. \"A single word was pinned to the margin: quondamly.\"\n20. \"A single word was pinned to the margin: zephyrine.\"\n21. \"A single word was pinned to the margin: verdacious.\"\n22. \"A single word was pinned to the margin: quondamly.\"\n23. \"A single word was pinned to the margin: zephyrine.\"\n24. \"A single word was pinned to the margin: verdacious.\"\n25. \"A single word was pinned to the margin: quondamly.\"\n26. \"A single word was pinned to the margin: zephyrine.\"\n27. \"A single word was pinned to the margin: verdacious.\"\n\nWait, let's count them carefully.\nI will do a quick mental scan or search simulatio"
+  }
+]

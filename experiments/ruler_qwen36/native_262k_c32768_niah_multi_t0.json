@@ -1,0 +1,48 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 32768,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 3574647746,
+  "prompt_tokens": 14983,
+  "completion_tokens": 410,
+  "ttft_s": 2.117,
+  "decode_s": 1.947,
+  "total_s": 4.063,
+  "prefill_tps": 7078.82,
+  "decode_tps": 210.63,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "495421",
+      "668152",
+      "695890"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "wonoj",
+      "zaniv",
+      "pepod"
+    ],
+    "values": [
+      495421,
+      668152,
+      695890
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 36510,
+  "content_preview": "wonoj: 495421\nzaniv: 668152\npepod: 695890",
+  "reasoning_preview": "The user wants to find the magic numbers for three specific keys: \"wonoj\", \"zaniv\", and \"pepod\" from the provided text.\nI will scan the text for these keys and extract the corresponding numbers.\n\n1. Search for \"wonoj\":\nFound: \"Archivist memo: the magic number for wonoj is 495421, recorded on the registry.\"\nNumber: 495421\n\n2. Search for \"zaniv\":\nFound: \"Archivist memo: the magic number for zaniv is 668152, recorded on the registry.\"\nNumber: 668152\n\n3. Search for \"pepod\":\nFound: \"Archivist memo: the magic number for pepod is 695890, recorded on the registry.\"\nNumber: 695890\n\nFormat the output as requested: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nwonoj: 495421\nzaniv: 668152\npepod: 695890\n\nDouble-check the text to ensure accuracy.\n- \"wonoj is 495421\" -> correct.\n- \"zaniv is 668152\" -> correct.\n- \"pepod is 695890\" -> correct.\n\nThe prompt says \"labelled by key, nothing else.\"\nI will format exactly as:\nwonoj: 495421\nzaniv: 668152\npepod: 695890\nNo extra text.\nReady.\u2705\n"
+}

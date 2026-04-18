@@ -1,0 +1,43 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 32768,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 640438950,
+  "prompt_tokens": 15567,
+  "completion_tokens": 8206,
+  "ttft_s": 2.195,
+  "decode_s": 40.052,
+  "total_s": 42.247,
+  "prefill_tps": 7093.02,
+  "decode_tps": 204.88,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 36510,
+  "content_preview": "verdacious\nzephyrine\nquondamly",
+  "reasoning_preview": "The user wants to find three \"invented words\" that appear frequently in the provided text.\nI need to scan the text for unusual or invented words, count their frequencies, and list the top three in descending order.\n\nLooking at the text, I notice several single words pinned to the margin:\n\"verdacious\"\n\"quondamly\"\n\"zephyrine\"\n\nLet's check the frequency of these three words.\nI will count them manually or estimate based on the text.\nScanning the text for \"verdacious\":\n1. A single word was pinned to the margin: verdacious.\n2. A single word was pinned to the margin: verdacious.\n3. A single word was pinned to the margin: verdacious.\n4. A single word was pinned to the margin: verdacious.\n5. A single word was pinned to the margin: verdacious.\n6. A single word was pinned to the margin: verdacious.\n7. A single word was pinned to the margin: verdacious.\n8. A single word was pinned to the margin: verdacious.\n9. A single word was pinned to the margin: verdacious.\n10. A single word was pinned to the margin: verdacious.\n11. A single word was pinned to the margin: verdacious.\n12. A single word was pinned to the margin: verdacious.\nLet's count exactly.\nI'll do a quick mental search or just count occurrences.\nActually, I can just list them as I see them:\n1. verdacious\n2. quondamly\n3. zephyrine\n4. verdacious\n5. zephyrine\n6. verdacious\n7. zephyrine\n8. zephyrine\n9. verdacious\n10. zephyrine\n11. quondamly\n12. verdacious\n13. zephyrine\n14. verdacious\n15. quondamly\n16. verdacious\n17. zephyrine\n18. verdacious\n19. quondamly\n20. verdacious\n21. zephyrine\n22. quondamly\n23. verdacious\n24. zephyrine\n25. quondamly\n26. verdacious\n27. zephyrine\n28. quondamly\n29. verdacious\n30. zephyrine\n31. quondamly\n32. verdacious\n33. zephyrine\n34. quondamly\n35. verdacious\n36. zephyrine\n37. quondamly\n38. verdacious\n39. zephyrine\n40. quondamly\n41. verdacious\n42. zephyrine\n43. quondamly\n44. verdacious\n45. zephyrine\n46. quondamly\n47. verdacious\n48. zephyrine\n49. quondamly\n50. verdacious\n51. zephyrine\n52. quondamly\n53. ve"
+}
