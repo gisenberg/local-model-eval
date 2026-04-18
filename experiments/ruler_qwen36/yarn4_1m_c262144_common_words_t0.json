@@ -1,0 +1,43 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 262144,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 2116638488,
+  "prompt_tokens": 189324,
+  "completion_tokens": 6246,
+  "ttft_s": 39.436,
+  "decode_s": 44.916,
+  "total_s": 84.352,
+  "prefill_tps": 4800.73,
+  "decode_tps": 139.06,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 41304,
+  "content_preview": "verdacious\nzephyrine\nquondamly",
+  "reasoning_preview": "The user wants to identify three invented words that appear frequently in the passage.\nThe passage is a long, repetitive text describing various characters interacting with objects in different settings.\nI need to scan the text for \"invented words\" or \"unusual words\" that stand out.\nLooking at the text, I see phrases like:\n\"A single word was pinned to the margin: verdacious.\"\n\"A single word was pinned to the margin: quondamly.\"\n\"A single word was pinned to the margin: zephyrine.\"\n\nLet's check the frequency of these three words: \"verdacious\", \"quondamly\", \"zephyrine\".\nI will count how many times each appears in the text.\nSearching for \"verdacious\":\n1. \"A single word was pinned to the margin: verdacious.\"\n2. \"A single word was pinned to the margin: verdacious.\"\n3. \"A single word was pinned to the margin: verdacious.\"\n4. \"A single word was pinned to the margin: verdacious.\"\n5. \"A single word was pinned to the margin: verdacious.\"\n6. \"A single word was pinned to the margin: verdacious.\"\n7. \"A single word was pinned to the margin: verdacious.\"\n8. \"A single word was pinned to the margin: verdacious.\"\n9. \"A single word was pinned to the margin: verdacious.\"\n10. \"A single word was pinned to the margin: verdacious.\"\n11. \"A single word was pinned to the margin: verdacious.\"\nLet's do a quick mental count or just assume they are roughly similar but I need to order them by frequency.\nWait, the prompt says \"Three invented words are scattered through the passage. They appear many more times than any other invented or unusual word. List the three invented words, ordered by frequency (most frequent first).\"\n\nLet's search the text carefully for these words.\n\"verdacious\" appears multiple times.\n\"quondamly\" appears multiple times.\n\"zephyrine\" appears multiple times.\n\nI will count them exactly.\nText scan:\n1. verdacious\n2. quondamly\n3. zephyrine\n4. verdacious\n5. verdacious\n6. quondamly\n7. verdacious\n8. zephyrine\n9. verdacious\n10. quondamly\n11. zephyrine\n12. verdacious\n13. zephyrine\n14. v"
+}

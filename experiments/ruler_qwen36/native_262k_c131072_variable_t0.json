@@ -1,0 +1,34 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 131072,
+  "task": "variable",
+  "trial": 0,
+  "seed": 3481332239,
+  "prompt_tokens": 89778,
+  "completion_tokens": 880,
+  "ttft_s": 14.783,
+  "decode_s": 5.108,
+  "total_s": 19.891,
+  "prefill_tps": 6072.93,
+  "decode_tps": 172.28,
+  "finish": "stop",
+  "score": {
+    "task": "variable",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "365131"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "base": 365124,
+    "chain_len": 8,
+    "answer": 365131
+  },
+  "vram_mb": 38432,
+  "content_preview": "365131",
+  "reasoning_preview": "The user wants to find the numerical value of `v7` based on the variable definitions in the text.\nI need to scan the text for the variable definitions:\n`v0 := 365124.`\n`v1 := v0 + 1.`\n`v2 := v1 + 1.`\n`v3 := v2 + 1.`\n`v4 := v3 + 1.`\n`v5 := v4 + 1.`\n`v6 := v5 + 1.`\n`v7 := v6 + 1.`\n\nLet's verify these definitions in the text.\nSearching for `v0 := ` -> \"Archivist shorthand: v0 := 365124. .\"\nSearching for `v1 := ` -> \"Archivist shorthand: v1 := v0 + 1. .\"\nSearching for `v2 := ` -> \"Archivist shorthand: v2 := v1 + 1. .\"\nSearching for `v3 := ` -> \"Archivist shorthand: v3 := v2 + 1. .\"\nSearching for `v4 := ` -> \"Archivist shorthand: v4 := v3 + 1. .\"\nSearching for `v5 := ` -> \"Archivist shorthand: v5 := v4 + 1. .\"\nSearching for `v6 := ` -> \"Archivist shorthand: v6 := v5 + 1. .\"\nSearching for `v7 := ` -> \"Archivist shorthand: v7 := v6 + 1. .\"\n\nSo, v0 = 365124\nv1 = 365125\nv2 = 365126\nv3 = 365127\nv4 = 365128\nv5 = 365129\nv6 = 365130\nv7 = 365131\n\nThe question asks for the numerical value of v7.\nv7 = 365124 + 7 = 365131.\n\nDouble check the arithmetic:\n365124 + 7 = 365131. Correct.\nThe answer should be just the number.\nI will output 365131.\nCheck if there's any trick. The prompt says \"Several sentences in the passage define variables of the form `v0 := N`, `v1 := v0 + 1`, \u2026, `v7 := v6 + 1`. What is the numerical value of v7? Answer with just the number, nothing else.\"\nEverything matches.\nResult: 365131.\nDone. \nI will produce the output as requested.\nAll steps verified.\nFinal answer: 365131. \nProceeds. \nSelf-Correction/Verification during thought:\nLet's quickly scan the text to ensure `v0` is indeed 365124.\n\"Archivist shorthand: v0 := 365124. .\" -> Found.\n\"Archivist shorthand: v1 := v0 + 1. .\" -> Found.\n\"Archivist shorthand: v2 := v1 + 1. .\" -> Found.\n\"Archivist shorthand: v3 := v2 + 1. .\" -> Found.\n\"Archivist shorthand: v4 := v3 + 1. .\" -> Found.\n\"Archivist shorthand: v5 := v4 + 1. .\" -> Found.\n\"Archivist shorthand: v6 := v5 + 1. .\" -> Found.\n\"Archivist shorthand: v7 := v6 + 1. .\" -"
+}

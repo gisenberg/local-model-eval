@@ -1,0 +1,34 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 262144,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 3007528274,
+  "prompt_tokens": 188950,
+  "completion_tokens": 328,
+  "ttft_s": 37.367,
+  "decode_s": 2.294,
+  "total_s": 39.661,
+  "prefill_tps": 5056.62,
+  "decode_tps": 142.96,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "874017"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "fijoh",
+    "value": 874017,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 41304,
+  "content_preview": "874017",
+  "reasoning_preview": "The user wants to find the \"magic number for fijoh\" from the provided text.\nI will search the text for \"fijoh\" or \"magic number\".\nLooking through the text:\n\"Internal note to archivists: the magic number for fijoh is 874017, and this should be remembered carefully.\"\nFound it. The number is 874017.\nThe user requested: \"Answer with just the number, nothing else.\"\nSo the answer should be 874017.\nDouble checking the exact wording in the text: \"the magic number for fijoh is 874017\"\nMatches perfectly.\nOutput: 874017.\nDone. \nI will produce just the number as requested.\nCheck format: \"Answer with just the number, nothing else.\" -> 874017.\nReady. \nProceeds. \nOutput matches requirement. \nFinal answer: 874017. \n(Self-Correction/Verification during thought)\nLet's quickly scan the text to ensure no other mentions or tricks.\n\"Internal note to archivists: the magic number for fijoh is 874017, and this should be remembered carefully.\"\nIt's explicitly stated.\nThe prompt asks for just the number.\nI will output \"874017\".\nDone. \nProceeds. \n[Output Generation] -> 874017\n"
+}

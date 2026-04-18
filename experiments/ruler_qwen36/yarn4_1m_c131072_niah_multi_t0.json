@@ -1,0 +1,48 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 131072,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 1008848069,
+  "prompt_tokens": 89510,
+  "completion_tokens": 659,
+  "ttft_s": 14.757,
+  "decode_s": 3.819,
+  "total_s": 18.576,
+  "prefill_tps": 6065.56,
+  "decode_tps": 172.58,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "247370",
+      "413122",
+      "680216"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "ganej",
+      "cuqot",
+      "divox"
+    ],
+    "values": [
+      247370,
+      413122,
+      680216
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 38432,
+  "content_preview": "ganej: 247370\ncuqot: 413122\ndivox: 680216",
+  "reasoning_preview": "The user wants to find the magic numbers for 'ganej', 'cuqot', and 'divox' from the provided text.\nI will scan the text for these names and extract the corresponding numbers.\n\nSearching for \"ganej\":\n\"Archivist memo: the magic number for ganej is 247370, recorded on the registry.\" -> 247370\n\nSearching for \"cuqot\":\n\"Archivist memo: the magic number for cuqot is 413122, recorded on the registry.\" -> 413122\n\nSearching for \"divox\":\n\"Archivist memo: the magic number for divox is 680216, recorded on the registry.\" -> 680216\n\nFormat required:\nganej: 247370\ncuqot: 413122\ndivox: 680216\n(Answer with three numbers on separate lines, labelled by key, nothing else.)\n\nLet's double check the exact wording in the prompt:\n\"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nganej: 247370\ncuqot: 413122\ndivox: 680216\n\nCheck the text again to be sure.\n\"Archivist memo: the magic number for ganej is 247370, recorded on the registry.\"\n\"Archivist memo: the magic number for cuqot is 413122, recorded on the registry.\"\n\"Archivist memo: the magic number for divox is 680216, recorded on the registry.\"\n\nAll match. Output exactly as requested.\nDone. \nI will generate the response now. \nFormat:\nganej: 247370\ncuqot: 413122\ndivox: 680216\nMatches instructions. No extra text.\nProceeds. \nSelf-Correction/Verification during thought:\nWait, let's verify the exact strings in the text.\n1. \"Archivist memo: the magic number for ganej is 247370, recorded on the registry.\"\n2. \"Archivist memo: the magic number for cuqot is 413122, recorded on the registry.\"\n3. \"Archivist memo: the magic number for divox is 680216, recorded on the registry.\"\nAll correct.\nOutput matches exactly.\nDone. \nProceeds. \nFinal answer matches requested format.\nganej: 247370\ncuqot: 413122\ndivox: 680216\nReady. \nOutput Generation. \n[Done]\n"
+}

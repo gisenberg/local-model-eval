@@ -1,0 +1,43 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 131072,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 2253402876,
+  "prompt_tokens": 90225,
+  "completion_tokens": 6972,
+  "ttft_s": 14.758,
+  "decode_s": 41.027,
+  "total_s": 55.785,
+  "prefill_tps": 6113.72,
+  "decode_tps": 169.94,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 38432,
+  "content_preview": "verdacious\nzephyrine\nquondamly",
+  "reasoning_preview": "The user wants to find three invented words that appear frequently in the text.\nI need to scan the text for words that are pinned to the margin, as the prompt mentions: \"A single word was pinned to the margin: [word].\"\nLet's search for \"A single word was pinned to the margin:\" in the text.\n1. \"A single word was pinned to the margin: verdacious.\"\n2. \"A single word was pinned to the margin: quondamly.\"\n3. \"A single word was pinned to the margin: zephyrine.\"\n\nWait, let's count the occurrences of each.\nI will do a quick mental scan or count.\nLet's list all occurrences of \"verdacious\", \"quondamly\", \"zephyrine\".\nActually, the prompt says \"Three invented words are scattered through the passage. They appear many more times than any other invented or unusual word. List the three invented words, ordered by frequency (most frequent first).\"\n\nLet's count them manually or estimate.\nI'll search the text for each word.\n\"verdacious\" appears at:\n- \"A single word was pinned to the margin: verdacious.\" (1)\n- \"A single word was pinned to the margin: verdacious.\" (2)\n- \"A single word was pinned to the margin: verdacious.\" (3)\n- \"A single word was pinned to the margin: verdacious.\" (4)\n- \"A single word was pinned to the margin: verdacious.\" (5)\n- \"A single word was pinned to the margin: verdacious.\" (6)\n- \"A single word was pinned to the margin: verdacious.\" (7)\n- \"A single word was pinned to the margin: verdacious.\" (8)\n- \"A single word was pinned to the margin: verdacious.\" (9)\n- \"A single word was pinned to the margin: verdacious.\" (10)\n- \"A single word was pinned to the margin: verdacious.\" (11)\n- \"A single word was pinned to the margin: verdacious.\" (12)\n- \"A single word was pinned to the margin: verdacious.\" (13)\n- \"A single word was pinned to the margin: verdacious.\" (14)\n- \"A single word was pinned to the margin: verdacious.\" (15)\n- \"A single word was pinned to the margin: verdacious.\" (16)\n- \"A single word was pinned to the margin: verdacious.\" (17)\n- \"A single word was pinned t"
+}

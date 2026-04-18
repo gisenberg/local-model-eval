@@ -1,0 +1,43 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 32768,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 2718074005,
+  "prompt_tokens": 15644,
+  "completion_tokens": 8206,
+  "ttft_s": 2.211,
+  "decode_s": 40.141,
+  "total_s": 42.352,
+  "prefill_tps": 7076.04,
+  "decode_tps": 204.43,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 36510,
+  "content_preview": "verdacious\nzephyrine\nquondamly",
+  "reasoning_preview": "The user wants to find three invented words scattered through the passage.\nThey appear many more times than any other invented or unusual word.\nI need to list them in order of frequency (most frequent first).\nThe answer should just be the three words on separate lines.\n\nLet's scan the passage for words that are pinned to the margin.\nThe passage repeatedly says: \"A single word was pinned to the margin: [word].\"\nLet's extract these words:\n1. verdacious\n2. quondamly\n3. zephyrine\n4. verdacious\n5. zephyrine\n6. verdacious\n7. zephyrine\n8. verdacious\n9. quondamly\n10. zephyrine\n11. verdacious\n12. zephyrine\n13. verdacious\n14. quondamly\n15. verdacious\n16. zephyrine\n17. quondamly\n18. zephyrine\n19. verdacious\n20. quondamly\n21. zephyrine\n22. verdacious\n23. zephyrine\n24. quondamly\n25. verdacious\n26. zephyrine\n27. quondamly\n28. verdacious\n29. zephyrine\n30. verdacious\n31. quondamly\n32. verdacious\n33. zephyrine\n34. verdacious\n35. zephyrine\n36. verdacious\n37. quondamly\n38. zephyrine\n39. verdacious\n40. zephyrine\n41. quondamly\n42. verdacious\n43. zephyrine\n44. quondamly\n45. verdacious\n46. zephyrine\n47. quondamly\n48. verdacious\n49. zephyrine\n50. quondamly\n51. verdacious\n52. zephyrine\n53. quondamly\n54. verdacious\n55. zephyrine\n56. quondamly\n57. verdacious\n58. zephyrine\n59. quondamly\n60. verdacious\n61. zephyrine\n62. quondamly\n63. verdacious\n64. zephyrine\n65. quondamly\n66. verdacious\n67. zephyrine\n68. quondamly\n69. verdacious\n70. zephyrine\n71. quondamly\n72. verdacious\n73. zephyrine\n74. quondamly\n75. verdacious\n76. zephyrine\n77. quondamly\n78. verdacious\n79. zephyrine\n80. quondamly\n\nWait, let's count exactly.\nI will search for \"verdacious\", \"quondamly\", \"zephyrine\" in the text.\nActually, I can just count them mentally or approximate.\nLet's do a quick scan of the text for these three words.\n\"verdacious\"\n\"quondamly\"\n\"zephyrine\"\n\nLet's count occurrences:\nverdacious:\n1. A single word was pinned to the margin: verdacious. (line 10)\n2. A single word was pinned to the margin: verdacious. (line 23)\n3."
+}

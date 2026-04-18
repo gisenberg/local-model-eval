@@ -1,0 +1,48 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 524288,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 4239417378,
+  "prompt_tokens": 388755,
+  "completion_tokens": 431,
+  "ttft_s": 112.853,
+  "decode_s": 4.171,
+  "total_s": 117.024,
+  "prefill_tps": 3444.79,
+  "decode_tps": 103.33,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "517831",
+      "604577",
+      "381501"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "jaxuw",
+      "rumaj",
+      "buvuf"
+    ],
+    "values": [
+      517831,
+      604577,
+      381501
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 47192,
+  "content_preview": "jaxuw 517831\nrumaj 604577\nbuvuf 381501",
+  "reasoning_preview": "The user wants to find the magic numbers for three specific keys: 'jaxuw', 'rumaj', and 'buvuf'.\nI will scan the text for these keys and extract their corresponding numbers.\n\nSearching for \"jaxuw\":\n\"Archivist memo: the magic number for jaxuw is 517831, recorded on the registry.\" -> 517831\n\nSearching for \"rumaj\":\n\"Archivist memo: the magic number for rumaj is 604577, recorded on the registry.\" -> 604577\n\nSearching for \"buvuf\":\n\"Archivist memo: the magic number for buvuf is 381501, recorded on the registry.\" -> 381501\n\nCheck format: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\njaxuw 517831\nrumaj 604577\nbuvuf 381501\n\nLet's verify the exact wording in the text.\n\"Archivist memo: the magic number for jaxuw is 517831, recorded on the registry.\"\n\"Archivist memo: the magic number for rumaj is 604577, recorded on the registry.\"\n\"Archivist memo: the magic number for buvuf is 381501, recorded on the registry.\"\n\nAll match. I will output exactly as requested.\nFormat:\njaxuw 517831\nrumaj 604577\nbuvuf 381501\nDone. \nDouble check constraints: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nMatches exactly.\nProceed. \nOutput generation. \n[Done]\n"
+}

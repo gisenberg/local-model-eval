@@ -1,0 +1,34 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 32768,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 2785559692,
+  "prompt_tokens": 14860,
+  "completion_tokens": 170,
+  "ttft_s": 2.063,
+  "decode_s": 0.783,
+  "total_s": 2.847,
+  "prefill_tps": 7201.67,
+  "decode_tps": 216.98,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "463443"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "ninos",
+    "value": 463443,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 36510,
+  "content_preview": "463443",
+  "reasoning_preview": "The user wants to find the \"magic number for ninos\" from the provided text.\nI will scan the text for the phrase \"magic number for ninos\" or similar.\nLooking through the text:\n\"Internal note to archivists: the magic number for ninos is 463443, and this should be remembered carefully.\"\nFound it. The number is 463443.\nThe user asks for just the number, nothing else.\nAnswer: 463443.\nDouble check the exact wording: \"the magic number for ninos is 463443\"\nMatches perfectly.\nOutput only the number.\nDone. \nProceed. \nOutput: 463443\n"
+}

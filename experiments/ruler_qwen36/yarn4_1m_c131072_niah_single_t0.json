@@ -1,0 +1,34 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 131072,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 1342307718,
+  "prompt_tokens": 89550,
+  "completion_tokens": 306,
+  "ttft_s": 14.283,
+  "decode_s": 1.751,
+  "total_s": 16.033,
+  "prefill_tps": 6269.9,
+  "decode_tps": 174.79,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "464747"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "desoj",
+    "value": 464747,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 38432,
+  "content_preview": "464747",
+  "reasoning_preview": "The user wants to know the \"magic number for desoj\" from the provided text.\nI will scan the text for the phrase \"magic number for desoj\" or similar.\nLooking through the text:\n\"... Internal note to archivists: the magic number for desoj is 464747, and this should be remembered carefully. . ...\"\nFound it. The number is 464747.\nThe user asked for just the number, nothing else.\nSo the answer should be \"464747\".\nDouble-checking the context: \"Internal note to archivists: the magic number for desoj is 464747, and this should be remembered carefully.\"\nMatches exactly.\nOutput: 464747.\nDone. \nI will formulate the response. \nNo extra text. Just the number.\nCheck constraint: \"Answer with just the number, nothing else.\"\nResult: 464747.\nProceeds. \nAll good. \nOutput matches requirement. \nDone. \n[Final check of the prompt] \"What is the magic number for desoj? Answer with just the number, nothing else.\"\nText says: \"the magic number for desoj is 464747\"\nAnswer: 464747.\nReady. \nOutput generation. \n[Done]\n"
+}

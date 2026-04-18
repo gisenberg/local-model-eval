@@ -1,0 +1,34 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 524288,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 882125137,
+  "prompt_tokens": 388662,
+  "completion_tokens": 155,
+  "ttft_s": 107.793,
+  "decode_s": 1.462,
+  "total_s": 109.255,
+  "prefill_tps": 3605.63,
+  "decode_tps": 106.0,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "872865"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "zupub",
+    "value": 872865,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 47192,
+  "content_preview": "872865",
+  "reasoning_preview": "The user wants to find the \"magic number for zupub\" from the provided text.\nI will search the text for the phrase \"magic number for zupub\" or \"zupub\".\nScanning the text...\nFound: \"Internal note to archivists: the magic number for zupub is 872865, and this should be remembered carefully.\"\nThe number is 872865.\nI will output just the number as requested.\nCheck constraints: \"Answer with just the number, nothing else.\"\nResult: 872865.\nDone. \nNo extra text.\nProceed. \nOutput matches requirement.\u2705\n"
+}

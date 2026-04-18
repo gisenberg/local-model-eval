@@ -1,0 +1,34 @@
+{
+  "config": "native_262k",
+  "config_name": "Native (no YaRN, 262K)",
+  "ctx": 32768,
+  "task": "niah_single",
+  "trial": 0,
+  "seed": 1999362046,
+  "prompt_tokens": 14851,
+  "completion_tokens": 221,
+  "ttft_s": 2.034,
+  "decode_s": 1.029,
+  "total_s": 3.062,
+  "prefill_tps": 7302.55,
+  "decode_tps": 214.82,
+  "finish": "stop",
+  "score": {
+    "task": "niah_single",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "863415"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "key": "manec",
+    "value": 863415,
+    "depth_frac": 0.5
+  },
+  "vram_mb": 36510,
+  "content_preview": "863415",
+  "reasoning_preview": "The user wants to find the \"magic number for manec\" from the provided text.\nI will scan the text for \"manec\" or \"magic number\".\nLooking through the text...\n\"Internal note to archivists: the magic number for manec is 863415, and this should be remembered carefully.\"\nFound it. The number is 863415.\nThe user asks to answer with just the number, nothing else.\nSo the answer should be \"863415\".\nDouble-checking the exact phrasing: \"Internal note to archivists: the magic number for manec is 863415, and this should be remembered carefully.\"\nMatches exactly.\nAnswer: 863415.\nDone. \nI will output just the number as requested.\nCheck format: \"Answer with just the number, nothing else.\" -> 863415.\nReady. \nOutput matches requirement.\u2705\n"
+}

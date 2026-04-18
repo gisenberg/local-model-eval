@@ -1,0 +1,34 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 32768,
+  "task": "variable",
+  "trial": 0,
+  "seed": 2830339623,
+  "prompt_tokens": 14952,
+  "completion_tokens": 723,
+  "ttft_s": 2.139,
+  "decode_s": 3.465,
+  "total_s": 5.605,
+  "prefill_tps": 6989.55,
+  "decode_tps": 208.64,
+  "finish": "stop",
+  "score": {
+    "task": "variable",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "798159"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "base": 798152,
+    "chain_len": 8,
+    "answer": 798159
+  },
+  "vram_mb": 36510,
+  "content_preview": "798159",
+  "reasoning_preview": "The user wants to find the numerical value of v7 based on the passage.\nI need to scan the passage for the variable definitions.\nThe passage mentions:\n\"Archivist shorthand: v0 := 798152.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nLet's calculate:\nv0 = 798152\nv1 = v0 + 1 = 798153\nv2 = v1 + 1 = 798154\nv3 = v2 + 1 = 798155\nv4 = v3 + 1 = 798156\nv5 = v4 + 1 = 798157\nv6 = v5 + 1 = 798158\nv7 = v6 + 1 = 798159\n\nThe question asks for the numerical value of v7.\nAnswer should be just the number: 798159.\n\nDouble check the text to ensure no trick.\n\"Archivist shorthand: v0 := 798152.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\n\nCalculations:\n798152 + 7 = 798159.\nMatches.\nOutput just the number.\nDone. \nCheck format: \"Answer with just the number, nothing else.\"\nSo \"798159\" is correct.\nNo extra text.\nReady. \nProceed. \nSelf-Correction/Verification during thought:\nLet's quickly scan the text to make sure I didn't miss any other definitions or modifications.\nThe text is very long and repetitive. I will trust the explicit definitions.\nv0 := 798152\nv1 := v0 + 1\nv2 := v1 + 1\nv3 := v2 + 1\nv4 := v3 + 1\nv5 := v4 + 1\nv6 := v5 + 1\nv7 := v6 + 1\nSo v7 = 798152 + 7 = 798159.\nCorrect.\nOutput matches requirement.\nDone. \nProceeds. \nFinal Answer: 798159. \nEverything is consistent.\nDone. \nOutput Generation. \n[End of thought process]\n"
+}

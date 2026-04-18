@@ -1,0 +1,43 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 131072,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 3455912958,
+  "prompt_tokens": 90009,
+  "completion_tokens": 7129,
+  "ttft_s": 14.761,
+  "decode_s": 42.055,
+  "total_s": 56.816,
+  "prefill_tps": 6097.8,
+  "decode_tps": 169.51,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 38432,
+  "content_preview": "zephyrine\nquondamly\nverdacious",
+  "reasoning_preview": "The user wants to identify three invented words scattered throughout the provided passage.\nThese words appear many more times than any other invented or unusual word.\nI need to list them in order of frequency (most frequent first).\nThe output should just be the three words on separate lines.\n\nFirst, I will scan the passage to find words that stand out as invented or unusual.\nLooking through the text, I see several instances of:\n- \"quondamly\"\n- \"zephyrine\"\n- \"verdacious\"\n\nLet's verify their occurrences.\nI'll search the text for these words.\n\"quondamly\" appears multiple times.\n\"zephyrine\" appears multiple times.\n\"verdacious\" appears multiple times.\n\nLet's count them roughly or just note that they are the only unusual/invented words repeated.\nWait, let's look for exact matches in the text.\n\"A single word was pinned to the margin: quondamly.\"\n\"A single word was pinned to the margin: zephyrine.\"\n\"A single word was pinned to the margin: verdacious.\"\n\nI will count the occurrences of each to determine the order.\nLet's do a quick mental scan or systematic count.\nI'll read through and tally:\nquondamly:\n1. A single word was pinned to the margin: quondamly.\n2. A single word was pinned to the margin: quondamly.\n3. A single word was pinned to the margin: quondamly.\n4. A single word was pinned to the margin: quondamly.\n5. A single word was pinned to the margin: quondamly.\n6. A single word was pinned to the margin: quondamly.\n7. A single word was pinned to the margin: quondamly.\n8. A single word was pinned to the margin: quondamly.\n9. A single word was pinned to the margin: quondamly.\n\nzephyrine:\n1. A single word was pinned to the margin: zephyrine.\n2. A single word was pinned to the margin: zephyrine.\n3. A single word was pinned to the margin: zephyrine.\n4. A single word was pinned to the margin: zephyrine.\n5. A single word was pinned to the margin: zephyrine.\n6. A single word was pinned to the margin: zephyrine.\n7. A single word was pinned to the margin: zephyrine.\n8. A single wo"
+}

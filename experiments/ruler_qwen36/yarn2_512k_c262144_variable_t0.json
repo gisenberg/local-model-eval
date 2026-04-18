@@ -1,0 +1,34 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 262144,
+  "task": "variable",
+  "trial": 0,
+  "seed": 4270418213,
+  "prompt_tokens": 189379,
+  "completion_tokens": 976,
+  "ttft_s": 38.831,
+  "decode_s": 6.938,
+  "total_s": 45.77,
+  "prefill_tps": 4876.95,
+  "decode_tps": 140.67,
+  "finish": "stop",
+  "score": {
+    "task": "variable",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "851135"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "base": 851128,
+    "chain_len": 8,
+    "answer": 851135
+  },
+  "vram_mb": 41304,
+  "content_preview": "851135",
+  "reasoning_preview": "The user wants to find the numerical value of `v7` based on the provided passage.\nI need to scan the passage for the variable definitions.\nThe passage contains several instances of \"Archivist shorthand: vN := ...\".\nLet's find them:\n1. `Archivist shorthand: v0 := 851128.`\n2. `Archivist shorthand: v1 := v0 + 1.`\n3. `Archivist shorthand: v2 := v1 + 1.`\n4. `Archivist shorthand: v3 := v2 + 1.`\n5. `Archivist shorthand: v4 := v3 + 1.`\n6. `Archivist shorthand: v5 := v4 + 1.`\n7. `Archivist shorthand: v6 := v5 + 1.`\n8. `Archivist shorthand: v7 := v6 + 1.`\n\nSo, v0 = 851128.\nv1 = v0 + 1 = 851129\nv2 = v1 + 1 = 851130\nv3 = v2 + 1 = 851131\nv4 = v3 + 1 = 851132\nv5 = v4 + 1 = 851133\nv6 = v5 + 1 = 851134\nv7 = v6 + 1 = 851135\n\nLet's double check the exact text in the passage to ensure there are no other definitions or tricks.\nSearching for \"Archivist shorthand:\"\n- `Archivist shorthand: v0 := 851128.`\n- `Archivist shorthand: v1 := v0 + 1.`\n- `Archivist shorthand: v2 := v1 + 1.`\n- `Archivist shorthand: v3 := v2 + 1.`\n- `Archivist shorthand: v4 := v3 + 1.`\n- `Archivist shorthand: v5 := v4 + 1.`\n- `Archivist shorthand: v6 := v5 + 1.`\n- `Archivist shorthand: v7 := v6 + 1.`\n\nThe progression is straightforward addition of 1 each time.\nv0 = 851128\nv7 = v0 + 7 = 851128 + 7 = 851135.\n\nCheck arithmetic: 851128 + 7 = 851135.\nThe question asks: \"What is the numerical value of v7? Answer with just the number, nothing else.\"\nSo the answer should be 851135.\nLet's quickly verify if there's any other hidden text or trick. The prompt says \"Several sentences in the passage define variables of the form `v0 := N`, `v1 := v0 + 1`, \u2026, `v7 := v6 + 1`.\"\nIt's a simple arithmetic progression.\nv0 = 851128\nv1 = 851129\nv2 = 851130\nv3 = 851131\nv4 = 851132\nv5 = 851133\nv6 = 851134\nv7 = 851135\n\nEverything matches. I will output 851135.\nDone. \nJust to be absolutely sure, I'll scan the text for \"v0\" to confirm the starting number.\n\"Archivist shorthand: v0 := 851128.\" -> Correct.\nThen v1 to v7 are all +1.\nResult is 851135"
+}

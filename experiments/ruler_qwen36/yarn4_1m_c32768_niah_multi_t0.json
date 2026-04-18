@@ -1,0 +1,48 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 32768,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 3760655562,
+  "prompt_tokens": 14941,
+  "completion_tokens": 582,
+  "ttft_s": 2.129,
+  "decode_s": 2.779,
+  "total_s": 4.909,
+  "prefill_tps": 7016.26,
+  "decode_tps": 209.41,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "745607",
+      "284697",
+      "857424"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "rifep",
+      "dusob",
+      "zajud"
+    ],
+    "values": [
+      745607,
+      284697,
+      857424
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 36510,
+  "content_preview": "rifep: 745607\ndusob: 284697\nzajud: 857424",
+  "reasoning_preview": "The user wants to find the magic numbers for 'rifep', 'dusob', and 'zajud' from the provided text.\nI will scan the text for these keywords.\n\n1. \"rifep\"\nScanning...\nFound: \"Archivist memo: the magic number for rifep is 745607, recorded on the registry.\"\nSo, rifep = 745607\n\n2. \"dusob\"\nScanning...\nFound: \"Archivist memo: the magic number for dusob is 284697, recorded on the registry.\"\nSo, dusob = 284697\n\n3. \"zajud\"\nScanning...\nFound: \"Archivist memo: the magic number for zajud is 857424, recorded on the registry.\"\nSo, zajud = 857424\n\nThe user wants the answer formatted as:\nkey: number\nkey: number\nkey: number\non separate lines, labelled by key, nothing else.\n\nLet's verify the exact wording requested: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nrifep: 745607\ndusob: 284697\nzajud: 857424\n\nCheck the text again to be absolutely sure.\n\"Archivist memo: the magic number for rifep is 745607, recorded on the registry.\" -> matches.\n\"Archivist memo: the magic number for dusob is 284697, recorded on the registry.\" -> matches.\n\"Archivist memo: the magic number for zajud is 857424, recorded on the registry.\" -> matches.\n\nFormat:\nrifep: 745607\ndusob: 284697\nzajud: 857424\n\nEverything looks correct. I will generate the output exactly as requested.\nNo extra text. Just the three lines.\nDone. \nSelf-Correction/Verification during thought:\nCheck if there are any other instances or tricks. The prompt says \"labelled by key, nothing else.\"\nI will output exactly:\nrifep: 745607\ndusob: 284697\nzajud: 857424\nMatches request. Proceeds. \nOutput Generation. \n[Done]\n"
+}

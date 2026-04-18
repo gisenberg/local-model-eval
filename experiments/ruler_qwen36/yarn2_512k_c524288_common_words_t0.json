@@ -1,0 +1,43 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 524288,
+  "task": "common_words",
+  "trial": 0,
+  "seed": 3895580453,
+  "prompt_tokens": 387846,
+  "completion_tokens": 8206,
+  "ttft_s": 116.038,
+  "decode_s": 80.853,
+  "total_s": 196.892,
+  "prefill_tps": 3342.4,
+  "decode_tps": 101.49,
+  "finish": "stop",
+  "score": {
+    "task": "common_words",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "targets": [
+      "zephyrine",
+      "quondamly",
+      "verdacious"
+    ],
+    "counts": [
+      24,
+      19,
+      15
+    ]
+  },
+  "vram_mb": 47192,
+  "content_preview": "quondamly\nverdacious\nzephyrine",
+  "reasoning_preview": "The user wants to find three invented words that appear frequently in the provided text.\nI need to scan the text for words that stand out as invented or unusual, count their frequencies, and list them in descending order of frequency.\n\nLet's look for words that are pinned to the margin, as the prompt mentions \"A single word was pinned to the margin: [word].\" This appears multiple times.\nScanning the text for \"pinned to the margin\":\n1. \"A single word was pinned to the margin: quondamly.\"\n2. \"A single word was pinned to the margin: verdacious.\"\n3. \"A single word was pinned to the margin: zephyrine.\"\n4. \"A single word was pinned to the margin: quondamly.\"\n5. \"A single word was pinned to the margin: verdacious.\"\n6. \"A single word was pinned to the margin: zephyrine.\"\n7. \"A single word was pinned to the margin: quondamly.\"\n8. \"A single word was pinned to the margin: verdacious.\"\n9. \"A single word was pinned to the margin: zephyrine.\"\n10. \"A single word was pinned to the margin: quondamly.\"\n11. \"A single word was pinned to the margin: verdacious.\"\n12. \"A single word was pinned to the margin: zephyrine.\"\n13. \"A single word was pinned to the margin: quondamly.\"\n14. \"A single word was pinned to the margin: verdacious.\"\n15. \"A single word was pinned to the margin: zephyrine.\"\n16. \"A single word was pinned to the margin: quondamly.\"\n17. \"A single word was pinned to the margin: verdacious.\"\n18. \"A single word was pinned to the margin: zephyrine.\"\n19. \"A single word was pinned to the margin: quondamly.\"\n20. \"A single word was pinned to the margin: verdacious.\"\n21. \"A single word was pinned to the margin: zephyrine.\"\n22. \"A single word was pinned to the margin: quondamly.\"\n23. \"A single word was pinned to the margin: verdacious.\"\n24. \"A single word was pinned to the margin: zephyrine.\"\n25. \"A single word was pinned to the margin: quondamly.\"\n26. \"A single word was pinned to the margin: verdacious.\"\n27. \"A single word was pinned to the margin: zephyrine.\"\n28. \"A single word was pi"
+}

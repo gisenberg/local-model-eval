@@ -1,0 +1,34 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 32768,
+  "task": "variable",
+  "trial": 0,
+  "seed": 1900965983,
+  "prompt_tokens": 14973,
+  "completion_tokens": 795,
+  "ttft_s": 2.143,
+  "decode_s": 3.806,
+  "total_s": 5.949,
+  "prefill_tps": 6988.46,
+  "decode_tps": 208.86,
+  "finish": "stop",
+  "score": {
+    "task": "variable",
+    "pass": true,
+    "partial": 1,
+    "n_expected": 1,
+    "hits": [
+      "233202"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "base": 233195,
+    "chain_len": 8,
+    "answer": 233202
+  },
+  "vram_mb": 36510,
+  "content_preview": "233202",
+  "reasoning_preview": "The user wants to find the numerical value of v7 based on the passage.\nI need to scan the passage for the variable definitions.\nThe passage contains:\nv0 := 233195\nv1 := v0 + 1\nv2 := v1 + 1\nv3 := v2 + 1\nv4 := v3 + 1\nv5 := v4 + 1\nv6 := v5 + 1\nv7 := v6 + 1\n\nLet's find them in the text to be sure.\n1. \"Archivist shorthand: v0 := 233195.\"\n2. \"Archivist shorthand: v1 := v0 + 1.\"\n3. \"Archivist shorthand: v2 := v1 + 1.\"\n4. \"Archivist shorthand: v3 := v2 + 1.\"\n5. \"Archivist shorthand: v4 := v3 + 1.\"\n6. \"Archivist shorthand: v5 := v4 + 1.\"\n7. \"Archivist shorthand: v6 := v5 + 1.\"\n8. \"Archivist shorthand: v7 := v6 + 1.\"\n\nSo v0 = 233195\nv1 = 233196\nv2 = 233197\nv3 = 233198\nv4 = 233199\nv5 = 233200\nv6 = 233201\nv7 = 233202\n\nLet's double check this arithmetic.\n233195 + 7 = 233202.\nYes, v7 = 233202.\n\nI will just output the number as requested.\nCheck the prompt: \"Answer with just the number, nothing else.\"\nSo the answer is 233202.\nDone.\nLet's quickly scan the text to ensure there are no other definitions or tricks.\n\"Archivist shorthand: v0 := 233195.\"\n\"Archivist shorthand: v1 := v0 + 1.\"\n\"Archivist shorthand: v2 := v1 + 1.\"\n\"Archivist shorthand: v3 := v2 + 1.\"\n\"Archivist shorthand: v4 := v3 + 1.\"\n\"Archivist shorthand: v5 := v4 + 1.\"\n\"Archivist shorthand: v6 := v5 + 1.\"\n\"Archivist shorthand: v7 := v6 + 1.\"\nAll straightforward.\nCalculation: 233195 + 7 = 233202.\nFinal answer: 233202.\nDone. \nI will produce exactly \"233202\".\nAll steps verified.\nReady. \nOutput matches requirement.\nProceeds. \n[Self-Correction/Verification during thought]\nWait, let's count how many +1 steps there are.\nv0 to v1: +1\nv1 to v2: +1\nv2 to v3: +1\nv3 to v4: +1\nv4 to v5: +1\nv5 to v6: +1\nv6 to v7: +1\nTotal additions = 7.\n233195 + 7 = 233202.\nCorrect.\nNo hidden traps.\nOutput is just the number.\nDone. \nProceeds. \nOutput: 233202\n"
+}

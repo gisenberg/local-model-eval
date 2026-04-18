@@ -1,0 +1,48 @@
+{
+  "config": "yarn4_1m",
+  "config_name": "YaRN factor=4 (1M)",
+  "ctx": 1048576,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 2005505861,
+  "prompt_tokens": 787313,
+  "completion_tokens": 415,
+  "ttft_s": 368.325,
+  "decode_s": 6.276,
+  "total_s": 374.6,
+  "prefill_tps": 2137.55,
+  "decode_tps": 66.13,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "246112",
+      "717293",
+      "524715"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "noqiz",
+      "gegik",
+      "yikut"
+    ],
+    "values": [
+      246112,
+      717293,
+      524715
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 58970,
+  "content_preview": "noqiz: 246112\ngegik: 717293\nyikut: 524715",
+  "reasoning_preview": "The user wants to extract the magic numbers for three specific keys: noqiz, gegik, and yikut from the provided text.\nI will search the text for these keys and their corresponding numbers.\n\n1. Search for \"noqiz\":\nLooking through the text...\nFound: \"Archivist memo: the magic number for noqiz is 246112, recorded on the registry.\"\nSo, noqiz = 246112.\n\n2. Search for \"gegik\":\nLooking through the text...\nFound: \"Archivist memo: the magic number for gegik is 717293, recorded on the registry.\"\nSo, gegik = 717293.\n\n3. Search for \"yikut\":\nLooking through the text...\nFound: \"Archivist memo: the magic number for yikut is 524715, recorded on the registry.\"\nSo, yikut = 524715.\n\nFormat the output as requested:\nnoqiz: 246112\ngegik: 717293\nyikut: 524715\nCheck for any other occurrences or tricks. The prompt says \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo I will output exactly:\nnoqiz: 246112\ngegik: 717293\nyikut: 524715\n\nDouble check the numbers:\nnoqiz -> 246112\ngegik -> 717293\nyikut -> 524715\nAll match. Ready. \nOutput matches requirement.\u2705\n"
+}

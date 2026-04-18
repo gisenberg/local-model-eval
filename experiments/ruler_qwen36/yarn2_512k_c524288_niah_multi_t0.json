@@ -1,0 +1,48 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 524288,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 2885318623,
+  "prompt_tokens": 388504,
+  "completion_tokens": 454,
+  "ttft_s": 111.242,
+  "decode_s": 4.384,
+  "total_s": 115.627,
+  "prefill_tps": 3492.42,
+  "decode_tps": 103.55,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "357902",
+      "231472",
+      "861533"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "huwab",
+      "qizur",
+      "soyif"
+    ],
+    "values": [
+      357902,
+      231472,
+      861533
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 47192,
+  "content_preview": "huwab 357902\nqizur 231472\nsoyif 861533",
+  "reasoning_preview": "The user wants to extract three magic numbers from the text:\n1. huwab\n2. qizur\n3. soyif\n\nI need to scan the text for these names and find the corresponding numbers.\n\nScanning for \"huwab\":\n\"Archivist memo: the magic number for huwab is 357902, recorded on the registry.\"\nSo, huwab = 357902.\n\nScanning for \"qizur\":\n\"Archivist memo: the magic number for qizur is 231472, recorded on the registry.\"\nSo, qizur = 231472.\n\nScanning for \"soyif\":\n\"Archivist memo: the magic number for soyif is 861533, recorded on the registry.\"\nSo, soyif = 861533.\n\nFormat required:\nAnswer with three numbers on separate lines, labelled by key, nothing else.\nhuwab 357902\nqizur 231472\nsoyif 861533\n\nDouble check the text to ensure accuracy.\n\"Archivist memo: the magic number for huwab is 357902, recorded on the registry.\" -> Correct.\n\"Archivist memo: the magic number for qizur is 231472, recorded on the registry.\" -> Correct.\n\"Archivist memo: the magic number for soyif is 861533, recorded on the registry.\" -> Correct.\n\nOutput matches exactly.\nProceed. \nFormat:\nhuwab 357902\nqizur 231472\nsoyif 861533\nDone. \nCheck constraints: \"Answer with three numbers on separate lines, labelled by key, nothing else.\" -> Matches.\nReady. \nOutput matches response.\u2705\n"
+}

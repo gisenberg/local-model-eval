@@ -1,0 +1,48 @@
+{
+  "config": "yarn2_512k",
+  "config_name": "YaRN factor=2 (512K)",
+  "ctx": 131072,
+  "task": "niah_multi",
+  "trial": 0,
+  "seed": 1579503135,
+  "prompt_tokens": 89604,
+  "completion_tokens": 985,
+  "ttft_s": 14.629,
+  "decode_s": 5.722,
+  "total_s": 20.35,
+  "prefill_tps": 6125.29,
+  "decode_tps": 172.15,
+  "finish": "stop",
+  "score": {
+    "task": "niah_multi",
+    "pass": true,
+    "partial": 3,
+    "n_expected": 3,
+    "hits": [
+      "836935",
+      "669557",
+      "887877"
+    ],
+    "missed": []
+  },
+  "meta": {
+    "keys": [
+      "balug",
+      "jutaw",
+      "yokuy"
+    ],
+    "values": [
+      836935,
+      669557,
+      887877
+    ],
+    "depths": [
+      0.15,
+      0.5,
+      0.85
+    ]
+  },
+  "vram_mb": 38432,
+  "content_preview": "balug 836935\njutaw 669557\nyokuy 887877",
+  "reasoning_preview": "The user wants to extract the \"magic numbers\" for three specific keys: \"balug\", \"jutaw\", and \"yokuy\" from the provided text.\nI will search the text for these keys and extract the corresponding numbers.\n\nSearching for \"balug\":\n\"Archivist memo: the magic number for balug is 836935, recorded on the registry.\"\nNumber for balug: 836935\n\nSearching for \"jutaw\":\n\"Archivist memo: the magic number for jutaw is 669557, recorded on the registry.\"\nNumber for jutaw: 669557\n\nSearching for \"yokuy\":\n\"Archivist memo: the magic number for yokuy is 887877, recorded on the registry.\"\nNumber for yokuy: 887877\n\nFormat required:\nbalug\n836935\njutaw\n669557\nyokuy\n887877\nWait, the prompt says: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nSo:\nbalug 836935\njutaw 669557\nyokuy 887877\nOr\nbalug: 836935\njutaw: 669557\nyokuy: 887877\n\nLet's check the exact wording: \"Answer with three numbers on separate lines, labelled by key, nothing else.\"\nI will format it as:\nbalug 836935\njutaw 669557\nyokuy 887877\n\nDouble check the numbers in the text:\nbalug -> 836935\njutaw -> 669557\nyokuy -> 887877\n\nAll match. I will output exactly that.\nCheck for any other instances? The prompt says \"the magic number for balug is 836935\".\nEverything is straightforward.\nOutput matches requirement.\nDone. \nI will produce the exact output.\nbalug 836935\njutaw 669557\nyokuy 887877\nWait, should I include a colon? \"labelled by key\" usually means \"key: value\" or \"key value\". I'll stick to \"key value\" or \"key: value\". I'll use \"key: value\" to be safe, or just \"key value\". The prompt says \"labelled by key\", so I'll write:\nbalug 836935\njutaw 669557\nyokuy 887877\nActually, standard format is fine. I'll just write:\nbalug 836935\njutaw 669557\nyokuy 887877\nDone. \nLet's verify one more time.\nText: \"Archivist memo: the magic number for balug is 836935, recorded on the registry.\"\nText: \"Archivist memo: the magic number for jutaw is 669557, recorded on the registry.\"\nText: \"Archivist memo: the magic number for yokuy is 88"
+}
