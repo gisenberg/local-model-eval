@@ -41,6 +41,17 @@ Per-platform model rankings (each is self-contained: tier list, throughput, VRAM
 
 See [results/HARDWARE_SPECS.md](results/HARDWARE_SPECS.md) for measured side-by-side throughput on the same models across the 3 benchmarked machines, and [results/README.md](results/README.md) for a navigation guide to all the analysis docs.
 
+### At a glance
+
+Four charts aggregating every measured configuration — regenerate with `python3 tools/generate_charts.py`, source data is a hand-curated table at the top of that script:
+
+| | |
+|---|---|
+| ![Quality vs speed](results/charts/01_quality_vs_speed.png) | ![Quantization cliff](results/charts/02_quant_cliff.png) |
+| **Quality vs speed** — every (hardware, model, quant) we've measured on one scatter. The upper-right cluster is the Pro 6000 + `gpt-oss-120b` and the 5090 + `Qwen 35B-A3B`; M4 Max points sit below 70 tok/s by bandwidth. | **Quantization cliff** — model×quant heatmap of coding pass rate. Gemma 4 31B holds 100% from BF16 through Q4_K_M; Gemopus regresses at every quant; Qwen 3.6 35B is noisy between BF16 and Q8. |
+| ![KV compression](results/charts/03_kv_compression.png) | ![Hardware head-to-head](results/charts/04_hardware_bars.png) |
+| **KV compression** — turbo4 costs ~10% on the 5090 but 30%+ on the M4 Max. `planar3` (rotorquant, K-only) is the one clean Mac win — +19% on dense Qwen 27B, wash on Gemma MoE. | **Same model, different hardware** — the 5090 beats M4 Max by 2.3–3.8× on every shared model. Gemma 31B Q8_0 on the Pro 6000 (44 tok/s) vs the Spark (7 tok/s) shows the bandwidth gap. |
+
 For per-platform context window / KV-cache analysis:
 
 - [results/CONTEXT_CAPACITY_5090.md](results/CONTEXT_CAPACITY_5090.md) — RTX 5090 32GB (KV cache spill cliff, full 256K context tests)
@@ -83,3 +94,4 @@ METHODOLOGY.md   How the benchmarks are scored
 - [`tools/score_combined.py`](tools/score_combined.py) — Same idea but combines all blocks into one file (handles bundled impl+test outputs)
 - [`tools/m4max_bench.py`](tools/m4max_bench.py) — M4 Max benchmark via direct llama-server (handles `--reasoning-budget 0`)
 - [`tools/m4max_mlx_bench.py`](tools/m4max_mlx_bench.py) — Same prompts via `mlx_lm.server` for MLX vs llama.cpp comparison
+- [`tools/generate_charts.py`](tools/generate_charts.py) — Renders the four summary PNGs in [`results/charts/`](results/charts/) from the curated cross-platform dataset
