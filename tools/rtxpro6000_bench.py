@@ -88,6 +88,12 @@ MODELS = {
         "ctx": 262144,
         "extra": [],
     },
+    "qwen36-opus-distill-q8": {
+        "name": "Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled Q8_0",
+        "path": f"{MODELS_ROOT}/qwen36-opus-distill-q8/Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled.Q8_0.gguf",
+        "ctx": 262144,
+        "extra": [],
+    },
 }
 
 

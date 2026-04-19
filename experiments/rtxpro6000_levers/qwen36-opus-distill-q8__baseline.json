@@ -1,0 +1,54 @@
+{
+  "model": "Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled Q8_0",
+  "key": "qwen36-opus-distill-q8",
+  "mode": "baseline",
+  "flags": {
+    "thinking": false,
+    "system_prompt": false,
+    "agentic": false
+  },
+  "vram_mb": 36510,
+  "total_score": "10/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "expected": 5,
+      "n_rounds": 1,
+      "elapsed_s": 13.66
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "expected": 5,
+      "n_rounds": 1,
+      "elapsed_s": 17.38
+    },
+    "astar_pathfinding": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 1,
+      "total": 1,
+      "status": "collection_error",
+      "expected": 6,
+      "n_rounds": 1,
+      "elapsed_s": 17.41
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 6,
+      "total": 6,
+      "status": "collection_error",
+      "expected": 6,
+      "n_rounds": 1,
+      "elapsed_s": 17.22
+    }
+  }
+}
