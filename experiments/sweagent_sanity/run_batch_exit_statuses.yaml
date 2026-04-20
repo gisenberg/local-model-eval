@@ -1,0 +1,7 @@
+instances_by_exit_status:
+    submitted:
+    - sqlfluff__sqlfluff-2419
+    submitted (exit_cost):
+    - sqlfluff__sqlfluff-1625
+    - sqlfluff__sqlfluff-1733
+total_cost: 0

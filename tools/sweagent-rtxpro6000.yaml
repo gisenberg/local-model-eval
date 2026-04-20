@@ -1,0 +1,94 @@
+# SWE-agent config for the Pro 6000 llama-swap endpoint.
+#
+# Points sweagent at the local llama-swap proxy on port 8080, using the
+# qwen36-35b-a3b-coder alias (Qwen3.6-35B-A3B Q8_0 + thinking, -np 4).
+# Cost + input-token tracking disabled since we're running free-of-charge.
+# Function-calling is kept on (llama.cpp serves with --jinja, which enables
+# OpenAI-format function calling for Qwen3.6).
+#
+# Invocation (single instance):
+#   sweagent run --config sweagent-rtxpro6000.yaml \
+#     --env.repo.github_url=https://github.com/SWE-agent/test-repo \
+#     --problem_statement.github_url=...
+#
+# Invocation (batch, SWE-bench Lite dev first 10):
+#   sweagent run-batch --config sweagent-rtxpro6000.yaml \
+#     --instances.type swe_bench --instances.subset lite \
+#     --instances.split dev --instances.slice :10
+
+# Extend the default config rather than reinvent templates + tool bundles
+# (still Anthropic-style file-edit tools but that's fine for Qwen3.6 —
+# llama.cpp's Jinja path maps OpenAI tool calls to Qwen's tag format).
+
+agent:
+  type: default
+  templates:
+    system_template: |-
+      You are a helpful assistant that can interact with a computer to solve tasks.
+    instance_template: |-
+      <uploaded_files>
+      {{working_dir}}
+      </uploaded_files>
+      I've uploaded a python code repository in the directory {{working_dir}}. Consider the following PR description:
+
+      <pr_description>
+      {{problem_statement}}
+      </pr_description>
+
+      Can you help me implement the necessary changes to the repository so that the requirements specified in the <pr_description> are met?
+      I've already taken care of all changes to any of the test files described in the <pr_description>. This means you DON'T have to modify the testing logic or any of the tests in any way!
+      Your task is to make the minimal changes to non-tests files in the {{working_dir}} directory to ensure the <pr_description> is satisfied.
+      Follow these steps to resolve the issue:
+      1. As a first step, it might be a good idea to find and read code relevant to the <pr_description>
+      2. Create a script to reproduce the error and execute it with `python <filename.py>` using the bash tool, to confirm the error
+      3. Edit the sourcecode of the repo to resolve the issue
+      4. Rerun your reproduce script and confirm that the error is fixed!
+      5. Think about edgecases and make sure your fix handles them as well
+      Your thinking should be thorough and so it's fine if it's very long.
+    next_step_template: |-
+      OBSERVATION:
+      {{observation}}
+    next_step_no_output_template: |-
+      Your command ran successfully and did not produce any output.
+  model:
+    # Provider prefix `openai/` routes through LiteLLM's OpenAI client.
+    # The tail `qwen36-35b-a3b-coder` is the llama-swap alias; the proxy
+    # loads/unloads model backends based on this value.
+    name: openai/qwen36-35b-a3b-coder
+    api_base: http://localhost:8080/v1
+    api_key: local-no-auth         # llama.cpp/llama-swap ignores auth
+    per_instance_cost_limit: 0     # cost tracking impossible for local
+    total_cost_limit: 0
+    per_instance_call_limit: 75    # cap agent loops; 75 tool calls per task
+    max_input_tokens: 0            # no truncation; rely on ctx instead
+    temperature: 0.6
+    top_p: 0.95
+  tools:
+    bundles:
+      - path: tools/registry
+      - path: tools/edit_anthropic
+      - path: tools/review_on_submit_m
+    registry_variables:
+      USE_FILEMAP: 'true'
+      SUBMIT_REVIEW_MESSAGES:
+        - |
+          Thank you for your work on this issue. Please carefully follow the steps below to help review your changes.
+
+          1. If you made any changes to your code after running the reproduction script, please run the reproduction script again.
+             If the reproduction script is failing, please revisit your changes and make sure they are correct.
+             If you have already removed your reproduction script, please ignore this step.
+          2. Remove your reproduction script (if you haven't done so already).
+          3. If you have modified any TEST files, please revert them to the state they had before you started fixing the issue.
+             You can do this with `git checkout -- /path/to/test/file.py`. Use below <diff> to find the files you need to revert.
+          4. Run the submit command again to confirm.
+
+          Here is a list of all of your changes:
+
+          <diff>
+          {{diff}}
+          </diff>
+    enable_bash_tool: true
+    parse_function:
+      type: function_calling
+  # Anthropic prompt-caching isn't applicable for local models.
+  history_processors: []

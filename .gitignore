@@ -6,3 +6,11 @@ spark_bench/spark_results.json
 # Transient spec dec experiment log
 /tmp/specdec_*.log
 /tmp/ik_*.log
+# SWE-agent bulk run artifacts (trajectories, per-instance logs, patches)
+# are too large to commit. Keep only the preds.json roll-ups.
+experiments/sweagent_lite/*/
+experiments/sweagent_lite_opus/*/
+experiments/sweagent_lite_retry/*/
+experiments/sweagent_sanity/*/
+# SWE-bench eval harness runtime logs (per-instance test runs, ~75 MB).
+logs/
