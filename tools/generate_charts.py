@@ -2,7 +2,7 @@
 """Generate headline charts from the local-model-eval rankings.
 
 Data is hand-curated from results/MODEL_RANKINGS_*.md, HARDWARE_SPECS.md,
-and TURBOQUANT_IMPACT_*.md. Each row represents one measured configuration
+and TURBOQUANT.md. Each row represents one measured configuration
 (hardware + model + quant + kv_config + thinking), with throughput and
 a coding-benchmark score where available.
 
@@ -60,7 +60,7 @@ DATA: list[Run] = [
     Run("RTX 5090", "Gemma 4 26B-A4B", "Gemma",   "NVFP4",  "fp8",    "vLLM",      135.0, 22, 22, 31.3),
     Run("RTX 5090", "Gemma 4 31B-IT",  "Gemma",   "NVFP4",  "fp8",    "vLLM",       42.0, 22, 22, 30.3),
 
-    # KV-compression pairs from TURBOQUANT_IMPACT_5090.md (f16 vs turbo4 speed)
+    # KV-compression pairs from TURBOQUANT.md (f16 vs turbo4 speed)
     Run("RTX 5090", "Gemma 4 26B-A4B", "Gemma",   "Q6_K",   "f16",    "llama.cpp", 152.0, 17, 17, 26.7, note="f16 baseline"),
     Run("RTX 5090", "Gemma 4 26B-A4B", "Gemma",   "Q4_K_M", "f16",    "llama.cpp", 164.0, 16, 17, 21.2, note="f16 baseline"),
 

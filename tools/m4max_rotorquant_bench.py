@@ -3,7 +3,7 @@
 M4 Max RotorQuant benchmark.
 
 Tests planar3/iso3 KV cache configs on the S/A tier M4 Max models against
-their existing f16/turbo4 baselines. See ROTORQUANT_HYPOTHESIS_M4MAX.md
+their existing f16/turbo4 baselines. See ROTORQUANT.md
 for the pre-experiment hypothesis.
 
 Runs the 3 standard coding prompts via johndpope/llama-cpp-turboquant's

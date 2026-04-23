@@ -45,7 +45,7 @@ The most consistent model tested. Average score nearly equals best-of-3 — prod
 **Strengths:** Fastest S-tier, extremely consistent, reaches the full 262K native context window with TurboQuant at ~5 GB of VRAM headroom.
 **Weakness:** ExprEval caps at 4/5 at temp 0.3 (test wording mismatch, not implementation quality).
 
-> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~230K" based on an architecture table in `CONTEXT_CAPACITY_5090.md` that recorded 15 global-attention layers at head_dim 256. The live gemma4 loader on the rebased johndpope fork shows the correct architecture: **5 global-attention layers at head_dim 512** (plus 25 SWA layers at head_dim 256). Recomputing the per-token KV cost from the live architecture shows turbo4 fits the full 262K native window with ~5 GB of headroom on 32 GB, so rotorquant compression would give only extra VRAM headroom (no additional usable context) on this model. See the addendum in [ROTORQUANT_5090.md](ROTORQUANT_5090.md) for the full correction.
+> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~230K" based on an architecture table in `CONTEXT_CAPACITY_5090.md` that recorded 15 global-attention layers at head_dim 256. The live gemma4 loader on the rebased johndpope fork shows the correct architecture: **5 global-attention layers at head_dim 512** (plus 25 SWA layers at head_dim 256). Recomputing the per-token KV cost from the live architecture shows turbo4 fits the full 262K native window with ~5 GB of headroom on 32 GB, so rotorquant compression would give only extra VRAM headroom (no additional usable context) on this model. See the addendum in [ROTORQUANT.md](ROTORQUANT.md) for the full correction.
 
 ---
 
@@ -93,7 +93,7 @@ Highest consistency of any model. Perfect single-shot, 99% average. **Cannot run
 **Strengths:** Most consistent across all benchmarks and runs. Dense architecture produces very stable output. Reaches the full 262K native context window with turbo4 at 28 GB VRAM (4 GB headroom on the 5090).
 **Weakness:** 50 tok/s (dense arch penalty vs the 139 tok/s MoE Gemma 26B).
 
-> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~58K" based on a pre-experiment projection of 870 KB/token f16 KV. That projection was ~10× too high because it assumed all 60 layers are full-attention; in reality, Gemma 4 31B-IT has only **10 non-SWA (global attention) layers with ~4 shared-KV heads each** (the other 50 are SWA at a fixed 1536-cell window). The actual per-token turbo4 cost is ~22 KB/token (measured from a VRAM sweep at 96K/160K/262K on the rebased planarquant fork), which puts the full 262K window at only 28 GB total. The iso3/iso3 "long context" subcard that was previously in this tier list has been removed — turbo4 already reaches the full native window, so rotorquant provides zero context advantage on this model. See the addendum in [ROTORQUANT_5090.md](ROTORQUANT_5090.md) for the full story.
+> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~58K" based on a pre-experiment projection of 870 KB/token f16 KV. That projection was ~10× too high because it assumed all 60 layers are full-attention; in reality, Gemma 4 31B-IT has only **10 non-SWA (global attention) layers with ~4 shared-KV heads each** (the other 50 are SWA at a fixed 1536-cell window). The actual per-token turbo4 cost is ~22 KB/token (measured from a VRAM sweep at 96K/160K/262K on the rebased planarquant fork), which puts the full 262K window at only 28 GB total. The iso3/iso3 "long context" subcard that was previously in this tier list has been removed — turbo4 already reaches the full native window, so rotorquant provides zero context advantage on this model. See the addendum in [ROTORQUANT.md](ROTORQUANT.md) for the full story.
 
 ---
 
@@ -430,5 +430,67 @@ llama-server -m harmonic-model.gguf --port 8080 -c 32768 -ngl 99 \
   -fa on -ctk turbo4 -ctv turbo4 -np 1 -rea on --reasoning-budget 16384
 ```
 
-See [TURBO3_RESULTS_5090.md](TURBO3_RESULTS_5090.md) for full experimental data across 8+ benchmark runs.
-See [TURBOQUANT_IMPACT_5090.md](TURBOQUANT_IMPACT_5090.md) for what TurboQuant unlocks on 32 GB VRAM.
+See [TURBOQUANT.md](TURBOQUANT.md) for the full TurboQuant KV compression story, including the 5090's per-model optimal KV configs, the thinking-budget-exhaustion findings with turbo3, and the context-unlock table. See [ROTORQUANT.md](ROTORQUANT.md) for the newer K-only Givens-rotation KV quantizer (turbo4 remains the 5090 default — rotorquant provides no throughput or context advantage on any model we tested).
+
+---
+
+## Free-tier API model comparison
+
+For calibration against hosted API models on the same 4-benchmark coding suite (temp 0.3, 3 runs best-of-3). Throughput numbers reflect API + network latency, not model-intrinsic decode speed; quality scores (pytest pass/fail) are directly comparable to the local tier list above.
+
+### GPT-OSS 120B (OpenRouter Free)
+
+OpenAI's open-source 120B served via OpenRouter free tier. Model ID: `openai/gpt-oss-120b:free`. Context 131K, max output 16,384.
+
+| Benchmark | Best | Avg | API tok/s |
+|---|---:|---:|---:|
+| Expression Evaluator | **5/5** | 3.3/5 | 34.8 |
+| A* Pathfinding | **6/6** | 5.7/6 | 29.4 |
+| LRU Cache with TTL | **0/6** | 0.0/6 | 34.1 |
+| String Processor | **5/5** | 5.0/5 | 37.0 |
+| **Total** | **16/22 (73%)** | **14.0/22 (64%)** | **~34** |
+
+**Three of four benchmarks are solid.** ExprEval 5/5, A* 6/6 (with bonus tests 7-9 on some runs), String Processor 5/5 — on par with local A-tier models (Qwen 27B Opus-Distilled, Qwopus 27B).
+
+**LRU Cache is a complete failure — 0/6 on every run.** Failure mode is a **SyntaxError**, not a logic bug: runs 1 and 2 use TypeScript non-null assertion syntax (`self._head.next!.prev`) inside Python code, run 3 has an unterminated triple-quoted string. Cross-language contamination on doubly-linked-list pointer manipulation. Same "LRU 0/6 every run" capability gap as Qwen 3.5 35B-A3B on the 5090 (C-tier), though the failure mode there was different (import errors + logic bugs, not syntax contamination).
+
+API throughput is ~34 tok/s through OpenRouter's free tier — network-dependent (1.5-5s TTFT depending on queue), not comparable to local decode rates.
+
+**Where it lands in the 5090 tier list:**
+
+| Tier | Models (5090 local) | Score |
+|---|---|---|
+| S | Gemma 4 26B-A4B Q6_K, Gemma 4 31B-IT Q4_K_M | 17/17 |
+| A | Qwen 27B Opus, Gemma 26B Q4_K_M, Harmonic 27B, Qwopus 27B | 16-17/17 |
+| → | **GPT-OSS 120B (free API)** | **16/22 (73%)** |
+| B | Gemma 31B Opus-Distilled | 16/17 |
+| C | Qwen 35B-A3B (same LRU gap) | 11/17 |
+
+Between A-tier and C-tier on quality: passes 3 of 4 benchmarks cleanly, LRU is categorical (consistent syntax-contamination bug, not variance). Closest local equivalent is Qwen 3.5 35B-A3B Q4_K_M (C-tier, 11/17) which has the same LRU gap but also fails on some ExprEval runs. GPT-OSS 120B is noticeably better — passes ExprEval and A* reliably where Qwen 35B doesn't.
+
+Useful for quick coding assistance; not reliable for tasks requiring doubly-linked-list implementations or complex pointer manipulation.
+
+### MiniMax M2.5 (OpenRouter Free) — not benchmarkable
+
+Model ID: `minimax/minimax-m2.5:free`. Context 196K, max output **8,192 tokens** (free tier cap).
+
+Benchmark abandoned after 2 of 12 runs:
+
+| Run | TTFT | Decode | Tokens | Score | Issue |
+|---|---:|---:|---:|---:|---|
+| ExprEval run 1 | **492s** (8 min queue) | 50.8 tok/s | 8,192 (hit cap) | 0/5 | Truncated mid-implementation |
+| ExprEval run 2 | **1,397s** (23 min queue) | 2.9 tok/s | 5,004 | 0/5 | Truncated, slow decode |
+
+Three compounding problems: free-tier queue times are 8-23 min (full bench would take 4-8 hours), 8K max output truncates the thinking preamble + implementation, decode throughput is inconsistent (50.8 tok/s vs 2.9 tok/s). Not a model-capability judgment — just a free-tier infrastructure issue. May perform well on a paid tier with higher output limits.
+
+### MiniMax M2.7 (NVIDIA NIM Free) — not benchmarkable
+
+Model ID: `minimaxai/minimax-m2.7`. Context 200K, max output 16,384. Served via `integrate.api.nvidia.com`.
+
+Every run timed out at 300s or connection dropped mid-stream. A short "Say one word" (max_tokens=5) succeeded at ~90s, confirming the endpoint is alive — but coding prompts requiring thousands of thinking + code tokens exceed the free-tier time limit. The 16K output cap would be sufficient if the endpoint could stay connected long enough. Pure infrastructure timeout, not a model issue.
+
+### API bench artifacts
+
+- Bench script: [`../tools/api_bench.py`](../tools/api_bench.py)
+- Results JSON: [`../experiments/api_bench/results.json`](../experiments/api_bench/results.json)
+- Per-run test files: `../experiments/api_bench/{model}_{benchmark}_run{n}_test.py`

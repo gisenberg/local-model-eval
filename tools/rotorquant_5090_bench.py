@@ -45,7 +45,7 @@ CTX = 32768
 # models are Gemma 4 26B-A4B Q6_K, Gemma 4 26B-A4B Q4_K_M, and Gemma 4 31B-IT
 # Q4_K_M — the last of which was the one model where rotorquant's 10.3x
 # compression would have materially unlocked extra context. See
-# ROTORQUANT_HYPOTHESIS_5090.md for the full scope-cut rationale.
+# ROTORQUANT.md for the full scope-cut rationale.
 MODELS = [
     {
         "key": "qwen27b-opus-q4km",

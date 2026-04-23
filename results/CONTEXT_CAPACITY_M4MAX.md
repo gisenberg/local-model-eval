@@ -24,7 +24,7 @@ For the RTX 5090 equivalent, see [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_509
 > | planar3 / f16 K-only (default ub) | ✅ 20.9 GB | — | ❌ 30.5 GB (K-only is deferred — no memory savings at allocation) | — |
 > | turbo4 / turbo4 (default ub) | ✅ ~18.5 GB | ✅ — | ✅ 21.0 GB | ✅ 24.1 GB (loads; decode unverified) |
 >
-> Details in [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) under "Context window gains" — the rebase that unblocked Gemma 4 testing also surfaced these base-version issues.
+> Details in [ROTORQUANT.md](ROTORQUANT.md) under "Context window gains" — the rebase that unblocked Gemma 4 testing also surfaced these base-version issues.
 
 ---
 

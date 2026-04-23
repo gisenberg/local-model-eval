@@ -483,6 +483,148 @@ The bartowski Qwen3.5-122B variants are unaffected because their ExprEval failur
 
 ---
 
+## Deep dive: Qwen3.6-35B-A3B vs Qwen3.5-122B-A10B on Spark — does the small model win?
+
+There is a standing debate on the Spark forums that prefers Qwen 3.5 35B-A3B at FP8 over 3.5 122B-A10B at INT4. James Hillyerd's framing: *"The rule of thumb is that a large model quantized down is usually better than a small model at a larger quant, but perhaps MoE suffers more."* We benchmarked both.
+
+**Short answer: no. The 122B Q4 scores 17/17. The 35B-A3B at BF16 (zero quant loss — best it can possibly be) scores 9/17. The rule holds for MoE.**
+
+### Results
+
+| Model | Active | Quant | Weights | Tok/s | ExprEval | A* | LRU | Total | Tier |
+|---|---:|---|---:|---:|---:|---:|---:|---:|---|
+| Qwen3.5-122B-A10B (bartowski) | 10B | Q4_K_M | 71 GB | **26** | **5/5** | **7/6** | **5/6** | **17/17** | **S** |
+| Qwen3.5-122B-A10B (unsloth) | 10B | Q4_K_M | 72 GB | 21 | 5/5 | 7/6 | 6/6 | **18/17** | **S** |
+| Qwen3.5-122B-A10B (vLLM INT4+FP8+MTP-2) | 10B | AR-INT4/FP8 | ~72 GB | **49** | 5/5 | 7/6 | 4/6 | **16/17** | S |
+| **Qwen3.6-35B-A3B (unsloth)** | **3B** | **BF16** | **69 GB** | **31** | **4/5** | **5/6** | **0/6** | **9/17** | **D** |
+| Qwen3-Coder-Next 80B-A3B | 3B | Q4_K_M | 46 GB | 50 | 5/5 | 6/6 | 3/6 | 14/17 | B |
+
+Key details:
+
+- The **35B-A3B BF16** result is the *best possible* quality for that model — zero quantization loss. FP8 can only be equal or worse. If BF16 scores 9/17, FP8 won't score higher.
+- The **122B at Q4_K_M** (~4.5 bpw) still scored 17/17. The model has enough capacity that Q4 doesn't hurt it on these tasks.
+- Throughput favors the 35B (31 tok/s BF16) over the 122B on ik-llama (26 tok/s) — but the 122B on vLLM with INT4+FP8 and MTP-2 speculative decoding runs at **49 tok/s**, beating the 35B on speed *and* quality.
+
+### Where the 35B-A3B failed
+
+- **Expression Evaluator (4/5)**: the model wrote a test asserting `1 + 2 * 3 - 4 / 2 == 4.0` but the impl returns `5.0` (the correct answer — `1 + 6 - 2 = 5`). The impl has right precedence; the test is wrong.
+- **A* Pathfinding (5/6)**: the test creates a 3×3 grid with the middle row blocked and asserts `find_path((0,0), (0,2))` returns `None`. But `(0,0)` and `(0,2)` are in the same unblocked top row — the impl correctly found a path along row 0. The test is wrong, the impl is right.
+- **LRU Cache (0/6)**: zero tests ran — model emitted impl and tests in a format the harness couldn't extract (combined single block). Structural output failure, not logic failure.
+
+**Pattern**: the 35B's failures are all self-consistency problems — writes code that works, then writes tests that don't match, or structures output in a way that breaks the harness. The 122B doesn't make these mistakes because it has enough capacity to maintain coherence across the full generation.
+
+### Why MoE doesn't change the rule
+
+The intuition that "MoE might suffer more from quantization" is backwards — MoE actually suffers *less*:
+
+1. **Only ~10B params are active per token** regardless of total model size. Quantizing the 122B's inactive experts from FP16 to Q4 doesn't affect per-token computation quality — those experts aren't being read. The active 10B experts are quantized, but 10B @ Q4 is still more capacity than 3B @ BF16.
+2. **The router is barely affected by weight quantization.** Expert selection happens in a tiny gating network well within the precision budget at Q4.
+3. **Capacity advantage compounds with expert count.** The 122B has 256 experts, the 35B also has 256 but each one is ~3× smaller. When the router picks top-10, the 122B's experts individually have more capacity to contribute — even quantized.
+
+### Speed argument also doesn't hold
+
+- 35B BF16: 31 tok/s (3B active × BF16 = ~6 GB/token)
+- 122B Q4_K_M on ik-llama: 26 tok/s (10B active × Q4 ≈ ~5 GB/token)
+- 122B INT4+FP8 on vLLM: **49 tok/s** (with MTP-2 spec dec)
+
+The 35B's speed advantage over ik-llama is 19%. It vanishes with vLLM, which runs the 122B ~60% *faster* while scoring 16/17 vs 9/17. Trading 17/17 for 9/17 to gain 19% throughput is a bad deal.
+
+**The rule holds**: a large MoE quantized to Q4 decisively beats a small MoE at FP8/BF16 on the Spark.
+
+---
+
+## Deep dive: MiniMax M2.5 & M2.7 — the empty-think template workaround
+
+MiniMax M2.5 and M2.7 are **mandatory thinking models** — MiniMax has explicitly stated that disabling thinking is not supported ([GitHub issue #68](https://github.com/MiniMax-AI/MiniMax-M2/issues/68)). Every mechanism llama.cpp provides (`-rea off`, `--reasoning-budget 0`, custom no-think templates) is ignored because the model's chat template never checks `enable_thinking` and the model weights are trained to always emit `<think>` tokens. The original M2.5 C-tier entry above scored 5/5 + 2 timeouts because the model spent 25+ minutes thinking on A* and LRU before producing any content.
+
+**The workaround**: inject a pre-closed `<think>\n\n</think>` block in the generation prompt so the model sees thinking as "already done" and skips to content. Proposed by user `gelim` in [llama.cpp issue #20196](https://github.com/ggml-org/llama.cpp/issues/20196). The llama.cpp maintainer warned it may degrade output quality; in practice it works cleanly on both M2.5 and M2.7.
+
+Template file: `templates/minimax-m27-empty-think.jinja` — identical to `minimax-m25-no-think.jinja` except the generation prompt block:
+
+```jinja
+{%- if add_generation_prompt -%}
+{{- ']~b]ai' ~ '\n' ~ '<think>' ~ '\n\n' ~ '</think>' ~ '\n\n' }}
+{%- endif -%}
+```
+
+**Result: zero reasoning tokens across all 12 benchmark runs.** The model produces content directly, at full decode throughput, with no thinking overhead.
+
+### Architecture note: M2.5 and M2.7 are architecturally identical
+
+Despite MiniMax's marketing describing "Lightning Attention" for M2.5, **both models have the exact same attention architecture** per their `config.json`:
+
+- 62 layers, ALL standard attention (`attn_type_list` all 1s)
+- 48 attention heads, 8 KV heads, 128 head dim
+- 256 experts, 8 active per token
+- `max_position_embeddings`: 196,608 (192K native context)
+
+**KV cache per token: ~248 KB/token at f16** (measured from llama-server allocation: 47,616 MiB for 196,608 tokens). NOT tiny — comparable to a dense model with 62 attention layers. The "Lightning Attention = tiny KV" label in earlier bench scripts was wrong.
+
+At 192K native context, KV cache alone is ~46.5 GB, which dominates the memory budget alongside weights.
+
+### Quality vs quant tradeoff
+
+Single-shot `temperature=0`, `-fa on`, f16 KV, `--no-mmap`, empty-think template.
+
+| Model | Quant | Weights | Context | Prefill | Decode | Score | Note |
+|---|---|---|---|---|---|---|---|
+| **M2.7** | UD-IQ3_S | 84 GB | 96K | ~330 tok/s | **28 tok/s** | **14/17 (82%)** | Best MiniMax quality. ExprEval 5/5, A* 6/6, LRU 3/6. |
+| **M2.7** | UD-IQ2_XXS | 61 GB | **192K native** | ~390 tok/s | **35 tok/s** | **10/17 (59%)** | Full context. ExprEval 5/5, A* 5/6, LRU 0/6. 2-bit costs 4 quality points. |
+| **M2.5** | UD-Q3_K_XL | 101 GB | 32K | ~330 tok/s | **28 tok/s** | **8/17 (47%)** | ExprEval 5/5, A* 3/6, LRU 0/6. |
+| **M2.5** | UD-IQ2_XXS | 70 GB | **160K** | ~390 tok/s | **35 tok/s** | **11/17 (65%)** | ExprEval 5/5, A* 6+2/6, LRU 0/6 (64K chars, no stop). |
+| M2.5 (original, no workaround) | UD-Q3_K_XL | 101 GB | 32K | ~330 tok/s | 29.6 tok/s | 5/5 + 2 TOs | A* and LRU timed out at 25 min. |
+
+**Observations**:
+- **M2.7 > M2.5 at every quant level.** Newer training substantially improves coding quality.
+- **2-bit quantization costs real quality.** M2.7 drops 14/17 (IQ3_S) → 10/17 (IQ2_XXS) — 4-point regression concentrated on LRU (3/6 → 0/6) and A* (6/6 → 5/6). Throughput increases (28 → 35 tok/s) but the quality trade is steep.
+- **LRU Cache is MiniMax's Achilles' heel.** 0/6 on both M2.5 variants and M2.7 IQ2_XXS. Only M2.7 IQ3_S achieves partial 3/6.
+- **M2.5 IQ2_XXS > M2.5 Q3_K_XL is noise**, not signal — the 11/17 vs 8/17 difference comes from A* (6+2 bonus on IQ2_XXS vs 3/6 on Q3_K_XL). Different quant noise steers the model down different paths at temp=0.
+
+### Memory: what fits at what context
+
+Both models have identical KV requirements (~248 KB/token f16). Budget: ~115 GB allocatable (120 GB unified minus OS/system overhead).
+
+| Config | Max context (measured) | Total at max ctx | Headroom |
+|---|---|---|---|
+| M2.7 IQ3_S | **96K** | ~103 GB | 12 GB |
+| M2.7 IQ2_XXS | **192K native** | ~107 GB | 8 GB |
+| M2.5 Q3_K_XL | 32K (tight) | ~104 GB | 11 GB |
+| M2.5 IQ2_XXS | **160K** | ~108 GB | 7 GB |
+
+M2.7 IQ3_S at 192K OOMs (79.3 + 46.5 = 126 GB > 115). M2.5 IQ2_XXS at 192K OOMs (68.7 + 46.5 = 115.2, just over). M2.5 IQ2_XXS at 160K loads successfully.
+
+### Comparison vs existing Spark picks
+
+| Model | Score | Decode | Context | Thinking issue? |
+|---|---|---|---|---|
+| **Qwen3.5-122B Q4_K_M (unsloth)** | **18/17** | 21 tok/s | 256K | No |
+| Qwen3.5-122B Q4_K_M (bartowski) + ik-llama | 17/17 | 26 tok/s | 256K | Yes (thinking can't be disabled) |
+| GLM-4.5-Air Q4_K_M | 15/17 | 22 tok/s | 128K | No |
+| **MiniMax-M2.7 IQ3_S (empty-think)** | **14/17** | **28 tok/s** | 96K | Workaround |
+| Qwen3-Coder-Next UD-Q4_K_M | 14/17 | 50 tok/s | 256K | No |
+| MiniMax-M2.7 IQ2_XXS (empty-think) | 10/17 | 35 tok/s | 192K | Workaround |
+
+**MiniMax-M2.7 IQ3_S lands in B-tier** alongside Qwen3-Coder-Next — same 14/17 at lower throughput (28 vs 50) and smaller context (96K vs 256K). The empty-think template turns an unusable model into a functional coder, but it doesn't beat the existing picks. **Qwen3.5-122B-A10B remains the Spark winner**.
+
+### MiniMax serving config
+
+Best MiniMax config on Spark: M2.7 IQ3_S at 96K.
+
+```bash
+llama-server \
+  -m ~/.lmstudio/models/unsloth/MiniMax-M2.7-GGUF/UD-IQ3_S/MiniMax-M2.7-UD-IQ3_S-00001-of-00003.gguf \
+  --host 0.0.0.0 --port 8080 \
+  -c 98304 -ngl 99 -fa on -ctk f16 -ctv f16 -np 1 --no-mmap --jinja \
+  --chat-template-file templates/minimax-m27-empty-think.jinja \
+  -rea off
+```
+
+Critical: `--chat-template-file` pointing to the empty-think template is **mandatory**. Without it the model thinks 20-30 min per prompt and times out on any non-trivial task.
+
+For full 192K native context use M2.7 IQ2_XXS (same command, different model path), accepting the 14/17 → 10/17 quality drop.
+
+---
+
 ## Configuration
 
 ```bash

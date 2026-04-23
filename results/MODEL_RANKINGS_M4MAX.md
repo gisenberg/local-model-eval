@@ -1,7 +1,7 @@
 # Local Model Tier List — MacBook Pro M4 Max 36 GB
 
 **Platform:** Apple M4 Max (14C CPU / 32C GPU binning), 36 GB unified LPDDR5X, 410 GB/s
-**Inference:** llama.cpp (planarquant fork with Gemma 4 cherry-picks, Metal backend) — see [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) for build instructions
+**Inference:** llama.cpp (planarquant fork with Gemma 4 cherry-picks, Metal backend) — see [ROTORQUANT.md](ROTORQUANT.md) for build instructions
 **Standard config:** flash attention (`-fa on`), `max_tokens=16384`, `-ctk f16 -ctv f16` (default; rotorquant K-only on dense GQA models — see KV format section), thinking off (`--reasoning-budget 0`), `-np 1 --jinja`, default `-ub 512`
 
 Tested April 2026. Last refreshed 2026-04-12 after the rotorquant + llama.cpp base upgrade.
@@ -11,7 +11,7 @@ Tested April 2026. Last refreshed 2026-04-12 after the rotorquant + llama.cpp ba
 > - **`-ub 256` is no longer required.** Default `-ub 512` works at 32K on all models below. The old "compute buffer scales with n_ubatch × n_ctx" claim was the bug, not the architecture.
 > - **Turbo4 KV is no longer mandatory for Gemma 4 31B-IT.** f16 fits at 64K on the new base; turbo4 is now an optional context extender for 128K+, not a fit requirement.
 > - **Plain f16 KV is much faster on the new base than the old-base turbo4/ub=256 configs it replaces.** Gemma 4 31B-IT f16 @ 32K default ub runs at **15.3 tok/s** vs the old 11.8 tok/s turbo4 number (+30%). Gemma 4 26B-A4B Q6_K f16 @ 32K runs at **65.6 tok/s** vs the old 60.3 tok/s f16 @ 16K number. The base upgrade by itself (without rotorquant) produces most of the speedup.
-> - **Rotorquant `planar3/f16` K-only is a +19% win on dense GQA (Qwen 27B), but a wash on Gemma 4.** Originally I measured +13-20% across three models, but retesting on the new base at matched ub shows Gemma 4 26B-A4B Q6_K is within 2% between f16 and planar3/f16. The original wins on Gemma 4 were cross-base comparisons (old-base f16 vs new-base planar3/f16) that double-counted the base upgrade. See [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) for the detail.
+> - **Rotorquant `planar3/f16` K-only is a +19% win on dense GQA (Qwen 27B), but a wash on Gemma 4.** Originally I measured +13-20% across three models, but retesting on the new base at matched ub shows Gemma 4 26B-A4B Q6_K is within 2% between f16 and planar3/f16. The original wins on Gemma 4 were cross-base comparisons (old-base f16 vs new-base planar3/f16) that double-counted the base upgrade. See [ROTORQUANT.md](ROTORQUANT.md) for the detail.
 >
 > The tier ordering below hasn't changed, but all S/A-tier throughput numbers, context ceilings, and config examples are new measurements.
 
@@ -43,7 +43,7 @@ These are on the planarquant fork with Gemma 4 cherry-picks, default `-ub 512`. 
 
 Two follow-on findings:
 
-- **Rotorquant `planar3/f16` K-only helps on dense GQA, not on Gemma 4.** Measured cleanly on the new base at matched ub: Qwen 27B Opus-Distilled gets +19% (15.5 vs 13.0 tok/s) at identical quality — a real win. Gemma 4 26B-A4B Q6_K at 32K default ub is a **wash** (64.5 vs 65.6 tok/s, noise-level). The original +13-20% Gemma 4 numbers I reported were cross-base comparisons that double-counted the base upgrade. Use planar3/f16 on dense GQA models; default to f16/f16 on Gemma 4. See [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md).
+- **Rotorquant `planar3/f16` K-only helps on dense GQA, not on Gemma 4.** Measured cleanly on the new base at matched ub: Qwen 27B Opus-Distilled gets +19% (15.5 vs 13.0 tok/s) at identical quality — a real win. Gemma 4 26B-A4B Q6_K at 32K default ub is a **wash** (64.5 vs 65.6 tok/s, noise-level). The original +13-20% Gemma 4 numbers I reported were cross-base comparisons that double-counted the base upgrade. Use planar3/f16 on dense GQA models; default to f16/f16 on Gemma 4. See [ROTORQUANT.md](ROTORQUANT.md).
 - **TurboQuant KV is now an optional context extender, not a speed or fit requirement.** On Apple Silicon, turbo4's dequant compute still costs decode throughput vs f16 on every model where both fit (measured: -20% to -30% on Gemma 4 31B-IT). But unlike planar3/f16 (deferred quantization, no memory savings), turbo4 compresses at allocation time — so on Gemma 4 31B-IT it's the path to 128K/256K context when you need it. Use f16 first; reach for turbo4 only to extend context beyond what f16 fits.
 
 ---
@@ -64,7 +64,7 @@ The highest-quality model on this machine. Dense 31B with ISWA (~9 of 62 layers 
 
 **Strengths:** Same quality as a 5090 (also 17/17 on this suite). Per-benchmark perfect: ExprEval 5/5, A* 6/6, LRU 6/6.
 **Weakness:** Throughput. 15 tok/s is usable but not snappy; a 2K-token generation still takes ~2 minutes. Acceptable for "give me the right answer once" workflows; painful for chat.
-**Rotorquant K-only:** `-ctk planar3 -ctv f16` was previously reported as +20% on this model, but that comparison was against the old-base turbo4/ub=256 config (11.8 tok/s). On a matched same-base comparison at default ub, rotorquant K-only's benefit on Gemma 4 disappears (see [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md)). Default to f16/f16.
+**Rotorquant K-only:** `-ctk planar3 -ctv f16` was previously reported as +20% on this model, but that comparison was against the old-base turbo4/ub=256 config (11.8 tok/s). On a matched same-base comparison at default ub, rotorquant K-only's benefit on Gemma 4 disappears (see [ROTORQUANT.md](ROTORQUANT.md)). Default to f16/f16.
 **Context tradeoff:** At 128K, f16 OOMs at 30.5 GB. If you need 128K+, use `-ctk turbo4 -ctv turbo4` instead: 128K fits at 21 GB and 256K at 24.1 GB, at a ~20% throughput penalty from the turbo4 dequant overhead.
 **Why not Q6_K?** 31B Q6_K is ~25 GB of weights; leaves no room for KV. Untested but unlikely to load.
 
@@ -190,7 +190,7 @@ The right KV format depends on both the model architecture and what you're optim
 2. **Dense GQA 27B+ (Qwen 3.5 27B Opus-Distilled) → `planar3/f16`.** This is the clean +19% rotorquant win — KV bandwidth is a meaningful fraction of per-token cost at this model class and deferred K quantization actually saves on it.
 3. **Gemma 4 31B-IT beyond 64K → `turbo4/turbo4`.** Only way to reach 128K/256K with the weights that big. ~20% throughput penalty vs f16.
 
-See [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) for the measurement detail behind these rows and [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) for the turbo4 speed-cost explanation.
+See [ROTORQUANT.md](ROTORQUANT.md) for the measurement detail behind these rows and [TURBOQUANT.md](TURBOQUANT.md) for the turbo4 speed-cost explanation.
 
 ---
 
@@ -258,7 +258,7 @@ Two models, two opposite outcomes — same lesson the 5090 ranking found: thinki
 
 ### llama.cpp (planarquant fork) — default
 
-The planarquant fork + Gemma 4 cherry-picks is the recommended binary. Build instructions are in [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md). It supports `f16`, `turbo3`, `turbo4`, `planar3`, `iso3`, `planar4`, and `iso4` KV cache types.
+The planarquant fork + Gemma 4 cherry-picks is the recommended binary. Build instructions are in [ROTORQUANT.md](ROTORQUANT.md). It supports `f16`, `turbo3`, `turbo4`, `planar3`, `iso3`, `planar4`, and `iso4` KV cache types.
 
 ```bash
 # Standard config — Gemma 26B-A4B Q6_K at 32K, default ub, plain f16
@@ -312,8 +312,8 @@ Note that mlx_lm.server takes 5-15 minutes to load a model on first invocation. 
 
 ## See also
 
-- [ROTORQUANT_M4MAX.md](ROTORQUANT_M4MAX.md) — the rotorquant experiment that changed the KV format defaults here, plus the base-upgrade compute-buffer finding
-- [TURBOQUANT_IMPACT_M4MAX.md](TURBOQUANT_IMPACT_M4MAX.md) — why TurboQuant costs speed on Apple Silicon, and when it's still worth using
+- [ROTORQUANT.md](ROTORQUANT.md) — the rotorquant experiment that changed the KV format defaults here, plus the base-upgrade compute-buffer finding
+- [TURBOQUANT.md](TURBOQUANT.md) — why TurboQuant costs speed on Apple Silicon, and when it's still worth using
 - [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — what fits at what context, in detail
 - [HARDWARE_SPECS.md](HARDWARE_SPECS.md) — full hardware comparison with the 5090 and Spark
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) — what these same models score on a 5090 with TurboQuant
