@@ -148,7 +148,7 @@ Dense Gemma 4 31B. Numbers: [`../sweagent_lite_gemma.gemma4-31b-full.json`](../s
 
 ## Why coding-bench and SWE-bench disagree
 
-From [`OPUS_DISTILL_QWEN36_RTXPRO6000.md`](OPUS_DISTILL_QWEN36_RTXPRO6000.md), Opus-distilled regressed to 10/22 on the 4-benchmark coding suite (stock: 21/22) because:
+From [`QWEN36_RTXPRO6000.md`](QWEN36_RTXPRO6000.md), Opus-distilled regressed to 10/22 on the 4-benchmark coding suite (stock: 21/22) because:
 
 1. **astar_pathfinding 0/6**: generated test file used `List[Tuple[int, int]]` type hints without importing `typing`. Pytest collection error.
 2. **lru_cache_ttl 0/6**: generated test file used `mock.patch('ttl_cache.x')` with a module name that didn't match the impl module. 6× `ModuleNotFoundError`.

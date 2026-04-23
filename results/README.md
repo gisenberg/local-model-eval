@@ -33,9 +33,7 @@ This folder is the analysis and reference output for the local-model-eval projec
 
 - [MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md) — tier list for the 96 GB class, stock llama.cpp (Vulkan + CUDA).
 - [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) — full 300-instance SWE-bench Lite run across 4 models (Qwen3.6-27B FP8, Opus-distilled 35B-A3B, stock 35B-A3B, Gemma 4 31B). Headline: **dense 27B FP8 is the best Qwen3.6 variant measured (172/300, 57.3%)**.
-- [RULER_QWEN36_RTXPRO6000.md](RULER_QWEN36_RTXPRO6000.md) — RULER-style long-context eval on Qwen3.6-35B-A3B at 32K/131K/262K/524K/1M.
-- [OPUS_DISTILL_QWEN36_RTXPRO6000.md](OPUS_DISTILL_QWEN36_RTXPRO6000.md) — Claude-Opus-4.6-reasoning-distilled Qwen3.6 coding bench (10/22, regression vs stock's 21/22 on from-scratch code, but +3.7 pp on SWE-bench Lite).
-- [NVFP4_QWEN36_27B_RTXPRO6000.md](NVFP4_QWEN36_27B_RTXPRO6000.md) — three-way precision comparison (BF16 vs vendor FP8 vs community NVFP4) on Qwen3.6-27B via vLLM.
+- [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) — Qwen3.6 deep dives: RULER long-context (48/48 at 1M via YaRN ×4), Opus-Reasoning-Distilled coding-bench regression (21/22 → 10/22, but +3.7 pp on SWE-bench Lite), and NVFP4 vs FP8 vs BF16 precision comparison on Qwen3.6-27B dense.
 
 ### NVIDIA L40S (datacenter, 46 GB, Linux)
 
@@ -66,7 +64,7 @@ Four cross-platform summary charts. Regenerate via `python3 ../tools/generate_ch
 
 Platform-specific files use `<TYPE>_<PLATFORM>.md`:
 
-- `<TYPE>` is one of: `MODEL_RANKINGS`, `SWEBENCH_LITE`, `RULER_QWEN36`, `OPUS_DISTILL_QWEN36`, `NVFP4_QWEN36_27B`
+- `<TYPE>` is one of: `MODEL_RANKINGS`, `SWEBENCH_LITE`, `QWEN36` (per-platform Qwen3.6 deep dives)
 - `<PLATFORM>` is one of: `5090`, `M4MAX`, `SPARK`, `RTXPRO6000`, `L40S`
 
 Cross-platform docs (`HARDWARE_*.md`, `CONTEXT_CAPACITY.md`, `TURBOQUANT.md`, `ROTORQUANT.md`, this `README.md`) don't have a platform suffix.
