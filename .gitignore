@@ -13,5 +13,6 @@ experiments/sweagent_lite_opus/*/
 experiments/sweagent_lite_retry/*/
 experiments/sweagent_sanity/*/
 experiments/sweagent_lite_gemma/*/
+experiments/sweagent_lite_fp8/*/
 # SWE-bench eval harness runtime logs (per-instance test runs, ~75 MB).
 logs/
