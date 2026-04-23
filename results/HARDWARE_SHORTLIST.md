@@ -240,7 +240,7 @@ The M5 Ultra Studio at 512 GB and ~1228 GB/s would finally be a desk machine tha
 ## Cross-references (other docs in this repo)
 
 - [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — the only measured rankings for any Apple Silicon in this repo
-- [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — where the compute-buffer-scales-with-`n_ubatch` finding came from
+- [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — where the compute-buffer-scales-with-`n_ubatch` finding came from
 - [TURBOQUANT.md](TURBOQUANT.md) — why turbo4 KV is a Metal-side speed loss
 - [HARDWARE_SPECS.md](HARDWARE_SPECS.md) — measured cross-platform comparison (5090, M4 Max 36 GB, DGX Spark)
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) — the bandwidth-rich CUDA reference

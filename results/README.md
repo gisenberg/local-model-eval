@@ -9,7 +9,7 @@ This folder is the analysis and reference output for the local-model-eval projec
 | "What hardware should I buy for local LLM inference?" | **[HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md)** — buyer's guide covering M4/M5 Max, M3 Ultra Studio, RTX 5090, RTX Pro 6000 Blackwell, DGX Spark, L40S. Mix of our own measurements and cited third-party benchmarks. |
 | "What are the specs of the machines you benchmarked?" | **[HARDWARE_SPECS.md](HARDWARE_SPECS.md)** — spec sheet + side-by-side throughput on the same models for the machines we benchmarked directly. |
 | "Which model should I run on my `<platform>`?" | The matching `MODEL_RANKINGS_<platform>.md` file. Each is a self-contained tier list with quality scores, throughput, quirks. |
-| "How big a context window can I fit on `<5090 / M4 Max>`?" | The matching `CONTEXT_CAPACITY_<platform>.md`. |
+| "How big a context window can I fit on `<5090 / M4 Max>`?" | **[CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md)** — cross-platform. 5090: KV compression is the first lever (spill-to-RAM failure mode). M4 Max: lower `-ub` is the first lever (OOM failure mode). |
 | "Should I use TurboQuant KV compression on my hardware?" | **[TURBOQUANT.md](TURBOQUANT.md)** — cross-platform doc. Short answer: yes always on the 5090, only when the model can't load with f16 on the M4 Max. |
 | "Should I use RotorQuant (the newer K-only Givens quantizer)?" | **[ROTORQUANT.md](ROTORQUANT.md)** — cross-platform. Short answer: yes on M4 Max for dense GQA ≥27B, yes on Spark for hybrid-attention MoE like Qwen3.5-122B, never on GLM-4.5-Air (broken output), no on the 5090 (turbo4 already wins). |
 | "How does `<Qwen3.6 / Gemma 4>` do on SWE-bench Lite?" | **[SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md)** — four-model comparison (Qwen3.6-27B FP8, Opus-distilled 35B-A3B, stock 35B-A3B, Gemma 4 31B) on the same harness. |
@@ -20,12 +20,10 @@ This folder is the analysis and reference output for the local-model-eval projec
 ### RTX 5090 (workstation, 32 GB GDDR7, Windows + WSL2)
 
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) — tier list with quality scores, throughput, TTFT (corrected after a Windows `requests`/`urllib3` bug). Includes a free-tier API model comparison (GPT-OSS 120B, MiniMax M2.5/M2.7) at the end.
-- [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md) — KV cache spill cliff, full 256K context tests.
 
 ### MacBook Pro M4 Max (Apple Silicon, 36 GB unified, Metal)
 
 - [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — tier list, includes MLX vs llama.cpp comparison.
-- [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — Metal working-set ceiling, the `n_ubatch` finding, OOM-not-spill failure mode.
 
 ### NVIDIA DGX Spark (GB10 Grace Blackwell, 128 GB unified, Linux/aarch64)
 
@@ -47,6 +45,7 @@ This folder is the analysis and reference output for the local-model-eval projec
 
 - [HARDWARE_SPECS.md](HARDWARE_SPECS.md) — measured spec sheet + side-by-side throughput on the same models, for the machines benchmarked directly.
 - [HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md) — broader buyer's guide including machines we cite third-party benchmarks for.
+- [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — what fits at what context. Distinct failure modes per platform: 5090 silent spill to system RAM via PCIe; M4 Max hard OOM at the Metal working-set ceiling.
 - [TURBOQUANT.md](TURBOQUANT.md) — TurboQuant KV compression across all platforms. 5090 wants turbo4; M4 Max wants f16. Includes per-model optimal configs, thinking-budget-exhaustion findings, NVFP4-turbo comparison.
 - [ROTORQUANT.md](ROTORQUANT.md) — RotorQuant K-only / symmetric configs across all platforms. +19% on dense GQA on M4 Max, quality uplift on Qwen3.5-122B on Spark, broken on GLM-4.5-Air, no-op on 5090.
 
@@ -67,10 +66,10 @@ Four cross-platform summary charts. Regenerate via `python3 ../tools/generate_ch
 
 Platform-specific files use `<TYPE>_<PLATFORM>.md`:
 
-- `<TYPE>` is one of: `MODEL_RANKINGS`, `CONTEXT_CAPACITY`, `SWEBENCH_LITE`, `RULER_QWEN36`, `OPUS_DISTILL_QWEN36`, `NVFP4_QWEN36_27B`
+- `<TYPE>` is one of: `MODEL_RANKINGS`, `SWEBENCH_LITE`, `RULER_QWEN36`, `OPUS_DISTILL_QWEN36`, `NVFP4_QWEN36_27B`
 - `<PLATFORM>` is one of: `5090`, `M4MAX`, `SPARK`, `RTXPRO6000`, `L40S`
 
-Cross-platform docs (`HARDWARE_*.md`, `TURBOQUANT.md`, `ROTORQUANT.md`, this `README.md`) don't have a platform suffix.
+Cross-platform docs (`HARDWARE_*.md`, `CONTEXT_CAPACITY.md`, `TURBOQUANT.md`, `ROTORQUANT.md`, this `README.md`) don't have a platform suffix.
 
 Future per-platform additions (if we benchmark more hardware) should follow the same pattern.
 
@@ -79,7 +78,7 @@ Future per-platform additions (if we benchmark more hardware) should follow the 
 1. Start at the [top-level README](../README.md) for the overall project framing and methodology.
 2. Read [HARDWARE_SHORTLIST.md](HARDWARE_SHORTLIST.md) to see which hardware classes are on the table and why.
 3. Pick the platform that matches what you have and read its `MODEL_RANKINGS_<platform>.md`.
-4. If you're hitting OOMs or want long contexts, read the matching `CONTEXT_CAPACITY_<platform>.md`.
+4. If you're hitting OOMs or want long contexts, read [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md).
 5. If your model fits on multiple machines and you want to understand the speed/quality tradeoffs, read [HARDWARE_SPECS.md](HARDWARE_SPECS.md).
 
 The KV-compression docs ([TURBOQUANT.md](TURBOQUANT.md) and [ROTORQUANT.md](ROTORQUANT.md)) are deep dives — only worth reading if you're specifically interested in KV cache compression (5090: very useful; M4 Max: situational).

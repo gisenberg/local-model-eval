@@ -340,7 +340,7 @@ The single-prompt smoke test at 44 tok/s vs coding-suite 39.7 tok/s reconciles a
 
 ## Correction: Gemma 4 26B-A4B doesn't need rotorquant for context
 
-The original hypothesis projected Gemma 4 26B-A4B Q6_K as "turbo4 max ~230K, iso3 would unlock full 262K, +32K gain." That projection was based on `CONTEXT_CAPACITY_5090.md`'s architecture summary listing 15 global-attention layers at head_dim 256. The live gemma4 loader reports 5 global + 25 SWA, head_dim 512, 8 KV heads. Recomputed:
+The original hypothesis projected Gemma 4 26B-A4B Q6_K as "turbo4 max ~230K, iso3 would unlock full 262K, +32K gain." That projection was based on `CONTEXT_CAPACITY.md`'s architecture summary listing 15 global-attention layers at head_dim 256. The live gemma4 loader reports 5 global + 25 SWA, head_dim 512, 8 KV heads. Recomputed:
 
 - Per-token global-attn KV at f16: ~80 KB (80 × 5 layers)
 - At turbo4 (3.8× vs f16): ~21 KB/tok → 262K × 21 KB = 5.5 GB → **fits full 262K** in ~26.5 GB total
@@ -412,4 +412,4 @@ The hypothesis doc's main intellectual contribution was framing the "compute buf
 
 - [TURBOQUANT.md](TURBOQUANT.md) — the KV quantizer this is measured against
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md), [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md), [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md) — per-platform tier lists with the baselines rotorquant is measured against
-- [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — the compute-buffer bottleneck that rotorquant cannot solve on Metal
+- [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — the compute-buffer bottleneck that rotorquant cannot solve on Metal

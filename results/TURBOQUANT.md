@@ -218,7 +218,7 @@ f16 is 31% faster and hits 88% bandwidth utilization. turbo4 drops to 54% becaus
 ## M4 Max decision tree
 
 1. **Default to `-ctk f16 -ctv f16`.**
-2. **First lever for OOMs is `-ub 256`, not turbo4 KV.** The compute buffer is usually the actual bottleneck. Halving `-ub` (physical batch size) cuts the compute buffer in half with zero decode-throughput cost. See [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) for the full sweep.
+2. **First lever for OOMs is `-ub 256`, not turbo4 KV.** The compute buffer is usually the actual bottleneck. Halving `-ub` (physical batch size) cuts the compute buffer in half with zero decode-throughput cost. See [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) for the full sweep.
 3. **Use turbo4 KV only when the KV cache itself is the bottleneck.** Basically Gemma 4 31B-IT, where dense/global KV puts the cache at a meaningful GB count. For most other models KV is <1% of the working set on Metal.
 4. **Don't expect a speedup from turbo4 on Apple Silicon.** It's purely a capacity workaround.
 5. **If `-ub 256` + turbo4 still OOM, the bottleneck is the weights themselves.** Drop to a smaller quant (Q6 → Q4) or switch to a smaller model class.
@@ -299,6 +299,6 @@ llama-server -m Qwen3.5-35B-A3B-Q4_K_M.gguf --port 8080 -c 32768 -ngl 99 \
 
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) — full per-model tier list with all configs
 - [MODEL_RANKINGS_M4MAX.md](MODEL_RANKINGS_M4MAX.md) — M4 Max tier list
-- [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — what fits at what context on Metal
-- [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md) — KV cache spill cliff on the 5090
+- [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — what fits at what context on Metal
+- [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — KV cache spill cliff on the 5090
 - [ROTORQUANT.md](ROTORQUANT.md) — newer K-only Givens-rotation KV quantizer

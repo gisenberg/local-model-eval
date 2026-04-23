@@ -23,7 +23,7 @@ Three things still shape what runs on this machine, but the old story ("compute 
 
 2. **KV cache math is model-specific.** The old rule of thumb was "KV is <1% of the working set, don't bother compressing." That's right for Gemma 4 MoE (sliding-window attention keeps KV tiny) and wrong for Gemma 4 31B-IT (dense with ISWA still leaves ~120 KB/token averaged KV — 3.7 GB at 32K). Before assuming KV doesn't matter, compute it: `2 × n_layers × n_kv_heads × head_dim × 2 (FP16) × ctx`, adjusted down by whatever fraction of layers use sliding-window.
 
-3. **No PCIe spill.** When the 5090 hits its 32 GB limit, it spills to system RAM via PCIe (slow but functional — see [CONTEXT_CAPACITY_5090.md](CONTEXT_CAPACITY_5090.md) for the cliff at 256K). The Mac has no PCIe to spill across; either it fits or it OOMs.
+3. **No PCIe spill.** When the 5090 hits its 32 GB limit, it spills to system RAM via PCIe (slow but functional — see [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) for the cliff at 256K). The Mac has no PCIe to spill across; either it fits or it OOMs.
 
 On the current base, the compute buffer is **~523 MiB regardless of context** for Gemma 4 sliding-window architectures (down from 8.4-16.7 GB on the old buggy base — a ~32× reduction). This is what opened up 32K+ context on all the Gemma 4 models.
 
@@ -314,7 +314,7 @@ Note that mlx_lm.server takes 5-15 minutes to load a model on first invocation. 
 
 - [ROTORQUANT.md](ROTORQUANT.md) — the rotorquant experiment that changed the KV format defaults here, plus the base-upgrade compute-buffer finding
 - [TURBOQUANT.md](TURBOQUANT.md) — why TurboQuant costs speed on Apple Silicon, and when it's still worth using
-- [CONTEXT_CAPACITY_M4MAX.md](CONTEXT_CAPACITY_M4MAX.md) — what fits at what context, in detail
+- [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — what fits at what context, in detail
 - [HARDWARE_SPECS.md](HARDWARE_SPECS.md) — full hardware comparison with the 5090 and Spark
 - [MODEL_RANKINGS_5090.md](MODEL_RANKINGS_5090.md) — what these same models score on a 5090 with TurboQuant
 - [MODEL_RANKINGS_SPARK.md](MODEL_RANKINGS_SPARK.md) — same models on the bandwidth-bound DGX Spark

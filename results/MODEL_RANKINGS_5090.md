@@ -45,7 +45,7 @@ The most consistent model tested. Average score nearly equals best-of-3 — prod
 **Strengths:** Fastest S-tier, extremely consistent, reaches the full 262K native context window with TurboQuant at ~5 GB of VRAM headroom.
 **Weakness:** ExprEval caps at 4/5 at temp 0.3 (test wording mismatch, not implementation quality).
 
-> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~230K" based on an architecture table in `CONTEXT_CAPACITY_5090.md` that recorded 15 global-attention layers at head_dim 256. The live gemma4 loader on the rebased johndpope fork shows the correct architecture: **5 global-attention layers at head_dim 512** (plus 25 SWA layers at head_dim 256). Recomputing the per-token KV cost from the live architecture shows turbo4 fits the full 262K native window with ~5 GB of headroom on 32 GB, so rotorquant compression would give only extra VRAM headroom (no additional usable context) on this model. See the addendum in [ROTORQUANT.md](ROTORQUANT.md) for the full correction.
+> **Correction (2026-04-11):** An earlier version of this card listed "Max context (turbo4) ~230K" based on an architecture table in `CONTEXT_CAPACITY.md` that recorded 15 global-attention layers at head_dim 256. The live gemma4 loader on the rebased johndpope fork shows the correct architecture: **5 global-attention layers at head_dim 512** (plus 25 SWA layers at head_dim 256). Recomputing the per-token KV cost from the live architecture shows turbo4 fits the full 262K native window with ~5 GB of headroom on 32 GB, so rotorquant compression would give only extra VRAM headroom (no additional usable context) on this model. See the addendum in [ROTORQUANT.md](ROTORQUANT.md) for the full correction.
 
 ---
 
