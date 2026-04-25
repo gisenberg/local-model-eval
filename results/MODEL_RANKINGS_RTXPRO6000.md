@@ -7,10 +7,13 @@
 Tested April 2026.
 
 > This is the first set of rankings for the Pro 6000 in this repo. We tested 8 model/quant combinations with a focus on **configurations that don't fit on a 5090** — BF16 of 31B dense, BF16 of 35B MoE, an 120B MoE (gpt-oss) that simply cannot load on 32 GB VRAM at any reasonable precision, and an 80B-class coder specialist at Q6_K.
+>
+> A 9th entry was added later: **Qwen3.6-27B (dense) at FP8 + DFlash speculative decoding**, served via vLLM nightly. This one *would* fit on a 5090, but it's the production agentic preset on this host — and it tops SWE-bench Lite over every other local model we measured, so it earned a spot.
 
 ## TL;DR
 
 - **gpt-oss-120b Q8_0 is the headline config.** 120B parameters, sparse MoE (4-of-128 experts/tok), **264 tok/s decode at Q8**, 21/22 on the coding suite, 66 GB VRAM. It's the fastest large model we've measured on any hardware, and it cannot load on the 5090 at all.
+- **Qwen3.6-27B FP8 + DFlash spec dec is the SWE-bench Lite winner — 57.3% resolved.** Beats Opus-distilled Qwen3.6-35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same 300-instance test split. Served via vLLM nightly with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (k=15). Spec dec gives **~4× decode speedup** vs the same FP8 weights without DFlash (195 tok/s warm vs 47 tok/s) at no quality cost — verifier-checked spec dec is lossless by construction. This is the daily-driver agentic preset on this host.
 - **Gemma 4 31B-IT is the quality king.** 22/22 on the coding suite at both BF16 and Q8_0. BF16 fits at full 262K on this card (82 GB VRAM) — the first card in our lineup where that's possible.
 - **Qwen3.6-35B-A3B is the throughput king in the mid-tier.** 221 tok/s at Q8 (CUDA), though coding quality is noisy across quants (14-15/22).
 - **Qwen3-Coder-Next Q6_K is fast (196 tok/s) and specialized for coding**, but the familiar Qwen-family LRU Cache blind spot is still there (0/6). Good if your workload is parsing / pathfinding / string work; not if you need eviction+expiry logic.
@@ -40,15 +43,22 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 | **S** | Gemma-4-31B-it | BF16 | 82.0 GB | 262K | 309 ms | **25.13 tok/s** | **22/22 (100%)** |
 | **S** | Gemma-4-31B-it | Q8_0 | 54.5 GB | 262K | 193 ms | 43.76 tok/s | **22/22 (100%)** |
 | **S** | gpt-oss-120b | Q8_0 | 65.8 GB | 131K | **41 ms** | **264.38 tok/s** | 21/22 (95%) |
+| **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **195.3 tok/s warm** § | 21/22 (95%) ¶ |
 | A | Qwen3.6-35B-A3B | BF16 | 72.1 GB | 262K | 61 ms | 135.05 tok/s | 14/22 (64%) |
 | A | Qwen3.6-35B-A3B | Q8_0 | 41.6 GB | 262K | 60 ms | **221.04 tok/s** | 15/22 (68%) |
 | B | Gemopus-4-31B-it | BF16 | 82.0 GB | 262K | 308 ms | 25.13 tok/s | 16/22 (73%) |
 | B | Gemopus-4-31B-it | Q8_0 | 54.5 GB | 262K | 192 ms | 43.77 tok/s | 15/22 (68%) |
 | A | Qwen3-Coder-Next | Q6_K | 70.3 GB | 262K | 77 ms | 196.36 tok/s | 15/22 (68%) |
 
+† vLLM nightly + [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter, k=15. All other rows are stock llama.cpp.
+‡ Weights only. Full vLLM footprint with `--gpu-memory-utilization 0.92` plus DFlash drafter (3.3 GB) plus paged-KV pool ≈ 88 GB.
+§ Warm-prefix decode on an 800-token prompt, 3-run mean. Cold-prefix is 149.6 tok/s. Without DFlash on the same FP8 weights: 47 tok/s (single-stream coding bench, single run). The non-DFlash 47 tok/s is what the SWE-bench result below was measured at; DFlash adds throughput, not quality.
+¶ Best-of-3 at T=0.3 on the same 4-benchmark coding suite (Qwen3.6 is a reasoning model — different temperature regime than the T=0 rows above). On **SWE-bench Lite** the same FP8 weights resolved **57.3%** of 300 instances — the highest of any local model in this lineup. See [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md).
+
 **Quick-pick guide:**
 - **Best coding quality at any speed:** Gemma-4-31B-it Q8_0 (22/22, 44 tok/s) — BF16 adds nothing at temp 0
 - **Best coding quality at high speed:** gpt-oss-120b Q8_0 (21/22, 264 tok/s) — 6× faster than Gemma, drops 1 test on A*
+- **Best agentic-coding result (SWE-bench Lite):** Qwen3.6-27B FP8 + DFlash (57.3%, 195 tok/s warm) — the actual production preset on this host
 - **Highest decode throughput period:** gpt-oss-120b Q8_0 (264 tok/s)
 - **Don't bother with:** Gemopus (base Gemma beats it), Qwen3.6 MoE for reliable coding (run-to-run variance)
 
@@ -91,6 +101,39 @@ Perfect score on our 4-benchmark coding suite at both quants. At temp 0, BF16 an
 **Strengths:** Perfect coding score. Full 262K native context. Dense architecture produces very stable output.
 
 **Weaknesses:** ~6× slower than the MoE models on throughput — pay the "every-parameter-active" penalty. If your workload tolerates ~25 tok/s, this is the highest-quality dense model we've measured.
+
+---
+
+### Qwen3.6-27B FP8 + DFlash spec dec (the production preset)
+
+The dense 27B variant of Qwen3.6 (different model from the 35B-A3B MoE elsewhere in this doc), served via vLLM nightly with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter for speculative decoding. This is the daily-driver agentic preset on this host (configured in `opencode-config/hosts/rtxpro6000/llama-swap.yaml` as `qwen36-27b-coder` and `qwen36-27b-agent`).
+
+| Metric | Value |
+|---|---|
+| Coding score (best-of-3, T=0.3) | **21/22 (95%)** — String 5/5, ExprEval 5/5, A* 5/6, LRU 6/6 |
+| **SWE-bench Lite (300 inst.)** | **172 / 300 = 57.3% resolved** — highest in this lineup |
+| Decode, warm prefix (800-tok prompt) | **195.3 tok/s** (k=15 draft tokens) |
+| Decode, cold prefix | 149.6 tok/s |
+| Decode, no DFlash (same FP8 weights) | 47 tok/s — DFlash gives ~4× speedup |
+| Drafter acceptance rate | 30.5% short prompt → 8.9% at 52K ctx (drafter SWA = 2048) |
+| Weights | 29 GB (FP8) + 3.3 GB drafter |
+| Native ctx | 262K |
+| Architecture | Dense `qwen3_5` 27B with hybrid linear+full attention; drafter is a 5-layer SWA model (z-lab/Qwen3.6-27B-DFlash) |
+
+**Strengths.**
+- **The SWE-bench winner.** 57.3% on the 300-instance Lite test split beats Opus-distilled 35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same harness (SWE-agent v1.1.0, 4 workers, 75-call ceiling). The 64K ceiling this run used hit `exit_context` 15 times — recoverable headroom for a future re-run.
+- **Spec-dec scales the dense-model throughput.** 195 tok/s warm puts a dense 27B in the same throughput band as the MoE models on this card, with the per-token quality of a dense model. DFlash is verifier-checked, so accepted tokens are bit-identical to running the target model alone — adding spec dec changes throughput, not quality.
+- **k=15 sweep was run.** Measured 182.2 / 186.7 / 195.3 tok/s at k=8/10/15. Block-diffusion drafting does all k positions in one forward pass, so larger k is mostly verifier cost — author-default k=15 wins.
+- **FP8 quantization of the target doesn't hurt the BF16 drafter.** Per-position acceptance curves match the all-BF16 sister entry within noise (29.2% vs 29.1%).
+
+**Weaknesses.**
+- **Acceptance collapses with context length** (30% short → 9% at 52K). Drafter has `sliding_window=2048` and only sees the recent tail of the prompt. Past ~100K context the drafter compute outweighs accepted-token savings — the long-context sister preset (`qwen36-27b-fp8-yarn2`) skips spec dec for that reason.
+- **Stack fragility.** vLLM nightly + drafter HF card warns "still under training, inference results may be unstable." Cold-swap is ~60-90s first time (vs ~30s for llama.cpp).
+- **No chat-completion-streaming throughput number** comparable to the llama.cpp rows above on this preset yet. The 195 tok/s figure is short-prompt warm-prefix decode, which is closer to agentic-tool-loop reality than to the streaming-bench number, but not directly comparable.
+
+**The non-DFlash baseline:** without spec dec, the same FP8 weights decode at ~47 tok/s — competitive with Gemma-Q8 but ~4× slower than the DFlash-on configuration. The 57.3% SWE-bench result was actually measured at 47 tok/s (vLLM 0.19.1, no spec dec); DFlash makes the same patches arrive ~4× faster.
+
+See [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) for the BF16/FP8/NVFP4 precision sweep on this same model (no spec dec) and [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) for the four-model agentic-coding breakdown.
 
 ---
 
@@ -179,6 +222,9 @@ All 7 configs fit at full native context on 96 GB. The measured totals (weights 
 | Qwen3.6-35B-A3B | Q8_0 | 34.7 GiB | 5.1 GiB | 41.6 GB | 54.4 GB |
 | Qwen3-Coder-Next | Q6_K | ~61 GiB | ~5 GiB | 70.3 GB | 25.7 GB |
 | gpt-oss-120b | Q8_0 | 55.1 GiB | ~9.0 GiB | 65.8 GB | 30.2 GB |
+| Qwen3.6-27B (dense) | FP8 + DFlash | 27.0 GiB | paged pool ‖ | ~88 GB ‖ | ~7 GB |
+
+‖ vLLM with `--gpu-memory-utilization 0.92` allocates a paged-KV pool that scales to fill the budget; total reported is target weights (29 GB) + DFlash drafter (3.3 GB) + ~50 GB KV pool + activations/buffers. This footprint hosts ~2 concurrent 100K-ctx sessions or 1 at 262K.
 
 **Observations:**
 - The Gemma-family architecture (10 full-attention layers at head_dim 512, 50 SWA layers capped at 1024) has the largest KV cache at full context (~22 GB at f16). For any model ≥30B at BF16, this is the one that eats your headroom.
@@ -201,9 +247,19 @@ LD_LIBRARY_PATH=/home/gisenberg/llama-build/src/build/bin:/path/to/cuda/lib \
   /home/gisenberg/llama-build/src/build/bin/llama-server \
   -m <model.gguf> --port 8080 \
   -c <native_ctx> -ngl 99 -fa on --no-mmap -np 1
+
+# vLLM nightly + DFlash spec dec (Qwen3.6-27B FP8 only)
+vllm serve /home/gisenberg/models-vllm/qwen36-27b-fp8 \
+  --served-model-name qwen36-27b-coder \
+  --max-model-len 262144 --gpu-memory-utilization 0.92 \
+  --enable-prefix-caching --attention-backend flash_attn \
+  --max-num-batched-tokens 32768 \
+  --speculative-config '{"method":"dflash","model":"/home/gisenberg/models-vllm/qwen36-27b-dflash-drafter","num_speculative_tokens":15}'
 ```
 
-No TurboQuant, no rotorquant, no NVFP4 — these are stock llama.cpp runs. The Pro 6000's 96 GB means KV-compression shortcuts aren't needed for anything in this lineup. Dense 31B at BF16 fits at full 262K with 14 GB to spare; every other config has 20+ GB of headroom.
+The llama.cpp rows are stock — no TurboQuant, no rotorquant, no NVFP4. The Pro 6000's 96 GB means KV-compression shortcuts aren't needed for anything in this lineup; dense 31B at BF16 fits at full 262K with 14 GB to spare, every other llama.cpp config has 20+ GB of headroom.
+
+The Qwen3.6-27B FP8 + DFlash row is the lone vLLM-nightly entry. DFlash is a **block-diffusion** drafter (all k positions emit in one forward pass, not autoregressive) — distinct from MTP / Eagle / Medusa style drafters and from the ngram/draft-model spec dec available in mainline llama.cpp. The drafter card and method are still pre-1.0; treat this preset as experimental relative to the llama.cpp rows.
 
 ---
 
@@ -286,4 +342,7 @@ Wall-clock total for the 4-benchmark suite on Qwen3.6 Q8:
 - Throughput: `experiments/rtxpro6000_bench_{vulkan,cuda}/*.json`
 - Coding: `experiments/rtxpro6000_coding/*.json` and per-benchmark response markdown in `experiments/rtxpro6000_coding/<key>/*.md`
 - Prompting levers: `experiments/rtxpro6000_levers/<key>__<mode>/*.md` and rebuilt summaries in `experiments/rtxpro6000_levers/<key>__<mode>.json`
-- Harness: `tools/rtxpro6000_bench.py`, `tools/rtxpro6000_coding_bench.py`, `tools/rtxpro6000_rescore.py`, `tools/rtxpro6000_levers_bench.py`, `tools/rtxpro6000_levers_rescore.py`
+- Qwen3.6-27B precision sweep (BF16/FP8/NVFP4, no spec dec): `experiments/nvfp4_qwen36_27b/{bf16,fp8,nvfp4}/results.json`
+- Qwen3.6-27B FP8 SWE-bench Lite (no spec dec): `experiments/sweagent_lite_fp8/preds.json` and `sweagent_lite_fp8.qwen36-27b-fp8-full.json`
+- Qwen3.6-27B FP8 + DFlash preset definition + measured numbers: `~/git/gisenberg/opencode-config/hosts/rtxpro6000/llama-swap.yaml` (`qwen36-27b-coder` block, lines ~321-368)
+- Harness: `tools/rtxpro6000_bench.py`, `tools/rtxpro6000_coding_bench.py`, `tools/rtxpro6000_rescore.py`, `tools/rtxpro6000_levers_bench.py`, `tools/rtxpro6000_levers_rescore.py`, `tools/nvfp4_qwen36_27b_bench.py`
