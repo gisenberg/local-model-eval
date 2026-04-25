@@ -36,24 +36,26 @@ The card runs the same bandwidth-bound math as the 5090 for any model that fits 
 
 ## Summary table
 
-All throughput is CUDA backend (see Vulkan comparison below). VRAM at full native context. Coding score is out of 22 across 4 benchmarks: String Processor (5) + Expression Evaluator (5) + A* Pathfinding (6) + LRU Cache with TTL (6).
+All throughput is CUDA backend (see Vulkan comparison below). VRAM at full native context. Coding score is out of 22 across 4 benchmarks: String Processor (5) + Expression Evaluator (5) + A* Pathfinding (6) + LRU Cache with TTL (6). SWE-bench Lite is the 300-instance test split via SWE-agent v1.1.0 (4 workers, 75-call ceiling) — full breakdown in [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md); "—" means not run on this preset.
 
-| Tier | Model | Quant | VRAM (full ctx) | Native ctx | TTFT | Decode (CUDA) | Coding |
-|---|---|---|---|---|---|---|---|
-| **S** | Gemma-4-31B-it | BF16 | 82.0 GB | 262K | 309 ms | **25.13 tok/s** | **22/22 (100%)** |
-| **S** | Gemma-4-31B-it | Q8_0 | 54.5 GB | 262K | 193 ms | 43.76 tok/s | **22/22 (100%)** |
-| **S** | gpt-oss-120b | Q8_0 | 65.8 GB | 131K | **41 ms** | **264.38 tok/s** | 21/22 (95%) |
-| **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **195.3 tok/s warm** § | 21/22 (95%) ¶ |
-| A | Qwen3.6-35B-A3B | BF16 | 72.1 GB | 262K | 61 ms | 135.05 tok/s | 14/22 (64%) |
-| A | Qwen3.6-35B-A3B | Q8_0 | 41.6 GB | 262K | 60 ms | **221.04 tok/s** | 15/22 (68%) |
-| B | Gemopus-4-31B-it | BF16 | 82.0 GB | 262K | 308 ms | 25.13 tok/s | 16/22 (73%) |
-| B | Gemopus-4-31B-it | Q8_0 | 54.5 GB | 262K | 192 ms | 43.77 tok/s | 15/22 (68%) |
-| A | Qwen3-Coder-Next | Q6_K | 70.3 GB | 262K | 77 ms | 196.36 tok/s | 15/22 (68%) |
+| Tier | Model | Quant | VRAM (full ctx) | Native ctx | TTFT | Decode (CUDA) | Coding | SWE-bench Lite |
+|---|---|---|---|---|---|---|---|---|
+| **S** | Gemma-4-31B-it | BF16 | 82.0 GB | 262K | 309 ms | **25.13 tok/s** | **22/22 (100%)** | — |
+| **S** | Gemma-4-31B-it | Q8_0 | 54.5 GB | 262K | 193 ms | 43.76 tok/s | **22/22 (100%)** | 23.0% (69/300) |
+| **S** | gpt-oss-120b | Q8_0 | 65.8 GB | 131K | **41 ms** | **264.38 tok/s** | 21/22 (95%) | — |
+| **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **195.3 tok/s warm** § | 21/22 (95%) ¶ | **57.3% (172/300)** ⊗ |
+| A | Qwen3.6-35B-A3B | BF16 | 72.1 GB | 262K | 61 ms | 135.05 tok/s | 14/22 (64%) | — |
+| A | Qwen3.6-35B-A3B | Q8_0 | 41.6 GB | 262K | 60 ms | **221.04 tok/s** | 15/22 (68%) | 48.3% (145/300) ⊕ |
+| B | Gemopus-4-31B-it | BF16 | 82.0 GB | 262K | 308 ms | 25.13 tok/s | 16/22 (73%) | — |
+| B | Gemopus-4-31B-it | Q8_0 | 54.5 GB | 262K | 192 ms | 43.77 tok/s | 15/22 (68%) | — |
+| A | Qwen3-Coder-Next | Q6_K | 70.3 GB | 262K | 77 ms | 196.36 tok/s | 15/22 (68%) | — |
 
 † vLLM nightly + [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter, k=15. All other rows are stock llama.cpp.
 ‡ Weights only. Full vLLM footprint with `--gpu-memory-utilization 0.92` plus DFlash drafter (3.3 GB) plus paged-KV pool ≈ 88 GB.
 § Warm-prefix decode on an 800-token prompt, 3-run mean. Cold-prefix is 149.6 tok/s. Without DFlash on the same FP8 weights: 47 tok/s (single-stream coding bench, single run). The non-DFlash 47 tok/s is what the SWE-bench result below was measured at; DFlash adds throughput, not quality.
-¶ Best-of-3 at T=0.3 on the same 4-benchmark coding suite (Qwen3.6 is a reasoning model — different temperature regime than the T=0 rows above). On **SWE-bench Lite** the same FP8 weights resolved **57.3%** of 300 instances — the highest of any local model in this lineup. See [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md).
+¶ Best-of-3 at T=0.3 on the same 4-benchmark coding suite (Qwen3.6 is a reasoning model — different temperature regime than the T=0 rows above).
+⊗ Same FP8 weights, vLLM 0.19.1, **no spec dec** (SWE-bench predates the DFlash addition). 64K context ceiling hit `exit_context` 15× — recoverable headroom for a re-run.
+⊕ Stock weights. The Opus-reasoning-distilled fine-tune of the same Q8_0 model resolved **52.0% (156/300)** — see Qwen3.6-35B-A3B section below.
 
 **Quick-pick guide:**
 - **Best coding quality at any speed:** Gemma-4-31B-it Q8_0 (22/22, 44 tok/s) — BF16 adds nothing at temp 0
@@ -92,6 +94,7 @@ Perfect score on our 4-benchmark coding suite at both quants. At temp 0, BF16 an
 | Metric | BF16 | Q8_0 |
 |---|---|---|
 | Coding score | **22/22 (100%)** | **22/22 (100%)** |
+| SWE-bench Lite | not run | **23.0% (69/300)** |
 | Decode (CUDA) | 25.13 tok/s | 43.76 tok/s |
 | Decode (Vulkan) | 24.82 tok/s | 43.69 tok/s |
 | TTFT | 309 ms | 193 ms |
@@ -99,6 +102,8 @@ Perfect score on our 4-benchmark coding suite at both quants. At temp 0, BF16 an
 | Bandwidth utilization | 79% of 1792 GB/s | 72% of 1792 GB/s |
 
 **Strengths:** Perfect coding score. Full 262K native context. Dense architecture produces very stable output.
+
+**SWE-bench gap:** Gemma's 100% coding-bench score does **not** translate to agentic-style coding — 23.0% on SWE-bench Lite is the lowest of any model we've measured here. The benchmarks measure different things: coding-bench rewards from-scratch self-consistent module-with-tests generation (Gemma's strength); SWE-bench rewards codebase-navigation and surgical-fix reasoning (where the Qwen-family models pull ahead). See [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) for the failure-mode analysis.
 
 **Weaknesses:** ~6× slower than the MoE models on throughput — pay the "every-parameter-active" penalty. If your workload tolerates ~25 tok/s, this is the highest-quality dense model we've measured.
 
@@ -143,15 +148,18 @@ See [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) for the BF16/FP8/NVFP4 precisio
 
 Highest throughput among the Qwen lineup: 221 tok/s at Q8, 135 at BF16 (CUDA). But the coding score is noisy — LRU Cache fails at Q8, A* Pathfinding fails at BF16. The hybrid linear+full-attention architecture means KV cache at 262K is only ~5 GB (vs 21 GB for Gemma's dense architecture).
 
-| Metric | BF16 | Q8_0 |
-|---|---|---|
-| Coding score | 14/22 (64%) | 15/22 (68%) |
-| Decode (CUDA) | 135.05 tok/s | **221.04 tok/s** |
-| Decode (Vulkan) | 81.29 tok/s | 205.65 tok/s |
-| TTFT | 61 ms | 60 ms |
-| VRAM @ 262K ctx | 72,070 MB | 41,558 MB |
+| Metric | BF16 | Q8_0 (stock) | Q8_0 Opus-distilled |
+|---|---|---|---|
+| Coding score | 14/22 (64%) | 15/22 (68%) | 10/22 (45%) † |
+| SWE-bench Lite | not run | 48.3% (145/300) | **52.0% (156/300)** |
+| Decode (CUDA) | 135.05 tok/s | **221.04 tok/s** | (same as stock) |
+| Decode (Vulkan) | 81.29 tok/s | 205.65 tok/s | — |
+| TTFT | 61 ms | 60 ms | — |
+| VRAM @ 262K ctx | 72,070 MB | 41,558 MB | 41,558 MB |
 
-**Strengths:** Fastest dense-quality model for throughput. Tiny KV cache means essentially zero context-window penalty.
+† Opus-distill regresses on from-scratch coding-bench (-5 vs stock Q8) but gains +3.7 pp on agentic SWE-bench. The two benchmarks reward different abilities — see Qwen3.6 deep-dive section in [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) and the [coding-bench / SWE-bench disagreement analysis](SWEBENCH_LITE_RTXPRO6000.md#why-coding-bench-and-swe-bench-disagree).
+
+**Strengths:** Fastest dense-quality model for throughput. Tiny KV cache means essentially zero context-window penalty. Stock Q8_0 hits 48.3% on SWE-bench Lite — the strongest llama.cpp-served result in this lineup, and within striking distance of the 27B FP8/vLLM run despite running at BF16-quality coding-bench.
 
 **Weaknesses:** Inconsistent coding correctness. Which benchmarks pass varies between BF16 and Q8 despite temp=0 — the hybrid-attention routing produces different code structures at the two precisions, and the harder tests (LRU, A*) are right at the capability edge.
 
