@@ -1,4 +1,5 @@
 __pycache__/
+.DS_Store
 .env
 spark_bench/spark_results.json
 # Transient server logs
