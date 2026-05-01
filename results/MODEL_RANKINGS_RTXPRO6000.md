@@ -13,7 +13,7 @@ Tested April 2026.
 ## TL;DR
 
 - **gpt-oss-120b Q8_0 is the headline config.** 120B parameters, sparse MoE (4-of-128 experts/tok), **264 tok/s decode at Q8**, 21/22 on the coding suite, 66 GB VRAM. It's the fastest large model we've measured on any hardware, and it cannot load on the 5090 at all.
-- **Qwen3.6-27B FP8 + DFlash spec dec is the SWE-bench Lite winner — 57.3% resolved.** Beats Opus-distilled Qwen3.6-35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same 300-instance test split. Served via vLLM nightly with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (k=15). Spec dec gives **~4× decode speedup** vs the same FP8 weights without DFlash (195 tok/s warm vs 47 tok/s) at no quality cost — verifier-checked spec dec is lossless by construction. This is the daily-driver agentic preset on this host.
+- **Qwen3.6-27B FP8 + DFlash spec dec is the SWE-bench Lite winner — 57.3% resolved.** Beats Opus-distilled Qwen3.6-35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same 300-instance test split. Served via vLLM with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (k=15). Spec dec gives **~4× decode speedup** vs the same FP8 weights without DFlash (~200 tok/s mean during coding generation vs 47 tok/s) at no quality cost — verifier-checked spec dec is lossless by construction. This is the daily-driver agentic preset on this host. **2026-04-30 refresh:** rebuilt onto vLLM PR-40898 + drafter commit `09196886` (3 weight updates upstream since our prior pin), lifting coding-suite score from 21/22 → 22/22 at flat throughput.
 - **Gemma 4 31B-IT is the quality king.** 22/22 on the coding suite at both BF16 and Q8_0. BF16 fits at full 262K on this card (82 GB VRAM) — the first card in our lineup where that's possible.
 - **Qwen3.6-35B-A3B is the throughput king in the mid-tier.** 221 tok/s at Q8 (CUDA), though coding quality is noisy across quants (14-15/22).
 - **Qwen3-Coder-Next Q6_K is fast (196 tok/s) and specialized for coding**, but the familiar Qwen-family LRU Cache blind spot is still there (0/6). Good if your workload is parsing / pathfinding / string work; not if you need eviction+expiry logic.
@@ -43,17 +43,17 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 | **S** | Gemma-4-31B-it | BF16 | 82.0 GB | 262K | 309 ms | **25.13 tok/s** | **22/22 (100%)** | — |
 | **S** | Gemma-4-31B-it | Q8_0 | 54.5 GB | 262K | 193 ms | 43.76 tok/s | **22/22 (100%)** | 23.0% (69/300) |
 | **S** | gpt-oss-120b | Q8_0 | 65.8 GB | 131K | **41 ms** | **264.38 tok/s** | 21/22 (95%) | — |
-| **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **195.3 tok/s warm** § | 21/22 (95%) ¶ | **57.3% (172/300)** ⊗ |
+| **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **~199 tok/s mean** § | **22/22 (100%)** ¶ | **57.3% (172/300)** ⊗ |
 | A | Qwen3.6-35B-A3B | BF16 | 72.1 GB | 262K | 61 ms | 135.05 tok/s | 14/22 (64%) | — |
 | A | Qwen3.6-35B-A3B | Q8_0 | 41.6 GB | 262K | 60 ms | **221.04 tok/s** | 15/22 (68%) | 48.3% (145/300) ⊕ |
 | B | Gemopus-4-31B-it | BF16 | 82.0 GB | 262K | 308 ms | 25.13 tok/s | 16/22 (73%) | — |
 | B | Gemopus-4-31B-it | Q8_0 | 54.5 GB | 262K | 192 ms | 43.77 tok/s | 15/22 (68%) | — |
 | A | Qwen3-Coder-Next | Q6_K | 70.3 GB | 262K | 77 ms | 196.36 tok/s | 15/22 (68%) | — |
 
-† vLLM nightly + [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter, k=15. All other rows are stock llama.cpp.
+† vLLM PR-40898 build + [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (commit `09196886`, 2026-04-27), k=15. All other rows are stock llama.cpp.
 ‡ Weights only. Full vLLM footprint with `--gpu-memory-utilization 0.92` plus DFlash drafter (3.3 GB) plus paged-KV pool ≈ 88 GB.
-§ Warm-prefix decode on an 800-token prompt, 3-run mean. Cold-prefix is 149.6 tok/s. Without DFlash on the same FP8 weights: 47 tok/s (single-stream coding bench, single run). The non-DFlash 47 tok/s is what the SWE-bench result below was measured at; DFlash adds throughput, not quality.
-¶ Best-of-3 at T=0.3 on the same 4-benchmark coding suite (Qwen3.6 is a reasoning model — different temperature regime than the T=0 rows above).
+§ Per-bench decode tok/s during the 4-benchmark coding suite (multi-thousand-token generation, mean across 12 runs is 199 tok/s, range 177-223). Smoke-test factorial prompt hits 249 tok/s; long refactor prompts drop to ~145-159 tok/s — spec-dec acceptance varies by prompt content. Without DFlash on the same FP8 weights: 47 tok/s (single-stream coding bench, single run). The non-DFlash 47 tok/s is what the SWE-bench result below was measured at; DFlash adds throughput, not quality.
+¶ Best-of-3 at T=0.3 on the 4-benchmark coding suite (vLLM PR-40898 + drafter `09196886`). Prior pin (vLLM 0.19.1 + drafter `1dbb59a5`) scored 21/22 — A* recovers fully on the upgrade.
 ⊗ Same FP8 weights, vLLM 0.19.1, **no spec dec** (SWE-bench predates the DFlash addition). 64K context ceiling hit `exit_context` 15× — recoverable headroom for a re-run.
 ⊕ Stock weights. The Opus-reasoning-distilled fine-tune of the same Q8_0 model resolved **52.0% (156/300)** — see Qwen3.6-35B-A3B section below.
 
@@ -111,30 +111,36 @@ Perfect score on our 4-benchmark coding suite at both quants. At temp 0, BF16 an
 
 ### Qwen3.6-27B FP8 + DFlash spec dec (the production preset)
 
-The dense 27B variant of Qwen3.6 (different model from the 35B-A3B MoE elsewhere in this doc), served via vLLM nightly with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter for speculative decoding. This is the daily-driver agentic preset on this host (configured in `opencode-config/hosts/rtxpro6000/llama-swap.yaml` as `qwen36-27b-coder` and `qwen36-27b-agent`).
+The dense 27B variant of Qwen3.6 (different model from the 35B-A3B MoE elsewhere in this doc), served via vLLM with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter for speculative decoding. This is the daily-driver agentic preset on this host (configured in `opencode-config/hosts/rtxpro6000/llama-swap.yaml` as `qwen36-27b-coder` and `qwen36-27b-agent`).
 
-| Metric | Value |
-|---|---|
-| Coding score (best-of-3, T=0.3) | **21/22 (95%)** — String 5/5, ExprEval 5/5, A* 5/6, LRU 6/6 |
-| **SWE-bench Lite (300 inst.)** | **172 / 300 = 57.3% resolved** — highest in this lineup |
-| Decode, warm prefix (800-tok prompt) | **195.3 tok/s** (k=15 draft tokens) |
-| Decode, cold prefix | 149.6 tok/s |
-| Decode, no DFlash (same FP8 weights) | 47 tok/s — DFlash gives ~4× speedup |
-| Drafter acceptance rate | 30.5% short prompt → 8.9% at 52K ctx (drafter SWA = 2048) |
-| Weights | 29 GB (FP8) + 3.3 GB drafter |
-| Native ctx | 262K |
-| Architecture | Dense `qwen3_5` 27B with hybrid linear+full attention; drafter is a 5-layer SWA model (z-lab/Qwen3.6-27B-DFlash) |
+**Stack version (2026-04-30 refresh):** vLLM PR-40898 build (`vllm-0.20.1rc1.dev33+g80561d6ce`) + DFlash drafter commit `09196886` (2026-04-27). The HF card recommends this exact pair — between our prior pin (vLLM 0.19.1 + drafter `1dbb59a5`) and the refresh, z-lab pushed 3 weight checkpoints and the upstream install recipe moved to the PR-40898 branch.
+
+| Metric | Value | Prior pin (4-24 baseline) |
+|---|---|---|
+| Coding score (best-of-3, T=0.3) | **22/22 (100%)** — String 5/5, ExprEval 5/5, A* 6/6, LRU 6/6 | 21/22 |
+| **SWE-bench Lite (300 inst.)** | **172 / 300 = 57.3% resolved** ⊗ | 57.3% (same number — measured pre-DFlash) |
+| Decode during 4-bench (mean of 12 runs) | **199 tok/s** (range 177-223) | not previously measured |
+| Decode, warm prefix (587-tok refactor prompt, 3-run mean) | 159 tok/s | 195 tok/s (different prompt) |
+| Decode, cold prefix (same 587-tok prompt) | 158.9 tok/s | 149.6 tok/s |
+| Decode, simple-prompt smoke test (factorial, ~40-tok prompt) | 249 tok/s | not previously measured |
+| Decode, no DFlash (same FP8 weights) | 47 tok/s — DFlash gives ~4× speedup | (same baseline) |
+| Drafter overall acceptance | **33.2%** (mean accepted/draft = 4.97 of 15) | 30.5% short → 8.9% at 52K ctx |
+| Per-position pos-0 acceptance | **87.1%** | not previously measured |
+| Weights | 29 GB (FP8) + 3.3 GB drafter | (same) |
+| Native ctx | 262K | (same) |
+| Architecture | Dense `qwen3_5` 27B with hybrid linear+full attention; drafter is a 5-layer SWA model (z-lab/Qwen3.6-27B-DFlash) | (same) |
 
 **Strengths.**
-- **The SWE-bench winner.** 57.3% on the 300-instance Lite test split beats Opus-distilled 35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same harness (SWE-agent v1.1.0, 4 workers, 75-call ceiling). The 64K ceiling this run used hit `exit_context` 15 times — recoverable headroom for a future re-run.
-- **Spec-dec scales the dense-model throughput.** 195 tok/s warm puts a dense 27B in the same throughput band as the MoE models on this card, with the per-token quality of a dense model. DFlash is verifier-checked, so accepted tokens are bit-identical to running the target model alone — adding spec dec changes throughput, not quality.
-- **k=15 sweep was run.** Measured 182.2 / 186.7 / 195.3 tok/s at k=8/10/15. Block-diffusion drafting does all k positions in one forward pass, so larger k is mostly verifier cost — author-default k=15 wins.
-- **FP8 quantization of the target doesn't hurt the BF16 drafter.** Per-position acceptance curves match the all-BF16 sister entry within noise (29.2% vs 29.1%).
+- **The SWE-bench winner.** 57.3% on the 300-instance Lite test split beats Opus-distilled 35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same harness (SWE-agent v1.1.0, 4 workers, 75-call ceiling). Note that this number was measured at the prior pin without DFlash; we have not re-run SWE-bench on the refreshed stack.
+- **22/22 perfect score on the coding suite.** A* fully recovered (5/6 → 6/6) on the new stack at the same T=0.3 sampling. The other three benchmarks were already perfect.
+- **Spec-dec scales the dense-model throughput.** ~200 tok/s mean during real coding generation puts a dense 27B in the same throughput band as the MoE models on this card, with the per-token quality of a dense model. DFlash is verifier-checked, so accepted tokens are bit-identical to running the target model alone — adding spec dec changes throughput, not quality.
+- **k=15 sweep was run on the prior pin** (measured 182.2 / 186.7 / 195.3 tok/s at k=8/10/15). We did not re-sweep on the refreshed stack — author-default k=15 still wins on the prior data.
+- **FP8 quantization of the target doesn't hurt the BF16 drafter.** Per-position acceptance curves match the all-BF16 sister entry within noise.
 
 **Weaknesses.**
-- **Acceptance collapses with context length** (30% short → 9% at 52K). Drafter has `sliding_window=2048` and only sees the recent tail of the prompt. Past ~100K context the drafter compute outweighs accepted-token savings — the long-context sister preset (`qwen36-27b-fp8-yarn2`) skips spec dec for that reason.
-- **Stack fragility.** vLLM nightly + drafter HF card warns "still under training, inference results may be unstable." Cold-swap is ~60-90s first time (vs ~30s for llama.cpp).
-- **No chat-completion-streaming throughput number** comparable to the llama.cpp rows above on this preset yet. The 195 tok/s figure is short-prompt warm-prefix decode, which is closer to agentic-tool-loop reality than to the streaming-bench number, but not directly comparable.
+- **Throughput is prompt-shape-dependent.** Spec-dec acceptance varies a lot with what's being generated: simple boilerplate (factorial smoke test) hits 249 tok/s, real coding-suite generation averages ~200 tok/s, complex refactoring of provided code can drop to ~145-160 tok/s. The "single warm-decode tok/s number" hides this distribution.
+- **Acceptance still drops with context length.** Drafter has `sliding_window=2048` and only sees the recent tail of the prompt. Past ~100K context the drafter compute outweighs accepted-token savings — the long-context sister preset (`qwen36-27b-fp8-yarn2`) skips spec dec for that reason. The 2026-04-30 refresh did not move the needle on this — pos-13 acceptance is still ~10%.
+- **Stack fragility.** vLLM PR-40898 + drafter HF card warns "still under training, inference results may be unstable." z-lab pushed 3 drafter checkpoints in 3 days during the prior month — expect more churn. Cold-swap is ~60-90s first time (vs ~30s for llama.cpp).
 
 **The non-DFlash baseline:** without spec dec, the same FP8 weights decode at ~47 tok/s — competitive with Gemma-Q8 but ~4× slower than the DFlash-on configuration. The 57.3% SWE-bench result was actually measured at 47 tok/s (vLLM 0.19.1, no spec dec); DFlash makes the same patches arrive ~4× faster.
 
