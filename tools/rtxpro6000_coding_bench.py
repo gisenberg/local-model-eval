@@ -26,7 +26,7 @@ from pathlib import Path
 REPO = Path("/home/gisenberg/git/gisenberg/local-model-eval")
 LLAMA_DIR = "/home/gisenberg/llama/llama-b8826"  # Vulkan build, will override for CUDA
 MODELS_ROOT = "/home/gisenberg/models"
-PORT = 8080
+PORT = int(os.environ.get("LLAMA_PORT", "8080"))
 OUTPUT_ROOT = REPO / "experiments/rtxpro6000_coding"
 PYTEST = "/home/gisenberg/.micromamba/envs/cuda/bin/pytest"
 

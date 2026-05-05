@@ -1,0 +1,45 @@
+{
+  "model": "Mistral-Medium-3.5-128B Q4_K_M (unsloth)",
+  "key": "mistral-medium-3.5-q4km",
+  "path": "/home/gisenberg/models/mistral-medium-3.5-q4km/Q4_K_M/Mistral-Medium-3.5-128B-Q4_K_M-00001-of-00003.gguf",
+  "ctx": 65536,
+  "vram_mb": 94076,
+  "load_seconds": 9.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.1552,
+      "decode_tps": 20.36,
+      "n_tokens": 256,
+      "total_s": 12.732
+    },
+    {
+      "ttft_s": 0.1563,
+      "decode_tps": 20.35,
+      "n_tokens": 256,
+      "total_s": 12.733
+    },
+    {
+      "ttft_s": 0.1551,
+      "decode_tps": 20.35,
+      "n_tokens": 256,
+      "total_s": 12.738
+    },
+    {
+      "ttft_s": 0.1556,
+      "decode_tps": 20.34,
+      "n_tokens": 256,
+      "total_s": 12.743
+    },
+    {
+      "ttft_s": 0.1556,
+      "decode_tps": 20.33,
+      "n_tokens": 256,
+      "total_s": 12.746
+    }
+  ],
+  "ttft_mean": 0.1556,
+  "ttft_median": 0.1556,
+  "decode_mean": 20.35,
+  "decode_median": 20.35
+}

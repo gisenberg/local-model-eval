@@ -1,0 +1,62 @@
+{
+  "model": "Mistral-Medium-3.5-128B Q4_K_M (unsloth)",
+  "key": "mistral-medium-3.5-q4km",
+  "ctx": 32768,
+  "vram_mb": 82770,
+  "backend": "vulkan",
+  "total_score": "15/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmprbcypepg\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6900,
+      "expected": 5,
+      "elapsed_s": 80.73
+    },
+    "expression_evaluator": {
+      "passed": 4,
+      "failed": 1,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpna8lq4ig\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses FAILED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n=================================== FAILURES ===================================\n_______________________________ test_parentheses _______________________________\n\n    def test_parentheses():\n        evaluator = ExpressionEvaluator()\n        assert evaluator.evaluate(\"(2 + 3) * 4\") == 20.0\n        assert evaluator.evaluate(\"10 - (2 * 3)\") == 4.0\n>       assert evaluator.evaluate(\"((8 / 2) + 3) * 2\") == 16.0\nE       AssertionError: assert 14.0 == 16.0\nE        +  where 14.0 = evaluate('((8 / 2) + 3) * 2')\nE        +    where evaluate = <test_expression_evaluator.ExpressionEvaluator object at 0x7b7037bdd2e0>.evaluate\n\ntest_expression_evaluator.py:187: AssertionError\n=========================== short test summary info ============================\nFAILED test_expression_evaluator.py::test_parentheses - AssertionError: asser...\n========================= 1 failed, 4 passed in 0.01s ==========================\n",
+      "n_code_blocks": 1,
+      "response_len": 8305,
+      "expected": 5,
+      "elapsed_s": 97.73
+    },
+    "astar_pathfinding": {
+      "passed": 4,
+      "failed": 2,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n=================================== FAILURES ===================================\n________________________ test_simple_path_uniform_grid _________________________\n\n    def test_simple_path_uniform_grid():\n        \"\"\"Test a simple path on a uniform grid (all cells have cost 1).\"\"\"\n        grid = [\n            [1, 1, 1],\n            [1, 1, 1],\n            [1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (2, 2))\n        assert path == [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)] or path == [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]\n        # Check path cost\n        total_cost = sum(grid[r][c] for r, c in path)\n>       assert total_cost == 4  # Minimum possible cost for this path\n        ^^^^^^^^^^^^^^^^^^^^^^\nE       assert 5 == 4\n\ntest_astar.py:137: AssertionError\n____________________ test_weighted_grid_prefers_lower_cost _____________________\n\n    def test_weighted_grid_prefers_lower_cost():\n        \"\"\"Test that path prefers lower-cost cells in a weighted grid.\"\"\"\n        grid = [\n            [1, 1, 1],\n            [1, 5, 1],\n            [1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (2, 2))\n        # The optimal path should avoid the high-cost cell (1,1)\n        assert (1, 1) not in path\n        # Check path cost\n        total_cost = sum(grid[r][c] for r, c in path)\n>       assert total_cost == 4  # Minimum possible cost (avoiding the 5-cost cell)\n        ^^^^^^^^^^^^^^^^^^^^^^\nE       assert 5 == 4\n\ntest_astar.py:168: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_simple_path_uniform_grid - assert 5 == 4\nFAILED test_astar.py::test_weighted_grid_prefers_lower_cost - assert 5 == 4\n========================= 2 failed, 4 passed in 0.01s ==========================\n",
+      "n_code_blocks": 1,
+      "response_len": 7641,
+      "expected": 6,
+      "elapsed_s": 106.09
+    },
+    "lru_cache_ttl": {
+      "passed": 2,
+      "failed": 4,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "l=20.0)  # Expires at 20.0\n>       cache.put(\"c\", 3)  # Expires at 10.0 (default)\n        ^^^^^^^^^^^^^^^^^\n\ntest_lru_cache.py:90: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nlru_cache.py:137: in put\n    expire_time = time.monotonic() + (ttl if ttl is not None else self.default_ttl)\n                  ^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1139: in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1143: in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <MagicMock name='monotonic' id='127256359897328'>, args = (), kwargs = {}\neffect = <list_iterator object at 0x73bd2e209840>\n\n    def _execute_mock_call(self, /, *args, **kwargs):\n        # separate from _increment_mock_call so that awaited functions are\n        # executed separately from their call, also AsyncMock overrides this method\n    \n        effect = self.side_effect\n        if effect is not None:\n            if _is_exception(effect):\n                raise effect\n            elif not _callable(effect):\n>               result = next(effect)\n                         ^^^^^^^^^^^^\nE               StopIteration\n\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1200: StopIteration\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::TestTTLCache::test_capacity_eviction - StopIteration\nFAILED test_lru_cache.py::TestTTLCache::test_ttl_expiry - assert 1 is None\nFAILED test_lru_cache.py::TestTTLCache::test_custom_ttl - assert 1 is None\nFAILED test_lru_cache.py::TestTTLCache::test_size_with_mixed_items - StopIter...\n========================= 4 failed, 2 passed in 0.06s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 9151,
+      "expected": 6,
+      "elapsed_s": 124.26
+    }
+  }
+}

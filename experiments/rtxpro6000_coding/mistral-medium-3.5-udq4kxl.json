@@ -1,0 +1,62 @@
+{
+  "model": "Mistral-Medium-3.5-128B UD-Q4_K_XL (unsloth)",
+  "key": "mistral-medium-3.5-udq4kxl",
+  "ctx": 32768,
+  "vram_mb": 83524,
+  "backend": "vulkan",
+  "total_score": "11/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpvyl234e4\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6028,
+      "expected": 5,
+      "elapsed_s": 73.22
+    },
+    "expression_evaluator": {
+      "passed": 1,
+      "failed": 4,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "nEvaluator object at 0x712889ff9010>\n\n    def _consume(self) -> str:\n        \"\"\"Return the current token and advance to the next one.\"\"\"\n        if self.current_token >= len(self.tokens):\n>           raise ValueError(\"Unexpected end of expression\")\nE           ValueError: Unexpected end of expression\n\ntest_expression_evaluator.py:88: ValueError\n_______________________________ test_unary_minus _______________________________\n\n    def test_unary_minus():\n        evaluator = ExpressionEvaluator()\n>       assert evaluator.evaluate(\"-3\") == -3.0\n               ^^^^^^^^^^^^^^^^^^^^^^^^\n\ntest_expression_evaluator.py:178: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntest_expression_evaluator.py:31: in evaluate\n    result = self._parse_expression()\n             ^^^^^^^^^^^^^^^^^^^^^^^^\ntest_expression_evaluator.py:95: in _parse_expression\n    result = self._parse_term()\n             ^^^^^^^^^^^^^^^^^^\ntest_expression_evaluator.py:112: in _parse_term\n    op = self._consume()\n         ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_expression_evaluator.ExpressionEvaluator object at 0x712889ff8dd0>\n\n    def _consume(self) -> str:\n        \"\"\"Return the current token and advance to the next one.\"\"\"\n        if self.current_token >= len(self.tokens):\n>           raise ValueError(\"Unexpected end of expression\")\nE           ValueError: Unexpected end of expression\n\ntest_expression_evaluator.py:88: ValueError\n=========================== short test summary info ============================\nFAILED test_expression_evaluator.py::test_basic_arithmetic - ValueError: Unex...\nFAILED test_expression_evaluator.py::test_precedence - ValueError: Unexpected...\nFAILED test_expression_evaluator.py::test_parentheses - ValueError: Unexpecte...\nFAILED test_expression_evaluator.py::test_unary_minus - ValueError: Unexpecte...\n========================= 4 failed, 1 passed in 0.02s ==========================\n",
+      "n_code_blocks": 1,
+      "response_len": 7474,
+      "expected": 5,
+      "elapsed_s": 89.45
+    },
+    "astar_pathfinding": {
+      "passed": 4,
+      "failed": 2,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "est_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n=================================== FAILURES ===================================\n__________________________ test_path_around_obstacles __________________________\n\n    def test_path_around_obstacles():\n        \"\"\"Test pathfinding around obstacles (walls).\"\"\"\n        grid = [\n            [1, 1, 1, 1],\n            [1, 0, 0, 1],\n            [1, 1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (2, 3))\n        assert path is not None\n        assert path[0] == (0, 0)\n        assert path[-1] == (2, 3)\n        # Check that path goes around the obstacles\n        assert (1, 1) not in path\n        assert (1, 2) not in path\n        # Check total cost (should be 6)\n        total_cost = sum(grid[r][c] for r, c in path[1:])\n>       assert total_cost == 6\nE       assert 5 == 6\n\ntest_astar.py:173: AssertionError\n____________________ test_weighted_grid_prefers_lower_cost _____________________\n\n    def test_weighted_grid_prefers_lower_cost():\n        \"\"\"Test that path prefers lower-cost cells in a weighted grid.\"\"\"\n        grid = [\n            [1, 1, 1, 1],\n            [1, 5, 5, 1],\n            [1, 1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        path = astar.find_path((0, 0), (2, 3))\n        assert path is not None\n        # The optimal path should go around the high-cost cells\n        assert (1, 1) not in path\n        assert (1, 2) not in path\n        # Check total cost (should be 6, going around the 5-cost cells)\n        total_cost = sum(grid[r][c] for r, c in path[1:])\n>       assert total_cost == 6\nE       assert 5 == 6\n\ntest_astar.py:190: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_path_around_obstacles - assert 5 == 6\nFAILED test_astar.py::test_weighted_grid_prefers_lower_cost - assert 5 == 6\n========================= 2 failed, 4 passed in 0.02s ==========================\n",
+      "n_code_blocks": 1,
+      "response_len": 8935,
+      "expected": 6,
+      "elapsed_s": 121.98
+    },
+    "lru_cache_ttl": {
+      "passed": 1,
+      "failed": 5,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "None\n>       assert cache.get(\"c\") == 3\n               ^^^^^^^^^^^^^^\n\ntest_lru_cache.py:90: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nlru_cache.py:89: in get\n    if node.expire_time <= time.monotonic():\n                           ^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1139: in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1143: in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <MagicMock name='monotonic' id='126071572391616'>, args = (), kwargs = {}\neffect = <list_iterator object at 0x72a95349f5b0>\n\n    def _execute_mock_call(self, /, *args, **kwargs):\n        # separate from _increment_mock_call so that awaited functions are\n        # executed separately from their call, also AsyncMock overrides this method\n    \n        effect = self.side_effect\n        if effect is not None:\n            if _is_exception(effect):\n                raise effect\n            elif not _callable(effect):\n>               result = next(effect)\n                         ^^^^^^^^^^^^\nE               StopIteration\n\n/home/gisenberg/.micromamba/envs/cuda/lib/python3.12/unittest/mock.py:1200: StopIteration\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::TestTTLCache::test_basic_get_put - StopIteration\nFAILED test_lru_cache.py::TestTTLCache::test_capacity_eviction - StopIteration\nFAILED test_lru_cache.py::TestTTLCache::test_ttl_expiry - StopIteration\nFAILED test_lru_cache.py::TestTTLCache::test_custom_ttl - StopIteration\nFAILED test_lru_cache.py::TestTTLCache::test_size_with_mixed_items - StopIter...\n========================= 5 failed, 1 passed in 0.15s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 8714,
+      "expected": 6,
+      "elapsed_s": 120.48
+    }
+  }
+}

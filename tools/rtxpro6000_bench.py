@@ -29,7 +29,7 @@ else:
     _LD_EXTRA = ""
 MODELS_ROOT = "/home/gisenberg/models"
 OUTPUT_ROOT = f"/home/gisenberg/git/gisenberg/local-model-eval/experiments/rtxpro6000_bench_{BACKEND}"
-PORT = 8080
+PORT = int(os.environ.get("LLAMA_PORT", "8080"))
 
 PROMPT = (
     "Write a Python function to compute the factorial of n recursively. "
@@ -92,6 +92,18 @@ MODELS = {
         "name": "Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled Q8_0",
         "path": f"{MODELS_ROOT}/qwen36-opus-distill-q8/Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled.Q8_0.gguf",
         "ctx": 262144,
+        "extra": [],
+    },
+    "mistral-medium-3.5-q4km": {
+        "name": "Mistral-Medium-3.5-128B Q4_K_M (unsloth)",
+        "path": f"{MODELS_ROOT}/mistral-medium-3.5-q4km/Q4_K_M/Mistral-Medium-3.5-128B-Q4_K_M-00001-of-00003.gguf",
+        "ctx": 65536,
+        "extra": [],
+    },
+    "mistral-medium-3.5-udq4kxl": {
+        "name": "Mistral-Medium-3.5-128B UD-Q4_K_XL (unsloth)",
+        "path": f"{MODELS_ROOT}/mistral-medium-3.5-udq4kxl/UD-Q4_K_XL/Mistral-Medium-3.5-128B-UD-Q4_K_XL-00001-of-00003.gguf",
+        "ctx": 65536,
         "extra": [],
     },
 }
