@@ -1,0 +1,14 @@
+{
+  "variant": "baseline",
+  "desc": "FP8 target only, no spec dec (PR-40898 stack baseline)",
+  "pid": 55920,
+  "startup_s": 54.0,
+  "bench_returncode": 0,
+  "spec_metrics": {},
+  "best_of_3": 21,
+  "avg": 20.1,
+  "mean_tok_per_sec": 48.3,
+  "min_tok_per_sec": 48.3,
+  "max_tok_per_sec": 48.4,
+  "vram_freed_mb": 18
+}

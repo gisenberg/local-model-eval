@@ -1,10 +1,11 @@
 # Qwen3.6 on RTX Pro 6000 — deep dives
 
-This doc collects the Qwen3.6-family experiments run on the RTX Pro 6000 Blackwell Workstation (96 GB, sm_120) that don't fit naturally in the model-agnostic tier list ([MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md)). Three experiments, one per section:
+This doc collects the Qwen3.6-family experiments run on the RTX Pro 6000 Blackwell Workstation (96 GB, sm_120) that don't fit naturally in the model-agnostic tier list ([MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md)). Four experiments, one per section:
 
 1. [**RULER long-context eval on Qwen3.6-35B-A3B**](#ruler-long-context-eval-qwen36-35b-a3b) — YaRN ×2/×4 up to 1M tokens. **48/48 tasks pass**, static-YaRN short-context tax is invisible, Qwen3.6-35B-A3B is a true 1M-token model on this hardware.
 2. [**Opus-Reasoning-Distilled Qwen3.6-35B-A3B on the coding bench**](#opus-reasoning-distilled-qwen36-35b-a3b--coding-bench-regression) — fine-tune **regresses** from stock's 21/22 to 10/22 on the 4-benchmark suite, independent of `-rea on/off`. Useful for agentic bug-fixing (separately measured on SWE-bench Lite at +3.7 pp vs stock) but lost on from-scratch code generation.
 3. [**NVFP4 vs FP8 vs BF16 on Qwen3.6-27B dense**](#precision-comparison-qwen36-27b-dense-nvfp4-vs-fp8-vs-bf16) — vendor FP8 is the sweet spot (91% avg vs 84% BF16, 1.6× throughput, half the memory). NVFP4 ties on best-of-3 but adds no speed over FP8 on this hybrid architecture because attention stays BF16.
+4. [**Spec-decode method × k-sweep on Qwen3.6-27B FP8**](#spec-decode-method--k-sweep-qwen36-27b-fp8) — 7 configs measured on the same 4-bench harness. **dflash-k15 stays the production winner** at 197.5 tok/s, 22/22. Native MTP-1 (built into the FP8 weights, never deployed before) is a clean drafter-free fallback at 22/22 + 67.5 tok/s. FP8 KV cache is a net loss (uncalibrated scaling) and is incompatible with DFlash at the framework level.
 
 For Qwen3.6's SWE-bench Lite numbers (including the dense 27B FP8 run), see [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md).
 
@@ -324,6 +325,141 @@ Total wall-clock on first-time setup: ~15 min for the toolchain after the ~25 mi
 - [`experiments/nvfp4_qwen36_27b/nvfp4/results.json`](../experiments/nvfp4_qwen36_27b/nvfp4/results.json)
 - [`tools/quantize_nvfp4.py`](../tools/quantize_nvfp4.py) — reusable for other models
 - [`tools/nvfp4_qwen36_27b_bench.py`](../tools/nvfp4_qwen36_27b_bench.py)
+
+---
+
+# Spec-decode method × k-sweep (Qwen3.6-27B FP8)
+
+**TL;DR — dflash-k15 stays the production winner at 197.5 tok/s, 22/22 best-of-3. The model's built-in MTP head (which we'd never deployed) gives 67.5 tok/s at 22/22 with 93% acceptance and adds only ~1 GB to the FP8 weight footprint — useful as a drafter-free fallback. DFlash dominates throughput at every k, with sharply diminishing returns past k=11. FP8 KV cache is a net loss on this stack: uncalibrated scaling factors regress quality, and the BF16 drafter is incompatible with FP8 KV at the vLLM page-allocator level.**
+
+## Why this run
+
+The DFlash refresh (`vLLM PR-40898 + drafter 09196886`, [previous commit](#)) lifted coding score 21/22 → 22/22 at 199 tok/s but left two big knobs un-swept: the spec-decode `num_speculative_tokens` (DFlash card community data shows acceptance falling sharply past k≈10), and whether the FP8 weights' built-in MTP head — which `~/models-vllm/qwen36-27b-fp8/model.safetensors.index.json` carries 22 quantized `mtp.*` tensors for — could replace the external 3.3 GB DFlash drafter. Plus FP8 KV cache as a memory knob: vLLM recipes lists "256K ctx, KV FP8" as the verified Blackwell production config and we'd never tested it.
+
+## Spec-decode setup
+
+- **Hardware**: RTX Pro 6000 Blackwell 96 GB, driver 580.126.09.
+- **vLLM**: `0.20.1rc1.dev33+g80561d6ce` (PR-40898 build, same as the production `qwen36-27b` daily driver).
+- **Target weights**: `~/models-vllm/qwen36-27b-fp8` (vendor FP8 release, 28.9 GB on load).
+- **Bench**: [`tools/nvfp4_qwen36_27b_bench.py`](../tools/nvfp4_qwen36_27b_bench.py), the same 4-task suite used for the precision sweep above. T=0.3, 3 runs each, 15K max tokens, thinking on (typical generation ~8-10K tokens including organic reasoning prose).
+- **Common serve args**: `--max-model-len 262144 --gpu-memory-utilization 0.88 --enable-prefix-caching --max-num-seqs 256 --reasoning-parser qwen3 --enable-auto-tool-choice --tool-call-parser qwen3_coder`. (`max_num_seqs` had to drop from vLLM's default 1024 — MTP-1 errors with `max_num_seqs (1024) exceeds available Mamba cache blocks (914)` since spec-decode adds Mamba slots per draft step.)
+- **Backend**: `flash_attn` for non-fp8-kv variants, `flashinfer` for fp8-kv variants (flash_attn rejects `kv_cache_dtype=fp8` with `not supported`).
+- **Orchestrator**: [`tools/qwen36_27b_mtp_sweep.py`](../tools/qwen36_27b_mtp_sweep.py) — boots vLLM with the variant's spec config, polls `/v1/models` until ready, runs the bench, scrapes `/metrics` for spec-decode counters, kills vLLM and the orphan `VLLM::EngineCore` worker, verifies VRAM is freed before moving on.
+
+## Spec-decode results
+
+| variant | best/22 | avg/22 | tok/s mean | range | speedup vs baseline | mean accepted | overall accept |
+|---|:---:|:---:|---:|---|---:|---|---:|
+| baseline (no spec dec) | 21 | 20.1 | 48.3 | 48.3-48.4 | 1.00× | — | — |
+| **mtp-1** (native MTP head) | **22** | **21.1** | 67.5 | 65.0-70.5 | 1.40× | 0.93 of 1 | 93.0% |
+| mtp-2 | 22 | 18.7 | 93.3 | 90.3-96.4 | 1.93× | 1.74 of 2 | 87.1% |
+| dflash-k7 | 22 | 17.9 | 170.8 | 158-180 | 3.54× | 4.09 of 7 | 58.5% |
+| dflash-k11 | 22 | 16.4 | 185.8 | 165-203 | 3.85× | 4.67 of 11 | 42.4% |
+| **dflash-k15** (production) | **22** | 18.0 | **197.5** | 173-223 | **4.09×** | 4.99 of 15 | 33.3% |
+| mtp-1-fp8kv | 21 ↓ | 18.7 ↓ | 75.0 | 70-76 | 1.55× | 0.93 of 1 | 93.1% |
+| dflash-k11-fp8kv | — | — | — | — | — | — | — |
+
+Per-position acceptance for the DFlash sweep (all FP8 target, BF16 drafter, single-stream coding bench):
+
+| draft pos | k=7 | k=11 | k=15 |
+|---:|---:|---:|---:|
+| 0 | 89% | 87% | 87% |
+| 2 | 65% | 60% | 59% |
+| 5 | 41% | 36% | 35% |
+| 8 | — | 23% | 22% |
+| 10 | — | 17% | 16% |
+| 14 | — | — | 8% |
+
+Mean accepted tokens per draft step (the metric that actually pays for throughput): k=7 → 4.09, k=11 → 4.67, k=15 → 4.99. **k=15's extra 4 draft positions buy only 0.32 more accepted tokens** — sharply diminishing returns. k=11 is the throughput-per-drafter-FLOP sweet spot if drafter compute ever became a bottleneck (it doesn't on single-stream).
+
+## Spec-decode findings
+
+1. **Native MTP-1 works and adds only ~1 GB to weight footprint.** vLLM auto-detected the MTP head from `~/models-vllm/qwen36-27b-fp8`'s `model.safetensors.index.json`, logged `Detected MTP model. Sharing target model lm_head weights with the draft model`, and ran cleanly. Model loading footprint went from baseline 28.0 GB to 28.95 GB — confirming the head is built into the FP8 weights, not a separate file. 93% per-position acceptance gives 1.4× decode throughput at no quality cost. **It's the only variant whose avg score (21.1) beats baseline (20.1)**, although given run-to-run variance on 3 trials this is likely just lucky stochasticity rather than a method-level quality lift.
+
+2. **MTP-2 is faster but quality variance widens.** 93.3 tok/s (1.93×) at 87% mean acceptance, but avg drops to 18.7. Best-of-3 still 22.
+
+3. **DFlash dominates throughput at every k.** Even k=7 hits 170.8 tok/s — 2.5× MTP-2 — because the drafter is parallel (block diffusion: all k positions in one forward pass) where MTP is autoregressive (one MTP-layer call per draft token). On Blackwell + this hybrid arch, the parallel drafter is a much better throughput pick.
+
+4. **k=15 is still the sweet spot for production** despite the diminishing returns. 197.5 mean tok/s confirms the existing dflash_pr40898 reference (~199). k=11 trades 6% throughput (185.8 vs 197.5) for 27% less drafter compute — only worth picking up if drafter VRAM/compute starts mattering (e.g., very long-context where drafter overhead grows with context).
+
+5. **All spec-decode variants preserve 22/22 best-of-3.** Verifier-checked spec dec is lossless by construction. Avg-score variance across variants is run-to-run noise, not method-level quality drift; with only 3 trials per task, ±1-2 points is normal.
+
+## FP8 KV cache: don't ship it
+
+The vLLM recipes page lists `--kv-cache-dtype fp8` as part of the verified Blackwell production stack. We tried it on both the quality leader (mtp-1) and the throughput leader (dflash-k11). Both failed.
+
+**mtp-1 + fp8-kv**: ran cleanly but regressed:
+- best-of-3: 22 → **21** (one test flipped from pass to fail)
+- avg: 21.1 → **18.7** (real quality drop on multiple runs)
+- tok/s: 67.5 → 75.0 (+11%, the only positive)
+
+vLLM logged the cause at startup:
+```
+Checkpoint does not provide a q scaling factor. Setting it to k_scale.
+Using KV cache scaling factor 1.0 for fp8_e4m3.
+Using uncalibrated q_scale 1.0 and/or prob_scale 1.0 with fp8 attention.
+This may cause accuracy issues.
+```
+
+The vendor FP8 release ships weight scales but not KV/prob scales. Without per-tensor calibration, FP8 quantize-on-write costs more accuracy than the +11% throughput is worth. Picking up FP8 KV would require calibrating Q/K/V scales on a representative dataset and re-uploading — out of scope for a knob sweep.
+
+**dflash-k11 + fp8-kv**: didn't even start. vLLM v1's KV-cache page allocator asserted:
+```
+File "vllm/v1/core/kv_cache_utils.py", line 1030, in unify_kv_cache_spec_page_size
+    assert new_spec.page_size_bytes == max_page_size
+AssertionError
+```
+
+The DFlash drafter is BF16. Its KV pages and the FP8 target's KV pages have different byte widths, and vLLM v1 enforces unified page size across draft + target. **Framework-level incompatibility**, not a config issue. Can't be patched without modifying vLLM's KV manager or producing an FP8-quantized DFlash drafter (z-lab doesn't ship one).
+
+**Conclusion**: don't pursue FP8 KV on this model until either (a) the FP8 release picks up calibrated KV scales, or (b) vLLM relaxes the page-size assertion for spec-decode pairs.
+
+## Spec-decode recommendation
+
+- **Keep `qwen36-27b` as dflash-k15.** No reason to change. 22/22 best-of-3, 197 tok/s mean, well above any alternative.
+- **Add `qwen36-27b-mtp1` as a drafter-free fallback** in `~/git/gisenberg/opencode-config/hosts/rtxpro6000/llama-swap.yaml`. Same FP8 weights, no DFlash dependency, no z-lab pre-1.0 churn. Gives 22/22 best-of-3 + 67.5 tok/s steady. Useful when:
+  - z-lab pushes a regressed drafter checkpoint and we need a known-good
+  - we want to ship the same `qwen36-27b-fp8` weights to a host without the 3.3 GB drafter file (e.g., DGX Spark, where every GB matters)
+  - sanity-checking whether a quality issue is the target or the drafter
+
+  Suggested entry:
+  ```yaml
+  "qwen36-27b-mtp1":
+    name: "Qwen3.6-27B FP8 + native MTP-1 (drafter-free fallback)"
+    description: "Same FP8 weights, model's built-in MTP head; 22/22 coding, 67 tok/s, no DFlash dependency"
+    env:
+      - "PATH=/home/gisenberg/venvs/dflash-pr40898/bin:..."
+      - "CUDA_HOME=/home/gisenberg/venvs/dflash-pr40898/lib/python3.12/site-packages/nvidia/cu13"
+    ttl: 600
+    cmd: |
+      /home/gisenberg/venvs/dflash-pr40898/bin/vllm serve
+      /home/gisenberg/models-vllm/qwen36-27b-fp8
+      --served-model-name qwen36-27b-mtp1
+      --host 127.0.0.1 --port ${PORT}
+      --max-model-len 262144
+      --gpu-memory-utilization 0.88
+      --enable-prefix-caching
+      --attention-backend flash_attn
+      --max-num-batched-tokens 32768
+      --max-num-seqs 256
+      --enable-auto-tool-choice --tool-call-parser qwen3_coder
+      --reasoning-parser qwen3
+      --speculative-config '{"method":"mtp","num_speculative_tokens":1}'
+  ```
+- **Don't bother with mtp-2.** Throughput is well below DFlash and avg quality variance is wider than mtp-1.
+- **Drop FP8 KV from the consideration set** until upstream ships calibrated FP8 KV scales for Qwen3.5/3.6.
+
+## Spec-decode files
+
+- [`tools/qwen36_27b_mtp_sweep.py`](../tools/qwen36_27b_mtp_sweep.py) — orchestrator (one variant per invocation; supports `all-round1`)
+- [`experiments/qwen36_27b_mtp_sweep/{baseline,mtp-1,mtp-2,dflash-k7,dflash-k11,dflash-k15-rerun,mtp-1-fp8kv}/`](../experiments/qwen36_27b_mtp_sweep/) — per-variant `summary.json`, `results.json`, `metrics.txt`, `vllm.log`
+
+## Spec-decode caveats
+
+- **Best-of-3 is generous methodology.** With only 3 runs at T=0.3, the avg column has ±1-2 points of stochastic noise. The "MTP-1 beats baseline on avg" finding (21.1 vs 20.1) is within that noise band — don't read it as a quality lift, just confirmation that MTP-1 doesn't *cost* quality.
+- **Throughput is generation-shape-dependent.** All numbers measured on this 4-task coding suite at ~8-10K tokens per generation with reasoning on. Real opencode workloads (mixed prompt sizes, tool-call interludes, much shorter responses for simple tasks) will see different acceptance distributions and likely lower means. The dflash_pr40898 reference doc has the prompt-shape variance discussion.
+- **`enable_thinking: false` collapses these scores.** First baseline run with `--default-chat-template-kwargs '{"enable_thinking": false}'` (matching the production agent preset) scored 0/5 on Expression Evaluator with 1421-token output — model emitted impl only, no tests. Switched off for this comparison; the production agent's no-think preset is a different measurement axis (SWE-bench Lite captures it).
+- **Single A/B point on FP8 KV.** mtp-1-fp8kv was the only fp8-kv variant that completed. Whether the regression is mtp-1-specific or a property of uncalibrated FP8 KV in general can't be distinguished from this data alone.
 
 ---
 

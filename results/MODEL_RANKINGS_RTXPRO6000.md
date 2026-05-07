@@ -144,7 +144,7 @@ The dense 27B variant of Qwen3.6 (different model from the 35B-A3B MoE elsewhere
 
 **The non-DFlash baseline:** without spec dec, the same FP8 weights decode at ~47 tok/s — competitive with Gemma-Q8 but ~4× slower than the DFlash-on configuration. The 57.3% SWE-bench result was actually measured at 47 tok/s (vLLM 0.19.1, no spec dec); DFlash makes the same patches arrive ~4× faster.
 
-See [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) for the BF16/FP8/NVFP4 precision sweep on this same model (no spec dec) and [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) for the four-model agentic-coding breakdown.
+See [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) for the BF16/FP8/NVFP4 precision sweep on this same model (no spec dec), the [spec-decode method × k-sweep](QWEN36_RTXPRO6000.md#spec-decode-method--k-sweep-qwen36-27b-fp8) (k=15 confirmed best, native MTP-1 is a clean drafter-free fallback at 67 tok/s, FP8 KV cache regresses quality), and [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) for the four-model agentic-coding breakdown.
 
 ---
 
