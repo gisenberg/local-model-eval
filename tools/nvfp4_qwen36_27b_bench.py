@@ -21,8 +21,9 @@ different variants without disk I/O churn. Example serve commands:
       --quantization modelopt_fp4 \\
       --max-model-len 16384 --gpu-memory-utilization 0.90
 
-  # Vendor FP8
-  vllm serve ~/models-vllm/qwen36-27b-fp8 \\
+  # Vendor FP8 (relocated 2026-05-22 to /mnt/extended/gisenberg/models/qwen36-27b-fp8
+  # after Qwopus took the NVMe slot as daily driver)
+  vllm serve /mnt/extended/gisenberg/models/qwen36-27b-fp8 \\
       --served-model-name qwen36-27b-fp8 --port 8090 \\
       --max-model-len 16384 --gpu-memory-utilization 0.90
 """
