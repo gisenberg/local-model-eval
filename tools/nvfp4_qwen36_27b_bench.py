@@ -31,7 +31,7 @@ different variants without disk I/O churn. Example serve commands:
 import argparse, json, os, re, subprocess, sys, time
 import requests
 
-TEMP = 0.3
+DEFAULT_TEMP = 0.3
 RUNS = 3
 # Qwen3.6 is a thinking model — reasoning traces easily exceed 8192. Matches
 # rtxpro6000_coding_bench.py's budget for Qwen3.6-35B-A3B and leaves ~1.4K for
@@ -58,7 +58,7 @@ BENCHMARKS = {
 }
 
 
-def run_inference(prompt, port, model):
+def run_inference(prompt, port, model, temp):
     t0 = time.perf_counter()
     resp = requests.post(
         f"http://localhost:{port}/v1/chat/completions",
@@ -66,7 +66,7 @@ def run_inference(prompt, port, model):
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": MAX_TOKENS,
-            "temperature": TEMP,
+            "temperature": temp,
         },
         timeout=600,
     )
@@ -118,11 +118,13 @@ def main():
     ap.add_argument("--port", type=int, default=8090)
     ap.add_argument("--served-name", required=True, help="served-model-name registered with vllm serve")
     ap.add_argument("--output-dir", required=True, help="e.g. experiments/nvfp4_qwen36_27b/nvfp4")
+    ap.add_argument("--temp", type=float, default=DEFAULT_TEMP,
+                    help=f"sampling temperature (default {DEFAULT_TEMP}; Qwopus card recommends 1.0 for thinking-on)")
     args = ap.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
     print(f"=== Qwen3.6-27B coding bench ({args.served_name}) ===")
-    print(f"Temp={TEMP}, {RUNS} runs, port={args.port}\n")
+    print(f"Temp={args.temp}, {RUNS} runs, port={args.port}\n")
 
     all_results = {}
     for bk, bench in BENCHMARKS.items():
@@ -130,7 +132,7 @@ def main():
         for run in range(1, RUNS + 1):
             print(f"  [{bench['name']}] Run {run}/{RUNS}...", end="", flush=True)
             try:
-                result = run_inference(bench["prompt"], args.port, args.served_name)
+                result = run_inference(bench["prompt"], args.port, args.served_name, args.temp)
                 tf = f"{args.output_dir}/{bk}_run{run}_test.py"
                 tr = extract_and_test(result["content"], tf)
                 print(f" {result['tok_per_sec']:.0f} tok/s | {tr['passed']}/{bench['expected']} | {result['tokens']} tok")
@@ -156,7 +158,7 @@ def main():
         f"({total_best/total_exp*100:.0f}%), Avg = {total_avg:.1f}/{total_exp}"
     )
 
-    all_results["_meta"] = {"served_name": args.served_name, "port": args.port, "temp": TEMP, "runs": RUNS}
+    all_results["_meta"] = {"served_name": args.served_name, "port": args.port, "temp": args.temp, "runs": RUNS}
     with open(f"{args.output_dir}/results.json", "w") as f:
         json.dump(all_results, f, indent=2)
     print(f"\nSaved to {args.output_dir}/results.json")

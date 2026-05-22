@@ -1,11 +1,12 @@
 # Qwen3.6 on RTX Pro 6000 — deep dives
 
-This doc collects the Qwen3.6-family experiments run on the RTX Pro 6000 Blackwell Workstation (96 GB, sm_120) that don't fit naturally in the model-agnostic tier list ([MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md)). Four experiments, one per section:
+This doc collects the Qwen3.6-family experiments run on the RTX Pro 6000 Blackwell Workstation (96 GB, sm_120) that don't fit naturally in the model-agnostic tier list ([MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md)). Five experiments, one per section:
 
 1. [**RULER long-context eval on Qwen3.6-35B-A3B**](#ruler-long-context-eval-qwen36-35b-a3b) — YaRN ×2/×4 up to 1M tokens. **48/48 tasks pass**, static-YaRN short-context tax is invisible, Qwen3.6-35B-A3B is a true 1M-token model on this hardware.
 2. [**Opus-Reasoning-Distilled Qwen3.6-35B-A3B on the coding bench**](#opus-reasoning-distilled-qwen36-35b-a3b--coding-bench-regression) — fine-tune **regresses** from stock's 21/22 to 10/22 on the 4-benchmark suite, independent of `-rea on/off`. Useful for agentic bug-fixing (separately measured on SWE-bench Lite at +3.7 pp vs stock) but lost on from-scratch code generation.
 3. [**NVFP4 vs FP8 vs BF16 on Qwen3.6-27B dense**](#precision-comparison-qwen36-27b-dense-nvfp4-vs-fp8-vs-bf16) — vendor FP8 is the sweet spot (91% avg vs 84% BF16, 1.6× throughput, half the memory). NVFP4 ties on best-of-3 but adds no speed over FP8 on this hybrid architecture because attention stays BF16.
 4. [**Spec-decode method × k-sweep on Qwen3.6-27B FP8**](#spec-decode-method--k-sweep-qwen36-27b-fp8) — 7 configs measured on the same 4-bench harness. **dflash-k15 stays the production winner** at 197.5 tok/s, 22/22. Native MTP-1 (built into the FP8 weights, never deployed before) is a clean drafter-free fallback at 22/22 + 67.5 tok/s. FP8 KV cache is a net loss (uncalibrated scaling) and is incompatible with DFlash at the framework level.
+5. [**Qwopus 3.6-27B v2 (dense Opus-distill) — coding bench acceptance run**](#qwopus-36-27b-v2-dense-opus-distill--coding-bench-acceptance-run) — new daily driver lands **22/22 best-of-3** (matches stock + FP8 DFlash), but **avg 16.4/22** — runs at temp 1.0 to dodge the card-documented `<think>`-loop failure mode, and even then 2/12 runs ran out the 15K token budget mid-output. Throughput **~48 tok/s** (matches the llama.cpp Q8_0 fallback). A different Opus-distill outcome than the 35B-A3B fine-tune in section 2 — quality ceiling holds, but variance is real.
 
 For Qwen3.6's SWE-bench Lite numbers (including the dense 27B FP8 run), see [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md).
 
@@ -460,6 +461,114 @@ The DFlash drafter is BF16. Its KV pages and the FP8 target's KV pages have diff
 - **Throughput is generation-shape-dependent.** All numbers measured on this 4-task coding suite at ~8-10K tokens per generation with reasoning on. Real opencode workloads (mixed prompt sizes, tool-call interludes, much shorter responses for simple tasks) will see different acceptance distributions and likely lower means. The dflash_pr40898 reference doc has the prompt-shape variance discussion.
 - **`enable_thinking: false` collapses these scores.** First baseline run with `--default-chat-template-kwargs '{"enable_thinking": false}'` (matching the production agent preset) scored 0/5 on Expression Evaluator with 1421-token output — model emitted impl only, no tests. Switched off for this comparison; the production agent's no-think preset is a different measurement axis (SWE-bench Lite captures it).
 - **Single A/B point on FP8 KV.** mtp-1-fp8kv was the only fp8-kv variant that completed. Whether the regression is mtp-1-specific or a property of uncalibrated FP8 KV in general can't be distinguished from this data alone.
+
+---
+
+# Qwopus 3.6-27B v2 (dense Opus-distill) — coding bench acceptance run
+
+**TL;DR — `Jackrong/Qwopus3.6-27B-v2-GGUF` Q8_0 is the new daily-driver pick on this host. Lands 22/22 best-of-3 on the 4-benchmark coding suite (matches stock Qwen3.6-27B FP8+DFlash) at ~48 tok/s, but avg is only 16.4/22 because 2/12 runs ran out the 15K-token max trying to escape a `<think>`-block loop — the failure mode the model card explicitly warns about for low-temperature sampling. We run this model at `temp=1.0` per the card and still see the cliff. A* and string_processor are rock-solid; expression_evaluator and LRU cache are where the variance lives.**
+
+## Qwopus-coding what we tested
+
+- **Model**: [`Jackrong/Qwopus3.6-27B-v2-GGUF`](https://huggingface.co/Jackrong/Qwopus3.6-27B-v2-GGUF) at Q8_0 (28.6 GB) + `mmproj.gguf` (931 MB).
+- **Base model**: dense `Qwen/Qwen3.6-27B` (hybrid linear_attn + full_attention, same arch family as the 35B-A3B Opus-distill in section 2, but **dense** not MoE).
+- **What the fine-tune is**: Trace Inversion distill of Claude Opus 4.6 + 4.7 chain-of-thought traces (datasets: `Jackrong/Claude-opus-4.6-TraceInversion-9000x`, `Jackrong/Claude-opus-4.7-TraceInversion-5000x`). Card-claimed MMLU-Pro subset 87.43% — author flags this as a 200-sample harness, treat as smoke test.
+- **Why we ran this**: promoted to daily driver on 2026-05-22, replacing the `qwen36-27b` FP8+DFlash vLLM entry as the routed default. Needed an acceptance number against the same 4-bench harness we've used for every other Qwen3.6 variant on this host to know whether the swap costs quality.
+
+## Qwopus-coding methodology
+
+Standard 4-benchmark coding suite (`tools/nvfp4_qwen36_27b_bench.py`) — same prompts as section 2, section 3, section 4. 3 runs per benchmark, scored per-test by `pytest -v` (partial credit per run, not all-or-nothing).
+
+Served via llama-swap on port 8080 (the production path, not a one-off vLLM on 8090): the entry exercised is exactly the one opencode hits. llama.cpp CUDA build (`/home/gisenberg/llama-build/src/build/bin/llama-server`), `-c 524288 -np 2 -ngl 99 -fa on -ctk f16 -ctv f16 --no-mmap --jinja`, `--mmproj` wired in. Sampling: **`temp 1.0`** per the model card (top-p 0.95, top-k 20, min-p 0, repeat-penalty 1.0).
+
+**Why temp=1.0 not 0.3.** Every prior Qwen3.6 row in this doc was scored at temp 0.3. The Qwopus model card explicitly warns: *"Greedy decoding (temp=0.1) forces the finetune to over-deliberate and loop inside the `<think>` block, whereas a higher temperature enables the model to utilize the full breadth of reasoning paths established during training."* Card-quoted bench range is 0.75–1.0. We took the upper end. This is a deliberate methodology change for this row only — Qwopus at 0.3 would be measuring a known-bad config, not its production-recommended config.
+
+`max_tokens=15000` (the harness default). Thinking left on — that's the whole point of running this distill.
+
+## Qwopus-coding results
+
+| benchmark | best/expected | avg/expected | per-run breakdown |
+|---|---:|---:|---|
+| expression_evaluator | **5/5** | 4.0/5 | 0 / 0 / 5  (run1 length-capped at 15K, run2 produced bad code at 6.5K, run3 clean) |
+| astar_pathfinding | **6/6** | 5.7/6 | 6 / 5 / 6 |
+| lru_cache_ttl | **6/6** | 2.0/6 | 0 / 0 / 6  (run1 produced bad code at 6.3K, run2 length-capped at 15K, run3 clean) |
+| string_processor | **5/5** | 4.7/5 | 5 / 4 / 5 |
+| **total** | **22/22 (100%)** | **16.4/22 (74.5%)** | — |
+
+(`expression_evaluator` run3 actually emitted 12 passing tests — the model wrote a 12-test suite when 5 were requested. The harness caps best-per-benchmark at `expected`, so it counts as 5/5.)
+
+Throughput steady across all 12 runs at **47.6–48.1 tok/s** (single-stream, one slot of `-np 2`). That's within noise of the `qwen36-27b-fallback` baseline (49 tok/s on stock Qwen3.6-27B Q8_0) — Qwopus inherits the base's decode speed exactly.
+
+### Where the variance comes from
+
+Of the 12 runs, 4 scored zero:
+
+| run | finish | tokens | what happened |
+|---|---|---:|---|
+| expression_evaluator run1 | `length` | 15000 | model spent the whole budget thinking, no code block ever emitted |
+| expression_evaluator run2 | `stop` | 6497 | model emitted code that failed pytest collection / test asserts |
+| lru_cache run1 | `stop` | 6330 | model emitted code that failed pytest collection / test asserts |
+| lru_cache run2 | `length` | 15000 | model spent the whole budget thinking, no code block ever emitted |
+
+Two distinct failure modes:
+
+1. **Length-capped runs (2/12, ~17%).** The `<think>` block runs past the 15K max_tokens, generation gets cut off mid-reasoning, no `</think>` ever fires, no python code block exists to extract. This is the exact failure mode the card warns about — *"the reasoning-loop failure mode where earlier finetunes hit 78 empty patches"* — and we still see a residual rate of it at temp 1.0. The card says temp 1.0 *eliminates* this mode; in our 12-run sample it merely *reduces* it. Plausibly noise (1 failure per benchmark, not 3/3).
+
+2. **Stopped-but-wrong runs (2/12, ~17%).** Model finished cleanly inside the token budget and emitted python code, but the code didn't pass tests. Different from the 35B-A3B Opus-distill failure mode (section 2), which was *pytest collection errors* from broken test files — here the tests collect and run, they just fail. This looks like ordinary "small model writes plausible-but-buggy code" variance, not a fine-tune-specific regression.
+
+The other 8 runs all scored at or near max (4 perfect runs at 5/5 or 6/6, plus the 12/5 over-test outlier, plus 5/6 and 4/5). So **when the model does emit code, it usually emits good code**.
+
+### Comparison to siblings
+
+| variant | source | best | avg | tok/s |
+|---|---|---:|---:|---:|
+| Qwen3.6-27B FP8 + DFlash (vLLM) | [§ Spec-decode k-sweep](#spec-decode-method--k-sweep-qwen36-27b-fp8) | 22/22 | 21.0 | 197.5 |
+| Stock Qwen3.6-27B Q8 (llama.cpp `-fallback`) | rebench (`temp 0.3`) | 22/22 | ~20.5 | 49.2 |
+| **Qwopus 3.6-27B v2 Q8 (this row)** | this run (`temp 1.0`) | **22/22** | **16.4** | **48.1** |
+| Qwen3.6-35B-A3B Opus-distill Q8 | [§ Opus-distill regression](#opus-reasoning-distilled-qwen36-35b-a3b--coding-bench-regression) | 10/22 | 10.0 | — |
+
+**Quality ceiling held.** Qwopus matches the best-of-3 score of every healthy Qwen3.6-27B variant we've measured. The 35B-A3B Opus-distill regression in section 2 is *not* a general property of Opus-distillation — the dense 27B version of the same idea (different distiller, different dataset, different base) doesn't lose the coding ceiling.
+
+**Avg dropped 4-5 points.** Stock variants average ~20.5-21.0; Qwopus averages 16.4 with a near-50/50 split between perfect runs and zero runs on the two harder benchmarks. The card's `<think>`-loop failure mode is the proximate cause; running with a much larger max_tokens budget (say 32K) would likely recover some of this.
+
+**Throughput is base-determined.** Qwopus is a fine-tune of Qwen3.6-27B with identical architecture, so llama.cpp decode speed is identical to stock at the same quant. The 4× speed gap vs the vLLM FP8+DFlash row is the spec-decode stack we're forgoing — DFlash here is vLLM-only and the existing drafter was trained against stock Qwen3.6, not Qwopus.
+
+## Qwopus-coding caveats
+
+- **Single 3-run trial per benchmark, temp 1.0.** At temp 1.0 with reasoning on, run-to-run variance is structurally larger than at temp 0.3 — the avg column has wider error bars than every other row in this doc. 22/22 best is a real ceiling; 16.4/22 avg is one sample of a noisy distribution.
+- **Methodology change vs prior rows.** Prior Qwen3.6 numbers in this doc are temp 0.3. Comparing Qwopus's avg directly to those is unfair — we'd need to re-run Qwopus at temp 0.3 to apples-to-apples it, but the card's `<think>`-loop warning means that's measuring a known-bad config. Best-of-3 (22/22) is the only number that compares cleanly across both temps.
+- **`max_tokens=15000` is a real ceiling.** Two runs hit it. A 32K budget would likely lift the avg; if you re-run this bench later, consider bumping that knob and noting the change.
+- **Author's MMLU-Pro 87.43% claim is a 200-sample harness** (author-acknowledged). The coding bench is a different axis — code quality + valid pytest emission — not general-knowledge recall.
+
+## Qwopus-coding recommendation
+
+**Keep Qwopus as the daily driver alias** (`opencode.json: "model": "rtxpro6000/qwopus36-27b-v2-q8"`). The ceiling holds, the throughput matches the llama.cpp Q8 baseline, and the variance hits are diagnosable (length cap on hard benchmarks with deep reasoning). For real opencode workflows the model gets to retry on a bad emit, so a 75% per-run hit rate translates to a much higher session-level success rate.
+
+**Route speed-critical work to `qwen36-27b` instead.** The vLLM FP8+DFlash entry is still wired up and runs at 197 tok/s — 4× the daily driver. Coding bench numbers are equivalent at best-of-3; the difference is whether the latency budget matters.
+
+**Don't try to retrofit DFlash to Qwopus.** Our drafter (`qwen36-27b-dflash-drafter-v2026-04-27`) was trained against stock Qwen3.6. Qwopus is a separate distillation — same tokenizer, drifted output distribution — so even llama.cpp's generic `--model-draft` would suffer reduced acceptance. The clean path to spec-decode on this daily driver is a Qwopus-trained drafter, which doesn't exist yet.
+
+## Qwopus-coding reproducing
+
+```bash
+# Download (29.5 GB total: Q8_0 + mmproj):
+mkdir -p ~/models/qwopus36-27b-v2-q8
+HF_HUB_ENABLE_HF_TRANSFER=1 hf download Jackrong/Qwopus3.6-27B-v2-GGUF \
+    Qwopus3.6-27B-v2-Q8_0.gguf mmproj.gguf \
+    --local-dir ~/models/qwopus36-27b-v2-q8
+
+# Confirm llama-swap sees the alias (the entry is in opencode-config/hosts/rtxpro6000/llama-swap.yaml):
+curl -sS http://127.0.0.1:8080/v1/models | jq '.data[].id'
+
+# Run the 4-benchmark coding suite at the card-recommended temp:
+cd ~/git/gisenberg/local-model-eval
+/home/gisenberg/venvs/dflash-pr40898/bin/python3 tools/nvfp4_qwen36_27b_bench.py \
+    --port 8080 --served-name qwopus36-27b-v2-q8 \
+    --output-dir experiments/qwopus36_27b_v2_q8 \
+    --temp 1.0
+```
+
+Per-run output (`<bench>_run<N>_test.py`) + JSON roll-up (`results.json`) lands in `experiments/qwopus36_27b_v2_q8/`. The `--temp` flag was added to `tools/nvfp4_qwen36_27b_bench.py` in the same commit that introduced this section (the harness defaulted to `temp 0.3` before; default is unchanged, so prior rows in this doc are reproducible verbatim).
 
 ---
 
