@@ -40,7 +40,7 @@ BENCHMARKS = [
 
 # Reuse same model configs as the throughput bench
 sys.path.insert(0, str(REPO / "tools"))
-from rtxpro6000_bench import MODELS, start_server, wait_for_server, stop_server, vram_used_mb
+from rtxpro6000_bench import BACKEND, MODELS, start_server, wait_for_server, stop_server, vram_used_mb
 
 
 # -------- Benchmark prompt extraction from .md ---------
@@ -244,7 +244,7 @@ def benchmark_model(model_key: str, ctx: int = 32768) -> dict:
         "key": model_key,
         "ctx": ctx,
         "vram_mb": vram_mb,
-        "backend": "vulkan",
+        "backend": BACKEND,
         "total_score": f"{total_passed}/{total_expected}",
         "benchmarks": bench_results,
     }

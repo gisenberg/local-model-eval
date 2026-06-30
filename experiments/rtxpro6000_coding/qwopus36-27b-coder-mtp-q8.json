@@ -1,0 +1,62 @@
+{
+  "model": "Qwopus3.6-27B-Coder-MTP Q8_0",
+  "key": "qwopus36-27b-coder-mtp-q8",
+  "ctx": 32768,
+  "vram_mb": 29952,
+  "backend": "cuda",
+  "total_score": "37/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 25,
+      "failed": 0,
+      "errors": 0,
+      "total": 25,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "16%]\ntest_string_processor.py::TestReverseWords::test_reverse_words_empty_string PASSED [ 20%]\ntest_string_processor.py::TestCountVowels::test_count_vowels_basic PASSED [ 24%]\ntest_string_processor.py::TestCountVowels::test_count_vowels_case_insensitive PASSED [ 28%]\ntest_string_processor.py::TestCountVowels::test_count_vowels_no_vowels PASSED [ 32%]\ntest_string_processor.py::TestCountVowels::test_count_vowels_all_vowels PASSED [ 36%]\ntest_string_processor.py::TestCountVowels::test_count_vowels_empty_string PASSED [ 40%]\ntest_string_processor.py::TestIsPalindrome::test_is_palindrome_basic PASSED [ 44%]\ntest_string_processor.py::TestIsPalindrome::test_is_palindrome_with_spaces_and_punctuation PASSED [ 48%]\ntest_string_processor.py::TestIsPalindrome::test_is_palindrome_not_palindrome PASSED [ 52%]\ntest_string_processor.py::TestIsPalindrome::test_is_palindrome_case_insensitive PASSED [ 56%]\ntest_string_processor.py::TestIsPalindrome::test_is_palindrome_empty_string PASSED [ 60%]\ntest_string_processor.py::TestCaesarCipher::test_caesar_cipher_basic PASSED [ 64%]\ntest_string_processor.py::TestCaesarCipher::test_caesar_cipher_wrap_around PASSED [ 68%]\ntest_string_processor.py::TestCaesarCipher::test_caesar_cipher_negative_shift PASSED [ 72%]\ntest_string_processor.py::TestCaesarCipher::test_caesar_cipher_preserve_case PASSED [ 76%]\ntest_string_processor.py::TestCaesarCipher::test_caesar_cipher_non_alpha_chars PASSED [ 80%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_basic PASSED [ 84%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_case_insensitive PASSED [ 88%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_tie_first_occurrence PASSED [ 92%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_empty_string PASSED [ 96%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_single_word PASSED [100%]\n\n============================== 25 passed in 0.01s ==============================\n",
+      "n_code_blocks": 2,
+      "response_len": 6084,
+      "expected": 5,
+      "elapsed_s": 13.33
+    },
+    "expression_evaluator": {
+      "passed": 1,
+      "failed": 4,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "____________________________\n\nevaluator = <expression_evaluator.ExpressionEvaluator object at 0x718ebfcb3710>\n\n    def test_unary_minus(evaluator: ExpressionEvaluator) -> None:\n        \"\"\"Test unary minus operator.\"\"\"\n        assert evaluator.evaluate(\"-3\") == -3.0\n>       assert evaluator.evaluate(\"-3 + 5\") == 2.0\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntest_expression_evaluator.py:48: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <expression_evaluator.ExpressionEvaluator object at 0x718ebfcb3710>\nexpr = '-3 + 5'\n\n    def evaluate(self, expr: str) -> float:\n        \"\"\"\n        Evaluate a mathematical expression string and return the result.\n    \n        Args:\n            expr: A string containing a mathematical expression.\n    \n        Returns:\n            The floating point result of the expression.\n    \n        Raises:\n            ValueError: If the expression is invalid, empty, has mismatched\n                parentheses, division by zero, or contains invalid tokens.\n        \"\"\"\n        if not expr or not expr.strip():\n            raise ValueError(\"Empty expression\")\n    \n        self._expr = expr.strip()\n        self._pos = 0\n        self._length = len(self._expr)\n    \n        result = self._parse_expr()\n    \n        if self._pos < self._length:\n>           raise ValueError(f\"Invalid token at position {self._pos}: '{self._expr[self._pos]}'\")\nE           ValueError: Invalid token at position 2: ' '\n\nexpression_evaluator.py:50: ValueError\n=========================== short test summary info ============================\nFAILED test_expression_evaluator.py::test_basic_arithmetic - ValueError: Inva...\nFAILED test_expression_evaluator.py::test_precedence - ValueError: Invalid to...\nFAILED test_expression_evaluator.py::test_parentheses - ValueError: Mismatche...\nFAILED test_expression_evaluator.py::test_unary_minus - ValueError: Invalid t...\n========================= 4 failed, 1 passed in 0.02s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 8182,
+      "expected": 5,
+      "elapsed_s": 18.8
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpu4emli8d\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost PASSED              [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 8728,
+      "expected": 6,
+      "elapsed_s": 23.17
+    },
+    "lru_cache_ttl": {
+      "passed": 5,
+      "failed": 1,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpr_ooerx2\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction_lru_order PASSED               [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_per_key_ttl PASSED                        [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_with_mixed_expired_valid_items FAILED       [100%]\n\n=================================== FAILURES ===================================\n___________________ test_size_with_mixed_expired_valid_items ___________________\n\nmock_time = [4.0]\n\n    def test_size_with_mixed_expired_valid_items(mock_time):\n        \"\"\"Test size() returns count of non-expired items with lazy cleanup.\"\"\"\n        cache = TTLCache(capacity=5, default_ttl=5.0)\n    \n        cache.put(\"key1\", \"value1\", ttl=2.0)\n        cache.put(\"key2\", \"value2\", ttl=10.0)\n        cache.put(\"key3\", \"value3\", ttl=3.0)\n    \n        # Advance time past key1 and key3 TTLs\n        mock_time[0] = 4.0\n    \n        # size() should lazily clean up expired items\n>       assert cache.size() == 1  # Only key2 is valid\n        ^^^^^^^^^^^^^^^^^^^^^^^^\nE       assert 2 == 1\nE        +  where 2 = size()\nE        +    where size = <lru_cache.TTLCache object at 0x76e69d167620>.size\n\ntest_lru_cache.py:100: AssertionError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_size_with_mixed_expired_valid_items - assert 2...\n========================= 1 failed, 5 passed in 0.02s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 9356,
+      "expected": 6,
+      "elapsed_s": 23.0
+    }
+  }
+}

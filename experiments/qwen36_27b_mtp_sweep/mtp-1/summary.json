@@ -19,5 +19,10 @@
   "mean_tok_per_sec": 67.5,
   "min_tok_per_sec": 65.0,
   "max_tok_per_sec": 70.5,
-  "vram_freed_mb": 18
+  "vram_freed_mb": 18,
+  "memory": {
+    "model_load_gib": 28.95,
+    "kv_pool_gib": 50.06,
+    "kv_pool_tokens": 192800
+  }
 }

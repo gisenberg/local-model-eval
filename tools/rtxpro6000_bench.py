@@ -22,10 +22,10 @@ import urllib.request
 
 BACKEND = os.environ.get("LLAMA_BACKEND", "vulkan")
 if BACKEND == "cuda":
-    LLAMA_DIR = "/home/gisenberg/llama-build/src/build/bin"
+    LLAMA_DIR = os.environ.get("LLAMA_DIR", "/home/gisenberg/llama-build/src/build/bin")
     _LD_EXTRA = ":/home/gisenberg/.micromamba/envs/cuda/lib"
 else:
-    LLAMA_DIR = "/home/gisenberg/llama/llama-b8826"
+    LLAMA_DIR = os.environ.get("LLAMA_DIR", "/home/gisenberg/llama/llama-b8826")
     _LD_EXTRA = ""
 MODELS_ROOT = "/home/gisenberg/models"
 OUTPUT_ROOT = f"/home/gisenberg/git/gisenberg/local-model-eval/experiments/rtxpro6000_bench_{BACKEND}"
@@ -93,6 +93,17 @@ MODELS = {
         "path": f"{MODELS_ROOT}/qwen36-opus-distill-q8/Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled.Q8_0.gguf",
         "ctx": 262144,
         "extra": [],
+    },
+    "qwopus36-27b-coder-mtp-q8": {
+        "name": "Qwopus3.6-27B-Coder-MTP Q8_0",
+        "path": f"{MODELS_ROOT}/qwopus36-27b-coder-mtp-q8/Qwopus3.6-27B-Coder-MTP-Q8_0.gguf",
+        "ctx": 32768,
+        "extra": [
+            "-rea", "off",
+            "--reasoning-budget", "0",
+            "--spec-type", "draft-mtp",
+            "--spec-draft-n-max", "2",
+        ],
     },
     "mistral-medium-3.5-q4km": {
         "name": "Mistral-Medium-3.5-128B Q4_K_M (unsloth)",

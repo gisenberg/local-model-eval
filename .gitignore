@@ -17,3 +17,9 @@ experiments/sweagent_lite_gemma/*/
 experiments/sweagent_lite_fp8/*/
 # SWE-bench eval harness runtime logs (per-instance test runs, ~75 MB).
 logs/
+
+# Image-to-3D experiment runtime artifacts and external model checkouts.
+experiments/image_to_3d_eval/.venv-*/
+experiments/image_to_3d_eval/hf_cache/
+experiments/image_to_3d_eval/output/
+experiments/image_to_3d_eval/third_party/

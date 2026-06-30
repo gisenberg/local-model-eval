@@ -1,0 +1,22 @@
+{
+  "variant": "nvfp4-mtp-5-fp8kv",
+  "desc": "NVFP4 + qwen3_5_mtp k=5 + fp8 KV (card's headline config, peak-k flavor)",
+  "pid": 80397,
+  "startup_s": 130.1,
+  "bench_returncode": 0,
+  "vram_used_mb_post_bench": 84444,
+  "spec_metrics": {
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8090): Max retries exceeded with url: /metrics (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8090): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+  },
+  "memory": {
+    "model_load_gib": 18.55,
+    "kv_pool_gib": 58.69,
+    "kv_pool_tokens": 452480
+  },
+  "best_of_3": 4,
+  "avg": 4.0,
+  "mean_tok_per_sec": 133.5,
+  "min_tok_per_sec": 133.5,
+  "max_tok_per_sec": 133.5,
+  "vram_freed_mb": 18
+}

@@ -1,0 +1,28 @@
+{
+  "variant": "nvfp4-mtp-1",
+  "desc": "NVFP4 (modelopt) + qwen3_5_mtp k=1 (low-latency NVFP4 baseline)",
+  "pid": 75046,
+  "startup_s": 466.2,
+  "bench_returncode": 0,
+  "spec_metrics": {
+    "vllm:spec_decode_num_drafts_total{engine=\"0\",model_name=\"qwen36-27b-sweep\"}": "62577.0",
+    "vllm:spec_decode_num_drafts_created{engine=\"0\",model_name=\"qwen36-27b-sweep\"}": "1.778260934299492e+09",
+    "vllm:spec_decode_num_draft_tokens_total{engine=\"0\",model_name=\"qwen36-27b-sweep\"}": "62577.0",
+    "vllm:spec_decode_num_draft_tokens_created{engine=\"0\",model_name=\"qwen36-27b-sweep\"}": "1.7782609342995067e+09",
+    "vllm:spec_decode_num_accepted_tokens_total{engine=\"0\",model_name=\"qwen36-27b-sweep\"}": "57437.0",
+    "vllm:spec_decode_num_accepted_tokens_created{engine=\"0\",model_name=\"qwen36-27b-sweep\"}": "1.7782609342995224e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"qwen36-27b-sweep\",position=\"0\"}": "57437.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"qwen36-27b-sweep\",position=\"0\"}": "1.778260934299535e+09"
+  },
+  "best_of_3": 17,
+  "avg": 15.8,
+  "mean_tok_per_sec": 80.7,
+  "min_tok_per_sec": 75.5,
+  "max_tok_per_sec": 84.6,
+  "vram_freed_mb": 18,
+  "memory": {
+    "model_load_gib": 18.55,
+    "kv_pool_gib": 58.63,
+    "kv_pool_tokens": 225600
+  }
+}

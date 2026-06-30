@@ -1,0 +1,11 @@
+Use case: product-mockup
+Asset type: image-to-3D reference input for TRELLIS.2 and Hunyuan3D 2.1
+Primary request: a single whimsical tabletop robot figurine designed for 3D reconstruction comparison
+Scene/backdrop: perfectly clean matte white studio background, no horizon line, no floor texture
+Subject: one compact toy-like robot figurine with a rounded cream ceramic body, teal side panels, small brass antenna, simple blocky feet, and two circular dark glass eyes
+Style/medium: photorealistic product photography of a physical object
+Composition/framing: centered 3/4 front view, entire object visible, generous padding on all sides, no cropping
+Lighting/mood: soft even studio lighting, minimal shadows that do not obscure the silhouette
+Materials/textures: ceramic body, satin painted metal side panels, small brushed brass details, glossy glass eyes
+Constraints: one object only; fully visible silhouette; no text; no watermark; no extra props; no hands; no logos
+Avoid: busy background, multiple objects, transparent parts, smoke, fur, hair, reflective floor, harsh cast shadow
