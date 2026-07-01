@@ -1,0 +1,45 @@
+{
+  "model": "DeepSeek-V4-Flash IQ2_XXS/Q2_K mixed GGUF (antirez)",
+  "key": "deepseek-v4-flash-iq2xxs",
+  "path": "/home/gisenberg/models/deepseek-v4-flash-iq2xxs/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2.gguf",
+  "ctx": 32768,
+  "vram_mb": 92168,
+  "load_seconds": 12.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.1854,
+      "decode_tps": 38.58,
+      "n_tokens": 255,
+      "total_s": 6.794
+    },
+    {
+      "ttft_s": 0.1837,
+      "decode_tps": 38.79,
+      "n_tokens": 255,
+      "total_s": 6.758
+    },
+    {
+      "ttft_s": 0.1841,
+      "decode_tps": 38.75,
+      "n_tokens": 255,
+      "total_s": 6.765
+    },
+    {
+      "ttft_s": 0.183,
+      "decode_tps": 38.8,
+      "n_tokens": 255,
+      "total_s": 6.756
+    },
+    {
+      "ttft_s": 0.1829,
+      "decode_tps": 38.75,
+      "n_tokens": 255,
+      "total_s": 6.764
+    }
+  ],
+  "ttft_mean": 0.1838,
+  "ttft_median": 0.1837,
+  "decode_mean": 38.73,
+  "decode_median": 38.75
+}

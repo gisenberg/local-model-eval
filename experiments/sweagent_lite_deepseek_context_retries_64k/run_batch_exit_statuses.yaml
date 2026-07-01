@@ -1,0 +1,6 @@
+instances_by_exit_status:
+    submitted:
+    - astropy__astropy-14365
+    submitted (exit_cost):
+    - django__django-11283
+total_cost: 0

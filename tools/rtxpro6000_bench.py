@@ -35,9 +35,9 @@ PROMPT = (
     "Write a Python function to compute the factorial of n recursively. "
     "Include type hints, a docstring, and one pytest test."
 )
-MAX_TOKENS = 256
-WARMUP_RUNS = 1
-TIMED_RUNS = 5
+MAX_TOKENS = int(os.environ.get("BENCH_MAX_TOKENS", "256"))
+WARMUP_RUNS = int(os.environ.get("BENCH_WARMUP_RUNS", "1"))
+TIMED_RUNS = int(os.environ.get("BENCH_TIMED_RUNS", "5"))
 
 MODELS = {
     "gemma4-31b-bf16": {
@@ -117,6 +117,19 @@ MODELS = {
         "ctx": 65536,
         "extra": [],
     },
+    "deepseek-v4-flash-iq2xxs": {
+        "name": "DeepSeek-V4-Flash IQ2_XXS/Q2_K mixed GGUF (antirez)",
+        "path": f"{MODELS_ROOT}/deepseek-v4-flash-iq2xxs/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2.gguf",
+        "ctx": 32768,
+        "gpu_layers": "auto",
+        "extra": [
+            "--jinja",
+            "-cram", "0",
+            "--fit", "on",
+            "-b", "2048",
+            "-ub", "2048",
+        ],
+    },
 }
 
 
@@ -128,7 +141,7 @@ def start_server(model_cfg, ctx_override=None):
         "--port", str(PORT),
         "--host", "127.0.0.1",
         "-c", str(ctx),
-        "-ngl", "99",
+        "-ngl", str(model_cfg.get("gpu_layers", "99")),
         "-fa", "on",
         "-np", "1",
         "--no-mmap",  # Force full load to VRAM (not OS page-cache backed)

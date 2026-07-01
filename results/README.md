@@ -34,6 +34,7 @@ This folder is the analysis and reference output for the local-model-eval projec
 - [MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md) — tier list for the 96 GB class, stock llama.cpp (Vulkan + CUDA).
 - [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) — full 300-instance SWE-bench Lite run across 4 models (Qwen3.6-27B FP8, Opus-distilled 35B-A3B, stock 35B-A3B, Gemma 4 31B). Headline: **dense 27B FP8 is the best Qwen3.6 variant measured (172/300, 57.3%)**.
 - [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md) — Qwen3.6 deep dives: RULER long-context (48/48 at 1M via YaRN ×4), Opus-Reasoning-Distilled coding-bench regression (21/22 → 10/22, but +3.7 pp on SWE-bench Lite), and NVFP4 vs FP8 vs BF16 precision comparison on Qwen3.6-27B dense.
+- [DEEPSEEK_V4_FLASH_RTXPRO6000.md](DEEPSEEK_V4_FLASH_RTXPRO6000.md) — DeepSeek V4 Flash q2 GGUF feasibility check on the 96 GB card. It runs, reaches 42 resolved patches in an aborted 72-prediction SWE-bench Lite partial, but is too slow and VRAM-tight to beat the current daily-driver choices.
 
 ### NVIDIA L40S (datacenter, 46 GB, Linux)
 
