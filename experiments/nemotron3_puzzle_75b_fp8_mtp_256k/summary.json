@@ -1,0 +1,45 @@
+{
+  "model": "nvidia/NVIDIA-Nemotron-Labs-3-Puzzle-75B-A9B-FP8",
+  "served_name": "nemotron3-puzzle-75b-fp8-mtp",
+  "port": 8091,
+  "max_model_len": 262144,
+  "max_num_seqs": 1,
+  "gpu_memory_utilization": 0.94,
+  "max_num_batched_tokens": 8192,
+  "moe_backend": "auto",
+  "speculative_config": {
+    "method": "mtp",
+    "num_speculative_tokens": 3
+  },
+  "pid": 201701,
+  "startup_s": 76.0,
+  "vram_used_mb_post_bench": 91013,
+  "spec_metrics": {
+    "vllm:spec_decode_num_drafts_total{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\"}": "10853.0",
+    "vllm:spec_decode_num_drafts_created{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\"}": "1.7834823357678008e+09",
+    "vllm:spec_decode_num_draft_tokens_total{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\"}": "32559.0",
+    "vllm:spec_decode_num_draft_tokens_created{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\"}": "1.7834823357678194e+09",
+    "vllm:spec_decode_num_accepted_tokens_total{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\"}": "24680.0",
+    "vllm:spec_decode_num_accepted_tokens_created{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\"}": "1.7834823357678323e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\",position=\"0\"}": "9459.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\",position=\"1\"}": "8182.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\",position=\"2\"}": "7039.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\",position=\"0\"}": "1.7834823357678483e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\",position=\"1\"}": "1.7834823357678537e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"nemotron3-puzzle-75b-fp8-mtp\",position=\"2\"}": "1.7834823357678583e+09"
+  },
+  "memory": {
+    "model_load_gib": 77.56,
+    "kv_pool_gib": 8.08,
+    "kv_pool_tokens": 312816,
+    "max_concurrency_tokens": 262144,
+    "max_concurrency": 4.74,
+    "kv_cache_dtype": "fp8_e4m3"
+  },
+  "best_of_3": 20,
+  "avg": 15.1,
+  "mean_tok_per_sec": 183.1,
+  "min_tok_per_sec": 44.6,
+  "max_tok_per_sec": 205.3,
+  "vram_freed_mb": 760
+}
