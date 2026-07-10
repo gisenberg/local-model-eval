@@ -144,6 +144,37 @@ Raw output:
 - `experiments/sweagent_lite_deepseek_context_retries_64k/preds.json`
 - `experiments/sweagent_lite_deepseek_full/eval/sweagent_lite_deepseek_full.deepseek-v4-flash-iq2xxs-partial-72.json`
 
+## vLLM-Moet Smoke Test
+
+I also tried `kacper-daftcode/vLLM-Moet` at commit `591250b` on 2026-07-09 using the official
+`deepseek-ai/DeepSeek-V4-Flash` FP8/NVFP4 checkpoint on the root NVMe volume.
+
+Setup:
+
+- Docker image: `vllm-moet-sm120:v024`, 33.9 GB, built locally from `Dockerfile.sm120-v024`.
+- Model footprint: 149 GB, 46 safetensors shards.
+- Host: RTX PRO 6000 Blackwell, 125 GiB RAM, 64 GiB swap.
+- Runtime config: FP8 KV, `deepseek_v4` tokenizer mode, 24K context, MTP with two draft tokens.
+
+Results:
+
+| Attempt | MoE knobs | Result |
+|---|---|---|
+| Delta pool | `VLLM_MOE_W2=1`, `VLLM_MOE_W2_DELTA_GB=1` | Engine reached DeepSeek V4/MTP setup and the FP4/MXFP4 MoE path, then was OOM-killed during load. GPU use was only about 10-13 GB; host OOM log showed about 101 GiB anonymous RSS. |
+| No delta pool | `VLLM_MOE_W2=1`, `VLLM_MOE_W2_DELTA=0`, `VLLM_MOE_W2_DELTA_GB=0` | Same pre-readiness failure. Docker recorded `OOMKilled=true`; GPU use was about 13 GB; host OOM log showed about 117 GiB anonymous RSS. |
+
+The surviving container log also warned that the `VLLM_MOE_W2*` variables were unknown vLLM
+environment variables. Those variables do exist in the vLLM-Moet patch/docs, so this warning is
+not by itself proof that the knobs were ignored, but it is an operational risk to keep in mind.
+
+Verdict: on this host, the vLLM-Moet path failed on host RAM/load staging before the server became
+ready. This was not a VRAM-fit failure and produced no benchmarkable throughput or SWE-bench result.
+The official checkpoint snapshot was removed after the failed smoke test.
+
+Raw notes:
+
+- `experiments/vllm_moet_deepseek_v4_flash/README.md`
+
 ## Read
 
 This is runnable on the 96 GB card, and the partial SWE-bench submitted-patch quality was better than the small coding suite suggested. It is still not an obvious replacement for the current Pro 6000 winners.
@@ -155,5 +186,6 @@ This is runnable on the 96 GB card, and the partial SWE-bench submitted-patch qu
 - SWE-bench Lite looked much better on the partial slice: 42/58 resolved among non-empty evaluated patches, 42/72 among all submitted predictions. The run was aborted because of wall-clock cost and operational fit, not because the model was failing the harness.
 - The antirez card explicitly says these quants are specific for the DS4 inference engine and "may work with other inference engines or not." llama.cpp loads and runs this file, but quality should be treated as a real empirical question, not assumed from the base model.
 - The sokann card's KLD comparison also flags the q2 quant as lossy versus the near-lossless 146 GiB baseline, despite "works amazingly well" qualitative behavior.
+- The vLLM-Moet official-checkpoint route did not get past model load on this 128 GB RAM host; it appears to need a much lower host-staging footprint or more RAM before it can be evaluated here.
 
 Practical verdict: keep it as a runnable curiosity / DeepSeek-specific behavior test. For daily Pro 6000 coding, Qwen3.6-27B FP8 + DFlash, Opus-distilled Qwen3.6-35B-A3B, stock Qwen3.6-35B-A3B, Gemma 4 31B Q8, and gpt-oss-120b Q8 remain better-supported choices in this repo.
