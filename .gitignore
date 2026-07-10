@@ -13,6 +13,7 @@ experiments/sweagent_lite/*/
 experiments/sweagent_lite_opus/*/
 experiments/sweagent_lite_retry/*/
 experiments/sweagent_sanity/*/
+experiments/sweagent_lite_*_smoke/
 experiments/sweagent_lite_gemma/*/
 experiments/sweagent_lite_fp8/*/
 experiments/sweagent_lite_*/*/

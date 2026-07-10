@@ -77,7 +77,10 @@ def run_inference(prompt, port, model, temp):
     u = d.get("usage", {})
     comp = u.get("completion_tokens", 0)
     return {
-        "content": msg.get("content", ""),
+        # Reasoning parsers may return JSON null when the model exhausts its
+        # budget before emitting final content. Keep the scorer string-safe so
+        # that run is recorded as zero code blocks instead of crashing.
+        "content": msg.get("content") or "",
         "tokens": comp,
         "elapsed_s": round(elapsed, 2),
         "tok_per_sec": round(comp / elapsed if elapsed > 0 else 0, 1),

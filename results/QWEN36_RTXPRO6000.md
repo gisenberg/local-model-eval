@@ -4,7 +4,7 @@ This doc collects the Qwen3.6-family experiments run on the RTX Pro 6000 Blackwe
 
 1. [**RULER long-context eval on Qwen3.6-35B-A3B**](#ruler-long-context-eval-qwen36-35b-a3b) — YaRN ×2/×4 up to 1M tokens. **48/48 tasks pass**, static-YaRN short-context tax is invisible, Qwen3.6-35B-A3B is a true 1M-token model on this hardware.
 2. [**Opus-Reasoning-Distilled Qwen3.6-35B-A3B on the coding bench**](#opus-reasoning-distilled-qwen36-35b-a3b--coding-bench-regression) — fine-tune **regresses** from stock's 21/22 to 10/22 on the 4-benchmark suite, independent of `-rea on/off`. Useful for agentic bug-fixing (separately measured on SWE-bench Lite at +3.7 pp vs stock) but lost on from-scratch code generation.
-3. [**NVFP4 vs FP8 vs BF16 on Qwen3.6-27B dense**](#precision-comparison-qwen36-27b-dense-nvfp4-vs-fp8-vs-bf16) — vendor FP8 is the sweet spot (91% avg vs 84% BF16, 1.6× throughput, half the memory). NVFP4 ties on best-of-3 but adds no speed over FP8 on this hybrid architecture because attention stays BF16.
+3. [**NVFP4 vs FP8 vs BF16 on Qwen3.6-27B dense**](#precision-comparison-qwen36-27b-dense-nvfp4-vs-fp8-vs-bf16) — Unsloth's July 2026 dynamic NVFP4 release changes the baseline result: **113.2 tok/s with MTP-2**, 2.45× the non-speculative ModelOpt NVFP4 and 2.41× non-speculative vendor FP8, while retaining a 21/22 best-of-3 coding score. Prior hand-tuned NVFP4+MTP and FP8+DFlash configs remain faster.
 4. [**Spec-decode method × k-sweep on Qwen3.6-27B FP8**](#spec-decode-method--k-sweep-qwen36-27b-fp8) — 7 configs measured on the same 4-bench harness. **dflash-k15 stays the production winner** at 197.5 tok/s, 22/22. Native MTP-1 (built into the FP8 weights, never deployed before) is a clean drafter-free fallback at 22/22 + 67.5 tok/s. FP8 KV cache is a net loss (uncalibrated scaling) and is incompatible with DFlash at the framework level.
 5. [**Qwopus 3.6-27B v2 (dense Opus-distill) — coding bench acceptance run**](#qwopus-36-27b-v2-dense-opus-distill--coding-bench-acceptance-run) — new daily driver lands **22/22 best-of-3** (matches stock + FP8 DFlash), but **avg 16.4/22** — runs at temp 1.0 to dodge the card-documented `<think>`-loop failure mode, and even then 2/12 runs ran out the 15K token budget mid-output. Throughput **~48 tok/s** (matches the llama.cpp Q8_0 fallback). A different Opus-distill outcome than the 35B-A3B fine-tune in section 2 — quality ceiling holds, but variance is real.
 
@@ -247,7 +247,7 @@ Per-trial output + JSON roll-up lands in `experiments/rtxpro6000_levers/qwen36-o
 
 # Precision comparison (Qwen3.6-27B dense): NVFP4 vs FP8 vs BF16
 
-Three-way comparison of Qwen3.6-27B at different precisions on the 4-bench coding suite, served via vLLM on RTX Pro 6000 Blackwell 96 GB. Different model from the 35B-A3B MoE above — this is the **dense VLM 27B** variant (Qwen3.6-27B-FP8 HF release), which we benchmarked because FP8 is the vendor's primary release format.
+Four-way comparison of Qwen3.6-27B at different precisions on the 4-bench coding suite, served via vLLM on RTX Pro 6000 Blackwell 96 GB. Different model from the 35B-A3B MoE above — this is the **dense VLM 27B** variant. The original BF16/FP8/ModelOpt-NVFP4 matrix was run in May 2026; the Unsloth dynamic NVFP4 row was added on July 10, 2026 from checkpoint revision `dd75bc4`.
 
 ## Precision results
 
@@ -256,22 +256,25 @@ Three-way comparison of Qwen3.6-27B at different precisions on the 4-bench codin
 | **BF16** (baseline) | `Qwen/Qwen3.6-27B` | 21/22 (95%) | 18.4/22 (84%) | 29 | 52 GB | HF release |
 | **FP8** (vendor) | `Qwen/Qwen3.6-27B-FP8` | 21/22 (95%) | 20.0/22 (91%) | 47 | 29 GB | HF release |
 | **NVFP4** (modelopt) | `mmangkad/Qwen3.6-27B-NVFP4` † | 22/22 (100%) | 18.6/22 (85%) | 46 | 29 GB | community, modelopt 0.42 |
+| **Dynamic NVFP4 + MTP-2** | [`unsloth/Qwen3.6-27B-NVFP4`](https://huggingface.co/unsloth/Qwen3.6-27B-NVFP4) | 21/22 (95%) | 16.7 raw / **18.3 adjusted** ‡ | **113.2** | 21.81 GiB | Unsloth, compressed-tensors |
 
 † See [NVFP4 checkpoint note](#nvfp4-checkpoint-note) — we self-quantized with modelopt 0.43 but the export didn't load in vLLM 0.19.1, so we swapped to a community checkpoint with the same methodology.
 
-**Headline**: FP8 is the sweet spot. Matches BF16 on best-of-3, highest avg score, 1.6× faster, halves the memory footprint. NVFP4 gets the only 100% best-of-3 but loses ~1.5 points on avg because it produced one zero run on A*; measured throughput was the same as FP8 (46 vs 47 tok/s) despite the smaller weight footprint, suggesting vLLM's NVFP4 path on Blackwell isn't yet hitting native FP4 tensor cores through flashinfer-cutlass JIT.
+‡ One Unsloth LRU sample scored 0/6 only because its generated tests patched `ttl_cache.time.monotonic` while the benchmark combines implementation and tests into one temporary module. Providing the module alias permitted by the repo methodology changes that sample to 5/6, moving the total average from 16.7 to 18.3. The remaining failure is genuine (`StopIteration` from too few mock timestamps). Raw results remain unmodified.
+
+**Headline**: Unsloth's documented MTP-2 recipe is the new throughput winner in this baseline precision matrix. At 113.2 tok/s it is **2.45× the older non-speculative NVFP4**, **2.41× non-speculative FP8**, and **3.89× BF16**. Quality does not show a quantization cliff: 21/22 best-of-3 matches BF16 and FP8; the module-alias-adjusted 18.3/22 average matches BF16 (18.4) and the older NVFP4 (18.6) within this suite's sampling variance, though it remains below FP8's 20.0.
 
 ## Precision per-benchmark
 
 Best/avg out of 3 runs at T=0.3, max_tokens=15000, max-model-len=16384.
 
-| Benchmark | BF16 best/avg | FP8 best/avg | NVFP4 best/avg |
-|---|---|---|---|
-| Expression Evaluator (5) | 5 / 4.0 | 5 / 4.3 | 5 / 4.3 |
-| A* Pathfinding (6) | 5 / 4.7 | 5 / 5.0 | **6** / 3.3 * |
-| LRU Cache w/ TTL (6) | 6 / 5.0 | 6 / 5.7 | **6 / 6.0** |
-| String Processor (5) | 5 / 4.7 | 5 / 5.0 | 5 / 5.0 |
-| **Total** | **21 / 18.4** | **21 / 20.0** | **22 / 18.6** |
+| Benchmark | BF16 best/avg | FP8 best/avg | NVFP4 best/avg | Unsloth NVFP4 + MTP-2 best/avg |
+|---|---|---|---|---|
+| Expression Evaluator (5) | 5 / 4.0 | 5 / 4.3 | 5 / 4.3 | 5 / 3.3 |
+| A* Pathfinding (6) | 5 / 4.7 | 5 / 5.0 | **6** / 3.3 * | 5 / 4.7 |
+| LRU Cache w/ TTL (6) | 6 / 5.0 | 6 / 5.7 | **6 / 6.0** | 6 / 3.7 raw, **5.3 adjusted** ‡ |
+| String Processor (5) | 5 / 4.7 | 5 / 5.0 | 5 / 5.0 | 5 / 5.0 |
+| **Total** | **21 / 18.4** | **21 / 20.0** | **22 / 18.6** | **21 / 16.7 raw, 18.3 adjusted** |
 
 \* NVFP4 A* run 1 produced no extractable code block (0/6). Run 2 was 4/6, run 3 was 6/6. Variance is real; the 100% best-of-3 is one lucky run, not a consistent quality lead.
 
@@ -282,6 +285,43 @@ Best/avg out of 3 runs at T=0.3, max_tokens=15000, max-model-len=16384.
 - **Bench**: [`tools/nvfp4_qwen36_27b_bench.py`](../tools/nvfp4_qwen36_27b_bench.py) — identical 4-benchmark suite as `nvfp4_gemma31b_bench_v2.py`, 3 runs each, T=0.3. Raw outputs in [`experiments/nvfp4_qwen36_27b/`](../experiments/nvfp4_qwen36_27b/).
 - **Quantization**: [`tools/quantize_nvfp4.py`](../tools/quantize_nvfp4.py) — NVIDIA Model Optimizer, `MAMBA_MOE_NVFP4_CONSERVATIVE_CFG` + `*linear_attn*` exclusion for Qwen3.5's gated-delta-net layers, calibrated on `abisee/cnn_dailymail` (128 samples, seq_len 2048) — matching NVIDIA's reference recipe for Qwen3-NVFP4 releases.
 - **Thinking**: Qwen3.6 is a reasoning model. The bench strips `<think>...</think>` before extracting code blocks (extraction regex would otherwise glue scratchwork fragments into invalid Python).
+
+### Unsloth dynamic NVFP4 run (July 10, 2026)
+
+- **Runtime**: vLLM 0.24.0, PyTorch 2.11.0+cu130, FlashInfer 0.6.12, `nvidia-cutlass-dsl==4.5.2`; driver 580.142; RTX Pro 6000 at its configured 350 W power limit.
+- **Serve config**: 16,384 max model length, BF16 KV cache, `--reasoning-parser qwen3`, and the model-card recipe `--speculative-config '{"method":"mtp","num_speculative_tokens":2}'`.
+- **Model footprint**: 21.81 GiB checkpoint; vLLM reported 22.13 GiB resident model memory with MTP and a 54.72 GiB KV pool (863,436 cache tokens). The large total VRAM reservation is from `--gpu-memory-utilization 0.90`, not the weights.
+- **Throughput**: mean 113.2 tok/s across all 12 coding generations, range 110.5–115.8. All 12 stopped normally; none exhausted the 15K output budget.
+- **MTP acceptance**: 65,059 / 74,684 draft tokens accepted = **87.1%** overall. Position 0 accepted 92.1%; position 1 accepted 82.2%.
+- **No-MTP control**: two warm Expression Evaluator generations measured 63.4 and 63.8 tok/s (63.6 mean). The new checkpoint + vLLM 0.24 path is **1.38×** the old checkpoint + vLLM 0.19 path without speculation; MTP-2 adds another **1.78×** on the new stack. Combined: 2.45×. Because both checkpoint and runtime changed, 1.38× is not a quant-kernel-only attribution.
+- **Against prior optimized configs**: the existing `sakamakismile` ModelOpt NVFP4+MTP sweep measured 116.5 tok/s at k=3 and about 129-131 tok/s at k=5/7; FP8+DFlash k=15 remains the repo-wide leader at 197.5 tok/s. Thus the 2.45× headline is real against the old non-speculative NVFP4 row, but this documented k=2 recipe does **not** set a new tuned local speed record. A new-checkpoint k-sweep would be the next experiment.
+- **Raw output**: [`experiments/nvfp4_qwen36_27b/unsloth_nvfp4_mtp2/results.json`](../experiments/nvfp4_qwen36_27b/unsloth_nvfp4_mtp2/results.json), with the generated test modules beside it.
+
+#### Fresh-install caveat
+
+The published install command resolved incompatible CUDA compiler components on July 10: CUDA 13.0 headers/runtime with NVVM/NVCC pieces from 13.2/13.3. FlashInfer first failed with incompatible headers, then with PTX 9.2 passed to a PTX 9.0 assembler. The working environment pins `nvidia-cuda-nvcc`, `nvidia-nvvm`, and `nvidia-cuda-crt` to `13.0.88`, exports the venv's `nvidia/cu13` as `CUDA_HOME`, and restores the missing `lib64 -> lib` and `libcudart.so -> libcudart.so.13` symlinks. These are packaging workarounds, not model changes.
+
+Minimal reproduction after applying those environment fixes:
+
+```bash
+CUDA_HOME=~/venvs/qwen36-unsloth-nvfp4/lib/python3.12/site-packages/nvidia/cu13
+PATH="$CUDA_HOME/bin:$HOME/venvs/qwen36-unsloth-nvfp4/bin:/usr/bin:/bin" \
+CUDA_HOME="$CUDA_HOME" \
+  ~/venvs/qwen36-unsloth-nvfp4/bin/vllm serve \
+    /mnt/extended/gisenberg/models/qwen36-27b-unsloth-nvfp4 \
+    --served-model-name qwen36-27b-unsloth-nvfp4-mtp2 \
+    --host 127.0.0.1 --port 8091 \
+    --max-model-len 16384 --gpu-memory-utilization 0.90 \
+    --reasoning-parser qwen3 \
+    --speculative-config '{"method":"mtp","num_speculative_tokens":2}'
+
+~/venvs/qwen36-unsloth-nvfp4/bin/python \
+  tools/nvfp4_qwen36_27b_bench.py \
+  --port 8091 \
+  --served-name qwen36-27b-unsloth-nvfp4-mtp2 \
+  --output-dir experiments/nvfp4_qwen36_27b/unsloth_nvfp4_mtp2 \
+  --temp 0.3
+```
 
 ## NVFP4 checkpoint note
 
@@ -298,9 +338,9 @@ The `mmangkad` checkpoint (produced with `modelopt 0.42.0rc1.dev107`, nearly ide
 
 Diagnosis is incomplete: it looks like modelopt 0.43 changed something in how quantized state is serialized for hybrid `linear_attn` + `self_attn` models that vLLM's `qwen3_next` loader doesn't handle yet. Not chased further in this session — pinning `nvidia-modelopt==0.42.*` would likely reproduce a working self-quantized checkpoint.
 
-## Why NVFP4 doesn't beat FP8 on throughput
+## Why the older ModelOpt NVFP4 didn't beat FP8 on throughput
 
-On paper Blackwell FP4 tensor cores should be ~2× FP8's throughput. We saw 46 vs 47 tok/s — effectively a tie. Two reasons:
+On the May 2026 ModelOpt checkpoint, Blackwell FP4 tensor cores should have been ~2× FP8's throughput but we saw 46 vs 47 tok/s — effectively a tie. Two reasons:
 
 1. **Only MLPs are quantized.** Both the `linear_attn` (gated-delta-net) blocks and the `self_attn` blocks stay in BF16 per the MAMBA-MoE conservative config. For a hybrid architecture where attention + gating is a large fraction of FLOPs, halving MLP precision gives a smaller speedup than for a pure-MLP-heavy dense transformer.
 2. **flashinfer-cutlass JIT is not the fastest FP4 path on SM 120.** The `flashinfer-trtllm` backend would use pre-compiled TRT-LLM kernels (likely better tuned) but failed to compile in our env. The `cutlass` (non-flashinfer) backend loaded but produced garbage output — looks like a correctness bug in vLLM 0.19.1's native cutlass NVFP4 path for hybrid Qwen3.5.
@@ -324,6 +364,7 @@ Total wall-clock on first-time setup: ~15 min for the toolchain after the ~25 mi
 - [`experiments/nvfp4_qwen36_27b/bf16/results.json`](../experiments/nvfp4_qwen36_27b/bf16/results.json)
 - [`experiments/nvfp4_qwen36_27b/fp8/results.json`](../experiments/nvfp4_qwen36_27b/fp8/results.json)
 - [`experiments/nvfp4_qwen36_27b/nvfp4/results.json`](../experiments/nvfp4_qwen36_27b/nvfp4/results.json)
+- [`experiments/nvfp4_qwen36_27b/unsloth_nvfp4_mtp2/results.json`](../experiments/nvfp4_qwen36_27b/unsloth_nvfp4_mtp2/results.json)
 - [`tools/quantize_nvfp4.py`](../tools/quantize_nvfp4.py) — reusable for other models
 - [`tools/nvfp4_qwen36_27b_bench.py`](../tools/nvfp4_qwen36_27b_bench.py)
 
