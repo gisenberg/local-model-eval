@@ -1,0 +1,29 @@
+{
+  "model": "/mnt/extended/gisenberg/models/qwen3-coder-next-fp8",
+  "served_name": "qwen3-coder-next-fp8",
+  "port": 8092,
+  "max_model_len": 262144,
+  "max_num_seqs": 1,
+  "gpu_memory_utilization": 0.94,
+  "max_num_batched_tokens": 8192,
+  "moe_backend": "auto",
+  "kv_cache_dtype": "fp8",
+  "pid": 2414927,
+  "startup_s": 310.2,
+  "vram_used_mb_post_bench": 92183,
+  "spec_metrics": {},
+  "memory": {
+    "model_load_gib": 74.89,
+    "kv_pool_gib": 12.39,
+    "kv_pool_tokens": 270144,
+    "max_concurrency_tokens": 262144,
+    "max_concurrency": 4.07,
+    "kv_cache_dtype": "fp8"
+  },
+  "best_of_3": 15,
+  "avg": 14.7,
+  "mean_tok_per_sec": 193.3,
+  "min_tok_per_sec": 164.6,
+  "max_tok_per_sec": 198.8,
+  "vram_freed_mb": 760
+}
