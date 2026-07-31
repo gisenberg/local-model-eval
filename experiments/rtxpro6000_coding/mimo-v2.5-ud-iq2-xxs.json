@@ -1,0 +1,69 @@
+{
+  "model": "MiMo-V2.5 UD-IQ2_XXS (Unsloth)",
+  "key": "mimo-v2.5-ud-iq2-xxs",
+  "ctx": 32768,
+  "vram_mb": 92651,
+  "backend": "cuda",
+  "total_score": "5/22",
+  "rescore_only": true,
+  "benchmarks": {
+    "string_processor": {
+      "passed": 23,
+      "failed": 2,
+      "errors": 0,
+      "total": 25,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "test_string_processor.py::TestCaesarCipher::test_caesar_cipher_non_alpha PASSED [ 80%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_basic PASSED [ 84%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_tied PASSED [ 88%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_case_insensitive FAILED [ 92%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_empty PASSED [ 96%]\ntest_string_processor.py::TestMostCommonWord::test_most_common_word_whitespace PASSED [100%]\n\n=================================== FAILURES ===================================\n__________________ TestCaesarCipher.test_caesar_cipher_mixed ___________________\n\nself = <test_string_processor.TestCaesarCipher object at 0x77c754ce2bd0>\nprocessor = <string_processor.StringProcessor object at 0x77c754ce2e40>\n\n    def test_caesar_cipher_mixed(self, processor):\n>       assert processor.caesar_cipher(\"Hello, World!\", 5) == \"Mjqqt, Btqi!\"\nE       AssertionError: assert 'Mjqqt, Btwqi!' == 'Mjqqt, Btqi!'\nE         \nE         - Mjqqt, Btqi!\nE         + Mjqqt, Btwqi!\nE         ?          +\n\ntest_string_processor.py:72: AssertionError\n__________ TestMostCommonWord.test_most_common_word_case_insensitive ___________\n\nself = <test_string_processor.TestMostCommonWord object at 0x77c754bb5580>\nprocessor = <string_processor.StringProcessor object at 0x77c754ce1ac0>\n\n    def test_most_common_word_case_insensitive(self, processor):\n>       assert processor.most_common_word(\"The the THE\") == \"The\"\nE       AssertionError: assert 'the' == 'The'\nE         \nE         - The\nE         + the\n\ntest_string_processor.py:86: AssertionError\n=========================== short test summary info ============================\nFAILED test_string_processor.py::TestCaesarCipher::test_caesar_cipher_mixed\nFAILED test_string_processor.py::TestMostCommonWord::test_most_common_word_case_insensitive\n========================= 2 failed, 23 passed in 0.02s =========================\n",
+      "n_code_blocks": 2,
+      "response_len": 6629,
+      "expected": 5,
+      "raw_passed": 23,
+      "scored_passed": 5,
+      "test_count_matches_expected": false,
+      "elapsed_s": 12.8
+    },
+    "expression_evaluator": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "total": 0,
+      "status": "no_code",
+      "n_code_blocks": 0,
+      "response_len": 0,
+      "expected": 5,
+      "raw_passed": 0,
+      "scored_passed": 0,
+      "test_count_matches_expected": false,
+      "elapsed_s": 138.23
+    },
+    "astar_pathfinding": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "total": 0,
+      "status": "no_code",
+      "n_code_blocks": 0,
+      "response_len": 0,
+      "expected": 6,
+      "raw_passed": 0,
+      "scored_passed": 0,
+      "test_count_matches_expected": false,
+      "elapsed_s": 140.11
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "total": 0,
+      "status": "no_code",
+      "n_code_blocks": 0,
+      "response_len": 0,
+      "expected": 6,
+      "raw_passed": 0,
+      "scored_passed": 0,
+      "test_count_matches_expected": false,
+      "elapsed_s": 140.42
+    }
+  }
+}

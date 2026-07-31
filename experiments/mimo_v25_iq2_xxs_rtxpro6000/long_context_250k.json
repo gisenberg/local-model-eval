@@ -1,0 +1,51 @@
+{
+  "base_url": "http://127.0.0.1:8091",
+  "model": "local",
+  "target_raw_tokens": 250000,
+  "raw_tokens": 249987,
+  "prompt_tokens": 250013,
+  "completion_tokens": 7,
+  "filler_repetitions": 11361,
+  "needle_depth": 0.75,
+  "expected": "739184",
+  "content": "739184",
+  "reasoning_content": null,
+  "elapsed_seconds": 276.676,
+  "passed": true,
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "739184"
+        }
+      }
+    ],
+    "created": 1785440049,
+    "model": "/mnt/extended/gisenberg/models/mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf",
+    "system_fingerprint": "b10198-ea63b4d32",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 7,
+      "prompt_tokens": 250013,
+      "total_tokens": 250020,
+      "prompt_tokens_details": {
+        "cached_tokens": 16
+      }
+    },
+    "id": "chatcmpl-yyvJP97SuqbeVb0VffrGwvavkrASIAW7",
+    "timings": {
+      "cache_n": 16,
+      "prompt_n": 249997,
+      "prompt_ms": 276308.458,
+      "prompt_per_token_ms": 1.1052470949651396,
+      "prompt_per_second": 904.7750539724702,
+      "predicted_n": 7,
+      "predicted_ms": 125.867,
+      "predicted_per_token_ms": 17.981,
+      "predicted_per_second": 55.61425949613481
+    }
+  }
+}

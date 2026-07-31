@@ -18,6 +18,22 @@ Three headline findings:
 2. **Dense 27B remains stronger than the 35B-A3B variants on this scaffold.** Dynamic NVFP4 is +7.3 pp over Opus-distilled 35B-A3B, +11 pp over stock 35B-A3B, and +36.3 pp over Gemma.
 3. **Opus-distillation beats stock on agentic work by +3.7 pp**, even though the *same distilled model* loses 11 pts vs stock on the from-scratch coding bench. The two benchmarks measure different things; SWE-bench rewards codebase-navigation / surgical-fix reasoning (what Opus-CoT teaches), while the coding bench rewards self-consistent module-with-tests generation (which the distillation hurts). See [why coding-bench and SWE-bench disagree](#why-coding-bench-and-swe-bench-disagree) below.
 
+## MiMo V2.5 IQ2 five-case canary
+
+MiMo V2.5 `UD-IQ2_XXS` resolved 3/5 on the first five test instances, all from Astropy.
+It resolved `12907`, `14995`, and `6938`, while missing `14182` and `14365`.
+That outcome is identical case-for-case to the Qwen3.6 NVFP4, FP8, Opus-distilled, and stock artifacts on the same slice.
+Gemma 4 Q8 resolved 2/5.
+
+All five MiMo patches were non-empty and the harness had no errors.
+Four cases submitted normally.
+One case hit the 75-call ceiling and was autosubmitted with a patch that passed the hidden tests.
+Two cases needed one retry each after returning no tool call.
+The result shows parity on this narrow slice rather than a demonstrated material improvement.
+A full 300-instance run was subsequently launched at user request on July 30, 2026, using two workers and the same pinned configuration.
+
+Full configuration and artifacts are in [MIMO_V2_5_IQ2_RTXPRO6000.md](MIMO_V2_5_IQ2_RTXPRO6000.md).
+
 ## Shared setup
 
 - **Host**: RTX Pro 6000 Blackwell Workstation (96 GB GDDR7, sm_120), llama.cpp CUDA build `a279d0f` for the llama-swap runs, vLLM 0.19.1 for the FP8 run, and vLLM 0.24.0 for dynamic NVFP4.

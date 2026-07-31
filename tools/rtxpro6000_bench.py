@@ -14,6 +14,7 @@ Model configs below. -c (context) is per model; -ngl 99 for full GPU offload.
 import json
 import os
 import re
+import shutil
 import statistics
 import subprocess
 import sys
@@ -30,6 +31,9 @@ else:
 MODELS_ROOT = "/home/gisenberg/models"
 OUTPUT_ROOT = f"/home/gisenberg/git/gisenberg/local-model-eval/experiments/rtxpro6000_bench_{BACKEND}"
 PORT = int(os.environ.get("LLAMA_PORT", "8080"))
+RTK = shutil.which("rtk")
+if RTK is None:
+    raise RuntimeError("rtk is required by the active agent profile")
 
 PROMPT = (
     "Write a Python function to compute the factorial of n recursively. "
@@ -130,12 +134,45 @@ MODELS = {
             "-ub", "2048",
         ],
     },
+    "mimo-v2.5-ud-iq2-xxs": {
+        "name": "MiMo-V2.5 UD-IQ2_XXS (Unsloth)",
+        "path": (
+            "/mnt/extended/gisenberg/models/"
+            "mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/"
+            "MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf"
+        ),
+        "ctx": 262144,
+        "gpu_layers": "auto",
+        "use_mmap": True,
+        "extra": [
+            "--jinja",
+            "--fit", "on",
+            "--fit-target", "4096",
+            "--fit-ctx", "262144",
+            "-b", "1024",
+            "-ub", "512",
+            "-ctk", "q8_0",
+            "-ctv", "q8_0",
+            "--reasoning-format", "deepseek",
+            "--reasoning-preserve",
+            "--metrics",
+        ],
+    },
+}
+
+MODELS["mimo-v2.5-ud-iq2-xxs-r4k"] = {
+    **MODELS["mimo-v2.5-ud-iq2-xxs"],
+    "name": "MiMo-V2.5 UD-IQ2_XXS (Unsloth, reasoning budget 4096)",
+    "extra": [
+        *MODELS["mimo-v2.5-ud-iq2-xxs"]["extra"],
+        "--reasoning-budget", "4096",
+    ],
 }
 
 
 def start_server(model_cfg, ctx_override=None):
     ctx = ctx_override or model_cfg["ctx"]
-    cmd = [
+    server_cmd = [
         f"{LLAMA_DIR}/llama-server",
         "-m", model_cfg["path"],
         "--port", str(PORT),
@@ -144,8 +181,12 @@ def start_server(model_cfg, ctx_override=None):
         "-ngl", str(model_cfg.get("gpu_layers", "99")),
         "-fa", "on",
         "-np", "1",
-        "--no-mmap",  # Force full load to VRAM (not OS page-cache backed)
-    ] + model_cfg.get("extra", [])
+    ]
+    if not model_cfg.get("use_mmap", False):
+        # Force full load to VRAM rather than relying on the OS page cache.
+        server_cmd.append("--no-mmap")
+    server_cmd += model_cfg.get("extra", [])
+    cmd = [RTK, "proxy", *server_cmd]
     env = os.environ.copy()
     env["LD_LIBRARY_PATH"] = LLAMA_DIR + _LD_EXTRA
     log_path = f"/tmp/llama-server-{model_cfg['key']}.log"
@@ -180,7 +221,13 @@ def stop_server(proc):
 def vram_used_mb():
     try:
         out = subprocess.check_output(
-            ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
+            [
+                RTK,
+                "proxy",
+                "nvidia-smi",
+                "--query-gpu=memory.used",
+                "--format=csv,noheader,nounits",
+            ],
             text=True, timeout=5,
         )
         return int(out.strip().split("\n")[0])

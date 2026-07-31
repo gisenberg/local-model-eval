@@ -1,0 +1,179 @@
+{
+  "base_url": "http://127.0.0.1:8091/v1",
+  "model": "local",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "reasoning_content": "The user wants me to reply with exactly \"MIMO_OK\" and no other text."
+          }
+        }
+      ],
+      "created": 1785439729,
+      "model": "/mnt/extended/gisenberg/models/mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10198-ea63b4d32",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 24,
+        "prompt_tokens": 35,
+        "total_tokens": 59,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-5s11K6lFeWNxh7pUSNkeDxBCMhRdYTvt",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 35,
+        "prompt_ms": 268.55,
+        "prompt_per_token_ms": 7.6728571428571435,
+        "prompt_per_second": 130.32954757028486,
+        "predicted_n": 24,
+        "predicted_ms": 237.313,
+        "predicted_per_token_ms": 9.888041666666666,
+        "predicted_per_second": 101.1322599267634
+      },
+      "_client_elapsed_s": 0.5401
+    },
+    "reasoning": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "**17 \u00d7 24 = 408**\n\n**Verification:** 24 \u00d7 17 = 24 \u00d7 10 + 24 \u00d7 7 = 240 + 168 = 408 \u2713",
+            "reasoning_content": "17 * 24 = 17 * 24\n\n17 * 24 = 17 * 20 + 17 * 4 = 340 + 68 = 408\n\nVerification: 24 * 17 = 24 * 10 + 24 * 7 = 240 + 168 = 408"
+          }
+        }
+      ],
+      "created": 1785439731,
+      "model": "/mnt/extended/gisenberg/models/mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10198-ea63b4d32",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 147,
+        "prompt_tokens": 49,
+        "total_tokens": 196,
+        "prompt_tokens_details": {
+          "cached_tokens": 16
+        }
+      },
+      "id": "chatcmpl-spOvmCj3VkT1sMzvE9SaQaMvNbRryewl",
+      "timings": {
+        "cache_n": 16,
+        "prompt_n": 33,
+        "prompt_ms": 152.747,
+        "prompt_per_token_ms": 4.62869696969697,
+        "prompt_per_second": 216.04352294971423,
+        "predicted_n": 147,
+        "predicted_ms": 1441.25,
+        "predicted_per_token_ms": 9.804421768707483,
+        "predicted_per_second": 101.99479618386817
+      },
+      "_client_elapsed_s": 1.6129
+    },
+    "tool_call": {
+      "choices": [
+        {
+          "finish_reason": "tool_calls",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "",
+            "reasoning_content": "The user wants me to call the lookup_record function with record_id \"alpha-7\". I should not guess the record value or answer directly. I'll make the function call.",
+            "tool_calls": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\":\"alpha-7\"}"
+                },
+                "id": "AIn0wjrij8Cc98z7KksY9OopJmpO4xcQ"
+              }
+            ]
+          }
+        }
+      ],
+      "created": 1785439732,
+      "model": "/mnt/extended/gisenberg/models/mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10198-ea63b4d32",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 63,
+        "prompt_tokens": 295,
+        "total_tokens": 358,
+        "prompt_tokens_details": {
+          "cached_tokens": 15
+        }
+      },
+      "id": "chatcmpl-mY0JDZ7blZwcg4YVHUbgPHnolxVrcYjg",
+      "timings": {
+        "cache_n": 15,
+        "prompt_n": 280,
+        "prompt_ms": 575.208,
+        "prompt_per_token_ms": 2.0543142857142858,
+        "prompt_per_second": 486.78043420814737,
+        "predicted_n": 63,
+        "predicted_ms": 632.477,
+        "predicted_per_token_ms": 10.03931746031746,
+        "predicted_per_second": 99.60836520537507
+      },
+      "_client_elapsed_s": 1.2333
+    },
+    "tool_followup": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The lookup_record function has been called with record_id \"alpha-7\". The result is:\n\n- **Record ID:** alpha-7\n- **Value:** 42",
+            "reasoning_content": "The function call was successful. The record with ID \"alpha-7\" has a value of 42. I should report this result to the user."
+          }
+        }
+      ],
+      "created": 1785439733,
+      "model": "/mnt/extended/gisenberg/models/mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10198-ea63b4d32",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 70,
+        "prompt_tokens": 382,
+        "total_tokens": 452,
+        "prompt_tokens_details": {
+          "cached_tokens": 357
+        }
+      },
+      "id": "chatcmpl-WPy6QG26pW5NWNuMTYPOjFvBsK6jw1NC",
+      "timings": {
+        "cache_n": 357,
+        "prompt_n": 25,
+        "prompt_ms": 166.025,
+        "prompt_per_token_ms": 6.641,
+        "prompt_per_second": 150.5797319680771,
+        "predicted_n": 70,
+        "predicted_ms": 689.671,
+        "predicted_per_token_ms": 9.852442857142858,
+        "predicted_per_second": 101.49767062845908
+      },
+      "_client_elapsed_s": 0.873
+    }
+  }
+}

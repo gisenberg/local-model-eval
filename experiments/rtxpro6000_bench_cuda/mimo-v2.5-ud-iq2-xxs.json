@@ -1,0 +1,45 @@
+{
+  "model": "MiMo-V2.5 UD-IQ2_XXS (Unsloth)",
+  "key": "mimo-v2.5-ud-iq2-xxs",
+  "path": "/mnt/extended/gisenberg/models/mimo-v2.5-ud-iq2-xxs-f7aff786/UD-IQ2_XXS/MiMo-V2.5-UD-IQ2_XXS-00001-of-00003.gguf",
+  "ctx": 262144,
+  "vram_mb": 92585,
+  "load_seconds": 9.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.0822,
+      "decode_tps": 99.48,
+      "n_tokens": 254,
+      "total_s": 2.636
+    },
+    {
+      "ttft_s": 0.0798,
+      "decode_tps": 100.98,
+      "n_tokens": 254,
+      "total_s": 2.595
+    },
+    {
+      "ttft_s": 0.0714,
+      "decode_tps": 100.67,
+      "n_tokens": 254,
+      "total_s": 2.594
+    },
+    {
+      "ttft_s": 0.073,
+      "decode_tps": 100.5,
+      "n_tokens": 254,
+      "total_s": 2.601
+    },
+    {
+      "ttft_s": 0.0753,
+      "decode_tps": 99.66,
+      "n_tokens": 254,
+      "total_s": 2.624
+    }
+  ],
+  "ttft_mean": 0.0763,
+  "ttft_median": 0.0753,
+  "decode_mean": 100.26,
+  "decode_median": 100.5
+}

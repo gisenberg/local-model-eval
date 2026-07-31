@@ -16,6 +16,7 @@ Usage:
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -29,6 +30,9 @@ MODELS_ROOT = "/home/gisenberg/models"
 PORT = int(os.environ.get("LLAMA_PORT", "8080"))
 OUTPUT_ROOT = REPO / "experiments/rtxpro6000_coding"
 PYTEST = "/home/gisenberg/.micromamba/envs/cuda/bin/pytest"
+RTK = shutil.which("rtk")
+if RTK is None:
+    raise RuntimeError("rtk is required by the active agent profile")
 
 # Which benchmarks to run, and the expected test count
 BENCHMARKS = [
@@ -112,6 +116,7 @@ def fix_test_imports(test_code: str, module_name: str, impl_code: str) -> str:
     class_names = re.findall(r"^class (\w+)", impl_code, re.MULTILINE)
     func_names = re.findall(r"^def (\w+)", impl_code, re.MULTILINE)
     symbols = set(class_names + func_names)
+    rewritten_modules = set()
 
     def repl(m):
         from_mod, imports = m.group(1), m.group(2)
@@ -119,10 +124,18 @@ def fix_test_imports(test_code: str, module_name: str, impl_code: str) -> str:
             return m.group(0)
         imp_names = {n.split(" as ")[0].strip() for n in imports.split(",")}
         if imp_names & symbols:
+            rewritten_modules.add(from_mod)
             return f"from {module_name} import {imports}"
         return m.group(0)
 
-    return re.sub(r"from (\w+) import ([\w, ]+)", repl, test_code)
+    result = re.sub(r"from (\w+) import ([\w, ]+)", repl, test_code)
+    for from_mod in rewritten_modules:
+        result = re.sub(
+            rf"(?P<quote>['\"]){re.escape(from_mod)}\.",
+            rf"\g<quote>{module_name}.",
+            result,
+        )
+    return result
 
 
 def loosen_pytest_raises(test_code: str) -> str:
@@ -163,7 +176,7 @@ def run_pytest(impl: str, tests: str, module_name: str) -> dict:
             (tdp / f"test_{module_name}.py").write_text(tests)
         try:
             res = subprocess.run(
-                [PYTEST, "-v", f"test_{module_name}.py"],
+                [RTK, "proxy", PYTEST, "-v", f"test_{module_name}.py"],
                 cwd=td, capture_output=True, text=True, timeout=90,
             )
         except subprocess.TimeoutExpired:
@@ -191,6 +204,15 @@ def score_response(bench_key: str, module_name: str, resp: str) -> dict:
     result["n_code_blocks"] = len(blocks)
     result["response_len"] = len(resp)
     return result
+
+
+def normalize_score(score: dict, expected: int) -> dict:
+    """Cap self-generated test passes at the task's declared test count."""
+    score["expected"] = expected
+    score["raw_passed"] = score.get("passed", 0)
+    score["scored_passed"] = min(score["raw_passed"], expected)
+    score["test_count_matches_expected"] = score.get("total", 0) == expected
+    return score
 
 
 # -------- Main driver ---------
@@ -228,16 +250,19 @@ def benchmark_model(model_key: str, ctx: int = 32768) -> dict:
             continue
         elapsed = time.perf_counter() - t0
         (artifacts_dir / f"{bench_name}.md").write_text(resp)
-        score = score_response(bench_name, module_name, resp)
-        score["expected"] = expected
+        score = normalize_score(
+            score_response(bench_name, module_name, resp),
+            expected,
+        )
         score["elapsed_s"] = round(elapsed, 2)
-        print(f"  {score.get('passed', 0)}/{expected} passed "
-              f"(failed={score.get('failed', 0)}, errors={score.get('errors', 0)}, "
+        print(f"  {score['scored_passed']}/{expected} scored "
+              f"(raw passed={score['raw_passed']}, "
+              f"failed={score.get('failed', 0)}, errors={score.get('errors', 0)}, "
               f"status={score.get('status')}, {elapsed:.1f}s)")
         bench_results[bench_name] = score
 
     stop_server(proc)
-    total_passed = sum(r.get("passed", 0) for r in bench_results.values())
+    total_passed = sum(r.get("scored_passed", 0) for r in bench_results.values())
     total_expected = sum(r.get("expected", 0) for r in bench_results.values())
     summary = {
         "model": cfg["name"],
@@ -252,9 +277,44 @@ def benchmark_model(model_key: str, ctx: int = 32768) -> dict:
     return summary
 
 
+def rescore_saved(model_key: str, ctx: int = 32768) -> dict:
+    """Rescore saved responses without invoking the model again."""
+    cfg = dict(MODELS[model_key])
+    artifacts_dir = OUTPUT_ROOT / model_key
+    summary_path = OUTPUT_ROOT / f"{model_key}.json"
+    previous = json.loads(summary_path.read_text()) if summary_path.exists() else {}
+    previous_results = previous.get("benchmarks", {})
+
+    bench_results = {}
+    for bench_name, expected, module_name in BENCHMARKS:
+        response_path = artifacts_dir / f"{bench_name}.md"
+        if not response_path.exists():
+            raise RuntimeError(f"Missing saved response: {response_path}")
+        score = normalize_score(
+            score_response(bench_name, module_name, response_path.read_text()),
+            expected,
+        )
+        if "elapsed_s" in previous_results.get(bench_name, {}):
+            score["elapsed_s"] = previous_results[bench_name]["elapsed_s"]
+        bench_results[bench_name] = score
+
+    total_passed = sum(r["scored_passed"] for r in bench_results.values())
+    total_expected = sum(r["expected"] for r in bench_results.values())
+    return {
+        "model": cfg["name"],
+        "key": model_key,
+        "ctx": previous.get("ctx", ctx),
+        "vram_mb": previous.get("vram_mb"),
+        "backend": previous.get("backend", BACKEND),
+        "total_score": f"{total_passed}/{total_expected}",
+        "rescore_only": True,
+        "benchmarks": bench_results,
+    }
+
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: rtxpro6000_coding_bench.py <model_key>")
+        print("Usage: rtxpro6000_coding_bench.py <model_key> [--rescore]")
         print("Keys:", " ".join(MODELS))
         sys.exit(1)
     key = sys.argv[1]
@@ -262,7 +322,10 @@ def main():
         print(f"Unknown key {key!r}")
         sys.exit(1)
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
-    summary = benchmark_model(key)
+    if len(sys.argv) > 2 and sys.argv[2] == "--rescore":
+        summary = rescore_saved(key)
+    else:
+        summary = benchmark_model(key)
     out_path = OUTPUT_ROOT / f"{key}.json"
     out_path.write_text(json.dumps(summary, indent=2))
     print(f"Saved: {out_path}")
