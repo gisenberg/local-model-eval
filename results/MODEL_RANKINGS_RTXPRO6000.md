@@ -13,6 +13,7 @@ Tested April 2026.
 > It raises SWE-bench Lite from 57.3% to 59.3% and cuts the 300-instance agent phase from 18h20m to 6h25m52s.
 > An 11th entry adds **MiMo V2.5 UD-IQ2_XXS** with 250K retrieval and bounded-reasoning evidence.
 > A 12th entry adds **DeepSeek V4 Flash 0731 EXL3 2.04 bpw**, which fits a 256K allocation entirely in VRAM, reaches 22/22, and resolves 121/300 on the full SWE-bench Lite split.
+> A 13th entry adds **Muse Glimmer 30B FP8 + DFlash-15**, which reaches 22/22, sustains 120 tok/s single-stream and 626 tok/s across eight streams, and resolves 129/300 on SWE-bench Lite.
 
 ## TL;DR
 
@@ -23,6 +24,7 @@ Tested April 2026.
   Its SWE-bench Lite canary resolves 3/5, exactly matching the four Qwen3.6 priors on the same cases, with one 75-call autosubmission and two recovered no-tool-call retries.
 - **DeepSeek V4 Flash 0731 EXL3 2.04 bpw is the best DeepSeek quant tested on this host.** It reaches 22/22 at 95.33 tok/s, resolves 121/300 (40.3%) on the full SWE-bench Lite split, and leaves about 22 GiB free during a successful 250K retrieval request.
   The 2.52 bpw branch resolves only 2/5 and leaves about 6.5 GiB free at 250K, so the extra precision is not the better operational tradeoff.
+- **Muse Glimmer 30B FP8 + DFlash-15 is the throughput-focused agent preset.** It reaches 22/22 at 120.12 tok/s single-stream, scales to 626.22 tok/s across eight streams, and resolves 129/300 (43.0%) on SWE-bench Lite in a 5h03m47s generation phase.
 - **Qwen3.6-35B-A3B is the throughput king in the mid-tier.** 221 tok/s at Q8 (CUDA), though coding quality is noisy across quants (14-15/22).
 - **Qwen3-Coder-Next Q6_K is fast (196 tok/s) and specialized for coding**, but the familiar Qwen-family LRU Cache blind spot is still there (0/6). Good if your workload is parsing / pathfinding / string work; not if you need eviction+expiry logic.
 - **Gemopus fine-tune regresses Gemma 4 on coding.** Base Gemma 31B-IT is strictly better (22/22 vs 15-16/22). The fine-tune helps on some tasks but catastrophically fails LRU Cache with TTL.
@@ -44,7 +46,7 @@ The card runs the same bandwidth-bound math as the 5090 for any model that fits 
 
 ## Summary table
 
-All throughput is CUDA backend (see Vulkan comparison below). VRAM at full native context. Coding score is out of 22 across 4 benchmarks: String Processor (5) + Expression Evaluator (5) + A* Pathfinding (6) + LRU Cache with TTL (6). SWE-bench Lite is the 300-instance test split via SWE-agent v1.1.0 (4 workers, 75-call ceiling) — full breakdown in [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md); "—" means not run on this preset.
+All throughput is CUDA backend (see Vulkan comparison below). VRAM at full native context. Coding score is out of 22 across 4 benchmarks: String Processor (5) + Expression Evaluator (5) + A* Pathfinding (6) + LRU Cache with TTL (6). SWE-bench Lite is the 300-instance test split via SWE-agent v1.1.0 with a 75-call ceiling and 4 workers unless noted; full breakdown is in [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md), and "—" means not run on this preset.
 
 | Tier | Model | Quant | VRAM (full ctx) | Native ctx | TTFT | Decode (CUDA) | Coding | SWE-bench Lite |
 |---|---|---|---|---|---|---|---|---|
@@ -55,6 +57,7 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 | **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **~199 tok/s mean** § | **22/22 (100%)** ¶ | **57.3% (172/300)** ⊗ |
 | A | MiMo-V2.5 | UD-IQ2_XXS ♣ | 92.6 GB | 262K tested | 76 ms | 100.26 tok/s | **22/22 (100%)** | 60% (3/5 canary); full run active |
 | A | DeepSeek V4 Flash 0731 | EXL3 2.04 bpw ♠ | 74.1 GB | 262K tested | 106 ms | 95.33 tok/s | **22/22 (100%)** | **40.3% (121/300)** |
+| A | Muse Glimmer 30B | FP8 W8A8 + DFlash-15 ♥ | 93,976 MiB reserved | 131K | 84 ms | **120.12 tok/s single / 626.22 aggregate** | **22/22 (100%)** | **43.0% (129/300)** |
 | A | Qwen3.6-35B-A3B | BF16 | 72.1 GB | 262K | 61 ms | 135.05 tok/s | 14/22 (64%) | — |
 | A | Qwen3.6-35B-A3B | Q8_0 | 41.6 GB | 262K | 60 ms | **221.04 tok/s** | 15/22 (68%) | 48.3% (145/300) ⊕ |
 | B | Gemopus-4-31B-it | BF16 | 82.0 GB | 262K | 308 ms | 25.13 tok/s | 16/22 (73%) | — |
@@ -70,6 +73,7 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 ⊕ Stock weights. The Opus-reasoning-distilled fine-tune of the same Q8_0 model resolved **52.0% (156/300)** — see Qwen3.6-35B-A3B section below.
 ♣ Partial GPU offload with Q8 KV at a 262,144-token allocation. The 22/22 score requires `--reasoning-budget 4096`; unbounded reasoning reaches only 5/22 because three tasks exhaust 16,384 output tokens without final content. The five-case SWE-bench result is a narrow Astropy-only canary, not a score comparable to the 300-instance runs. See [MIMO_V2_5_IQ2_RTXPRO6000.md](MIMO_V2_5_IQ2_RTXPRO6000.md).
 ♠ All 48 target modules and four shared 262,144-token FP16 cache slots are on the GPU with no host DRAM overflow. The full SWE-bench run produced 173 non-empty patches, resolved 121, and recorded zero harness errors. See [DEEPSEEK_V4_FLASH_RTXPRO6000.md](DEEPSEEK_V4_FLASH_RTXPRO6000.md).
+♥ Digest-pinned vLLM Muse Glimmer image with a guarded native-assistant compatibility patch, 131,072-token allocation, and 16 sequence slots. SWE-bench used eight workers, produced 209 non-empty patches, resolved 129, and recorded zero harness errors. See [MUSE_GLIMMER_RTXPRO6000.md](MUSE_GLIMMER_RTXPRO6000.md).
 
 **Quick-pick guide:**
 - **Best coding quality at any speed:** Gemma-4-31B-it Q8_0 (22/22, 44 tok/s) — BF16 adds nothing at temp 0

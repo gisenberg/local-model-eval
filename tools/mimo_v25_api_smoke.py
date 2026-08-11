@@ -136,7 +136,8 @@ def main() -> int:
             "role": "user",
             "content": (
                 "Call lookup_record with record_id alpha-7. "
-                "Do not guess the record value and do not answer directly."
+                "Do not guess or report the record value before the tool returns. "
+                "After the tool returns, report the value."
             ),
         }
     ]

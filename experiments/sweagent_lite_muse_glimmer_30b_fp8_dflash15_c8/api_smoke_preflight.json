@@ -1,0 +1,187 @@
+{
+  "base_url": "http://100.107.241.79:8092/v1",
+  "model": "muse-glimmer-30b-fp8",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-92ff2066ceef68c4",
+      "object": "chat.completion",
+      "created": 1786419120,
+      "model": "muse-glimmer-30b-fp8",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Reply with exactly MIMO_OK and no other text.\n\nWe need reply with exactly MIMO_OK and no other text.\n\nThe user asks to reply with exactly MIMO_OK and no other text.\n\nWe should comply. Exactly MIMO_OK and no other text.\n\nNo extra whitespace? Probably just MIMO_OK. Ensure no newline? Might be okay. Probably just output MIMO_OK.\n\nFollow instruction."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": 200008,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19075+gd89ec6d6a-3d4995bd",
+      "usage": {
+        "prompt_tokens": 66,
+        "total_tokens": 153,
+        "completion_tokens": 87,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.6575
+    },
+    "reasoning": {
+      "id": "chatcmpl-89d22e8aba27405f",
+      "object": "chat.completion",
+      "created": 1786419120,
+      "model": "muse-glimmer-30b-fp8",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 = 17 \u00d7 20 + 17 \u00d7 4 = 340 + 68 = 408\n\nCheck: 24 \u00d7 17 = 24 \u00d7 10 + 24 \u00d7 7 = 240 + 168 = 408\n\n**408**",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Compute 17 * 24. Think briefly, verify it a second way, then give the concise final answer.\n\nCompute 17 * 24.\n\nThink briefly, verify it a second way, then give concise final answer.\n\n17*24 = 17*20 + 17*4 = 340 + 68 = 408.\n\nVerify second way: 24*17 = 24*10 +24*7 =240+168=408. Or 17*24 = (20-3)*24 =480-72=408.\n\nConcise final answer: 408.\n\nProbably just output 408.\n\nThe instruction: Think briefly, verify it a second way, then give the concise final answer.\n\nMaybe show reasoning briefly then final.\n\nWe should comply. Provide concise final answer.\n\nProbably just 408.\n\nMake sure format concise.\n\nPossibly: 408\n\nOk."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": 200008,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19075+gd89ec6d6a-3d4995bd",
+      "usage": {
+        "prompt_tokens": 79,
+        "total_tokens": 325,
+        "completion_tokens": 246,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.6533
+    },
+    "tool_call": {
+      "id": "chatcmpl-a8763b6db485009d",
+      "object": "chat.completion",
+      "created": 1786419122,
+      "model": "muse-glimmer-30b-fp8",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-a81283d9bdb6574e",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "Call lookup_record with record_id alpha-7. Do not guess or report the record value before the tool returns. After the tool returns, report the value.\n\nWe need to call lookup_record with record_id alpha-7. Do not guess or report the record value before the tool returns. After the tool returns, report the value.\n\nSo we need to call lookup_record."
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": 200008,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19075+gd89ec6d6a-3d4995bd",
+      "usage": {
+        "prompt_tokens": 444,
+        "total_tokens": 572,
+        "completion_tokens": 128,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.0157
+    },
+    "tool_followup": {
+      "id": "chatcmpl-a1167537a47654d2",
+      "object": "chat.completion",
+      "created": 1786419123,
+      "model": "muse-glimmer-30b-fp8",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The lookup for record_id **alpha-7** returned:\n\n```json\n{\"record_id\":\"alpha-7\",\"value\":42}\n```\n\nValue = 42",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Tool returned value 42. Report the value.\n\nWe should report the value. Probably just say value is 42.\n\nFollow instruction: After tool returns, report the value.\n\nSo output: The record alpha-7 has value 42.\n\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": 200008,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19075+gd89ec6d6a-3d4995bd",
+      "usage": {
+        "prompt_tokens": 604,
+        "total_tokens": 694,
+        "completion_tokens": 90,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.7868
+    }
+  }
+}

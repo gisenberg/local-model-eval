@@ -1,0 +1,158 @@
+{
+  "model": "muse-glimmer-30b-fp8",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "high",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 64
+  },
+  "vram_used_mb": 94290,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test. Return the implementation in one python code block.",
+    "max_tokens": 512,
+    "warmups": [
+      {
+        "ttft_s": 0.1216,
+        "decode_s": 10.4212,
+        "decode_tps": 49.03,
+        "completion_tokens": 512,
+        "content_events": 499,
+        "elapsed_s": 10.5429,
+        "usage": {
+          "prompt_tokens": 74,
+          "total_tokens": 586,
+          "completion_tokens": 512
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.0946,
+        "decode_s": 10.4281,
+        "decode_tps": 49.0,
+        "completion_tokens": 512,
+        "content_events": 499,
+        "elapsed_s": 10.5227,
+        "usage": {
+          "prompt_tokens": 74,
+          "total_tokens": 586,
+          "completion_tokens": 512
+        }
+      },
+      {
+        "ttft_s": 0.0855,
+        "decode_s": 10.4328,
+        "decode_tps": 48.98,
+        "completion_tokens": 512,
+        "content_events": 501,
+        "elapsed_s": 10.5184,
+        "usage": {
+          "prompt_tokens": 74,
+          "total_tokens": 586,
+          "completion_tokens": 512
+        }
+      },
+      {
+        "ttft_s": 0.0854,
+        "decode_s": 10.4369,
+        "decode_tps": 48.96,
+        "completion_tokens": 512,
+        "content_events": 500,
+        "elapsed_s": 10.5224,
+        "usage": {
+          "prompt_tokens": 74,
+          "total_tokens": 586,
+          "completion_tokens": 512
+        }
+      }
+    ],
+    "ttft_mean_s": 0.0885,
+    "ttft_median_s": 0.0855,
+    "decode_mean_tps": 48.98,
+    "decode_median_tps": 48.98
+  },
+  "coding": {
+    "total_passed": 22,
+    "total_expected": 22,
+    "total_score": "22/22",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpptiwfmn0\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 3101,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 60.0,
+        "completion_tokens": 2711,
+        "finish_reason": "stop",
+        "reasoning_chars": 8042
+      },
+      "expression_evaluator": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpfmieu16d\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 4958,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 94.64,
+        "completion_tokens": 4374,
+        "finish_reason": "stop",
+        "reasoning_chars": 13542
+      },
+      "astar_pathfinding": {
+        "passed": 6,
+        "failed": 1,
+        "errors": 0,
+        "total": 7,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmphob7s0do\nplugins: anyio-4.13.0\ncollecting ... collected 7 items\n\ntest_astar.py::test_simple_path PASSED                                   [ 14%]\ntest_astar.py::test_path_around_obstacles FAILED                         [ 28%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost PASSED              [ 42%]\ntest_astar.py::test_no_path_exists PASSED                                [ 57%]\ntest_astar.py::test_start_equals_end PASSED                              [ 71%]\ntest_astar.py::test_invalid_coordinates PASSED                           [ 85%]\ntest_astar.py::test_start_or_end_is_wall PASSED                          [100%]\n\n=================================== FAILURES ===================================\n__________________________ test_path_around_obstacles __________________________\n\n    def test_path_around_obstacles():\n        grid = [\n            [1,1,1],\n            [0,0,1],\n            [1,1,1]\n        ]\n        a = AStarGrid(grid)\n        p = a.find_path((0,0),(2,0))\n        assert p is not None\n        assert p[0]==(0,0) and p[-1]==(2,0)\n        # must go via top right\n        for r,c in p:\n            assert grid[r][c]!=0\n        # valid adjacency\n        for (r1,c1),(r2,c2) in zip(p,p[1:]):\n            assert abs(r1-r2)+abs(c1-c2)==1\n>       assert path_cost(grid,p)==4\nE       assert 6 == 4\nE        +  where 6 = path_cost([[1, 1, 1], [0, 0, 1], [1, 1, 1]], [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), ...])\n\ntest_astar.py:33: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_path_around_obstacles - assert 6 == 4\n========================= 1 failed, 6 passed in 0.02s ==========================\n",
+        "n_code_blocks": 2,
+        "response_len": 4517,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": false,
+        "elapsed_s": 90.0,
+        "completion_tokens": 4063,
+        "finish_reason": "stop",
+        "reasoning_chars": 11160
+      },
+      "lru_cache_ttl": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp_jz0lo_1\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction_lru PASSED                     [ 33%]\ntest_lru_cache.py::test_ttl_expiry PASSED                                [ 50%]\ntest_lru_cache.py::test_custom_per_key_ttl PASSED                        [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_mixed_expired_valid PASSED                  [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 5895,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": true,
+        "elapsed_s": 270.15,
+        "completion_tokens": 12329,
+        "finish_reason": "stop",
+        "reasoning_chars": 46175
+      }
+    }
+  }
+}

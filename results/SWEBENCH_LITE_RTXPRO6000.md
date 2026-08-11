@@ -1,6 +1,7 @@
-# SWE-bench Lite on RTX Pro 6000 - six-model comparison
+# SWE-bench Lite on RTX Pro 6000 - nine-deployment comparison
 
-All six runs hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split, via SWE-agent v1.1.0 in function-calling mode with a 75-call ceiling and 4 parallel workers on the same RTX Pro 6000 Blackwell Workstation (96 GB, sm_120).
+All nine deployments hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split via SWE-agent v1.1.0 in function-calling mode with a 75-call ceiling on the same RTX Pro 6000 Blackwell Workstation (96 GB, sm_120).
+Runs used four parallel workers unless noted otherwise.
 
 ## Headline
 
@@ -10,15 +11,30 @@ All six runs hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split, vi
 | **Qwen3.6-27B dense** | FP8 (vendor) | vLLM 0.19 | **172** | **57.3%** | 58.1% |
 | Qwen3.6-35B-A3B | Q8_0 Opus-distilled | llama.cpp + llama-swap | 156 | 52.0% | 54.9% |
 | Qwen3.6-35B-A3B | Q8_0 stock | llama.cpp + llama-swap | 145 | 48.3% | 52.0% |
+| Qwen3-Coder-Next | FP8 | vLLM | 136 | 45.3% | 56.9% |
+| Muse Glimmer 30B | FP8 + DFlash-15 | vLLM, 8 workers | 129 | 43.0% | 61.7% |
+| NVIDIA Nemotron 3 Puzzle 75B-A9B | FP8 + MTP-3 | vLLM | 128 | 42.7% | 43.1% |
 | DeepSeek V4 Flash 0731 | EXL3 2.04 bpw | TabbyAPI + ExLlamaV3 | 121 | 40.3% | 69.9% |
 | Gemma-4-31B-IT | Q8_0 stock | llama.cpp + llama-swap | 69 | 23.0% | 34.5% |
 
-Four headline findings:
+Five headline findings:
 
 1. **Unsloth dynamic NVFP4 + MTP-2 is the best and fastest dense-27B variant measured.** It resolves 178/300 (59.3%), six more than vendor FP8 (+2.0 pp), while cutting the SWE-agent batch from 18h20m to 6h25m52s (**2.85× faster**). The newer run also raises the context ceiling from 64K to 262K, so this is a deployment-stack comparison rather than a quantization-only attribution.
 2. **Dense 27B remains stronger than the 35B-A3B variants on this scaffold.** Dynamic NVFP4 is +7.3 pp over Opus-distilled 35B-A3B, +11 pp over stock 35B-A3B, and +36.3 pp over Gemma.
 3. **Opus-distillation beats stock on agentic work by +3.7 pp**, even though the *same distilled model* loses 11 pts vs stock on the from-scratch coding bench. The two benchmarks measure different things; SWE-bench rewards codebase-navigation / surgical-fix reasoning (what Opus-CoT teaches), while the coding bench rewards self-consistent module-with-tests generation (which the distillation hurts). See [why coding-bench and SWE-bench disagree](#why-coding-bench-and-swe-bench-disagree) below.
 4. **DeepSeek V4 Flash EXL3 has strong submitted-patch quality but poor patch coverage.** It resolves 121/300 overall, or 40.3%, while resolving 121/173 non-empty attempts, or 69.9%. Its 127 empty patches are the dominant quality loss despite a perfect 22/22 lightweight score.
+5. **Muse Glimmer combines high serving throughput with mid-table completion quality.** DFlash raises single-stream decode from 48.98 to 120.12 tok/s without changing its 22/22 lightweight score, and eight workers finish SWE-agent generation in 5h03m47s.
+   The official result is 129/300, with 91 empty patches and zero harness errors.
+
+## Muse Glimmer 30B FP8 + DFlash-15 - 43.0%
+
+Muse Glimmer ran through the digest-pinned vLLM DFlash stack at a 131,072-token allocation, 16 server-side sequence slots, and eight SWE-agent workers.
+It resolved **129/300**, produced 209 non-empty patches, left 91 empty patches, and recorded zero harness errors.
+Its 61.7% resolution rate among non-empty patches makes patch coverage the main constraint.
+
+Generation took 5h03m47s and official evaluation brought the end-to-end run to about 5h31m.
+The matched lightweight A/B remained 22/22 while DFlash improved mean decode by 2.45x and coding-suite wall time by 3.25x.
+Serving, concurrency, build, and artifact details are in [MUSE_GLIMMER_RTXPRO6000.md](MUSE_GLIMMER_RTXPRO6000.md).
 
 ## DeepSeek V4 Flash 0731 EXL3 2.04 bpw - 40.3%
 
@@ -51,13 +67,13 @@ Full configuration and artifacts are in [MIMO_V2_5_IQ2_RTXPRO6000.md](MIMO_V2_5_
 
 - **Host**: RTX Pro 6000 Blackwell Workstation (96 GB GDDR7, sm_120), llama.cpp CUDA build `a279d0f` for the llama-swap runs, vLLM 0.19.1 for the FP8 run, and vLLM 0.24.0 for dynamic NVFP4.
 - **Agent**: SWE-agent v1.1.0, `config/default.yaml` templates, tool bundles `registry` + `edit_anthropic` + `review_on_submit_m`, parse mode `function_calling`, per-instance call limit 75, per-command `execution_timeout: 30`.
-- **Dataset**: `SWE-bench/SWE-bench_Lite` test split, 300 instances, `--num_workers 4`.
+- **Dataset**: `SWE-bench/SWE-bench_Lite` test split, 300 instances, normally `--num_workers 4`; Muse Glimmer used eight workers.
 - **Sandbox**: SWE-ReX Docker containers per task (`swebench/sweb.eval.x86_64.*`).
 - **Evaluation**: `swebench.harness.run_evaluation` against hidden test suites.
 
 Per-model details (model/quant/sampling/context) are in each model's section below.
 
-## Per-repo six-way comparison
+## Per-repo original six-way comparison
 
 Resolved count / evaluated count per repo bucket. The `n=` shown is the total in the bucket for each run (Docker-pull failures in earlier rounds created tiny denominator differences).
 
@@ -257,7 +273,7 @@ For from-scratch module+tests generation, stock `qwen36-35b-a3b-coder` (Q8_0 via
 ## Shared caveats
 
 1. **Single trial per model**. Stochastic sampling + agent-loop dynamics imply ±2–3 pp on re-run. The headline gaps (Opus-distill vs stock = 3.7 pp, FP8-27B vs Opus = 5.3 pp) are larger than single-trial noise but not by a huge margin.
-2. **Call-limit 75 constrains all five runs equally.** Many resolved patches came from `exit_cost` autosubmits; raising to 150 might shift the gaps.
+2. **Call-limit 75 constrains all full runs equally.** Many resolved patches came from `exit_cost` autosubmits; raising to 150 might shift the gaps.
 3. **SWE-agent's default tool bundle is Anthropic-style (search+replace edit).** A unified-diff scaffold might score differently.
 4. **Lite ≠ Verified.** Same models typically score ~10 pp lower on Verified than Lite.
 5. **Docker Hub rate limit bit the stock run in round 1.** Anonymous limit is 100 pulls / 6h; we needed ~300. `docker login` (free tier = 200/6h authenticated) is sufficient spread across a run.
