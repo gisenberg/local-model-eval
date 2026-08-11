@@ -1,0 +1,20 @@
+{
+  "protocol_pass": true,
+  "generation_content_chars": 1444,
+  "generation_reasoning_chars": 4063,
+  "generation_finish_reason": "stop",
+  "generation_completion_tokens": 2213,
+  "reasoning_parsed": true,
+  "reasoning_history_accepted": true,
+  "preserved_follow_up_finish_reason": "stop",
+  "preserved_follow_up_completion_tokens": 31,
+  "preserved_follow_up_content_chars": 93,
+  "preserved_follow_up_reasoning_chars": 0,
+  "first_tool_calls": 1,
+  "first_tool_reasoning_chars": 0,
+  "tool_history_accepted": true,
+  "follow_up_finish_reason": "stop",
+  "follow_up_tool_calls": 0,
+  "follow_up_content_chars": 120,
+  "follow_up_reasoning_chars": 0
+}

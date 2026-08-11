@@ -57,6 +57,12 @@ def main() -> int:
     parser.add_argument("--model", default="local")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--max-tokens", type=int, default=2048)
+    parser.add_argument(
+        "--reasoning",
+        choices=("required", "forbidden", "optional"),
+        default="required",
+        help="Expected reasoning_content contract for the served preset.",
+    )
     args = parser.parse_args()
 
     endpoint = f"{args.base_url.rstrip('/')}/chat/completions"
@@ -65,6 +71,10 @@ def main() -> int:
         "temperature": 0,
         "max_tokens": args.max_tokens,
         "stream": False,
+        "chat_template_kwargs": {
+            "enable_thinking": args.reasoning != "forbidden",
+            "drop_thinking": False,
+        },
     }
 
     basic = post_json(
@@ -174,10 +184,20 @@ def main() -> int:
         )
         followup_message = response_message(followup)
 
+    reasoning_check_name = {
+        "required": "reasoning_preserved",
+        "forbidden": "reasoning_suppressed",
+        "optional": "reasoning_accepted",
+    }[args.reasoning]
+    reasoning_check = {
+        "required": bool(reasoning_trace.strip()),
+        "forbidden": not bool(reasoning_trace.strip()),
+        "optional": True,
+    }[args.reasoning]
     checks = {
         "basic_generation": basic_content == "MIMO_OK",
         "reasoning_answer": "408" in reasoning_content,
-        "reasoning_preserved": bool(reasoning_trace.strip()),
+        reasoning_check_name: reasoning_check,
         "single_tool_call": len(tool_calls) == 1,
         "tool_name": tool_name == "lookup_record",
         "tool_arguments": tool_arguments == {"record_id": "alpha-7"},

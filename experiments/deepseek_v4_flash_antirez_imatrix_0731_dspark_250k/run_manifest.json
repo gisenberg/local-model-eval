@@ -1,0 +1,56 @@
+{
+  "date": "2026-08-02",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation",
+  "gpu_memory_total_mib": 97887,
+  "background_gpu_process": {
+    "name": "Sunshine",
+    "memory_mib": 590
+  },
+  "llama_cpp": {
+    "version": 10231,
+    "commit": "bb4e0e1b3f6bb38960769a1c9bcd2081016154cd",
+    "build_path": "/home/gisenberg/llama-build/src-deepseek-v4-dspark-bb4e0e1/build/bin"
+  },
+  "main_model": {
+    "path": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf"
+  },
+  "draft_model": {
+    "repository": "am17an/DeepseekV4-Flash-20260731-DSpark",
+    "revision": "9d79f20040120924bd2f7dc4f3a9f86c721b39f8",
+    "path": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-dspark-9d79f200/DeepseekV4-Flash-20260731-DSpark.gguf",
+    "size_bytes": 10896057568,
+    "sha256": "835d0fc5216b8a71111492c3f9e64add1d72345befa750610fdfae1011adf08f"
+  },
+  "fixed_server_settings": {
+    "context_tokens": 262144,
+    "parallel_slots": 1,
+    "flash_attention": true,
+    "fit": false,
+    "batch_size": 1024,
+    "ubatch_size": 128,
+    "kv_cache_k": "f16",
+    "kv_cache_v": "f16",
+    "main_gpu_layers": "all",
+    "draft_gpu_layers": "all",
+    "reasoning": false
+  },
+  "recommended": {
+    "spec_type": "draft-dspark",
+    "spec_draft_n_max": 3,
+    "loaded_gpu_memory_mib": 95619,
+    "decode_tokens_per_second": 164.02,
+    "mean_ttft_seconds": 0.092,
+    "lightweight_coding_score": "16/22",
+    "api_protocol_score": "7/7"
+  },
+  "worst_case_context_validation": {
+    "spec_draft_n_max": 5,
+    "raw_prompt_tokens": 249981,
+    "api_prompt_tokens": 249985,
+    "retrieval_passed": true,
+    "elapsed_seconds": 630.269,
+    "prompt_tokens_per_second": 396.86,
+    "peak_gpu_memory_mib": 95869,
+    "free_gpu_memory_at_peak_mib": 1373
+  }
+}

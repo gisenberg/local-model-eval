@@ -14,7 +14,6 @@ Model configs below. -c (context) is per model; -ngl 99 for full GPU offload.
 import json
 import os
 import re
-import shutil
 import statistics
 import subprocess
 import sys
@@ -31,10 +30,6 @@ else:
 MODELS_ROOT = "/home/gisenberg/models"
 OUTPUT_ROOT = f"/home/gisenberg/git/gisenberg/local-model-eval/experiments/rtxpro6000_bench_{BACKEND}"
 PORT = int(os.environ.get("LLAMA_PORT", "8080"))
-RTK = shutil.which("rtk")
-if RTK is None:
-    raise RuntimeError("rtk is required by the active agent profile")
-
 PROMPT = (
     "Write a Python function to compute the factorial of n recursively. "
     "Include type hints, a docstring, and one pytest test."
@@ -134,6 +129,97 @@ MODELS = {
             "-ub", "2048",
         ],
     },
+    "deepseek-v4-flash-0731-ud-iq2-xxs": {
+        "name": "DeepSeek-V4-Flash-0731 UD-IQ2_XXS (Unsloth)",
+        "path": (
+            "/mnt/extended/gisenberg/models/"
+            "deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/"
+            "DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf"
+        ),
+        "ctx": 262144,
+        "gpu_layers": "auto",
+        "use_mmap": True,
+        "extra": [
+            "--jinja",
+            "--fit", "on",
+            "--fit-target", "4096",
+            "--fit-ctx", "262144",
+            "-b", "1024",
+            "-ub", "128",
+            "-ctk", "f16",
+            "-ctv", "f16",
+            "--threads", "16",
+            "--threads-batch", "32",
+            "--ctx-checkpoints", "0",
+            "--metrics",
+            "--reasoning-format", "deepseek",
+            "--reasoning-preserve",
+        ],
+    },
+    "deepseek-v4-flash-antirez-imatrix-0731": {
+        "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez)",
+        "path": (
+            "/mnt/extended/gisenberg/models/"
+            "deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/"
+            "DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-"
+            "chat-v2-imatrix-0731.gguf"
+        ),
+        "ctx": 262144,
+        "gpu_layers": "auto",
+        "use_mmap": True,
+        "extra": [
+            "--jinja",
+            "--fit", "on",
+            "--fit-target", "4096",
+            "--fit-ctx", "262144",
+            "-b", "1024",
+            "-ub", "128",
+            "-ctk", "f16",
+            "-ctv", "f16",
+            "--threads", "16",
+            "--threads-batch", "32",
+            "--ctx-checkpoints", "0",
+            "--metrics",
+            "--reasoning-format", "deepseek",
+            "--reasoning-preserve",
+        ],
+    },
+    "deepseek-v4-flash-antirez-imatrix-0731-dspark-n5": {
+        "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, DSpark n=5)",
+        "path": (
+            "/mnt/extended/gisenberg/models/"
+            "deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/"
+            "DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-"
+            "chat-v2-imatrix-0731.gguf"
+        ),
+        "ctx": 262144,
+        "gpu_layers": "all",
+        "use_mmap": True,
+        "extra": [
+            "--jinja",
+            "--fit", "off",
+            "-b", "1024",
+            "-ub", "128",
+            "-ctk", "f16",
+            "-ctv", "f16",
+            "--threads", "16",
+            "--threads-batch", "32",
+            "--ctx-checkpoints", "0",
+            "--metrics",
+            "--reasoning-format", "deepseek",
+            "--reasoning", "off",
+            "--reasoning-budget", "0",
+            "--spec-draft-model",
+            (
+                "/mnt/extended/gisenberg/models/"
+                "deepseek-v4-flash-0731-dspark-9d79f200/"
+                "DeepseekV4-Flash-20260731-DSpark.gguf"
+            ),
+            "--spec-type", "draft-dspark",
+            "--spec-draft-n-max", "5",
+            "--spec-draft-ngl", "all",
+        ],
+    },
     "mimo-v2.5-ud-iq2-xxs": {
         "name": "MiMo-V2.5 UD-IQ2_XXS (Unsloth)",
         "path": (
@@ -160,12 +246,80 @@ MODELS = {
     },
 }
 
+MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n3"] = {
+    **MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n5"],
+    "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, DSpark n=3)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n5"]["extra"][:-4],
+        "--spec-draft-n-max", "3",
+        "--spec-draft-ngl", "all",
+    ],
+}
+
+MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n4"] = {
+    **MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n5"],
+    "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, DSpark n=4)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n5"]["extra"][:-4],
+        "--spec-draft-n-max", "4",
+        "--spec-draft-ngl", "all",
+    ],
+}
+
+MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n2"] = {
+    **MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n5"],
+    "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, DSpark n=2)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-antirez-imatrix-0731-dspark-n5"]["extra"][:-4],
+        "--spec-draft-n-max", "2",
+        "--spec-draft-ngl", "all",
+    ],
+}
+
 MODELS["mimo-v2.5-ud-iq2-xxs-r4k"] = {
     **MODELS["mimo-v2.5-ud-iq2-xxs"],
     "name": "MiMo-V2.5 UD-IQ2_XXS (Unsloth, reasoning budget 4096)",
     "extra": [
         *MODELS["mimo-v2.5-ud-iq2-xxs"]["extra"],
         "--reasoning-budget", "4096",
+    ],
+}
+
+MODELS["deepseek-v4-flash-0731-ud-iq2-xxs-r4k"] = {
+    **MODELS["deepseek-v4-flash-0731-ud-iq2-xxs"],
+    "name": "DeepSeek-V4-Flash-0731 UD-IQ2_XXS (Unsloth, reasoning budget 4096)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-0731-ud-iq2-xxs"]["extra"],
+        "--reasoning-budget", "4096",
+    ],
+}
+
+MODELS["deepseek-v4-flash-0731-ud-iq2-xxs-no-think"] = {
+    **MODELS["deepseek-v4-flash-0731-ud-iq2-xxs"],
+    "name": "DeepSeek-V4-Flash-0731 UD-IQ2_XXS (Unsloth, reasoning off)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-0731-ud-iq2-xxs"]["extra"],
+        "--reasoning", "off",
+        "--reasoning-budget", "0",
+    ],
+}
+
+MODELS["deepseek-v4-flash-antirez-imatrix-0731-r4k"] = {
+    **MODELS["deepseek-v4-flash-antirez-imatrix-0731"],
+    "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, reasoning budget 4096)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-antirez-imatrix-0731"]["extra"],
+        "--reasoning-budget", "4096",
+    ],
+}
+
+MODELS["deepseek-v4-flash-antirez-imatrix-0731-no-think"] = {
+    **MODELS["deepseek-v4-flash-antirez-imatrix-0731"],
+    "name": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, reasoning off)",
+    "extra": [
+        *MODELS["deepseek-v4-flash-antirez-imatrix-0731"]["extra"],
+        "--reasoning", "off",
+        "--reasoning-budget", "0",
     ],
 }
 
@@ -186,7 +340,7 @@ def start_server(model_cfg, ctx_override=None):
         # Force full load to VRAM rather than relying on the OS page cache.
         server_cmd.append("--no-mmap")
     server_cmd += model_cfg.get("extra", [])
-    cmd = [RTK, "proxy", *server_cmd]
+    cmd = server_cmd
     env = os.environ.copy()
     env["LD_LIBRARY_PATH"] = LLAMA_DIR + _LD_EXTRA
     log_path = f"/tmp/llama-server-{model_cfg['key']}.log"
@@ -222,8 +376,6 @@ def vram_used_mb():
     try:
         out = subprocess.check_output(
             [
-                RTK,
-                "proxy",
                 "nvidia-smi",
                 "--query-gpu=memory.used",
                 "--format=csv,noheader,nounits",

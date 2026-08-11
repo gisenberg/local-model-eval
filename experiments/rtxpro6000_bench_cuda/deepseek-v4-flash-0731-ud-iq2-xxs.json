@@ -1,0 +1,45 @@
+{
+  "model": "DeepSeek-V4-Flash-0731 UD-IQ2_XXS (Unsloth)",
+  "key": "deepseek-v4-flash-0731-ud-iq2-xxs",
+  "path": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf",
+  "ctx": 262144,
+  "vram_mb": 89695,
+  "load_seconds": 9.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.0766,
+      "decode_tps": 80.48,
+      "n_tokens": 256,
+      "total_s": 3.258
+    },
+    {
+      "ttft_s": 0.0729,
+      "decode_tps": 80.49,
+      "n_tokens": 256,
+      "total_s": 3.253
+    },
+    {
+      "ttft_s": 0.0741,
+      "decode_tps": 80.47,
+      "n_tokens": 256,
+      "total_s": 3.256
+    },
+    {
+      "ttft_s": 0.0736,
+      "decode_tps": 80.17,
+      "n_tokens": 256,
+      "total_s": 3.267
+    },
+    {
+      "ttft_s": 0.0735,
+      "decode_tps": 80.38,
+      "n_tokens": 256,
+      "total_s": 3.259
+    }
+  ],
+  "ttft_mean": 0.0741,
+  "ttft_median": 0.0736,
+  "decode_mean": 80.4,
+  "decode_median": 80.47
+}

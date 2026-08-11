@@ -1,0 +1,94 @@
+{
+  "variant": "fa_on_ub128",
+  "base_url": "http://127.0.0.1:8092",
+  "model": "mimo-v2.5-iq2-xxs",
+  "target_prefix_tokens": 100000,
+  "requests_requested": 10,
+  "max_tokens": 4096,
+  "started_unix": 1785477918.5791948,
+  "results": [
+    {
+      "request_index": 1,
+      "ok": true,
+      "elapsed_seconds": 281.213,
+      "first_chunk_seconds": 226.145,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 12803,
+      "reasoning_characters": 879,
+      "content_tail": "3. The output function $\\lambda$ is defined as $\\lambda(s, i) = \\langle id', \\text{normalize}(path'), payload' \\rangle$.\n4. The transition function $\\delta$ and output function $\\lambda$ only depend on the input $i$ and the current state $s$.\n5. They do not modify any external state or produce any external effects.\n6. Thus, the state machine has no external side effects.\n\n### 5.3 Proof Obligation 3: Payload Unchanged\n\n**Obligation:** For all states $s \\in \\mathcal{S}$ and inputs $i \\in \\mathcal{",
+      "reasoning_tail": "ite a formal analysis that includes definitions, invariants, transition cases, and proof obligations. I should continue expanding until the response limit, not summarize early, and not stop because the proof is repetitive.\n\nLet me structure this as a formal verification document with:\n\n1. Definitions\n2. State machine specification\n3. Invariants\n4. Transition cases\n5. Proof obligations\n6. Formal verification\n\nI'll write this in a detailed, self-contained manner, expanding each section thoroughly.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "request_index": 2,
+      "ok": true,
+      "elapsed_seconds": 55.669,
+      "first_chunk_seconds": 0.601,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 14885,
+      "reasoning_characters": 630,
+      "content_tail": "es $s \\in S$ and inputs $i \\in I$, the transition function $\\delta$ must return the payload unchanged.\n\n**Proof**:\n- The module returns the payload unchanged in all cases.\n- Therefore, the payload is unchanged.\n\n### 10.4 Verification Condition 4: Path Normalization\n\n**Condition**: For all states $s \\in S$ and inputs $i \\in I$, the path normalization operation must be deterministic and not alter the payload.\n\n**Proof**:\n- The path normalization operation is deterministic.\n- The path normalization",
+      "reasoning_tail": " audit record provided. The audit record describes a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nI need to write a formal analysis that includes definitions, invariants, transition cases, and proof obligations. Let me structure this as a comprehensive formal verification document.\n\nLet me create a detailed formal analysis of this deterministic state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 3,
+      "ok": true,
+      "elapsed_seconds": 55.672,
+      "first_chunk_seconds": 0.56,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 12736,
+      "reasoning_characters": 886,
+      "content_tail": " transition and output are valid.\n\n#### 7.2.2 Case 2: Invalid Integer Identifier\n\n**Verification:**\n1. Let \\( i = (id_i, path_i, payload_i) \\) be an input where \\( id_i \\notin \\mathbb{Z} \\).\n2. Let \\( s = (id, path, payload) \\) be a state.\n3. By definition, \\( \\delta(i, s) = \\text{undefined} \\).\n4. By definition, \\( \\lambda(i, s) = \\text{undefined} \\).\n5. Therefore, the transition and output are undefined.\n\n#### 7.2.3 Case 3: Invalid Path\n\n**Verification:**\n1. Let \\( i = (id_i, path_i, payload_i",
+      "reasoning_tail": "ormal analysis that includes definitions, invariants, transition cases, and proof obligations. I should continue expanding until the response limit, not summarize early, and not stop merely because the proof is repetitive.\n\nLet me structure this as a formal verification document with:\n\n1. Definitions\n2. State machine specification\n3. Invariants\n4. Transition cases\n5. Proof obligations\n6. Formal verification\n\nI'll write this in a detailed, self-contained manner, expanding each section thoroughly.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 4,
+      "ok": true,
+      "elapsed_seconds": 56.088,
+      "first_chunk_seconds": 0.54,
+      "chunks": 4034,
+      "finish_reason": null,
+      "content_characters": 14001,
+      "reasoning_characters": 891,
+      "content_tail": "alid.\n  - intros H.\n    exists invalid.\nQed.\n\nTheorem unchanged_payload: forall s i, output s i = (id, path, payload) -> payload = payload.\nProof.\n  intros s i.\n  destruct s.\n  - intros H.\n    exists valid.\n  - intros H.\n    exists invalid.\nQed.\n\nTheorem path_normalization: forall s i, output s i = (id, path, payload) -> path = normalize(path).\nProof.\n  intros s i.\n  destruct s.\n  - intros H.\n    exists valid.\n  - intros H.\n    exists invalid.\nQed.\n\nTheorem integer_validation: forall s i, output",
+      "reasoning_tail": " analysis that includes definitions, invariants, transition cases, and proof obligations. The user wants me to continue expanding until the response limit, not summarize early, and not stop because the proof is repetitive.\n\nLet me structure this as a formal verification document with:\n\n1. Definitions\n2. State machine specification\n3. Invariants\n4. Transition cases\n5. Proof obligations\n6. Formal verification\n\nI'll write this in a detailed, self-contained manner, expanding each section thoroughly.",
+      "usage": {}
+    },
+    {
+      "request_index": 5,
+      "ok": false,
+      "error": "URLError: <urlopen error [Errno 111] Connection refused>",
+      "elapsed_seconds": 0.001
+    }
+  ],
+  "prefix_tokens": 99994,
+  "filler_repetitions": 2941,
+  "completed_unix": 1785478368.8182216,
+  "passed": false
+}

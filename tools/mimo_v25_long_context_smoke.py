@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a deterministic near-250K-token retrieval probe through llama-server."""
+"""Run a deterministic near-250K-token retrieval probe through an OAI server."""
 
 from __future__ import annotations
 
@@ -47,12 +47,23 @@ def build_prompt(repetitions: int) -> str:
     return FILLER * left + NEEDLE + FILLER * right + QUESTION
 
 
-def token_count(base_url: str, content: str, timeout: int) -> int:
-    response = post_json(
-        f"{base_url.rstrip('/')}/tokenize",
-        {"content": content, "add_special": True},
-        timeout,
-    )
+def token_count(
+    base_url: str,
+    content: str,
+    timeout: int,
+    tokenizer_api: str,
+) -> int:
+    if tokenizer_api == "tabby":
+        endpoint = "/v1/token/encode"
+        body = {"text": content, "add_bos_token": True}
+    else:
+        endpoint = "/tokenize"
+        body = {"content": content, "add_special": True}
+
+    response = post_json(f"{base_url.rstrip('/')}{endpoint}", body, timeout)
+    length = response.get("length")
+    if isinstance(length, int):
+        return length
     tokens = response.get("tokens")
     if not isinstance(tokens, list):
         raise RuntimeError(f"unexpected tokenize response: {response}")
@@ -63,23 +74,24 @@ def fit_prompt(
     base_url: str,
     target_tokens: int,
     timeout: int,
+    tokenizer_api: str,
 ) -> tuple[str, int, int]:
     low = 0
     high = max(1, target_tokens // 8)
-    while token_count(base_url, build_prompt(high), timeout) < target_tokens:
+    while token_count(base_url, build_prompt(high), timeout, tokenizer_api) < target_tokens:
         low = high
         high *= 2
 
     while low + 1 < high:
         middle = (low + high) // 2
-        count = token_count(base_url, build_prompt(middle), timeout)
+        count = token_count(base_url, build_prompt(middle), timeout, tokenizer_api)
         if count <= target_tokens:
             low = middle
         else:
             high = middle
 
     prompt = build_prompt(low)
-    return prompt, token_count(base_url, prompt, timeout), low
+    return prompt, token_count(base_url, prompt, timeout, tokenizer_api), low
 
 
 def main() -> int:
@@ -89,6 +101,12 @@ def main() -> int:
     parser.add_argument("--target-tokens", type=int, default=250_000)
     parser.add_argument("--max-tokens", type=int, default=256)
     parser.add_argument("--timeout", type=int, default=3600)
+    parser.add_argument(
+        "--tokenizer-api",
+        choices=("llama", "tabby"),
+        default="llama",
+        help="Tokenizer endpoint dialect exposed by the server.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
@@ -96,6 +114,7 @@ def main() -> int:
         args.base_url,
         args.target_tokens,
         args.timeout,
+        args.tokenizer_api,
     )
     started = time.perf_counter()
     response = post_json(

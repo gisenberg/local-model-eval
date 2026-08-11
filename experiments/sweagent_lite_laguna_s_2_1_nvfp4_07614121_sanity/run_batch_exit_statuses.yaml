@@ -1,0 +1,9 @@
+instances_by_exit_status:
+    submitted:
+    - astropy__astropy-12907
+    - astropy__astropy-14365
+    - astropy__astropy-14995
+    submitted (exit_format):
+    - astropy__astropy-14182
+    - astropy__astropy-6938
+total_cost: 0

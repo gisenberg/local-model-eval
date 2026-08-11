@@ -1,0 +1,148 @@
+{
+  "mode": "baseline",
+  "served_name": "poolside/Laguna-S-2.1-NVFP4",
+  "request_config": {
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "top_k": 20,
+    "max_tokens": 1024,
+    "preserve_thinking": true
+  },
+  "memory": {
+    "idle_used_mib": 86791,
+    "peak_used_mib": 86793
+  },
+  "serial": {
+    "summary": {
+      "requests": 4,
+      "completion_tokens": 4096,
+      "wall_s": 38.2008,
+      "aggregate_output_tps": 107.223,
+      "mean_ttft_s": 0.0375,
+      "p50_ttft_s": 0.0403,
+      "mean_request_decode_tps": 107.541
+    },
+    "runs": [
+      {
+        "seed": 1000,
+        "prompt_tokens": 81,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.5236,
+        "ttft_s": 0.0233,
+        "decode_tps": 107.68,
+        "finish_reason": "length",
+        "content_chars": 4501,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 1001,
+        "prompt_tokens": 77,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.5509,
+        "ttft_s": 0.0462,
+        "decode_tps": 107.631,
+        "finish_reason": "length",
+        "content_chars": 4048,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 1002,
+        "prompt_tokens": 71,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.5584,
+        "ttft_s": 0.0443,
+        "decode_tps": 107.525,
+        "finish_reason": "length",
+        "content_chars": 3597,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 1003,
+        "prompt_tokens": 75,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.5676,
+        "ttft_s": 0.0362,
+        "decode_tps": 107.33,
+        "finish_reason": "length",
+        "content_chars": 3804,
+        "reasoning_chars": 755
+      }
+    ]
+  },
+  "concurrent_4": {
+    "summary": {
+      "requests": 4,
+      "completion_tokens": 4096,
+      "wall_s": 14.681,
+      "aggregate_output_tps": 279.0,
+      "mean_ttft_s": 0.0617,
+      "p50_ttft_s": 0.0638,
+      "mean_request_decode_tps": 70.002
+    },
+    "runs": [
+      {
+        "seed": 2000,
+        "prompt_tokens": 81,
+        "completion_tokens": 1024,
+        "elapsed_s": 14.6802,
+        "ttft_s": 0.0654,
+        "decode_tps": 69.998,
+        "finish_reason": "length",
+        "content_chars": 4623,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 2001,
+        "prompt_tokens": 77,
+        "completion_tokens": 1024,
+        "elapsed_s": 14.6651,
+        "ttft_s": 0.0537,
+        "decode_tps": 70.014,
+        "finish_reason": "length",
+        "content_chars": 3964,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 2002,
+        "prompt_tokens": 71,
+        "completion_tokens": 1024,
+        "elapsed_s": 14.6787,
+        "ttft_s": 0.0642,
+        "decode_tps": 69.999,
+        "finish_reason": "length",
+        "content_chars": 3691,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 2003,
+        "prompt_tokens": 75,
+        "completion_tokens": 1024,
+        "elapsed_s": 14.6782,
+        "ttft_s": 0.0635,
+        "decode_tps": 69.998,
+        "finish_reason": "length",
+        "content_chars": 4124,
+        "reasoning_chars": 0
+      }
+    ]
+  },
+  "speculative_decoding": null,
+  "metrics_before": [
+    "vllm:prompt_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 2463.0",
+    "vllm:generation_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 2088.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"stop\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 4.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"length\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"abort\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"error\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"repetition\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0"
+  ],
+  "metrics_after": [
+    "vllm:prompt_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 3071.0",
+    "vllm:generation_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 10280.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"stop\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 4.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"length\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 9.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"abort\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"error\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"repetition\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0"
+  ]
+}

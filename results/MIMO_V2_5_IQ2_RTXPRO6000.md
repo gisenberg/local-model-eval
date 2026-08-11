@@ -6,6 +6,8 @@ MiMo V2.5 UD-IQ2_XXS fits on one RTX Pro 6000 at a 262,144-token allocation when
 The tested preset uses 92,585 MiB VRAM and leaves 4,657 MiB free.
 A real 250,013-token OpenAI chat request completed without truncation and retrieved a needle placed at 75% depth.
 Generation, preserved reasoning, strict tool arguments, and a multi-turn tool result all passed.
+The original Q8 KV preset is not stable under repeated long-context decode on driver 595.84.
+Use F16 K/V cache with flash attention and `-ub 128` for long-lived serving on this stack.
 
 The default unbounded-thinking preset is not usable for agent work.
 It reached a final answer on only one of four local coding tasks before the 16,384-token output ceiling.
@@ -37,7 +39,7 @@ The model files are:
 The IQ2_XXS quant was selected because the repository's `UD-Q2_K_XL` file is about 103 GB and cannot leave enough GPU space for a 250K context allocation on this card.
 IQ2_XXS still requires partial CPU weight offload, but it leaves enough GPU space for Q8 KV cache and runtime buffers.
 
-## Serving configuration
+## Original quality and context serving configuration
 
 ```bash
 rtk proxy env \
@@ -73,6 +75,35 @@ Mmap was kept because it avoids a high transient host-memory copy while the 89.8
 
 For the SWE-bench canary, the same total context allocation is divided into two 131,072-token slots with `-np 2`.
 The two-slot server holds at about 92,625 MiB VRAM and leaves about 4,617 MiB free.
+
+The stability-safe single-slot configuration changes `-ub 512 -ctk q8_0 -ctv q8_0` to `-ub 128 -ctk f16 -ctv f16`.
+It retains `-fa on`.
+
+## Long-context CUDA stability isolation
+
+The full SWE-bench retry exposed a deterministic CUDA failure after repeated generations from a shared 100K-token prefix.
+The isolation matrix used the same model, 262,144-token slot, llama.cpp commit, driver, reasoning settings, and OpenAI-compatible streaming API for every variant.
+Each stable variant was asked to complete ten sequential generations of up to 4,096 tokens while reusing the prefix.
+
+| Flash attention | KV cache | Ubatch | 100K prefill | Decode | Peak GPU memory | Result |
+|---|---|---:|---:|---:|---:|---|
+| On | Q8_0 | 512 | 1,138.35 tok/s | 71.8 to 72.1 tok/s | 92,673 MiB | Xid 8 after 6 complete responses and 22,974 completion tokens |
+| On | Q8_0 | 128 | 442.81 tok/s | 74.3 to 74.4 tok/s | 93,151 MiB | Xid 8 during request 4 after 3 complete responses |
+| Off | F16 | 512 | Did not finish | N/A | 97,215 MiB | CUDA OOM at 64,529 prompt tokens, no Xid |
+| Off | F16 | 128 | 164.38 tok/s | 35.0 to 35.2 tok/s | 94,839 MiB | Passed 10/10, 40,960 completion tokens |
+| On | F16 | 128 | 370.12 tok/s | 78.7 to 79.8 tok/s | 93,225 MiB | Passed 10/10, 38,391 completion tokens |
+
+Both Q8 KV runs terminated at `cudaStreamSynchronize` with `CUDA error: the launch timed out and was terminated`.
+The kernel recorded Xid 8 against the corresponding `llama-server` PID in both cases.
+Reducing ubatch from 512 to 128 delayed prefill and did not prevent the failure.
+
+Disabling flash attention and using F16 KV eliminated the watchdog at ubatch 128, but more than halved decode throughput.
+Keeping flash attention enabled while changing only K/V cache from Q8_0 to F16 also eliminated the watchdog and improved decode throughput by about 6.5% over the Q8 ubatch-128 run.
+That control isolates the current trigger to quantized Q8 KV handling under flash attention, or their interaction, rather than the model's IQ2 weight kernels or flash attention generally.
+The F16 ubatch-512 non-flash OOM is a separate memory-capacity failure.
+
+The exact tested stack was llama.cpp `ea63b4d32ea1b66bdbe369be7f9443f6c00f8b31`, NVIDIA open kernel module and driver `595.84`, GSP firmware `595.84`, CUDA 13.0, and kernel `7.0.0-28-generic`.
+Raw server logs, kernel logs, GPU telemetry, commands, and API responses are stored in [`../experiments/mimo_v25_cuda_isolation_59584_ea63b4d/`](../experiments/mimo_v25_cuda_isolation_59584_ea63b4d/).
 
 ## API protocol checks
 
@@ -201,8 +232,9 @@ Gemma 4 Q8 resolves two of the five.
 This slice therefore shows parity with the leading Qwen deployments rather than material improvement.
 It is also too small and too Astropy-heavy to estimate a 300-case score.
 A full 300-instance run was subsequently launched at user request on July 30, 2026.
-It uses two workers, two 131K slots, and the same pinned 4K-reasoning configuration.
-Its output directory is `experiments/sweagent_lite_mimo_v2_5_iq2_xxs_f7aff786_r4k`.
+The retry was stopped after the serving process reproduced the long-context CUDA Xid 8 failure described above.
+Seventeen non-empty patches and their logs were preserved in `experiments/sweagent_lite_mimo_v2_5_iq2_xxs_f7aff786_r4k`.
+Future retries should use F16 K/V cache with flash attention and ubatch 128.
 
 Evidence is stored in:
 
@@ -215,6 +247,8 @@ Evidence is stored in:
 - [`../tools/rtxpro6000_coding_bench.py`](../tools/rtxpro6000_coding_bench.py)
 - [`../tools/mimo_v25_api_smoke.py`](../tools/mimo_v25_api_smoke.py)
 - [`../tools/mimo_v25_long_context_smoke.py`](../tools/mimo_v25_long_context_smoke.py)
+- [`../tools/mimo_v25_cuda_decode_probe.py`](../tools/mimo_v25_cuda_decode_probe.py)
+- [`../tools/run_mimo_v25_cuda_isolation.sh`](../tools/run_mimo_v25_cuda_isolation.sh)
 - [`../tools/sweagent-rtxpro6000-mimo-v2.5-iq2-xxs.yaml`](../tools/sweagent-rtxpro6000-mimo-v2.5-iq2-xxs.yaml)
 - [`../tools/run_swebench_lite_mimo_v2_5_iq2_xxs.sh`](../tools/run_swebench_lite_mimo_v2_5_iq2_xxs.sh)
 
@@ -222,7 +256,9 @@ Evidence is stored in:
 
 Use the 4,096-token reasoning budget for every agentic deployment.
 Do not use the unbounded default with finite output limits.
-Keep the 4 GiB fit margin and Q8 KV cache for the 262K single-slot preset.
+Keep the 4 GiB fit margin.
+Use F16 K/V cache, flash attention, and ubatch 128 for the 262K single-slot preset on driver 595.84.
+Do not use Q8 KV for long-lived serving until an upstream fix passes this isolation workload.
 Use two 131K slots only for parallel benchmark or agent work where a 131K per-request ceiling is acceptable.
 Do not promote this quant over the current Qwen3.6 NVFP4 agent preset based on the five-case SWE-bench canary.
-Revisit that decision after the full 300-instance result is available.
+Revisit that decision after a stable full 300-instance rerun is available.

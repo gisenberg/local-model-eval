@@ -1,0 +1,211 @@
+{
+  "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+  "mode": "no-think",
+  "base_url": "http://127.0.0.1:8091/v1",
+  "vram_before_mb": 89826,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test.",
+    "max_tokens": 256,
+    "warmups": [
+      {
+        "ttft_s": 2.513,
+        "decode_s": 2.6748,
+        "decode_tps": 94.96,
+        "completion_tokens": 255,
+        "content_events": 153,
+        "elapsed_s": 5.1879,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.06,
+          "prompt_tokens_per_sec": 483.33,
+          "completion_tokens": 255,
+          "completion_time": 5.1,
+          "completion_tokens_per_sec": 50.04,
+          "total_tokens": 284,
+          "total_time": 5.17
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.1077,
+        "decode_s": 2.6899,
+        "decode_tps": 94.43,
+        "completion_tokens": 255,
+        "content_events": 153,
+        "elapsed_s": 2.7977,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 255,
+          "completion_time": 2.74,
+          "completion_tokens_per_sec": 92.99,
+          "total_tokens": 284,
+          "total_time": 2.79
+        }
+      },
+      {
+        "ttft_s": 0.1084,
+        "decode_s": 2.6902,
+        "decode_tps": 94.42,
+        "completion_tokens": 255,
+        "content_events": 153,
+        "elapsed_s": 2.7987,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 255,
+          "completion_time": 2.74,
+          "completion_tokens_per_sec": 92.97,
+          "total_tokens": 284,
+          "total_time": 2.79
+        }
+      },
+      {
+        "ttft_s": 0.1077,
+        "decode_s": 2.6919,
+        "decode_tps": 94.36,
+        "completion_tokens": 255,
+        "content_events": 153,
+        "elapsed_s": 2.7996,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 255,
+          "completion_time": 2.74,
+          "completion_tokens_per_sec": 92.93,
+          "total_tokens": 284,
+          "total_time": 2.8
+        }
+      },
+      {
+        "ttft_s": 0.1083,
+        "decode_s": 2.6946,
+        "decode_tps": 94.26,
+        "completion_tokens": 255,
+        "content_events": 153,
+        "elapsed_s": 2.8029,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 255,
+          "completion_time": 2.75,
+          "completion_tokens_per_sec": 92.83,
+          "total_tokens": 284,
+          "total_time": 2.8
+        }
+      },
+      {
+        "ttft_s": 0.1081,
+        "decode_s": 2.6942,
+        "decode_tps": 94.28,
+        "completion_tokens": 255,
+        "content_events": 153,
+        "elapsed_s": 2.8023,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 255,
+          "completion_time": 2.75,
+          "completion_tokens_per_sec": 92.84,
+          "total_tokens": 284,
+          "total_time": 2.8
+        }
+      }
+    ],
+    "ttft_mean_s": 0.108,
+    "ttft_median_s": 0.1081,
+    "decode_mean_tps": 94.35,
+    "decode_median_tps": 94.36
+  },
+  "vram_after_throughput_mb": 90150,
+  "coding": {
+    "total_passed": 21,
+    "total_expected": 22,
+    "total_score": "21/22",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp0tif0tfi\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 6527,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 16.03,
+        "completion_tokens": 1468,
+        "finish_reason": "stop",
+        "reasoning_chars": 0
+      },
+      "expression_evaluator": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp2rzw3ok6\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 16%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 33%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 50%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 66%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [ 83%]\ntest_expression_evaluator.py::test_floating_point PASSED                 [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+        "n_code_blocks": 1,
+        "response_len": 10213,
+        "expected": 5,
+        "raw_passed": 6,
+        "scored_passed": 5,
+        "test_count_matches_expected": false,
+        "elapsed_s": 25.9,
+        "completion_tokens": 2349,
+        "finish_reason": "stop",
+        "reasoning_chars": 0
+      },
+      "astar_pathfinding": {
+        "passed": 6,
+        "failed": 2,
+        "errors": 0,
+        "total": 8,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "ce PASSED                        [100%]\n\n=================================== FAILURES ===================================\n__________________________ test_path_around_obstacles __________________________\n\n    def test_path_around_obstacles():\n        \"\"\"Test pathfinding around obstacles.\"\"\"\n        grid = [\n            [1, 1, 1, 1],\n            [1, 0, 0, 1],\n            [1, 1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n    \n        path = astar.find_path((0, 0), (2, 3))\n    \n        assert path is not None\n        assert path[0] == (0, 0)\n        assert path[-1] == (2, 3)\n    \n        # Verify path doesn't go through walls\n        for pos in path:\n            assert grid[pos[0]][pos[1]] != 0\n    \n        # Check optimality\n        cost = astar.get_path_cost(path)\n>       assert cost == 7  # Must go around the obstacles\n        ^^^^^^^^^^^^^^^^\nE       assert 6 == 7\n\ntest_astar.py:230: AssertionError\n____________________ test_weighted_grid_prefers_lower_cost _____________________\n\n    def test_weighted_grid_prefers_lower_cost():\n        \"\"\"Test that pathfinding prefers lower-cost cells.\"\"\"\n        grid = [\n            [1, 10, 10, 10],\n            [1, 1, 1, 10],\n            [10, 10, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n    \n        path = astar.find_path((0, 0), (2, 3))\n    \n        assert path is not None\n        assert path[0] == (0, 0)\n        assert path[-1] == (2, 3)\n    \n        # Check optimality - path should prefer low-cost cells\n        cost = astar.get_path_cost(path)\n>       assert cost == 5  # Path through low-cost cells: (0,0)->(1,0)->(1,1)->(1,2)->(2,2)->(2,3)\n        ^^^^^^^^^^^^^^^^\nE       assert 6 == 5\n\ntest_astar.py:250: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_path_around_obstacles - assert 6 == 7\nFAILED test_astar.py::test_weighted_grid_prefers_lower_cost - assert 6 == 5\n========================= 2 failed, 6 passed in 0.02s ==========================\n",
+        "n_code_blocks": 1,
+        "response_len": 11164,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": false,
+        "elapsed_s": 32.52,
+        "completion_tokens": 2913,
+        "finish_reason": "stop",
+        "reasoning_chars": 0
+      },
+      "lru_cache_ttl": {
+        "passed": 5,
+        "failed": 1,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp7_q035r0\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_lru_cache.py::test_basic_get_put PASSED                             [ 16%]\ntest_lru_cache.py::test_capacity_eviction_lru_order PASSED               [ 33%]\ntest_lru_cache.py::test_ttl_expiry FAILED                                [ 50%]\ntest_lru_cache.py::test_custom_per_key_ttl PASSED                        [ 66%]\ntest_lru_cache.py::test_delete PASSED                                    [ 83%]\ntest_lru_cache.py::test_size_with_mixed_expired_valid PASSED             [100%]\n\n=================================== FAILURES ===================================\n_______________________________ test_ttl_expiry ________________________________\n\n    def test_ttl_expiry():\n        \"\"\"Test that items expire after their TTL.\"\"\"\n        cache = TTLCache(capacity=3, default_ttl=5)\n    \n        cache.put(\"a\", 1)\n    \n        # Mock time to simulate expiration\n        with patch(\"time.monotonic\", return_value=0):\n            cache.put(\"b\", 2)\n    \n        # Advance time beyond TTL\n        with patch(\"time.monotonic\", return_value=6):\n>           assert cache.get(\"a\") is None  # Expired\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE           AssertionError: assert 1 is None\nE            +  where 1 = get('a')\nE            +    where get = <lru_cache.TTLCache object at 0x7e50026feba0>.get\n\ntest_lru_cache.py:54: AssertionError\n=========================== short test summary info ============================\nFAILED test_lru_cache.py::test_ttl_expiry - AssertionError: assert 1 is None\n========================= 1 failed, 5 passed in 0.02s ==========================\n",
+        "n_code_blocks": 2,
+        "response_len": 9390,
+        "expected": 6,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 26.59,
+        "completion_tokens": 2374,
+        "finish_reason": "stop",
+        "reasoning_chars": 0
+      }
+    }
+  },
+  "vram_after_coding_mb": 90154
+}

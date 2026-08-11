@@ -1,0 +1,45 @@
+{
+  "model": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, reasoning off)",
+  "key": "deepseek-v4-flash-antirez-imatrix-0731-no-think",
+  "path": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+  "ctx": 262144,
+  "vram_mb": 85113,
+  "load_seconds": 9.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.0808,
+      "decode_tps": 78.47,
+      "n_tokens": 256,
+      "total_s": 3.343
+    },
+    {
+      "ttft_s": 0.0789,
+      "decode_tps": 78.61,
+      "n_tokens": 256,
+      "total_s": 3.335
+    },
+    {
+      "ttft_s": 0.0786,
+      "decode_tps": 78.52,
+      "n_tokens": 256,
+      "total_s": 3.339
+    },
+    {
+      "ttft_s": 0.0783,
+      "decode_tps": 78.51,
+      "n_tokens": 256,
+      "total_s": 3.339
+    },
+    {
+      "ttft_s": 0.0794,
+      "decode_tps": 78.36,
+      "n_tokens": 256,
+      "total_s": 3.346
+    }
+  ],
+  "ttft_mean": 0.0792,
+  "ttft_median": 0.0789,
+  "decode_mean": 78.49,
+  "decode_median": 78.51
+}

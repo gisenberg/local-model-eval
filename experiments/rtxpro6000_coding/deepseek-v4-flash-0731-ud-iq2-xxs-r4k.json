@@ -1,0 +1,72 @@
+{
+  "model": "DeepSeek-V4-Flash-0731 UD-IQ2_XXS (Unsloth, reasoning budget 4096)",
+  "key": "deepseek-v4-flash-0731-ud-iq2-xxs-r4k",
+  "ctx": 32768,
+  "vram_mb": 88071,
+  "backend": "cuda",
+  "total_score": "14/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp4xyedekm\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 3193,
+      "expected": 5,
+      "raw_passed": 5,
+      "scored_passed": 5,
+      "test_count_matches_expected": true,
+      "elapsed_s": 35.55
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpugd61pgx\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 5949,
+      "expected": 5,
+      "raw_passed": 5,
+      "scored_passed": 5,
+      "test_count_matches_expected": true,
+      "elapsed_s": 38.18
+    },
+    "astar_pathfinding": {
+      "passed": 4,
+      "failed": 2,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "======\n__________________________ test_path_around_obstacles __________________________\n\n    def test_path_around_obstacles():\n        \"\"\"Path must go around a wall.\"\"\"\n        grid = [\n            [1, 1, 1, 1],\n            [1, 0, 0, 1],\n            [1, 1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        start = (0, 0)\n        end = (0, 3)\n        path = astar.find_path(start, end)\n        assert path is not None\n        # Path should not include wall cells (1,1) or (1,2)\n        for r, c in path:\n            assert grid[r][c] != 0\n        # Optimal cost: must go down and around, e.g., (0,0)->(1,0)->(2,0)->(2,1)->(2,2)->(2,3)->(1,3)->(0,3)\n        # That's 7 steps, cost = 7 (all 1s)\n        total_cost = sum(grid[r][c] for r, c in path[1:])\n>       assert total_cost == 7\nE       assert 3 == 7\n\ntest_astar.py:46: AssertionError\n______________________ test_no_path_exists_fully_blocked _______________________\n\n    def test_no_path_exists_fully_blocked():\n        \"\"\"No path when start is enclosed by walls.\"\"\"\n        grid = [\n            [1, 1, 1],\n            [1, 0, 1],\n            [1, 1, 1]\n        ]\n        astar = AStarGrid(grid)\n        start = (0, 0)\n        end = (2, 2)\n        # The wall at (1,1) blocks all paths? Actually there is a path around: (0,0)->(0,1)->(0,2)->(1,2)->(2,2)\n        # So let's make it fully blocked:\n        grid = [\n            [1, 1, 1],\n            [1, 0, 1],\n            [1, 0, 1]\n        ]\n        astar = AStarGrid(grid)\n        start = (0, 0)\n        end = (2, 2)\n        path = astar.find_path(start, end)\n>       assert path is None\nE       assert [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)] is None\n\ntest_astar.py:94: AssertionError\n=========================== short test summary info ============================\nFAILED test_astar.py::test_path_around_obstacles - assert 3 == 7\nFAILED test_astar.py::test_no_path_exists_fully_blocked - assert [(0, 0), (0,...\n========================= 2 failed, 4 passed in 0.01s ==========================\n",
+      "n_code_blocks": 2,
+      "response_len": 7314,
+      "expected": 6,
+      "raw_passed": 4,
+      "scored_passed": 4,
+      "test_count_matches_expected": true,
+      "elapsed_s": 42.39
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "total": 0,
+      "status": "no_code",
+      "n_code_blocks": 0,
+      "response_len": 53196,
+      "expected": 6,
+      "raw_passed": 0,
+      "scored_passed": 0,
+      "test_count_matches_expected": false,
+      "elapsed_s": 217.42
+    }
+  }
+}

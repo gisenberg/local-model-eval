@@ -1,0 +1,11 @@
+{
+  "generation_content_chars": 1231,
+  "generation_reasoning_chars": 3160,
+  "reasoning_history_accepted": true,
+  "preserved_follow_up_finish_reason": "stop",
+  "first_tool_calls": 1,
+  "first_tool_reasoning_chars": 0,
+  "tool_history_accepted": true,
+  "follow_up_finish_reason": "stop",
+  "follow_up_tool_calls": 0
+}

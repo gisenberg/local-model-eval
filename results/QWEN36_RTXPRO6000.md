@@ -6,7 +6,7 @@ This doc collects the Qwen3.6-family experiments run on the RTX Pro 6000 Blackwe
 2. [**Opus-Reasoning-Distilled Qwen3.6-35B-A3B on the coding bench**](#opus-reasoning-distilled-qwen36-35b-a3b--coding-bench-regression) — fine-tune **regresses** from stock's 21/22 to 10/22 on the 4-benchmark suite, independent of `-rea on/off`. Useful for agentic bug-fixing (separately measured on SWE-bench Lite at +3.7 pp vs stock) but lost on from-scratch code generation.
 3. [**NVFP4 vs FP8 vs BF16 on Qwen3.6-27B dense**](#precision-comparison-qwen36-27b-dense-nvfp4-vs-fp8-vs-bf16) — Unsloth's July 2026 dynamic NVFP4 release changes the baseline result: **113.2 tok/s with MTP-2**, 2.45× the non-speculative ModelOpt NVFP4 and 2.41× non-speculative vendor FP8, while retaining a 21/22 best-of-3 coding score. Prior hand-tuned NVFP4+MTP and FP8+DFlash configs remain faster.
 4. [**Spec-decode method × k-sweep on Qwen3.6-27B FP8**](#spec-decode-method--k-sweep-qwen36-27b-fp8) — 7 configs measured on the same 4-bench harness. **dflash-k15 stays the production winner** at 197.5 tok/s, 22/22. Native MTP-1 (built into the FP8 weights, never deployed before) is a clean drafter-free fallback at 22/22 + 67.5 tok/s. FP8 KV cache is a net loss (uncalibrated scaling) and is incompatible with DFlash at the framework level.
-5. [**Qwopus 3.6-27B v2 (dense Opus-distill) — coding bench acceptance run**](#qwopus-36-27b-v2-dense-opus-distill--coding-bench-acceptance-run) — new daily driver lands **22/22 best-of-3** (matches stock + FP8 DFlash), but **avg 16.4/22** — runs at temp 1.0 to dodge the card-documented `<think>`-loop failure mode, and even then 2/12 runs ran out the 15K token budget mid-output. Throughput **~48 tok/s** (matches the llama.cpp Q8_0 fallback). A different Opus-distill outcome than the 35B-A3B fine-tune in section 2 — quality ceiling holds, but variance is real.
+5. [**Qwopus 3.6-27B v2 (dense Opus-distill) — coding bench acceptance run**](#qwopus-36-27b-v2-dense-opus-distill--coding-bench-acceptance-run) — the May 2026 daily driver landed **22/22 best-of-3**, but **avg 16.4/22** and ~48 tok/s; retained as a rollback after the July NVFP4 promotion.
 
 For Qwen3.6's SWE-bench Lite numbers (including the dense 27B FP8 run), see [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md).
 
@@ -221,7 +221,7 @@ A small pre-benchmark smoke test (`is_palindrome(s: str) -> bool` with a 200-cha
 
 ## Opus-distill recommendation
 
-**Don't swap this in for stock Qwen3.6 for from-scratch coding.** The primary daily-driver pick (`rtxpro6000/qwen36-35b-a3b-coder` with `-rea on`) stays at 21/22; this fine-tune drops to 10/22 with no lever that recovers the gap.
+**Don't swap this in for stock Qwen3.6 for from-scratch coding.** The then-primary stock pick (`rtxpro6000/qwen36-35b-a3b-coder` with `-rea on`) stayed at 21/22; this fine-tune dropped to 10/22 with no lever that recovered the gap.
 
 **But for agentic bug-fixing** (codebase navigation, SWE-bench-style tasks): Opus-distill is +3.7 pp over stock on SWE-bench Lite (156/300 vs 145/300). SWE-bench's harness provides its own hidden tests, so the "model writes broken tests" regression axis never comes up. Details in [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md#qwen36-35b-a3b-opus-distilled-q8_0-llama-swap--520).
 
@@ -507,7 +507,7 @@ The DFlash drafter is BF16. Its KV pages and the FP8 target's KV pages have diff
 
 # Qwopus 3.6-27B v2 (dense Opus-distill) — coding bench acceptance run
 
-**TL;DR — `Jackrong/Qwopus3.6-27B-v2-GGUF` Q8_0 is the new daily-driver pick on this host. Lands 22/22 best-of-3 on the 4-benchmark coding suite (matches stock Qwen3.6-27B FP8+DFlash) at ~48 tok/s, but avg is only 16.4/22 because 2/12 runs ran out the 15K-token max trying to escape a `<think>`-block loop — the failure mode the model card explicitly warns about for low-temperature sampling. We run this model at `temp=1.0` per the card and still see the cliff. A* and string_processor are rock-solid; expression_evaluator and LRU cache are where the variance lives.**
+**Historical note — `Jackrong/Qwopus3.6-27B-v2-GGUF` Q8_0 was promoted on May 22, 2026, then superseded by Unsloth dynamic NVFP4 + MTP-2 on July 10.** Qwopus lands 22/22 best-of-3 at ~48 tok/s, but averages only 16.4/22 because 2/12 runs exhaust the 15K-token budget inside a `<think>` loop. The new `qwen36-27b-nvfp4` daily driver resolves 59.3% of SWE-bench Lite at 113.2 tok/s single-generation and retains Qwopus as a rollback alias.
 
 ## Qwopus-coding what we tested
 
@@ -583,11 +583,11 @@ The other 8 runs all scored at or near max (4 perfect runs at 5/5 or 6/6, plus t
 
 ## Qwopus-coding recommendation
 
-**Keep Qwopus as the daily driver alias** (`opencode.json: "model": "rtxpro6000/qwopus36-27b-v2-q8"`). The ceiling holds, the throughput matches the llama.cpp Q8 baseline, and the variance hits are diagnosable (length cap on hard benchmarks with deep reasoning). For real opencode workflows the model gets to retry on a bad emit, so a 75% per-run hit rate translates to a much higher session-level success rate.
+**Superseded recommendation:** keep Qwopus available as a rollback alias, but route the default to `rtxpro6000/qwen36-27b-nvfp4`. The dynamic-NVFP4 deployment is +2.0 pp over vendor FP8 on SWE-bench Lite, more than twice Qwopus's single-generation speed, and supports the full native 262K context instead of the Coder-MTP fine-tune's 32K target.
 
-**Route speed-critical work to `qwen36-27b` instead.** The vLLM FP8+DFlash entry is still wired up and runs at 197 tok/s — 4× the daily driver. Coding bench numbers are equivalent at best-of-3; the difference is whether the latency budget matters.
+**Route speed-critical single-stream work to `qwen36-27b` instead.** The vLLM FP8+DFlash rollback remains wired up at 197 tok/s, about 1.7× the NVFP4 daily driver's single-generation rate. The NVFP4 entry wins the measured SWE-bench quality and multi-worker elapsed-time comparison.
 
-**Don't try to retrofit DFlash to Qwopus.** Our drafter (`qwen36-27b-dflash-drafter-v2026-04-27`) was trained against stock Qwen3.6. Qwopus is a separate distillation — same tokenizer, drifted output distribution — so even llama.cpp's generic `--model-draft` would suffer reduced acceptance. The clean path to spec-decode on this daily driver is a Qwopus-trained drafter, which doesn't exist yet.
+**Don't try to retrofit DFlash to the Qwopus rollback.** Our drafter (`qwen36-27b-dflash-drafter-v2026-04-27`) was trained against stock Qwen3.6. Qwopus is a separate distillation — same tokenizer, drifted output distribution — so even llama.cpp's generic `--model-draft` would suffer reduced acceptance.
 
 ## Qwopus-coding reproducing
 
@@ -615,6 +615,6 @@ Per-run output (`<bench>_run<N>_test.py`) + JSON roll-up (`results.json`) lands 
 
 # See also
 
-- [MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md) — tier list for this platform; Qwen3.6-35B-A3B is the daily-driver pick.
-- [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) — four-model SWE-bench Lite comparison including Qwen3.6-27B-FP8 (57.3%), Opus-distilled Qwen3.6-35B-A3B (52.0%), stock Qwen3.6-35B-A3B (48.3%).
+- [MODEL_RANKINGS_RTXPRO6000.md](MODEL_RANKINGS_RTXPRO6000.md) — tier list for this platform; Unsloth Qwen3.6-27B NVFP4 + MTP-2 is the daily-driver pick.
+- [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md) — five-model SWE-bench Lite comparison led by Unsloth Qwen3.6-27B NVFP4 + MTP-2 at 59.3%.
 - [CONTEXT_CAPACITY.md](CONTEXT_CAPACITY.md) — cross-platform KV cache capacity analysis; Qwen3.6-35B-A3B's hybrid architecture is the cleanest "KV cache is a rounding error" case in the lineup.

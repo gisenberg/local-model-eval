@@ -1,0 +1,175 @@
+{
+  "base_url": "http://127.0.0.1:8091/v1",
+  "model": "deepseek-v4-flash-antirez-imatrix-0731",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_suppressed": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK"
+          }
+        }
+      ],
+      "created": 1785554412,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 15,
+        "total_tokens": 19,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-1Gq7tyHzXjBUDuOj8JhvKzYA9eOEvjBE",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 15,
+        "prompt_ms": 60.729,
+        "prompt_per_token_ms": 4.0485999999999995,
+        "prompt_per_second": 246.99896260435705,
+        "predicted_n": 4,
+        "predicted_ms": 68.763,
+        "predicted_per_token_ms": 17.19075,
+        "predicted_per_second": 58.17081860884487
+      },
+      "_client_elapsed_s": 0.1366
+    },
+    "reasoning": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "We need to compute 17 \u00d7 24.\n\n**First way (direct multiplication):**  \n17 \u00d7 24 = 17 \u00d7 (20 + 4) = (17 \u00d7 20) + (17 \u00d7 4) = 340 + 68 = 408.\n\n**Second way (verification using another method):**  \n24 \u00d7 17 = 24 \u00d7 (10 + 7) = 240 + 168 = 408.  \nBoth match.\n\n**Final answer:** 408."
+          }
+        }
+      ],
+      "created": 1785554413,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 105,
+        "prompt_tokens": 27,
+        "total_tokens": 132,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-ns0D3JrOgIfNFjdBDb9ojknEGHzJmWGO",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 27,
+        "prompt_ms": 91.589,
+        "prompt_per_token_ms": 3.392185185185185,
+        "prompt_per_second": 294.79522650099904,
+        "predicted_n": 105,
+        "predicted_ms": 1389.044,
+        "predicted_per_token_ms": 13.228990476190477,
+        "predicted_per_second": 75.59155793480984
+      },
+      "_client_elapsed_s": 1.487
+    },
+    "tool_call": {
+      "choices": [
+        {
+          "finish_reason": "tool_calls",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n",
+            "tool_calls": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\":\"alpha-7\"}"
+                },
+                "id": "U0niBzpjykxkprFTGuxxry1FbgLQKVo9"
+              }
+            ]
+          }
+        }
+      ],
+      "created": 1785554415,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 48,
+        "prompt_tokens": 313,
+        "total_tokens": 361,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-xO47ZrMenh7XT6sXg67tNDCIkVwvIFAT",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 313,
+        "prompt_ms": 591.362,
+        "prompt_per_token_ms": 1.8893354632587858,
+        "prompt_per_second": 529.2866298477076,
+        "predicted_n": 48,
+        "predicted_ms": 633.534,
+        "predicted_per_token_ms": 13.198625,
+        "predicted_per_second": 75.76546799382513
+      },
+      "_client_elapsed_s": 1.2352
+    },
+    "tool_followup": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The record `alpha-7` has a value of **42**."
+          }
+        }
+      ],
+      "created": 1785554416,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 15,
+        "prompt_tokens": 383,
+        "total_tokens": 398,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-DNQtdnZ8ZdksS5nX9hZWsxOCSSM0n04u",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 383,
+        "prompt_ms": 740.341,
+        "prompt_per_token_ms": 1.933005221932115,
+        "prompt_per_second": 517.3291766902008,
+        "predicted_n": 15,
+        "predicted_ms": 230.468,
+        "predicted_per_token_ms": 15.364533333333332,
+        "predicted_per_second": 65.08495756460768
+      },
+      "_client_elapsed_s": 0.9767
+    }
+  }
+}

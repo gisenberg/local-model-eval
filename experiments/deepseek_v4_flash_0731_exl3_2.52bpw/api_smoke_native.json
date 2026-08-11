@@ -1,0 +1,123 @@
+{
+  "base_url": "http://127.0.0.1:8091/v1",
+  "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": false
+  },
+  "passed": 6,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "cmpl-fee5fdfc642044059b059dea36a8d1c4",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "reasoning_content": "We need to respond with exactly \"MIMO_OK\" and no other text. The instruction is clear. So I will output that.",
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292104,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.4033
+    },
+    "reasoning": {
+      "id": "cmpl-7647c689a71c43f0af202be1fea06522",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "408",
+            "reasoning_content": "We need answer compute 17*24. Need think briefly, verify second way, concise final. Need comply. We can compute: 17*24 = 17*(20+4)=340+68=408. Verify: 24*17 = 24*(10+7)=240+168=408. Final answer concise.",
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292104,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.8246
+    },
+    "tool_call": {
+      "id": "cmpl-beeed472d6f243dfb7f8b8899354aeae",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "tool_calls",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "reasoning_content": "We need to call lookup_record with record_id alpha-7. The user says do not guess the record value and do not answer directly. So we just call the tool.",
+            "tool_calls": [
+              {
+                "id": "call_0bf0b0fda504435b83e1576f",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                },
+                "type": "function",
+                "index": 0
+              }
+            ],
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292106,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 1.1934
+    },
+    "tool_followup": {
+      "id": "cmpl-a3ee692b83974ef5958acdec09e51c09",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "I have looked up the record with ID `alpha-7`. The record has been retrieved successfully.",
+            "reasoning_content": "The tool returned the record. The user said do not guess the record value and do not answer directly. So I should not directly state the value. I'll just acknowledge the lookup was performed.",
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292106,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.801
+    }
+  }
+}

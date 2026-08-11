@@ -33,7 +33,7 @@ import requests
 
 DEFAULT_TEMP = 0.3
 RUNS = 3
-# Qwen3.6 is a thinking model — reasoning traces easily exceed 8192. Matches
+# Qwen3.6 is a thinking model - reasoning traces easily exceed 8192. Matches
 # rtxpro6000_coding_bench.py's budget for Qwen3.6-35B-A3B and leaves ~1.4K for
 # the prompt within the 16384 max-model-len window.
 MAX_TOKENS = 15000
@@ -41,7 +41,7 @@ MAX_TOKENS = 15000
 BENCHMARKS = {
     "expression_evaluator": {
         "name": "Expression Evaluator", "expected": 5,
-        "prompt": "Build a mathematical expression evaluator in Python. Requirements:\n1. Support +, -, *, / with correct operator precedence\n2. Support parentheses for grouping\n3. Support unary minus (e.g., '-3', '-(2+1)')\n4. Support floating point numbers (e.g., '3.14')\n5. Raise ValueError for: mismatched parentheses, division by zero, invalid tokens, empty expressions\n6. Implement as class ExpressionEvaluator with evaluate(expr: str) -> float\n7. Use recursive descent parser — no eval() or ast.literal_eval()\n8. Include type hints and docstrings\n9. Write 5 pytest tests",
+        "prompt": "Build a mathematical expression evaluator in Python. Requirements:\n1. Support +, -, *, / with correct operator precedence\n2. Support parentheses for grouping\n3. Support unary minus (e.g., '-3', '-(2+1)')\n4. Support floating point numbers (e.g., '3.14')\n5. Raise ValueError for: mismatched parentheses, division by zero, invalid tokens, empty expressions\n6. Implement as class ExpressionEvaluator with evaluate(expr: str) -> float\n7. Use recursive descent parser - no eval() or ast.literal_eval()\n8. Include type hints and docstrings\n9. Write 5 pytest tests",
     },
     "astar": {
         "name": "A* Pathfinding", "expected": 6,
@@ -58,14 +58,14 @@ BENCHMARKS = {
 }
 
 
-def run_inference(prompt, port, model, temp):
+def run_inference(prompt, port, model, temp, max_tokens):
     t0 = time.perf_counter()
     resp = requests.post(
         f"http://localhost:{port}/v1/chat/completions",
         json={
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": MAX_TOKENS,
+            "max_tokens": max_tokens,
             "temperature": temp,
         },
         timeout=600,
@@ -81,6 +81,7 @@ def run_inference(prompt, port, model, temp):
         # budget before emitting final content. Keep the scorer string-safe so
         # that run is recorded as zero code blocks instead of crashing.
         "content": msg.get("content") or "",
+        "reasoning": msg.get("reasoning") or msg.get("reasoning_content") or "",
         "tokens": comp,
         "elapsed_s": round(elapsed, 2),
         "tok_per_sec": round(comp / elapsed if elapsed > 0 else 0, 1),
@@ -89,7 +90,7 @@ def run_inference(prompt, port, model, temp):
 
 
 def extract_and_test(content, test_file):
-    # Qwen3.6 is a reasoning model — strip <think>...</think> before extracting code blocks,
+    # Qwen3.6 is a reasoning model - strip <think>...</think> before extracting code blocks,
     # otherwise we collect scratchwork snippets and glue them into invalid Python.
     if "</think>" in content:
         content = content.split("</think>", 1)[1]
@@ -123,19 +124,27 @@ def main():
     ap.add_argument("--output-dir", required=True, help="e.g. experiments/nvfp4_qwen36_27b/nvfp4")
     ap.add_argument("--temp", type=float, default=DEFAULT_TEMP,
                     help=f"sampling temperature (default {DEFAULT_TEMP}; Qwopus card recommends 1.0 for thinking-on)")
+    ap.add_argument("--runs", type=int, default=RUNS)
+    ap.add_argument("--max-tokens", type=int, default=MAX_TOKENS)
     args = ap.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
     print(f"=== Qwen3.6-27B coding bench ({args.served_name}) ===")
-    print(f"Temp={args.temp}, {RUNS} runs, port={args.port}\n")
+    print(f"Temp={args.temp}, {args.runs} runs, port={args.port}\n")
 
     all_results = {}
     for bk, bench in BENCHMARKS.items():
         runs = []
-        for run in range(1, RUNS + 1):
-            print(f"  [{bench['name']}] Run {run}/{RUNS}...", end="", flush=True)
+        for run in range(1, args.runs + 1):
+            print(f"  [{bench['name']}] Run {run}/{args.runs}...", end="", flush=True)
             try:
-                result = run_inference(bench["prompt"], args.port, args.served_name, args.temp)
+                result = run_inference(
+                    bench["prompt"],
+                    args.port,
+                    args.served_name,
+                    args.temp,
+                    args.max_tokens,
+                )
                 tf = f"{args.output_dir}/{bk}_run{run}_test.py"
                 tr = extract_and_test(result["content"], tf)
                 print(f" {result['tok_per_sec']:.0f} tok/s | {tr['passed']}/{bench['expected']} | {result['tokens']} tok")
@@ -157,11 +166,17 @@ def main():
     total_avg = sum(min(v.get("avg", 0), v.get("expected", 0)) for v in all_results.values())
     total_exp = sum(v.get("expected", 0) for v in all_results.values())
     print(
-        f"\nTOTAL: Best-of-{RUNS} = {total_best}/{total_exp} "
+        f"\nTOTAL: Best-of-{args.runs} = {total_best}/{total_exp} "
         f"({total_best/total_exp*100:.0f}%), Avg = {total_avg:.1f}/{total_exp}"
     )
 
-    all_results["_meta"] = {"served_name": args.served_name, "port": args.port, "temp": args.temp, "runs": RUNS}
+    all_results["_meta"] = {
+        "served_name": args.served_name,
+        "port": args.port,
+        "temp": args.temp,
+        "runs": args.runs,
+        "max_tokens": args.max_tokens,
+    }
     with open(f"{args.output_dir}/results.json", "w") as f:
         json.dump(all_results, f, indent=2)
     print(f"\nSaved to {args.output_dir}/results.json")

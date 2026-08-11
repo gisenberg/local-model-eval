@@ -1,0 +1,53 @@
+{
+  "base_url": "http://127.0.0.1:8091",
+  "model": "local",
+  "target_raw_tokens": 250000,
+  "raw_tokens": 249981,
+  "prompt_tokens": 249985,
+  "completion_tokens": 3,
+  "filler_repetitions": 11361,
+  "needle_depth": 0.75,
+  "expected": "739184",
+  "content": "739184",
+  "reasoning_content": null,
+  "elapsed_seconds": 630.269,
+  "passed": true,
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "739184"
+        }
+      }
+    ],
+    "created": 1785704301,
+    "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+    "system_fingerprint": "b10231-bb4e0e1b3",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 3,
+      "prompt_tokens": 249985,
+      "total_tokens": 249988,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "id": "chatcmpl-k6lnrBkrrRap6XpW3gwGu4Jr6rd7dsp9",
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 249985,
+      "prompt_ms": 629902.272,
+      "prompt_per_token_ms": 2.519760273616417,
+      "prompt_per_second": 396.8631502253099,
+      "predicted_n": 3,
+      "predicted_ms": 52.321,
+      "predicted_per_token_ms": 17.44033333333333,
+      "predicted_per_second": 57.33835362473959,
+      "draft_n": 5,
+      "draft_n_accepted": 2
+    }
+  }
+}

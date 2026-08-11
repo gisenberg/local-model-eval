@@ -16,7 +16,6 @@ Usage:
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -30,10 +29,6 @@ MODELS_ROOT = "/home/gisenberg/models"
 PORT = int(os.environ.get("LLAMA_PORT", "8080"))
 OUTPUT_ROOT = REPO / "experiments/rtxpro6000_coding"
 PYTEST = "/home/gisenberg/.micromamba/envs/cuda/bin/pytest"
-RTK = shutil.which("rtk")
-if RTK is None:
-    raise RuntimeError("rtk is required by the active agent profile")
-
 # Which benchmarks to run, and the expected test count
 BENCHMARKS = [
     ("string_processor", 5, "string_processor"),
@@ -176,7 +171,7 @@ def run_pytest(impl: str, tests: str, module_name: str) -> dict:
             (tdp / f"test_{module_name}.py").write_text(tests)
         try:
             res = subprocess.run(
-                [RTK, "proxy", PYTEST, "-v", f"test_{module_name}.py"],
+                [PYTEST, "-v", f"test_{module_name}.py"],
                 cwd=td, capture_output=True, text=True, timeout=90,
             )
         except subprocess.TimeoutExpired:
@@ -325,7 +320,8 @@ def main():
     if len(sys.argv) > 2 and sys.argv[2] == "--rescore":
         summary = rescore_saved(key)
     else:
-        summary = benchmark_model(key)
+        ctx = int(os.environ.get("CODING_CTX", "32768"))
+        summary = benchmark_model(key, ctx=ctx)
     out_path = OUTPUT_ROOT / f"{key}.json"
     out_path.write_text(json.dumps(summary, indent=2))
     print(f"Saved: {out_path}")

@@ -1,0 +1,72 @@
+{
+  "model": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez)",
+  "key": "deepseek-v4-flash-antirez-imatrix-0731",
+  "ctx": 32768,
+  "vram_mb": 83491,
+  "backend": "cuda",
+  "total_score": "16/22",
+  "benchmarks": {
+    "string_processor": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": false,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpwslgfjp5\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 2,
+      "response_len": 4619,
+      "expected": 5,
+      "raw_passed": 5,
+      "scored_passed": 5,
+      "test_count_matches_expected": true,
+      "elapsed_s": 37.76
+    },
+    "expression_evaluator": {
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "total": 5,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpv1q9rrcz\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6802,
+      "expected": 5,
+      "raw_passed": 5,
+      "scored_passed": 5,
+      "test_count_matches_expected": true,
+      "elapsed_s": 59.08
+    },
+    "astar_pathfinding": {
+      "passed": 6,
+      "failed": 0,
+      "errors": 0,
+      "total": 6,
+      "status": "ok",
+      "single_file": true,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp05v36t1u\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost PASSED              [ 50%]\ntest_astar.py::test_no_path_fully_blocked PASSED                         [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+      "n_code_blocks": 1,
+      "response_len": 6969,
+      "expected": 6,
+      "raw_passed": 6,
+      "scored_passed": 6,
+      "test_count_matches_expected": true,
+      "elapsed_s": 45.69
+    },
+    "lru_cache_ttl": {
+      "passed": 0,
+      "failed": 0,
+      "errors": 0,
+      "total": 0,
+      "status": "no_code",
+      "n_code_blocks": 0,
+      "response_len": 0,
+      "expected": 6,
+      "raw_passed": 0,
+      "scored_passed": 0,
+      "test_count_matches_expected": false,
+      "elapsed_s": 223.98
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "variant": "fa_off_f16kv_ub512",
+  "base_url": "http://127.0.0.1:8092",
+  "model": "mimo-v2.5-iq2-xxs",
+  "target_prefix_tokens": 100000,
+  "requests_requested": 10,
+  "max_tokens": 4096,
+  "started_unix": 1785478494.0505712,
+  "results": [
+    {
+      "request_index": 1,
+      "ok": false,
+      "error": "stream ended without a complete response",
+      "elapsed_seconds": 312.841,
+      "first_chunk_seconds": null,
+      "chunks": 0,
+      "finish_reason": null,
+      "content_characters": 0,
+      "reasoning_characters": 0,
+      "content_tail": "",
+      "reasoning_tail": "",
+      "usage": {}
+    }
+  ],
+  "prefix_tokens": 99994,
+  "filler_repetitions": 2941,
+  "completed_unix": 1785478808.492814,
+  "passed": false
+}

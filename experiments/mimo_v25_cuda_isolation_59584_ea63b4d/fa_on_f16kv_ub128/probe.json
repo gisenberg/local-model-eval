@@ -1,0 +1,225 @@
+{
+  "variant": "fa_on_f16kv_ub128",
+  "base_url": "http://127.0.0.1:8092",
+  "model": "mimo-v2.5-iq2-xxs",
+  "target_prefix_tokens": 100000,
+  "requests_requested": 10,
+  "max_tokens": 4096,
+  "started_unix": 1785480695.2405849,
+  "results": [
+    {
+      "request_index": 1,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 317.624,
+      "first_chunk_seconds": 270.539,
+      "chunks": 3728,
+      "finish_reason": "stop",
+      "content_characters": 12480,
+      "reasoning_characters": 612,
+      "content_tail": " and unchanged payload.\n- **Proof Obligations**: Integer identifier validation, path normalization, unchanged payload, determinism, and purity.\n- **Formal Verification**: Theorems 1-5, which prove the key properties of the state machine.\n\nThe analysis demonstrates that the module alpha is a deterministic, pure state machine that validates an integer identifier, normalizes the associated path, and returns the unchanged payload. The implementation is deterministic and has no external side effects.",
+      "reasoning_tail": " on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nI need to write a comprehensive formal analysis covering definitions, invariants, transition cases, and proof obligations. Let me structure this as a formal verification document.\n\nLet me create a thorough formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 3729,
+        "prompt_tokens": 100086,
+        "total_tokens": 103815,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "request_index": 2,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 51.991,
+      "first_chunk_seconds": 0.655,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 13845,
+      "reasoning_characters": 612,
+      "content_tail": "0, v)$$\n\n### 11.2 Case 2: Valid Integer Identifier and Unnormalized Path\n\n$$\\delta(s_0, (i, p)) = (s_0, v)$$\n\n### 11.3 Case 3: Invalid Integer Identifier\n\n$$\\delta(s_0, (i, p)) = (s_0, v)$$\n\n### 11.4 Case 4: Empty Path\n\n$$\\delta(s_0, (i, \\epsilon)) = (s_0, v)$$\n\n### 11.5 Case 5: Non-Empty Path\n\n$$\\delta(s_0, (i, p)) = (s_0, v)$$\n\n---\n\n## 12. Appendix: Invariants\n\n### 12.1 Determinism Invariant\n\n$$\\forall s \\in \\mathcal{S}, \\forall (i, p) \\in \\mathcal{I}, \\exists! (s', v) \\in \\mathcal{S} \\times \\",
+      "reasoning_tail": " on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nI need to write a comprehensive formal analysis covering definitions, invariants, transition cases, and proof obligations. Let me structure this as a formal verification document.\n\nLet me create a thorough formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 3,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 52.197,
+      "first_chunk_seconds": 0.671,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 11930,
+      "reasoning_characters": 612,
+      "content_tail": "(i.\\text{path}) = i.\\text{path}$, and $i.\\text{payload} = i.\\text{payload}$, we have:\n\n$$\\delta(s, i) = \\langle i.\\text{id}, i.\\text{path}, i.\\text{payload} \\rangle$$\n\n4. Therefore, $\\delta(s, i) = s$.\n\n**QED**.\n\n### 5.7 Proof Obligation 7: Output Consistency\n\n**Statement**: For all inputs $i \\in \\mathcal{I}$:\n\n$$\\text{output} = \\langle \\text{validate}(i.\\text{id}), \\text{normalize}(i.\\text{path}), i.\\text{payload} \\rangle$$\n\n**Proof**:\n\n1. Assume $i \\in \\mathcal{I}$.\n2. By definition of $\\delta",
+      "reasoning_tail": " on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nI need to write a comprehensive formal analysis covering definitions, invariants, transition cases, and proof obligations. Let me structure this as a formal verification document.\n\nLet me create a thorough formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 4,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 35.546,
+      "first_chunk_seconds": 0.644,
+      "chunks": 2779,
+      "finish_reason": "stop",
+      "content_characters": 8924,
+      "reasoning_characters": 551,
+      "content_tail": "e effects.\n\n---\n\n## 6. Conclusion\n\nThe formal analysis of the deterministic state machine for module alpha has been completed. The analysis includes definitions of the state space, input space, output space, transition function, output function, determinism, and no external side effects. The invariants have been established, and the transition cases have been enumerated. The proof obligations have been verified, confirming that the state machine is deterministic and has no external side effects.",
+      "reasoning_tail": "tained formal analysis of a deterministic state machine based on the repository audit record provided. The audit record describes a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nI need to write a formal analysis that includes:\n- Definitions\n- Invariants\n- Transition cases\n- Proof obligations\n\nLet me create a comprehensive formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 2779,
+        "prompt_tokens": 100086,
+        "total_tokens": 102865,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 5,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 52.497,
+      "first_chunk_seconds": 0.726,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 13722,
+      "reasoning_characters": 435,
+      "content_tail": "hcal{I}: s.payload = i.payload$$\n\n**Proof:**\nThe module alpha returns the unchanged payload $payload$ after processing the input. Therefore, the payload $payload$ is always unchanged.\n\n### 7.4 Verification of Invariant 4: Determinism\n\nThe module alpha is deterministic if and only if for all $s \\in \\mathcal{S}$ and $i \\in \\mathcal{I}$, there exists a unique $s' \\in \\mathcal{S}$ and $o \\in \\mathcal{O}$ such that:\n\n$$\\delta(s, i) = s'$$\n$$\\lambda(s, i) = o$$\n\n**Formal Statement:**\n$$\\forall s \\in \\",
+      "reasoning_tail": "The user is asking me to write a detailed, self-contained formal analysis of a deterministic state machine based on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nLet me write a comprehensive formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 6,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 52.739,
+      "first_chunk_seconds": 0.69,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 13296,
+      "reasoning_characters": 435,
+      "content_tail": "ta(s, i_2), i_1)$$\n\n**Proof:**\n\n1. Let $s \\in \\mathcal{S}$ and $i_1, i_2 \\in \\mathcal{I}$ be arbitrary.\n2. The transition function $\\delta$ is defined as $\\delta(s, i) = (id_i, \\text{normalize}(path_i), payload_i)$.\n3. Applying $\\delta$ to $i_1$ and then $i_2$: $\\delta(\\delta(s, i_1), i_2) = \\delta((id_{i_1}, \\text{normalize}(path_{i_1}), payload_{i_1}), i_2) = (id_{i_2}, \\text{normalize}(path_{i_2}), payload_{i_2})$.\n4. Applying $\\delta$ to $i_2$ and then $i_1$: $\\delta(\\delta(s, i_2), i_1) = \\",
+      "reasoning_tail": "The user is asking me to write a detailed, self-contained formal analysis of a deterministic state machine based on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nLet me write a comprehensive formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 7,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 47.998,
+      "first_chunk_seconds": 0.641,
+      "chunks": 3735,
+      "finish_reason": "stop",
+      "content_characters": 14573,
+      "reasoning_characters": 419,
+      "content_tail": "ination of the deterministic state machine described by the repository audit records for module alpha. The analysis includes definitions, invariants, transition cases, and proof obligations, as well as additional analysis and formal verification. The module is deterministic and has no external side effects, and it validates an integer identifier, normalizes the associated path, and returns the unchanged payload. The analysis is self-contained and does not require any external tools or resources.",
+      "reasoning_tail": "The user is asking me to write a detailed formal analysis of a deterministic state machine based on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nLet me write a comprehensive formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 3735,
+        "prompt_tokens": 100086,
+        "total_tokens": 103821,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 8,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 52.342,
+      "first_chunk_seconds": 0.65,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 13054,
+      "reasoning_characters": 419,
+      "content_tail": "ad_{out}$.\n\n**Verification:**\n\n1. Let $s \\in \\mathcal{S}$ and $i \\in \\mathcal{I}$ be arbitrary.\n2. By definition of $R$, $R(payload_{in}) = payload_{out}$.\n3. Therefore, the return function $R$ is applied to the input payload $payload_{in}$.\n4. Hence, the return function $R$ is applied to the input payload $payload_{in}$.\n\n---\n\n## 9. Conclusion\n\nThe state machine defined by module alpha is deterministic and has no external side effects. The validation function $V$ is applied to the input integer",
+      "reasoning_tail": "The user is asking me to write a detailed formal analysis of a deterministic state machine based on the repository audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nLet me write a comprehensive formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100086,
+        "total_tokens": 104182,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 9,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 45.947,
+      "first_chunk_seconds": 0.719,
+      "chunks": 3572,
+      "finish_reason": "stop",
+      "content_characters": 12679,
+      "reasoning_characters": 434,
+      "content_tail": "Conclusion\n\nThis formal analysis has provided a comprehensive examination of the deterministic state machine described by the repository audit record for module alpha. The analysis has expanded upon definitions, invariants, transition cases, and proof obligations in exhaustive detail. The state machine is deterministic, has no external side effects, and satisfies all invariants. The proof obligations have been verified, and the state machine has been classified as deterministic, total, and pure.",
+      "reasoning_tail": "The user is asking me to write a detailed, self-contained formal analysis of a deterministic state machine based on the repository audit record provided. The audit record describes a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nLet me write a comprehensive formal analysis of this state machine.",
+      "usage": {
+        "completion_tokens": 3572,
+        "prompt_tokens": 100086,
+        "total_tokens": 103658,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    },
+    {
+      "request_index": 10,
+      "ok": true,
+      "error": null,
+      "elapsed_seconds": 52.722,
+      "first_chunk_seconds": 0.803,
+      "chunks": 4097,
+      "finish_reason": "length",
+      "content_characters": 14687,
+      "reasoning_characters": 626,
+      "content_tail": "lization *)\nTheorem path_normalization : forall (s : State) (i : Input),\n  snd (fst (snd (delta s i))) = normalize i.path.\nProof.\n  intros s i.\n  reflexivity.\nQed.\n\n(* Identifier Validation *)\nTheorem identifier_validation : forall (s : State) (i : Input),\n  fst (snd (delta s i)) = validate i.id.\nProof.\n  intros s i.\n  reflexivity.\nQed.\n```\n\n---\n\n## 12. Formal Verification in Isabelle/HOL (Sketch)\n\n```isabelle\n(* Module Alpha: Deterministic State Machine *)\n\n(* State Space *)\ndatatype State = S0",
+      "reasoning_tail": "tory audit records provided. The audit records describe a module called \"alpha\" that:\n\n1. Validates an integer identifier\n2. Normalizes the associated path\n3. Returns the unchanged payload\n4. Is deterministic\n5. Has no external side effects\n\nI need to write a comprehensive formal analysis covering definitions, invariants, transition cases, and proof obligations. Let me structure this as a formal verification document.\n\nLet me create a thorough formal analysis of this deterministic state machine.",
+      "usage": {
+        "completion_tokens": 4096,
+        "prompt_tokens": 100087,
+        "total_tokens": 104183,
+        "prompt_tokens_details": {
+          "cached_tokens": 99953
+        }
+      }
+    }
+  ],
+  "prefix_tokens": 99994,
+  "filler_repetitions": 2941,
+  "completed_unix": 1785481458.4986672,
+  "passed": true
+}

@@ -8,16 +8,21 @@ Tested April 2026.
 
 > This is the first set of rankings for the Pro 6000 in this repo. We tested 8 model/quant combinations with a focus on **configurations that don't fit on a 5090** — BF16 of 31B dense, BF16 of 35B MoE, an 120B MoE (gpt-oss) that simply cannot load on 32 GB VRAM at any reasonable precision, and an 80B-class coder specialist at Q6_K.
 >
-> A 9th entry was added later: **Qwen3.6-27B (dense) at FP8 + DFlash speculative decoding**, served via vLLM nightly. This one *would* fit on a 5090, but it's the production agentic preset on this host — and it tops SWE-bench Lite over every other local model we measured, so it earned a spot.
-> A 10th entry adds **MiMo V2.5 UD-IQ2_XXS** with 250K retrieval and bounded-reasoning evidence.
+> A 9th entry added **Qwen3.6-27B FP8 + DFlash**.
+> A 10th, measured July 10, 2026, is now the production preset: **Unsloth Qwen3.6-27B dynamic NVFP4 + MTP-2** on vLLM 0.24.
+> It raises SWE-bench Lite from 57.3% to 59.3% and cuts the 300-instance agent phase from 18h20m to 6h25m52s.
+> An 11th entry adds **MiMo V2.5 UD-IQ2_XXS** with 250K retrieval and bounded-reasoning evidence.
+> A 12th entry adds **DeepSeek V4 Flash 0731 EXL3 2.04 bpw**, which fits a 256K allocation entirely in VRAM, reaches 22/22, and resolves 121/300 on the full SWE-bench Lite split.
 
 ## TL;DR
 
 - **gpt-oss-120b Q8_0 is the headline config.** 120B parameters, sparse MoE (4-of-128 experts/tok), **264 tok/s decode at Q8**, 21/22 on the coding suite, 66 GB VRAM. It's the fastest large model we've measured on any hardware, and it cannot load on the 5090 at all.
-- **Qwen3.6-27B FP8 + DFlash spec dec is the SWE-bench Lite winner — 57.3% resolved.** Beats Opus-distilled Qwen3.6-35B-A3B (52.0%), stock 35B-A3B (48.3%), and Gemma-4-31B-IT (23.0%) on the same 300-instance test split. Served via vLLM with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (k=15). Spec dec gives **~4× decode speedup** vs the same FP8 weights without DFlash (~200 tok/s mean during coding generation vs 47 tok/s) at no quality cost — verifier-checked spec dec is lossless by construction. This is the daily-driver agentic preset on this host. **2026-04-30 refresh:** rebuilt onto vLLM PR-40898 + drafter commit `09196886` (3 weight updates upstream since our prior pin), lifting coding-suite score from 21/22 → 22/22 at flat throughput.
+- **Unsloth Qwen3.6-27B dynamic NVFP4 + MTP-2 is the SWE-bench Lite winner — 59.3% resolved.** It beats the prior vendor-FP8 result by six cases (+2.0 pp) and completes the SWE-agent phase **2.85× faster**. Decode is 113.2 tok/s single-generation and 179.8 tok/s aggregate across four workers. This is the daily-driver agentic preset on this host; FP8+DFlash remains a rollback/speed A/B.
 - **Gemma 4 31B-IT is the quality king.** 22/22 on the coding suite at both BF16 and Q8_0. BF16 fits at full 262K on this card (82 GB VRAM) — the first card in our lineup where that's possible.
 - **MiMo V2.5 UD-IQ2_XXS reaches 22/22 with a 4K reasoning budget.** It runs a real 250K-token retrieval request on one card at 100 tok/s, but uses 92.6 GB and the unbounded-thinking default falls to 5/22.
   Its SWE-bench Lite canary resolves 3/5, exactly matching the four Qwen3.6 priors on the same cases, with one 75-call autosubmission and two recovered no-tool-call retries.
+- **DeepSeek V4 Flash 0731 EXL3 2.04 bpw is the best DeepSeek quant tested on this host.** It reaches 22/22 at 95.33 tok/s, resolves 121/300 (40.3%) on the full SWE-bench Lite split, and leaves about 22 GiB free during a successful 250K retrieval request.
+  The 2.52 bpw branch resolves only 2/5 and leaves about 6.5 GiB free at 250K, so the extra precision is not the better operational tradeoff.
 - **Qwen3.6-35B-A3B is the throughput king in the mid-tier.** 221 tok/s at Q8 (CUDA), though coding quality is noisy across quants (14-15/22).
 - **Qwen3-Coder-Next Q6_K is fast (196 tok/s) and specialized for coding**, but the familiar Qwen-family LRU Cache blind spot is still there (0/6). Good if your workload is parsing / pathfinding / string work; not if you need eviction+expiry logic.
 - **Gemopus fine-tune regresses Gemma 4 on coding.** Base Gemma 31B-IT is strictly better (22/22 vs 15-16/22). The fine-tune helps on some tasks but catastrophically fails LRU Cache with TTL.
@@ -43,29 +48,33 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 
 | Tier | Model | Quant | VRAM (full ctx) | Native ctx | TTFT | Decode (CUDA) | Coding | SWE-bench Lite |
 |---|---|---|---|---|---|---|---|---|
+| **S** | **Qwen3.6-27B (Unsloth)** | **dynamic NVFP4 + MTP-2** | ~96 GB reserved ◇ | 262K | n/a | **113.2 tok/s single / 179.8 aggregate** | 21/22 | **59.3% (178/300)** |
 | **S** | Gemma-4-31B-it | BF16 | 82.0 GB | 262K | 309 ms | **25.13 tok/s** | **22/22 (100%)** | — |
 | **S** | Gemma-4-31B-it | Q8_0 | 54.5 GB | 262K | 193 ms | 43.76 tok/s | **22/22 (100%)** | 23.0% (69/300) |
 | **S** | gpt-oss-120b | Q8_0 | 65.8 GB | 131K | **41 ms** | **264.38 tok/s** | 21/22 (95%) | — |
 | **S** | Qwen3.6-27B (dense) | FP8 + DFlash † | 29 GB ‡ | 262K | n/a | **~199 tok/s mean** § | **22/22 (100%)** ¶ | **57.3% (172/300)** ⊗ |
 | A | MiMo-V2.5 | UD-IQ2_XXS ♣ | 92.6 GB | 262K tested | 76 ms | 100.26 tok/s | **22/22 (100%)** | 60% (3/5 canary); full run active |
+| A | DeepSeek V4 Flash 0731 | EXL3 2.04 bpw ♠ | 74.1 GB | 262K tested | 106 ms | 95.33 tok/s | **22/22 (100%)** | **40.3% (121/300)** |
 | A | Qwen3.6-35B-A3B | BF16 | 72.1 GB | 262K | 61 ms | 135.05 tok/s | 14/22 (64%) | — |
 | A | Qwen3.6-35B-A3B | Q8_0 | 41.6 GB | 262K | 60 ms | **221.04 tok/s** | 15/22 (68%) | 48.3% (145/300) ⊕ |
 | B | Gemopus-4-31B-it | BF16 | 82.0 GB | 262K | 308 ms | 25.13 tok/s | 16/22 (73%) | — |
 | B | Gemopus-4-31B-it | Q8_0 | 54.5 GB | 262K | 192 ms | 43.77 tok/s | 15/22 (68%) | — |
 | A | Qwen3-Coder-Next | Q6_K | 70.3 GB | 262K | 77 ms | 196.36 tok/s | 15/22 (68%) | — |
 
-† vLLM PR-40898 build + [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (commit `09196886`, 2026-04-27), k=15. All other rows are stock llama.cpp.
+◇ NVFP4 weights are 21.81 GiB; vLLM reserves the remaining memory for its FP8 KV pool and runtime at `--gpu-memory-utilization 0.94`.
+† vLLM PR-40898 build + [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter (commit `09196886`, 2026-04-27), k=15. Rows other than the two vLLM Qwen3.6 deployments are stock llama.cpp.
 ‡ Weights only. Full vLLM footprint with `--gpu-memory-utilization 0.92` plus DFlash drafter (3.3 GB) plus paged-KV pool ≈ 88 GB.
 § Per-bench decode tok/s during the 4-benchmark coding suite (multi-thousand-token generation, mean across 12 runs is 199 tok/s, range 177-223). Smoke-test factorial prompt hits 249 tok/s; long refactor prompts drop to ~145-159 tok/s — spec-dec acceptance varies by prompt content. Without DFlash on the same FP8 weights: 47 tok/s (single-stream coding bench, single run). The non-DFlash 47 tok/s is what the SWE-bench result below was measured at; DFlash adds throughput, not quality.
 ¶ Best-of-3 at T=0.3 on the 4-benchmark coding suite (vLLM PR-40898 + drafter `09196886`). Prior pin (vLLM 0.19.1 + drafter `1dbb59a5`) scored 21/22 — A* recovers fully on the upgrade.
 ⊗ Same FP8 weights, vLLM 0.19.1, **no spec dec** (SWE-bench predates the DFlash addition). 64K context ceiling hit `exit_context` 15× — recoverable headroom for a re-run.
 ⊕ Stock weights. The Opus-reasoning-distilled fine-tune of the same Q8_0 model resolved **52.0% (156/300)** — see Qwen3.6-35B-A3B section below.
 ♣ Partial GPU offload with Q8 KV at a 262,144-token allocation. The 22/22 score requires `--reasoning-budget 4096`; unbounded reasoning reaches only 5/22 because three tasks exhaust 16,384 output tokens without final content. The five-case SWE-bench result is a narrow Astropy-only canary, not a score comparable to the 300-instance runs. See [MIMO_V2_5_IQ2_RTXPRO6000.md](MIMO_V2_5_IQ2_RTXPRO6000.md).
+♠ All 48 target modules and four shared 262,144-token FP16 cache slots are on the GPU with no host DRAM overflow. The full SWE-bench run produced 173 non-empty patches, resolved 121, and recorded zero harness errors. See [DEEPSEEK_V4_FLASH_RTXPRO6000.md](DEEPSEEK_V4_FLASH_RTXPRO6000.md).
 
 **Quick-pick guide:**
 - **Best coding quality at any speed:** Gemma-4-31B-it Q8_0 (22/22, 44 tok/s) — BF16 adds nothing at temp 0
 - **Best coding quality at high speed:** gpt-oss-120b Q8_0 (21/22, 264 tok/s) — 6× faster than Gemma, drops 1 test on A*
-- **Best agentic-coding result (SWE-bench Lite):** Qwen3.6-27B FP8 + DFlash (57.3%, 195 tok/s warm) — the actual production preset on this host
+- **Best agentic-coding result (SWE-bench Lite):** Unsloth Qwen3.6-27B NVFP4 + MTP-2 (59.3%, 113 tok/s single / 180 aggregate) — the production preset on this host
 - **Highest decode throughput period:** gpt-oss-120b Q8_0 (264 tok/s)
 - **Don't bother with:** Gemopus (base Gemma beats it), Qwen3.6 MoE for reliable coding (run-to-run variance)
 
@@ -114,9 +123,27 @@ Perfect score on our 4-benchmark coding suite at both quants. At temp 0, BF16 an
 
 ---
 
-### Qwen3.6-27B FP8 + DFlash spec dec (the production preset)
+### Qwen3.6-27B Unsloth NVFP4 + MTP-2 (the production preset)
 
-The dense 27B variant of Qwen3.6 (different model from the 35B-A3B MoE elsewhere in this doc), served via vLLM with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter for speculative decoding. This is the daily-driver agentic preset on this host (configured in `opencode-config/hosts/rtxpro6000/llama-swap.yaml` as `qwen36-27b-coder` and `qwen36-27b-agent`).
+The July 2026 Unsloth dynamic-NVFP4 checkpoint is the new daily driver, routed as `qwen36-27b-nvfp4` in `opencode-config/hosts/rtxpro6000/llama-swap.yaml`. The production entry matches the measured vLLM 0.24 stack: calibrated FP8 KV, FlashInfer attention, 262K context, four concurrent sequences, prefix caching, Qwen tool/reasoning parsers, and native MTP-2.
+
+| Metric | Value |
+|---|---|
+| SWE-bench Lite | **178 / 300 = 59.3%** |
+| Agent phase | **6h25m52s**, 46.7 instances/hour |
+| Speed vs prior FP8 SWE run | **2.85× faster** |
+| Single-generation coding speed | **113.2 tok/s** mean (110.5–115.8) |
+| Four-worker aggregate speed | **179.8 tok/s** mean, 258.3 p90 |
+| Coding score | 21/22 best-of-3; 18.3/22 adjusted average |
+| Context | 262K, no context-limit exits in SWE-bench |
+
+This is a deployment-stack win, not a pure quantization A/B: checkpoint calibration, vLLM version, FP8 KV, MTP, parser, and context ceiling all changed. The decisive production result is that it improves quality by six resolved cases while reducing elapsed agent time from 18h20m to 6h25m52s. Full methodology and exit-status breakdown are in [SWEBENCH_LITE_RTXPRO6000.md](SWEBENCH_LITE_RTXPRO6000.md); the single-generation precision comparison is in [QWEN36_RTXPRO6000.md](QWEN36_RTXPRO6000.md).
+
+---
+
+### Qwen3.6-27B FP8 + DFlash spec dec (previous production preset / rollback)
+
+The dense 27B variant of Qwen3.6 (different model from the 35B-A3B MoE elsewhere in this doc), served via vLLM with the [z-lab DFlash](https://github.com/z-lab/dflash) block-diffusion drafter for speculative decoding. This was the production agentic preset before the July 2026 NVFP4 promotion and remains available as `qwen36-27b`.
 
 **Stack version (2026-04-30 refresh):** vLLM PR-40898 build (`vllm-0.20.1rc1.dev33+g80561d6ce`) + DFlash drafter commit `09196886` (2026-04-27). The HF card recommends this exact pair — between our prior pin (vLLM 0.19.1 + drafter `1dbb59a5`) and the refresh, z-lab pushed 3 weight checkpoints and the upstream install recipe moved to the PR-40898 branch.
 

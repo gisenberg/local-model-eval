@@ -1,0 +1,179 @@
+{
+  "base_url": "http://127.0.0.1:8091/v1",
+  "model": "deepseek-v4-flash-0731-iq2-xxs",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "reasoning_content": "1.  The user asks to reply with exactly \"MIMO_OK\" and no other text.\n\n2.  I must comply with this instruction.\n\n3.  The response should be only \"MIMO_OK\".\n\n4.  No additional text, explanation, or formatting.\n\n5.  I will output \"MIMO_OK\"."
+          }
+        }
+      ],
+      "created": 1785546321,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 71,
+        "prompt_tokens": 15,
+        "total_tokens": 86,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-feQC7C81lNGv1O4PwgReu1PatXJQaVNC",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 15,
+        "prompt_ms": 108.673,
+        "prompt_per_token_ms": 7.244866666666667,
+        "prompt_per_second": 138.02876519466656,
+        "predicted_n": 71,
+        "predicted_ms": 900.192,
+        "predicted_per_token_ms": 12.678760563380282,
+        "predicted_per_second": 78.87206284881447
+      },
+      "_client_elapsed_s": 1.0172
+    },
+    "reasoning": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "408",
+            "reasoning_content": "1.  **Calculate 17 * 24 directly.**\n    17 * 24 = 17 * (20 + 4) = 17*20 + 17*4 = 340 + 68 = 408.\n\n2.  **Verify a second way.**\n    Let's use the standard multiplication algorithm or another breakdown.\n    17 * 24 = (10 + 7) * 24 = 10*24 + 7*24 = 240 + 168 = 408.\n    Or check: 24 * 17 = 24 * (10 + 7) = 240 + 168 = 408. Matches.\n\n3.  **Concise final answer.**\n    408"
+          }
+        }
+      ],
+      "created": 1785546323,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 152,
+        "prompt_tokens": 27,
+        "total_tokens": 179,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-UTllMV341nOXjXpESLq1JtBrZ10eFxcW",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 27,
+        "prompt_ms": 55.356,
+        "prompt_per_token_ms": 2.050222222222222,
+        "prompt_per_second": 487.75200520268805,
+        "predicted_n": 152,
+        "predicted_ms": 1942.993,
+        "predicted_per_token_ms": 12.782848684210526,
+        "predicted_per_second": 78.22982378217523
+      },
+      "_client_elapsed_s": 2.0053
+    },
+    "tool_call": {
+      "choices": [
+        {
+          "finish_reason": "tool_calls",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "I'll look up the record with identifier alpha-7.\n\n",
+            "reasoning_content": "The user wants me to call lookup_record with record_id alpha-7. Let me do that.",
+            "tool_calls": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\":\"alpha-7\"}"
+                },
+                "id": "KLBZYtl2b2oJs7OHsBo690Sc1h2JJ1DQ"
+              }
+            ]
+          }
+        }
+      ],
+      "created": 1785546324,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 313,
+        "total_tokens": 393,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-JN7tJgNY4GMRoCF2oilVmF4yWZLBgrBN",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 313,
+        "prompt_ms": 528.107,
+        "prompt_per_token_ms": 1.6872428115015974,
+        "prompt_per_second": 592.6829222108398,
+        "predicted_n": 80,
+        "predicted_ms": 1066.809,
+        "predicted_per_token_ms": 13.3351125,
+        "predicted_per_second": 74.98999352273931
+      },
+      "_client_elapsed_s": 1.6083
+    },
+    "tool_followup": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The record with identifier `alpha-7` has a value of **42**.",
+            "reasoning_content": "The record value is 42. I should report this."
+          }
+        }
+      ],
+      "created": 1785546326,
+      "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf",
+      "system_fingerprint": "b10216-876a43211",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 30,
+        "prompt_tokens": 415,
+        "total_tokens": 445,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-gv0eXvqyYprmi6GKgvTi264ycW7USHSs",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 415,
+        "prompt_ms": 699.132,
+        "prompt_per_token_ms": 1.6846554216867469,
+        "prompt_per_second": 593.5931984231876,
+        "predicted_n": 30,
+        "predicted_ms": 385.491,
+        "predicted_per_token_ms": 12.8497,
+        "predicted_per_second": 77.82282854852642
+      },
+      "_client_elapsed_s": 1.0907
+    }
+  }
+}

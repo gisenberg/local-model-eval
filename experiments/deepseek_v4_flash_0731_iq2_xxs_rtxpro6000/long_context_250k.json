@@ -1,0 +1,51 @@
+{
+  "base_url": "http://127.0.0.1:8091",
+  "model": "deepseek-v4-flash-0731-iq2-xxs",
+  "target_raw_tokens": 250000,
+  "raw_tokens": 249981,
+  "prompt_tokens": 249985,
+  "completion_tokens": 3,
+  "filler_repetitions": 11361,
+  "needle_depth": 0.75,
+  "expected": "739184",
+  "content": "739184",
+  "reasoning_content": null,
+  "elapsed_seconds": 586.062,
+  "passed": true,
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "739184"
+        }
+      }
+    ],
+    "created": 1785539083,
+    "model": "/mnt/extended/gisenberg/models/deepseek-v4-flash-0731-iq2-xxs-cf5e97a3/UD-IQ2_XXS/DeepSeek-V4-Flash-0731-UD-IQ2_XXS-00001-of-00003.gguf",
+    "system_fingerprint": "b10216-876a43211",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 3,
+      "prompt_tokens": 249985,
+      "total_tokens": 249988,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "id": "chatcmpl-PXdO9rjLTX7nuoXNeVJLex00gXnOKu2E",
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 249985,
+      "prompt_ms": 585683.139,
+      "prompt_per_token_ms": 2.342873128387703,
+      "prompt_per_second": 426.8263560170545,
+      "predicted_n": 3,
+      "predicted_ms": 58.369,
+      "predicted_per_token_ms": 19.456333333333333,
+      "predicted_per_second": 51.39714574517295
+    }
+  }
+}

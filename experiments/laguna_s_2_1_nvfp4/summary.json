@@ -1,0 +1,50 @@
+{
+  "model": "poolside/Laguna-S-2.1-NVFP4",
+  "revision": "216d1f13878dd4e715bc7412848d0f330e95bba6",
+  "checkpoint_gib": 66.98,
+  "hardware": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "vram_mib": 97887,
+    "power_limit_w": 350
+  },
+  "runtime": {
+    "vllm": "0.25.1",
+    "flashinfer": "0.6.15.dev20260712",
+    "torch": "2.11.0+cu130",
+    "cuda_compiler": "13.0.88",
+    "weight_backend": "FLASHINFER_CUTLASS",
+    "attention_backend": "FLASHINFER",
+    "kv_cache_dtype": "fp8_e4m3fn",
+    "model_memory_gib": 67.11,
+    "kv_cache_memory_gib": 18.85,
+    "max_model_len": 16384,
+    "speculative_decoding": false
+  },
+  "sampling": {
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "top_k": 20,
+    "enable_thinking": true,
+    "max_tokens": 15000,
+    "runs_per_benchmark": 3
+  },
+  "score": {
+    "best_of_3": "22/22",
+    "raw_average": "17.4/22",
+    "raw_average_percent": 79.1,
+    "module_alias_adjusted_average": "21.0/22",
+    "module_alias_adjusted_average_percent": 95.5
+  },
+  "performance": {
+    "mean_tokens_per_second": 108.12,
+    "min_tokens_per_second": 107.8,
+    "max_tokens_per_second": 108.6,
+    "total_completion_tokens": 20984
+  },
+  "compatibility_notes": [
+    "The local tokenizer_config.json copy sets fix_mistral_regex=true to resolve the Transformers incorrect-tokenization warning.",
+    "The server used /usr/local/cuda-13.0/bin because the host /usr/local/cuda symlink points to CUDA 12.8.",
+    "FlashInfer 0.6.13 rejected SM120 JIT compilation, so the model-card-recommended 0.6.15.dev20260712 nightly trio was installed.",
+    "The module-alias-adjusted score rewrites only mock.patch module targets in temporary copies; preserved model outputs remain unchanged."
+  ]
+}

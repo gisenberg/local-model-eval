@@ -1,0 +1,123 @@
+{
+  "base_url": "http://127.0.0.1:8091/v1",
+  "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_suppressed": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "cmpl-d3b3858aa05e4977a2e45e7002ad473f",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "reasoning_content": null,
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292144,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.0954
+    },
+    "reasoning": {
+      "id": "cmpl-0bd6a2a1857346429225367ebcdd3cca",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "We can compute 17 \u00d7 24 by breaking it down:  \n17 \u00d7 24 = 17 \u00d7 (20 + 4) = (17 \u00d7 20) + (17 \u00d7 4) = 340 + 68 = 408.\n\nVerification with another method:  \n24 \u00d7 17 = 24 \u00d7 (10 + 7) = 240 + 168 = 408.\n\nFinal answer: **408**",
+            "reasoning_content": null,
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292145,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 1.0131
+    },
+    "tool_call": {
+      "id": "cmpl-58c2a5e859d64532acb4d06536ba16fb",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "tool_calls",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "reasoning_content": null,
+            "tool_calls": [
+              {
+                "id": "call_147d294d18ba4cc0ac722daf",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                },
+                "type": "function",
+                "index": 0
+              }
+            ],
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292145,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.6294
+    },
+    "tool_followup": {
+      "id": "cmpl-678739228dee486f8b9a0185ff8bab59",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "The record `alpha-7` has been retrieved. Its value is **42**.",
+            "reasoning_content": null,
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786292146,
+      "model": "deepseek-v4-flash-0731-exl3-2.52bpw-9e893778",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.3745
+    }
+  }
+}

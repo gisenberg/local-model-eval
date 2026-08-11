@@ -1,0 +1,27 @@
+{
+    "astropy__astropy-12907": {
+        "model_name_or_path": "sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_canary5",
+        "instance_id": "astropy__astropy-12907",
+        "model_patch": "diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py\nindex a308e2729..45bea3608 100644\n--- a/astropy/modeling/separable.py\n+++ b/astropy/modeling/separable.py\n@@ -242,7 +242,7 @@ def _cstack(left, right):\n         cright = _coord_matrix(right, 'right', noutp)\n     else:\n         cright = np.zeros((noutp, right.shape[1]))\n-        cright[-right.shape[0]:, -right.shape[1]:] = 1\n+        cright[-right.shape[0]:, -right.shape[1]:] = right\n \n     return np.hstack([cleft, cright])\n \n"
+    },
+    "astropy__astropy-14182": {
+        "model_name_or_path": "sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_canary5",
+        "instance_id": "astropy__astropy-14182",
+        "model_patch": "diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py\nindex abdeba8ef..2ccbff02e 100644\n--- a/astropy/io/ascii/rst.py\n+++ b/astropy/io/ascii/rst.py\n@@ -57,10 +57,11 @@ class RST(FixedWidth):\n     data_class = SimpleRSTData\n     header_class = SimpleRSTHeader\n \n-    def __init__(self):\n-        super().__init__(delimiter_pad=None, bookend=False)\n+    def __init__(self, header_rows=None):\n+        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)\n+        self.data.start_line = len(self.header.header_rows) + 2\n \n     def write(self, lines):\n         lines = super().write(lines)\n-        lines = [lines[1]] + lines + [lines[1]]\n+        lines = [lines[len(self.header.header_rows)]] + lines + [lines[len(self.header.header_rows)]]\n         return lines\n"
+    },
+    "astropy__astropy-14365": {
+        "model_name_or_path": "sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_canary5",
+        "instance_id": "astropy__astropy-14365",
+        "model_patch": "diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py\nindex 83a4f004a..66ba59126 100644\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -60,7 +60,7 @@ def _line_type(line, delimiter=None):\n     ValueError: Unrecognized QDP line...\n     \"\"\"\n     _decimal_re = r\"[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?\"\n-    _command_re = r\"READ [TS]ERR(\\s+[0-9]+)+\"\n+    _command_re = r\"[Rr][Ee][Aa][Dd] [TtSs][Ee][Rr][Rr](\\s+[0-9]+)+\"\n \n     sep = delimiter\n     if delimiter is None:\n"
+    },
+    "astropy__astropy-14995": {
+        "model_name_or_path": "sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_canary5",
+        "instance_id": "astropy__astropy-14995",
+        "model_patch": "diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py\nindex 4153dfccb..210ccacd6 100644\n--- a/astropy/nddata/mixins/ndarithmetic.py\n+++ b/astropy/nddata/mixins/ndarithmetic.py\n@@ -522,6 +522,9 @@ class NDArithmeticMixin:\n             return deepcopy(operand.mask)\n         elif operand is None:\n             return deepcopy(self.mask)\n+        elif operand.mask is None:\n+            # self has a mask but operand doesn't - copy self's mask\n+            return deepcopy(self.mask)\n         else:\n             # Now lets calculate the resulting mask (operation enforces copy)\n             return handle_mask(self.mask, operand.mask, **kwds)\n"
+    },
+    "astropy__astropy-6938": {
+        "model_name_or_path": "sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_canary5",
+        "instance_id": "astropy__astropy-6938",
+        "model_patch": ""
+    }
+}

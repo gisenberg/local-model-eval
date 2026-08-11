@@ -19,18 +19,18 @@ OUT_DIR=${OUT_DIR:-experiments/sweagent_lite_mimo_v2_5_iq2_xxs_f7aff786_r4k}
 RUN_ID=${RUN_ID:-sweagent_lite_mimo_v2_5_iq2_xxs_f7aff786_r4k.mimo-v2.5-iq2-xxs-r4k-full}
 
 cd "$REPO"
-rtk mkdir -p "$OUT_DIR"
-exec > >(rtk tee -a "$OUT_DIR/run_swebench_lite.log") 2>&1
+mkdir -p "$OUT_DIR"
+exec > >(tee -a "$OUT_DIR/run_swebench_lite.log") 2>&1
 
-rtk echo "=== MiMo-V2.5 UD-IQ2_XXS SWE-bench Lite run ==="
-rtk date -Is
-rtk echo "out_dir=$OUT_DIR"
-rtk echo "run_id=$RUN_ID"
-rtk echo "num_workers=$NUM_WORKERS parallel_slots=$PARALLEL_SLOTS total_context=$TOTAL_CONTEXT"
-rtk echo "reasoning_budget=$REASONING_BUDGET"
+echo "=== MiMo-V2.5 UD-IQ2_XXS SWE-bench Lite run ==="
+date -Is
+echo "out_dir=$OUT_DIR"
+echo "run_id=$RUN_ID"
+echo "num_workers=$NUM_WORKERS parallel_slots=$PARALLEL_SLOTS total_context=$TOTAL_CONTEXT"
+echo "reasoning_budget=$REASONING_BUDGET"
 
 SERVE_CMD=(
-  rtk proxy env
+  env
   "LD_LIBRARY_PATH=$LLAMA_DIR:$CUDA_LIB"
   "$LLAMA_SERVER"
   -m "$MODEL"
@@ -56,61 +56,61 @@ SERVE_CMD=(
   --metrics
 )
 
-rtk proxy printf '%q ' "${SERVE_CMD[@]}" > "$OUT_DIR/serve_cmd.txt"
-rtk proxy printf '\n' >> "$OUT_DIR/serve_cmd.txt"
+printf '%q ' "${SERVE_CMD[@]}" > "$OUT_DIR/serve_cmd.txt"
+printf '\n' >> "$OUT_DIR/serve_cmd.txt"
 
 SERVER_PID=""
 stop_server() {
-  if [[ -n "$SERVER_PID" ]] && rtk proxy kill -0 "$SERVER_PID" 2>/dev/null; then
-    rtk echo "Stopping llama-server pid $SERVER_PID"
-    rtk proxy kill -TERM -- "-$SERVER_PID" 2>/dev/null || rtk proxy kill -TERM "$SERVER_PID" 2>/dev/null || true
+  if [[ -n "$SERVER_PID" ]] && kill -0 "$SERVER_PID" 2>/dev/null; then
+    echo "Stopping llama-server pid $SERVER_PID"
+    kill -TERM -- "-$SERVER_PID" 2>/dev/null || kill -TERM "$SERVER_PID" 2>/dev/null || true
     for _ in {1..30}; do
-      if ! rtk proxy kill -0 "$SERVER_PID" 2>/dev/null; then
+      if ! kill -0 "$SERVER_PID" 2>/dev/null; then
         break
       fi
-      rtk sleep 2
+      sleep 2
     done
-    rtk proxy kill -KILL -- "-$SERVER_PID" 2>/dev/null || rtk proxy kill -KILL "$SERVER_PID" 2>/dev/null || true
+    kill -KILL -- "-$SERVER_PID" 2>/dev/null || kill -KILL "$SERVER_PID" 2>/dev/null || true
   fi
 }
 trap stop_server EXIT
 
-rtk echo "Starting llama-server on port $PORT"
-rtk proxy setsid "${SERVE_CMD[@]}" > "$OUT_DIR/llama-server.log" 2>&1 &
+echo "Starting llama-server on port $PORT"
+setsid "${SERVE_CMD[@]}" > "$OUT_DIR/llama-server.log" 2>&1 &
 SERVER_PID=$!
-rtk proxy printf '%s\n' "$SERVER_PID" > "$OUT_DIR/llama-server.pid"
+printf '%s\n' "$SERVER_PID" > "$OUT_DIR/llama-server.pid"
 
-rtk echo "Waiting for llama-server readiness"
+echo "Waiting for llama-server readiness"
 READY=0
 for _ in {1..600}; do
   MODELS_JSON=""
-  if MODELS_JSON=$(rtk curl -fsS --max-time 3 "http://127.0.0.1:$PORT/v1/models" 2>/dev/null) &&
+  if MODELS_JSON=$(curl -fsS --max-time 3 "http://127.0.0.1:$PORT/v1/models" 2>/dev/null) &&
     [[ "$MODELS_JSON" == *"$MODEL"* ]]; then
     READY=1
     break
   fi
-  if ! rtk proxy kill -0 "$SERVER_PID" 2>/dev/null; then
-    rtk echo "llama-server exited during startup"
-    rtk tail -n 200 "$OUT_DIR/llama-server.log" || true
+  if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+    echo "llama-server exited during startup"
+    tail -n 200 "$OUT_DIR/llama-server.log" || true
     exit 1
   fi
-  rtk sleep 2
+  sleep 2
 done
 if [[ "$READY" != 1 ]]; then
-  rtk echo "llama-server did not become ready"
-  rtk tail -n 200 "$OUT_DIR/llama-server.log" || true
+  echo "llama-server did not become ready"
+  tail -n 200 "$OUT_DIR/llama-server.log" || true
   exit 1
 fi
-rtk echo "llama-server ready"
+echo "llama-server ready"
 
 SLICE_ARGS=()
 if [[ -n "${SWE_SLICE:-}" ]]; then
   SLICE_ARGS=(--instances.slice "$SWE_SLICE")
-  rtk echo "Using SWE slice: $SWE_SLICE"
+  echo "Using SWE slice: $SWE_SLICE"
 fi
 
-rtk echo "Starting SWE-agent batch"
-rtk "$SWEAGENT" run-batch \
+echo "Starting SWE-agent batch"
+"$SWEAGENT" run-batch \
   --config tools/sweagent-rtxpro6000-mimo-v2.5-iq2-xxs.yaml \
   --instances.type swe_bench \
   --instances.subset lite \
@@ -119,14 +119,14 @@ rtk "$SWEAGENT" run-batch \
   --output_dir "$OUT_DIR" \
   --num_workers "$NUM_WORKERS"
 
-rtk echo "SWE-agent batch complete"
-rtk date -Is
+echo "SWE-agent batch complete"
+date -Is
 
 if [[ -f "$OUT_DIR/preds.json" ]]; then
   stop_server
   trap - EXIT
-  rtk echo "Starting SWE-bench harness evaluation"
-  rtk "$PYTHON" -m swebench.harness.run_evaluation \
+  echo "Starting SWE-bench harness evaluation"
+  "$PYTHON" -m swebench.harness.run_evaluation \
     --dataset_name SWE-bench/SWE-bench_Lite \
     --split test \
     --predictions_path "$OUT_DIR/preds.json" \
@@ -137,13 +137,13 @@ if [[ -f "$OUT_DIR/preds.json" ]]; then
 
   HARNESS_REPORT="$REPO/${OUT_DIR##*/}.$RUN_ID.json"
   if [[ -f "$HARNESS_REPORT" ]]; then
-    rtk mkdir -p "$OUT_DIR/eval"
-    rtk cp "$HARNESS_REPORT" "$OUT_DIR/eval/$RUN_ID.json"
-    rtk cp "$HARNESS_REPORT" "$REPO/$RUN_ID.json"
+    mkdir -p "$OUT_DIR/eval"
+    cp "$HARNESS_REPORT" "$OUT_DIR/eval/$RUN_ID.json"
+    cp "$HARNESS_REPORT" "$REPO/$RUN_ID.json"
   fi
 else
-  rtk echo "No preds.json found; skipping evaluation"
+  echo "No preds.json found; skipping evaluation"
 fi
 
-rtk echo "Done"
-rtk date -Is
+echo "Done"
+date -Is

@@ -1,0 +1,3 @@
+client_rc=1
+server_alive=0
+xid_count=1

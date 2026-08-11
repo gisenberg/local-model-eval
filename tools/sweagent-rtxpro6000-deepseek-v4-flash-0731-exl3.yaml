@@ -1,0 +1,89 @@
+# SWE-agent config for DeepSeek-V4-Flash-0731 EXL3 via TabbyAPI.
+#
+# The recommended server uses four 262K-token slots and disables reasoning for agent work.
+
+agent:
+  type: default
+  templates:
+    system_template: |-
+      You are a helpful assistant that can interact with a computer to solve tasks.
+      Call exactly one tool at a time and wait for its result before calling another tool.
+      Never include multiple tool calls in one response.
+      Use exactly the argument names declared by the selected function's JSON schema.
+      Once the targeted reproduction and relevant tests pass, call submit immediately.
+      Do not continue browsing or run broad test suites after the fix is validated.
+    instance_template: |-
+      <uploaded_files>
+      {{working_dir}}
+      </uploaded_files>
+      I've uploaded a python code repository in the directory {{working_dir}}. Consider the following PR description:
+
+      <pr_description>
+      {{problem_statement}}
+      </pr_description>
+
+      Can you help me implement the necessary changes to the repository so that the requirements specified in the <pr_description> are met?
+      I've already taken care of all changes to any of the test files described in the <pr_description>. This means you DON'T have to modify the testing logic or any of the tests in any way!
+      Your task is to make the minimal changes to non-tests files in the {{working_dir}} directory to ensure the <pr_description> is satisfied.
+      Follow these steps to resolve the issue:
+      1. Find and read code relevant to the <pr_description>.
+      2. Create a targeted reproduction and run it.
+      3. Edit the source code to resolve the issue.
+      4. Rerun the reproduction and confirm that the issue is fixed.
+      5. Check relevant edge cases and submit the minimal patch.
+    next_step_template: |-
+      OBSERVATION:
+      {{observation}}
+    next_step_no_output_template: |-
+      Your command ran successfully and did not produce any output.
+  model:
+    name: openai/deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab
+    api_base: http://localhost:8091/v1
+    api_key: local-no-auth
+    per_instance_cost_limit: 0
+    total_cost_limit: 0
+    per_instance_call_limit: 75
+    max_input_tokens: 0
+    max_output_tokens: 8192
+    temperature: 0.6
+    top_p: 0.95
+    completion_kwargs:
+      max_tokens: 8192
+      parallel_tool_calls: false
+      extra_body:
+        chat_template_kwargs:
+          enable_thinking: false
+  tools:
+    env_variables:
+      TERM: dumb
+      PAGER: cat
+      GIT_PAGER: cat
+      LESS: -FRX
+    bundles:
+      - path: tools/registry
+      - path: tools/edit_anthropic
+      - path: tools/review_on_submit_m
+    registry_variables:
+      USE_FILEMAP: 'true'
+      SUBMIT_REVIEW_MESSAGES:
+        - |
+          Thank you for your work on this issue. Please carefully follow the steps below to help review your changes.
+
+          1. If you made any changes after running the reproduction, run it again.
+             If it fails, revisit the changes and make sure they are correct.
+          2. Remove your reproduction script.
+          3. Revert any changes to test files.
+          4. Run the submit command again to confirm.
+
+          Here is a list of all of your changes:
+
+          <diff>
+          {{diff}}
+          </diff>
+    enable_bash_tool: true
+    parse_function:
+      type: function_calling
+  history_processors:
+    - type: last_n_observations
+      n: 12
+      polling: 2

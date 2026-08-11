@@ -1,0 +1,38 @@
+{
+  "base_url": "http://127.0.0.1:8091",
+  "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+  "target_raw_tokens": 250000,
+  "raw_tokens": 249982,
+  "prompt_tokens": null,
+  "completion_tokens": null,
+  "filler_repetitions": 11361,
+  "needle_depth": 0.75,
+  "expected": "739184",
+  "content": "739184",
+  "reasoning_content": null,
+  "elapsed_seconds": 110.774,
+  "passed": true,
+  "response": {
+    "id": "cmpl-973002a8c942464eaa51bc66ba9527c9",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "stop",
+        "eos_reason": "stop_token",
+        "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+        "message": {
+          "role": "assistant",
+          "content": "739184",
+          "reasoning_content": null,
+          "tool_calls": null,
+          "tool_call_id": null
+        },
+        "logprobs": null
+      }
+    ],
+    "created": 1786290671,
+    "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+    "object": "chat.completion",
+    "usage": null
+  }
+}

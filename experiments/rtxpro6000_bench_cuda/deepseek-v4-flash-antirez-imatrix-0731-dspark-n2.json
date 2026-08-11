@@ -1,0 +1,45 @@
+{
+  "model": "DeepSeek-V4-Flash IQ2_XXS imatrix-0731 (antirez, DSpark n=2)",
+  "key": "deepseek-v4-flash-antirez-imatrix-0731-dspark-n2",
+  "path": "/mnt/extended/gisenberg/models/deepseek-v4-flash-antirez-imatrix-0731-1cd7b564/DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+  "ctx": 262144,
+  "vram_mb": 95607,
+  "load_seconds": 9.0,
+  "backend": "cuda",
+  "runs": [
+    {
+      "ttft_s": 0.0892,
+      "decode_tps": 138.47,
+      "n_tokens": 256,
+      "total_s": 1.938
+    },
+    {
+      "ttft_s": 0.0835,
+      "decode_tps": 137.54,
+      "n_tokens": 256,
+      "total_s": 1.945
+    },
+    {
+      "ttft_s": 0.0836,
+      "decode_tps": 138.17,
+      "n_tokens": 256,
+      "total_s": 1.936
+    },
+    {
+      "ttft_s": 0.084,
+      "decode_tps": 138.14,
+      "n_tokens": 256,
+      "total_s": 1.937
+    },
+    {
+      "ttft_s": 0.084,
+      "decode_tps": 137.81,
+      "n_tokens": 256,
+      "total_s": 1.942
+    }
+  ],
+  "ttft_mean": 0.0849,
+  "ttft_median": 0.084,
+  "decode_mean": 138.03,
+  "decode_median": 138.14
+}

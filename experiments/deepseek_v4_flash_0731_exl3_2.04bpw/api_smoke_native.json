@@ -1,0 +1,123 @@
+{
+  "base_url": "http://127.0.0.1:8091/v1",
+  "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "cmpl-9bfc3e12a71d4defb74595c8094df260",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "reasoning_content": "1. The user instruction is clear: \"Reply with exactly MIMO_OK and no other text.\"\n2. I must output exactly \"MIMO_OK\" without any additional characters, spaces, or newlines (though the instruction says \"no other text\", I will output just the string).\n3. No reasoning or explanation is needed.\n4. Final output: MIMO_OK",
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786290026,
+      "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.9075
+    },
+    "reasoning": {
+      "id": "cmpl-bf326890206c443098569b6d2f516733",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "408",
+            "reasoning_content": "We need answer compute 17*24. Need think briefly, verify second way, concise final. Need comply. Let's compute: 17*24 = 17*20 +17*4 =340+68=408. Verify second way: 24*17 =24*10+24*7=240+168=408. Or distributive. Final answer concise.",
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786290027,
+      "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.899
+    },
+    "tool_call": {
+      "id": "cmpl-c5e88209791740baab542a6e76318091",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "tool_calls",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "reasoning_content": "The user wants me to call lookup_record with record_id alpha-7. I should do that, but not guess the record value or answer directly. So I'll just invoke the tool.",
+            "tool_calls": [
+              {
+                "id": "call_9b04b9c127b64defaf4e18aa",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                },
+                "type": "function",
+                "index": 0
+              }
+            ],
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786290028,
+      "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 1.212
+    },
+    "tool_followup": {
+      "id": "cmpl-cbb9b6633d664d3b9f9dc44ede22ef0c",
+      "choices": [
+        {
+          "index": 0,
+          "finish_reason": "stop",
+          "eos_reason": "stop_token",
+          "stop_str": "<\uff5cend\u2581of\u2581sentence\uff5c>",
+          "message": {
+            "role": "assistant",
+            "content": "The lookup for record `alpha-7` returned the stored value: 42.",
+            "reasoning_content": "The tool returned the record value. The user said \"Do not guess the record value and do not answer directly.\" I should not answer directly. I'll just report the lookup result without interpreting or guessing. I'll state the record was found and its value as returned by the tool.",
+            "tool_calls": null,
+            "tool_call_id": null
+          },
+          "logprobs": null
+        }
+      ],
+      "created": 1786290029,
+      "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+      "object": "chat.completion",
+      "usage": null,
+      "_client_elapsed_s": 0.9497
+    }
+  }
+}

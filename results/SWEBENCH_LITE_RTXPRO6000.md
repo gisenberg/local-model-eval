@@ -1,6 +1,6 @@
-# SWE-bench Lite on RTX Pro 6000 — five-model comparison
+# SWE-bench Lite on RTX Pro 6000 - six-model comparison
 
-All five runs hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split, via SWE-agent v1.1.0 in function-calling mode with a 75-call ceiling and 4 parallel workers on the same RTX Pro 6000 Blackwell Workstation (96 GB, sm_120).
+All six runs hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split, via SWE-agent v1.1.0 in function-calling mode with a 75-call ceiling and 4 parallel workers on the same RTX Pro 6000 Blackwell Workstation (96 GB, sm_120).
 
 ## Headline
 
@@ -10,13 +10,26 @@ All five runs hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split, v
 | **Qwen3.6-27B dense** | FP8 (vendor) | vLLM 0.19 | **172** | **57.3%** | 58.1% |
 | Qwen3.6-35B-A3B | Q8_0 Opus-distilled | llama.cpp + llama-swap | 156 | 52.0% | 54.9% |
 | Qwen3.6-35B-A3B | Q8_0 stock | llama.cpp + llama-swap | 145 | 48.3% | 52.0% |
+| DeepSeek V4 Flash 0731 | EXL3 2.04 bpw | TabbyAPI + ExLlamaV3 | 121 | 40.3% | 69.9% |
 | Gemma-4-31B-IT | Q8_0 stock | llama.cpp + llama-swap | 69 | 23.0% | 34.5% |
 
-Three headline findings:
+Four headline findings:
 
 1. **Unsloth dynamic NVFP4 + MTP-2 is the best and fastest dense-27B variant measured.** It resolves 178/300 (59.3%), six more than vendor FP8 (+2.0 pp), while cutting the SWE-agent batch from 18h20m to 6h25m52s (**2.85× faster**). The newer run also raises the context ceiling from 64K to 262K, so this is a deployment-stack comparison rather than a quantization-only attribution.
 2. **Dense 27B remains stronger than the 35B-A3B variants on this scaffold.** Dynamic NVFP4 is +7.3 pp over Opus-distilled 35B-A3B, +11 pp over stock 35B-A3B, and +36.3 pp over Gemma.
 3. **Opus-distillation beats stock on agentic work by +3.7 pp**, even though the *same distilled model* loses 11 pts vs stock on the from-scratch coding bench. The two benchmarks measure different things; SWE-bench rewards codebase-navigation / surgical-fix reasoning (what Opus-CoT teaches), while the coding bench rewards self-consistent module-with-tests generation (which the distillation hurts). See [why coding-bench and SWE-bench disagree](#why-coding-bench-and-swe-bench-disagree) below.
+4. **DeepSeek V4 Flash EXL3 has strong submitted-patch quality but poor patch coverage.** It resolves 121/300 overall, or 40.3%, while resolving 121/173 non-empty attempts, or 69.9%. Its 127 empty patches are the dominant quality loss despite a perfect 22/22 lightweight score.
+
+## DeepSeek V4 Flash 0731 EXL3 2.04 bpw - 40.3%
+
+The `turboderp/DeepSeek-V4-Flash-0731-exl3` 2.04 bpw quant ran through TabbyAPI and ExLlamaV3 with four shared 262,144-token FP16 cache slots, reasoning disabled, no MTP, and all model modules resident on the GPU.
+The official result is **121/300 resolved (40.33%)**, with 173 non-empty patches, 127 empty patches, 52 unresolved non-empty patches, and zero harness errors.
+The report and predictions are in [`../experiments/sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_batch4_full300/`](../experiments/sweagent_lite_deepseek_v4_flash_0731_exl3_2.04bpw_batch4_full300/).
+
+The 69.9% resolution rate among non-empty patches is the strongest in this table, but `% of attempts` is conditional on producing a patch and should not be read as the model's overall success rate.
+The operational weakness is that only 57.7% of instances produced a non-empty patch.
+The interrupted run was recovered from 287 completed trajectories, and the official evaluator subsequently completed all 300 predictions without errors.
+Full serving, throughput, context, and recovery details are in [DEEPSEEK_V4_FLASH_RTXPRO6000.md](DEEPSEEK_V4_FLASH_RTXPRO6000.md).
 
 ## MiMo V2.5 IQ2 five-case canary
 
@@ -44,25 +57,25 @@ Full configuration and artifacts are in [MIMO_V2_5_IQ2_RTXPRO6000.md](MIMO_V2_5_
 
 Per-model details (model/quant/sampling/context) are in each model's section below.
 
-## Per-repo five-way comparison
+## Per-repo six-way comparison
 
 Resolved count / evaluated count per repo bucket. The `n=` shown is the total in the bucket for each run (Docker-pull failures in earlier rounds created tiny denominator differences).
 
-| Repo | NVFP4+MTP-27B | FP8-27B | Opus-35B-A3B | Stock-35B-A3B | Gemma-4-31B |
-|---|---|---|---|---|---|
-| astropy | 3/6 | 3/6 | 3/6 | 3/6 | 2/4 |
-| django | **77/114** | 75/112 | 67/102 | 63/104 | 26/60 |
-| matplotlib | 11/23 | 11/23 | 11/23 | **12/23** | 5/14 |
-| mwaskom | 3/4 | 3/4 | 2/4 | 2/4 | **3/3** |
-| pallets | **2/3** | 1/3 | 1/3 | 0/2 | 0/2 |
-| psf/requests | **6/6** | **6/6** | 3/6 | 5/6 | 4/4 |
-| pydata/xarray | 2/5 | 2/5 | 2/5 | 2/3 | 1/3 |
-| pylint-dev | **3/6** | 2/6 | **3/6** | 3/6 | 0/5 |
-| pytest-dev | 8/17 | **9/17** | 8/16 | 7/15 | 3/11 |
-| scikit-learn | **17/23** | 16/23 | 16/23 | 12/21 | 8/17 |
-| sphinx-doc | **4/16** | 2/16 | 3/16 | 2/16 | 1/14 |
-| sympy | **42/77** | **42/75** | 37/74 | 34/73 | 16/63 |
-| **Total** | **178** | **172** | **156** | **145** | **69** |
+| Repo | NVFP4+MTP-27B | FP8-27B | Opus-35B-A3B | Stock-35B-A3B | DeepSeek EXL3 | Gemma-4-31B |
+|---|---|---|---|---|---|---|
+| astropy | 3/6 | 3/6 | 3/6 | 3/6 | 3/5 | 2/4 |
+| django | **77/114** | 75/112 | 67/102 | 63/104 | 52/63 | 26/60 |
+| matplotlib | 11/23 | 11/23 | 11/23 | **12/23** | 9/13 | 5/14 |
+| mwaskom | 3/4 | 3/4 | 2/4 | 2/4 | 1/2 | **3/3** |
+| pallets | **2/3** | 1/3 | 1/3 | 0/2 | 0/1 | 0/2 |
+| psf/requests | **6/6** | **6/6** | 3/6 | 5/6 | 5/5 | 4/4 |
+| pydata/xarray | 2/5 | 2/5 | 2/5 | 2/3 | 1/1 | 1/3 |
+| pylint-dev | **3/6** | 2/6 | **3/6** | 3/6 | 2/2 | 0/5 |
+| pytest-dev | 8/17 | **9/17** | 8/16 | 7/15 | 7/9 | 3/11 |
+| scikit-learn | **17/23** | 16/23 | 16/23 | 12/21 | 11/13 | 8/17 |
+| sphinx-doc | **4/16** | 2/16 | 3/16 | 2/16 | 1/15 | 1/14 |
+| sympy | **42/77** | **42/75** | 37/74 | 34/73 | 29/44 | 16/63 |
+| **Total** | **178** | **172** | **156** | **145** | **121** | **69** |
 
 Dynamic NVFP4 wins or ties FP8 on 10 of 12 repos; its six-case lead comes mainly from django (+2), pallets (+1), pylint (+1), scikit-learn (+1), and sphinx (+2), offset by pytest (-1). Gemma matches or beats Qwen3.6 stock on exactly one repo (mwaskom, n=4) and loses everywhere else; django and sympy drive most of the deficit.
 
@@ -236,7 +249,7 @@ For from-scratch module+tests generation, stock `qwen36-35b-a3b-coder` (Q8_0 via
 
 | Workload | Pick |
 |---|---|
-| Edit-loop / agentic bug-fixing (<262K ctx) | Unsloth `Qwen3.6-27B-NVFP4` + MTP-2 via vLLM |
+| Edit-loop / agentic bug-fixing (<262K ctx) | `rtxpro6000/qwen36-27b-nvfp4` (Unsloth NVFP4 + MTP-2 via vLLM) |
 | Agentic work needing >262K ctx | `rtxpro6000/qwen36-opus-distill-q8` (or `-524k` / `-1m`) |
 | Write a new module + tests | `rtxpro6000/qwen36-35b-a3b-coder` (stock) |
 | Max coding accuracy, speed doesn't matter | `rtxpro6000/gemma-4-31b-coder` (22/22 coding-bench) |

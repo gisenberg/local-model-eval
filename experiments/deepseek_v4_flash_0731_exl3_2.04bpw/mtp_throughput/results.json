@@ -1,0 +1,127 @@
+{
+  "model": "deepseek-v4-flash-0731-exl3-2.04bpw-b5526bab",
+  "mode": "no-think",
+  "base_url": "http://127.0.0.1:8091/v1",
+  "vram_before_mb": 81826,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test.",
+    "max_tokens": 256,
+    "warmups": [
+      {
+        "ttft_s": 19.2928,
+        "decode_s": 12.9476,
+        "decode_tps": 19.08,
+        "completion_tokens": 248,
+        "content_events": 19,
+        "elapsed_s": 32.2404,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.59,
+          "prompt_tokens_per_sec": 49.15,
+          "completion_tokens": 248,
+          "completion_time": 31.62,
+          "completion_tokens_per_sec": 7.84,
+          "total_tokens": 277,
+          "total_time": 32.22
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.1812,
+        "decode_s": 1.3572,
+        "decode_tps": 182.0,
+        "completion_tokens": 248,
+        "content_events": 19,
+        "elapsed_s": 1.5384,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 248,
+          "completion_time": 1.48,
+          "completion_tokens_per_sec": 167.32,
+          "total_tokens": 277,
+          "total_time": 1.53
+        }
+      },
+      {
+        "ttft_s": 0.1856,
+        "decode_s": 1.3968,
+        "decode_tps": 176.83,
+        "completion_tokens": 248,
+        "content_events": 20,
+        "elapsed_s": 1.5824,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 248,
+          "completion_time": 1.52,
+          "completion_tokens_per_sec": 162.76,
+          "total_tokens": 277,
+          "total_time": 1.58
+        }
+      },
+      {
+        "ttft_s": 0.1846,
+        "decode_s": 1.3625,
+        "decode_tps": 181.29,
+        "completion_tokens": 248,
+        "content_events": 19,
+        "elapsed_s": 1.5471,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 248,
+          "completion_time": 1.49,
+          "completion_tokens_per_sec": 166.46,
+          "total_tokens": 277,
+          "total_time": 1.54
+        }
+      },
+      {
+        "ttft_s": 0.1856,
+        "decode_s": 1.3599,
+        "decode_tps": 181.64,
+        "completion_tokens": 248,
+        "content_events": 19,
+        "elapsed_s": 1.5455,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 248,
+          "completion_time": 1.49,
+          "completion_tokens_per_sec": 166.85,
+          "total_tokens": 277,
+          "total_time": 1.54
+        }
+      },
+      {
+        "ttft_s": 0.1844,
+        "decode_s": 1.3624,
+        "decode_tps": 181.29,
+        "completion_tokens": 248,
+        "content_events": 19,
+        "elapsed_s": 1.5468,
+        "usage": {
+          "prompt_tokens": 29,
+          "prompt_time": 0.05,
+          "prompt_tokens_per_sec": 580.0,
+          "completion_tokens": 248,
+          "completion_time": 1.49,
+          "completion_tokens_per_sec": 166.53,
+          "total_tokens": 277,
+          "total_time": 1.54
+        }
+      }
+    ],
+    "ttft_mean_s": 0.1843,
+    "ttft_median_s": 0.1846,
+    "decode_mean_tps": 180.61,
+    "decode_median_tps": 181.29
+  },
+  "vram_after_throughput_mb": 82298
+}

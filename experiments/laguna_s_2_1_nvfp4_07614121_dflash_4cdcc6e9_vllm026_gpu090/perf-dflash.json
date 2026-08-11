@@ -1,0 +1,194 @@
+{
+  "mode": "dflash",
+  "served_name": "poolside/Laguna-S-2.1-NVFP4",
+  "request_config": {
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "top_k": 20,
+    "max_tokens": 1024,
+    "preserve_thinking": true
+  },
+  "memory": {
+    "idle_used_mib": 93234,
+    "peak_used_mib": 93234
+  },
+  "serial": {
+    "summary": {
+      "requests": 4,
+      "completion_tokens": 4096,
+      "wall_s": 17.8247,
+      "aggregate_output_tps": 229.794,
+      "mean_ttft_s": 0.0747,
+      "p50_ttft_s": 0.0771,
+      "mean_request_decode_tps": 234.906
+    },
+    "runs": [
+      {
+        "seed": 1000,
+        "prompt_tokens": 81,
+        "completion_tokens": 1024,
+        "elapsed_s": 4.5546,
+        "ttft_s": 0.0869,
+        "decode_tps": 228.978,
+        "finish_reason": "length",
+        "content_chars": 3859,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 1001,
+        "prompt_tokens": 77,
+        "completion_tokens": 1024,
+        "elapsed_s": 4.228,
+        "ttft_s": 0.0777,
+        "decode_tps": 246.489,
+        "finish_reason": "length",
+        "content_chars": 4019,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 1002,
+        "prompt_tokens": 71,
+        "completion_tokens": 1024,
+        "elapsed_s": 4.0782,
+        "ttft_s": 0.0766,
+        "decode_tps": 255.647,
+        "finish_reason": "length",
+        "content_chars": 3674,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 1003,
+        "prompt_tokens": 75,
+        "completion_tokens": 1024,
+        "elapsed_s": 4.9637,
+        "ttft_s": 0.0574,
+        "decode_tps": 208.509,
+        "finish_reason": "length",
+        "content_chars": 0,
+        "reasoning_chars": 4256
+      }
+    ]
+  },
+  "concurrent_4": {
+    "summary": {
+      "requests": 4,
+      "completion_tokens": 4096,
+      "wall_s": 10.9308,
+      "aggregate_output_tps": 374.723,
+      "mean_ttft_s": 3.3689,
+      "p50_ttft_s": 3.3754,
+      "mean_request_decode_tps": 155.126
+    },
+    "runs": [
+      {
+        "seed": 2000,
+        "prompt_tokens": 81,
+        "completion_tokens": 1024,
+        "elapsed_s": 10.9301,
+        "ttft_s": 3.3487,
+        "decode_tps": 134.936,
+        "finish_reason": "length",
+        "content_chars": 4353,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 2001,
+        "prompt_tokens": 77,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.8915,
+        "ttft_s": 3.3761,
+        "decode_tps": 157.013,
+        "finish_reason": "length",
+        "content_chars": 4185,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 2002,
+        "prompt_tokens": 71,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.589,
+        "ttft_s": 3.3758,
+        "decode_tps": 164.648,
+        "finish_reason": "length",
+        "content_chars": 3713,
+        "reasoning_chars": 0
+      },
+      {
+        "seed": 2003,
+        "prompt_tokens": 75,
+        "completion_tokens": 1024,
+        "elapsed_s": 9.6163,
+        "ttft_s": 3.3751,
+        "decode_tps": 163.908,
+        "finish_reason": "length",
+        "content_chars": 4147,
+        "reasoning_chars": 0
+      }
+    ]
+  },
+  "speculative_decoding": {
+    "num_drafts": 1717,
+    "draft_tokens": 12019,
+    "accepted_tokens": 6484,
+    "acceptance_rate_percent": 53.948,
+    "acceptance_length": 4.776
+  },
+  "metrics_before": [
+    "vllm:spec_decode_num_drafts_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 494.0",
+    "vllm:spec_decode_num_drafts_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.7852168454208004e+09",
+    "vllm:spec_decode_num_draft_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 3458.0",
+    "vllm:spec_decode_num_draft_tokens_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.7852168454208179e+09",
+    "vllm:spec_decode_num_accepted_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1889.0",
+    "vllm:spec_decode_num_accepted_tokens_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.7852168454208279e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"0\"} 413.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"1\"} 370.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"2\"} 300.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"3\"} 253.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"4\"} 220.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"5\"} 179.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"6\"} 154.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"0\"} 1.7852168454208407e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"1\"} 1.785216845420845e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"2\"} 1.7852168454208481e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"3\"} 1.785216845420851e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"4\"} 1.7852168454208553e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"5\"} 1.7852168454208581e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"6\"} 1.7852168454208617e+09",
+    "vllm:prompt_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 2758.0",
+    "vllm:generation_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 2386.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"stop\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 4.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"length\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"abort\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"error\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"repetition\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0"
+  ],
+  "metrics_after": [
+    "vllm:spec_decode_num_drafts_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 2211.0",
+    "vllm:spec_decode_num_drafts_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.7852168454208004e+09",
+    "vllm:spec_decode_num_draft_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 15477.0",
+    "vllm:spec_decode_num_draft_tokens_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.7852168454208179e+09",
+    "vllm:spec_decode_num_accepted_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 8373.0",
+    "vllm:spec_decode_num_accepted_tokens_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 1.7852168454208279e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"0\"} 1877.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"1\"} 1564.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"2\"} 1325.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"3\"} 1106.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"4\"} 972.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"5\"} 827.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"6\"} 702.0",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"0\"} 1.7852168454208407e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"1\"} 1.785216845420845e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"2\"} 1.7852168454208481e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"3\"} 1.785216845420851e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"4\"} 1.7852168454208553e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"5\"} 1.7852168454208581e+09",
+    "vllm:spec_decode_num_accepted_tokens_per_pos_created{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\",position=\"6\"} 1.7852168454208617e+09",
+    "vllm:prompt_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 3366.0",
+    "vllm:generation_tokens_total{engine=\"0\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 10578.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"stop\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 4.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"length\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 9.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"abort\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"error\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0",
+    "vllm:request_success_total{engine=\"0\",finished_reason=\"repetition\",model_name=\"poolside/Laguna-S-2.1-NVFP4\"} 0.0"
+  ]
+}
