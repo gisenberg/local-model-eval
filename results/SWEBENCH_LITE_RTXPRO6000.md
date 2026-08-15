@@ -1,12 +1,14 @@
-# SWE-bench Lite on RTX Pro 6000 - nine-deployment comparison
+# SWE-bench Lite on RTX Pro 6000 - eleven-deployment comparison
 
-All nine deployments hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split via SWE-agent v1.1.0 in function-calling mode with a 75-call ceiling on the same RTX Pro 6000 Blackwell Workstation (96 GB, sm_120).
+All eleven deployments hit the same 300-instance `SWE-bench/SWE-bench_Lite` test split via SWE-agent v1.1.0 in function-calling mode with a 75-call ceiling on the same RTX Pro 6000 Blackwell Workstation (96 GB, sm_120).
 Runs used four parallel workers unless noted otherwise.
 
 ## Headline
 
 | Model | Quant | Serving | Resolved / 300 | % resolved | % of attempts |
 |---|---|---|---:|---:|---:|
+| **Qwen3.8-27B dense** | **FP8 (vendor)** | **vLLM + MTP-3, 8 workers** | **206** | **68.7%** | **71.0%** |
+| Qwen3.8-27B dense | FP8 (vendor) | SGLang + MTP-4, 15 workers | 196 | 65.3% | 67.1% |
 | **Qwen3.6-27B dense** | **Dynamic NVFP4 (Unsloth)** | **vLLM 0.24 + MTP-2** | **178** | **59.3%** | **60.8%** |
 | **Qwen3.6-27B dense** | FP8 (vendor) | vLLM 0.19 | **172** | **57.3%** | 58.1% |
 | Qwen3.6-35B-A3B | Q8_0 Opus-distilled | llama.cpp + llama-swap | 156 | 52.0% | 54.9% |
@@ -17,14 +19,27 @@ Runs used four parallel workers unless noted otherwise.
 | DeepSeek V4 Flash 0731 | EXL3 2.04 bpw | TabbyAPI + ExLlamaV3 | 121 | 40.3% | 69.9% |
 | Gemma-4-31B-IT | Q8_0 stock | llama.cpp + llama-swap | 69 | 23.0% | 34.5% |
 
-Five headline findings:
+Six headline findings:
 
-1. **Unsloth dynamic NVFP4 + MTP-2 is the best and fastest dense-27B variant measured.** It resolves 178/300 (59.3%), six more than vendor FP8 (+2.0 pp), while cutting the SWE-agent batch from 18h20m to 6h25m52s (**2.85× faster**). The newer run also raises the context ceiling from 64K to 262K, so this is a deployment-stack comparison rather than a quantization-only attribution.
-2. **Dense 27B remains stronger than the 35B-A3B variants on this scaffold.** Dynamic NVFP4 is +7.3 pp over Opus-distilled 35B-A3B, +11 pp over stock 35B-A3B, and +36.3 pp over Gemma.
-3. **Opus-distillation beats stock on agentic work by +3.7 pp**, even though the *same distilled model* loses 11 pts vs stock on the from-scratch coding bench. The two benchmarks measure different things; SWE-bench rewards codebase-navigation / surgical-fix reasoning (what Opus-CoT teaches), while the coding bench rewards self-consistent module-with-tests generation (which the distillation hurts). See [why coding-bench and SWE-bench disagree](#why-coding-bench-and-swe-bench-disagree) below.
-4. **DeepSeek V4 Flash EXL3 has strong submitted-patch quality but poor patch coverage.** It resolves 121/300 overall, or 40.3%, while resolving 121/173 non-empty attempts, or 69.9%. Its 127 empty patches are the dominant quality loss despite a perfect 22/22 lightweight score.
-5. **Muse Glimmer combines high serving throughput with mid-table completion quality.** DFlash raises single-stream decode from 48.98 to 120.12 tok/s without changing its 22/22 lightweight score, and eight workers finish SWE-agent generation in 5h03m47s.
+1. **Qwen3.8 FP8 + MTP-3 on vLLM is the new overall leader.** It resolves 206/300 (68.7%), 28 cases and 9.4 points above the former Qwen3.6 NVFP4 daily driver.
+2. **SGLang wins Qwen3.8 serving throughput but not completion quality.** Its 15-worker MTP-4 deployment resolves 196/300, 10 fewer than the vLLM MTP-3 deployment. The different reasoning budgets and speculative settings make this a deployment comparison rather than a runtime-only A/B.
+3. **Unsloth dynamic NVFP4 + MTP-2 remains the best Qwen3.6 deployment measured.** It resolves 178/300 (59.3%), six more than vendor FP8 (+2.0 pp), while cutting the SWE-agent batch from 18h20m to 6h25m52s (**2.85× faster**). The newer run also raises the context ceiling from 64K to 262K, so this is a deployment-stack comparison rather than a quantization-only attribution.
+4. **Dense 27B remains stronger than the 35B-A3B variants on this scaffold.** Qwen3.8 vLLM is +16.7 points over Opus-distilled 35B-A3B, +20.4 points over stock 35B-A3B, and +45.7 points over Gemma.
+5. **DeepSeek V4 Flash EXL3 has strong submitted-patch quality but poor patch coverage.** It resolves 121/300 overall, or 40.3%, while resolving 121/173 non-empty attempts, or 69.9%. Its 127 empty patches are the dominant quality loss despite a perfect 22/22 lightweight score.
+6. **Muse Glimmer combines high serving throughput with mid-table completion quality.** DFlash raises single-stream decode from 48.98 to 120.12 tok/s without changing its 22/22 lightweight score, and eight workers finish SWE-agent generation in 5h03m47s.
    The official result is 129/300, with 91 empty patches and zero harness errors.
+
+## Qwen3.8-27B FP8 - 68.7% on vLLM, 65.3% on SGLang
+
+The retained vLLM configuration uses the official FP8 checkpoint, native MTP-3, FP8 KV cache, medium reasoning, a 262,144-token allocation, and eight SWE-agent workers.
+It resolved **206/300**, produced 290 non-empty patches, and recorded zero harness errors.
+
+The SGLang configuration used the same checkpoint with MTP-4, a hard 4,096-token reasoning budget, the same 262,144-token allocation, and the concurrency-sweep winner of 15 workers.
+It resolved **196/300**, produced 292 non-empty patches, and recorded zero harness errors.
+Its generation phase took 9h19m52s.
+
+vLLM therefore remains the daily-driver stack.
+The complete serving, concurrency, long-context, lightweight, and reasoning evidence is in [QWEN38_RTXPRO6000.md](QWEN38_RTXPRO6000.md).
 
 ## Muse Glimmer 30B FP8 + DFlash-15 - 43.0%
 
@@ -253,19 +268,22 @@ To isolate just the model variable, you'd need either `Qwen3.6-27B-Q8_0` on llam
 
 ## Recommendation shift
 
-Historical daily-driver for opencode was `rtxpro6000/qwen36-opus-distill-q8` (52.0% SWE-bench Lite, agentic-uplift over stock, +3.7 pp). Dynamic NVFP4 + MTP-2 is now the best measured edit-loop deployment at **59.3%**, +2.0 pp over vendor FP8 and +7.3 pp over Opus-distilled, while finishing 2.85× faster than the old FP8 run. Trade-offs:
+Historical daily-driver for opencode was `rtxpro6000/qwen36-opus-distill-q8` (52.0% SWE-bench Lite, agentic-uplift over stock, +3.7 pp).
+Qwen3.8 FP8 + MTP-3 is now the best measured edit-loop deployment at **68.7%**, 9.4 points above Qwen3.6 dynamic NVFP4 and 16.7 points above Opus-distilled.
+Trade-offs:
 
 - **Context ceiling is tighter than llama.cpp, but no longer restrictive for Lite**: 262K on the new vLLM stack vs 1M on llama.cpp; unlike the old 64K FP8 run, dynamic NVFP4 had no context-limit exits.
-- **Latency**: 113.2 tok/s single-generation and 179.8 tok/s aggregate across the four-worker trace. The older FP8 deployment measured ~47 tok/s single-stream; llama-swap 35B-A3B Q8 measured ~90 tok/s single-stream.
+- **Latency**: Qwen3.8 reaches a repeatable 116.48 tok/s at c1 and 633.58 tok/s on its warmed c8 trial. The alternate SGLang stack reaches 827.58 tok/s at c15 but scores 10 cases lower.
 - **Different serving stack**: if you already live in llama-swap, swapping to vLLM is non-trivial operationally.
 
-For pure edit-loop quality and throughput, dynamic NVFP4+MTP-2 is the new best pick. For `>262K` whole-repo reads, the 35B-A3B Opus-distilled alias remains useful.
+For pure edit-loop quality, Qwen3.8 FP8 + MTP-3 on vLLM is the new best pick.
+For `>262K` whole-repo reads, the 35B-A3B Opus-distilled alias remains useful.
 
 For from-scratch module+tests generation, stock `qwen36-35b-a3b-coder` (Q8_0 via llama-swap) still wins the coding bench 21/22 vs Opus-distill's 10/22. Workload → model:
 
 | Workload | Pick |
 |---|---|
-| Edit-loop / agentic bug-fixing (<262K ctx) | `rtxpro6000/qwen36-27b-nvfp4` (Unsloth NVFP4 + MTP-2 via vLLM) |
+| Edit-loop / agentic bug-fixing (<262K ctx) | `rtxpro6000/qwen38-27b-fp8` (official FP8 + MTP-3 via vLLM) |
 | Agentic work needing >262K ctx | `rtxpro6000/qwen36-opus-distill-q8` (or `-524k` / `-1m`) |
 | Write a new module + tests | `rtxpro6000/qwen36-35b-a3b-coder` (stock) |
 | Max coding accuracy, speed doesn't matter | `rtxpro6000/gemma-4-31b-coder` (22/22 coding-bench) |

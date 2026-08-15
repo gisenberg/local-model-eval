@@ -1,0 +1,187 @@
+{
+  "base_url": "http://127.0.0.1:8092/v1",
+  "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-bc820b4d2597588a",
+      "object": "chat.completion",
+      "created": 1786465572,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Analyze User Input:** The user says: \"Reply with exactly MIMO_OK and no other text.\"\n2.  **Identify Constraint:** The response must be exactly \"MIMO_OK\" and nothing else. No quotes, no extra spaces, no punctuation, just the string MIMO_OK.\n3.  **Formulate Output:** Output exactly `MIMO_OK`.\n4.  **Check:** Does it match \"exactly MIMO_OK and no other text\"? Yes. I'll output just that.\u2705"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-1f8f3488",
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 150,
+        "completion_tokens": 123,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 15.7147
+    },
+    "reasoning": {
+      "id": "chatcmpl-88374fb1cd93812d",
+      "object": "chat.completion",
+      "created": 1786465588,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408.  \nVerification another way: 24 \u00d7 17 = 24 \u00d7 (10 + 7) = 240 + 168 = 408. Both approaches confirm the result.\n\nFinal answer: **408**",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Understand the user's request**: The user wants me to compute 17 * 24, think briefly, verify it a second way, and then give a concise final answer.\n\n2.  **Compute 17 * 24**:\n   - Method 1: Standard multiplication\n     17 * 24 = 17 * (20 + 4) = 17*20 + 17*4 = 340 + 68 = 408\n   - Method 2: 24 * 17 = 24 * (10 + 7) = 240 + 168 = 408\n   - Method 3: 17 * 24 = (15 + 2) * 24 = 360 + 48 = 408\n   - All methods give 408.\n\n3.  **Verify a second way**: I already have multiple methods. I'll explicitly state one verification method, e.g., breaking it down differently or using the other order.\n\n4.  **Formulate the response**: \n   - Think briefly (I already did)\n   - Verify a second way (I'll show another method)\n   - Give concise final answer\n\n   Structure: \n   - Calculation: 17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408\n   - Verification: 24 \u00d7 17 = 24 \u00d7 (10 + 7) = 240 + 168 = 408, or 17 \u00d7 24 = (15 + 2) \u00d7 24 = 360 + 48 = 408\n   - Final answer: 408\n\n   Keep it concise as requested. I'll output the thinking/verification briefly, then the final answer. The prompt says: \"Think briefly, verify it a second way, then give the concise final answer.\" I'll structure my response accordingly. I'll make sure the final answer is clearly stated, maybe just \"408\" at the end, but I can include a short sentence.\n\n   Let's draft:\n   - Compute: 17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408.\n   - Verify another way: 24 \u00d7 17 = 24 \u00d7 (10 + 7) = 240 + 168 = 408. Both methods agree.\n   - Final answer: 408.\n\n   That fits. I'll output it concisely.\u2705"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-1f8f3488",
+      "usage": {
+        "prompt_tokens": 41,
+        "total_tokens": 739,
+        "completion_tokens": 698,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.1452
+    },
+    "tool_call": {
+      "id": "chatcmpl-be4a70a259bb3b72",
+      "object": "chat.completion",
+      "created": 1786465589,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-b31512cf4399ce44",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "We need to call lookup_record with record_id \"alpha-7\". Then after tool returns, report the value. So we need to call function."
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-1f8f3488",
+      "usage": {
+        "prompt_tokens": 321,
+        "total_tokens": 380,
+        "completion_tokens": 59,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.2395
+    },
+    "tool_followup": {
+      "id": "chatcmpl-83149aab4235f3bc",
+      "object": "chat.completion",
+      "created": 1786465589,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The value for record\u202f`alpha-7` is **42**.",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The tool returned JSON: {\"record_id\":\"alpha-7\",\"value\":42}. We need to report the value. So answer: 42."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-1f8f3488",
+      "usage": {
+        "prompt_tokens": 409,
+        "total_tokens": 458,
+        "completion_tokens": 49,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.1863
+    }
+  }
+}

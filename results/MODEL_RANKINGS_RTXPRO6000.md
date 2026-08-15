@@ -14,11 +14,12 @@ Tested April 2026.
 > An 11th entry adds **MiMo V2.5 UD-IQ2_XXS** with 250K retrieval and bounded-reasoning evidence.
 > A 12th entry adds **DeepSeek V4 Flash 0731 EXL3 2.04 bpw**, which fits a 256K allocation entirely in VRAM, reaches 22/22, and resolves 121/300 on the full SWE-bench Lite split.
 > A 13th entry adds **Muse Glimmer 30B FP8 + DFlash-15**, which reaches 22/22, sustains 120 tok/s single-stream and 626 tok/s across eight streams, and resolves 129/300 on SWE-bench Lite.
+> A 14th entry adds **Qwen3.8-27B FP8 + MTP-3**, which retrieves at 250K context, reaches 633.6 tok/s across eight warmed streams, and sets the host's new SWE-bench Lite high score at 206/300.
 
 ## TL;DR
 
 - **gpt-oss-120b Q8_0 is the headline config.** 120B parameters, sparse MoE (4-of-128 experts/tok), **264 tok/s decode at Q8**, 21/22 on the coding suite, 66 GB VRAM. It's the fastest large model we've measured on any hardware, and it cannot load on the 5090 at all.
-- **Unsloth Qwen3.6-27B dynamic NVFP4 + MTP-2 is the SWE-bench Lite winner — 59.3% resolved.** It beats the prior vendor-FP8 result by six cases (+2.0 pp) and completes the SWE-agent phase **2.85× faster**. Decode is 113.2 tok/s single-generation and 179.8 tok/s aggregate across four workers. This is the daily-driver agentic preset on this host; FP8+DFlash remains a rollback/speed A/B.
+- **Qwen3.8-27B FP8 + MTP-3 is the SWE-bench Lite winner at 68.7% resolved.** It resolves 206/300, 28 cases above Qwen3.6 dynamic NVFP4, while sustaining a repeatable 116.48 tok/s at c1 and 633.58 tok/s on the warmed eight-stream trial. This is the daily-driver agentic preset on this host.
 - **Gemma 4 31B-IT is the quality king.** 22/22 on the coding suite at both BF16 and Q8_0. BF16 fits at full 262K on this card (82 GB VRAM) — the first card in our lineup where that's possible.
 - **MiMo V2.5 UD-IQ2_XXS reaches 22/22 with a 4K reasoning budget.** It runs a real 250K-token retrieval request on one card at 100 tok/s, but uses 92.6 GB and the unbounded-thinking default falls to 5/22.
   Its SWE-bench Lite canary resolves 3/5, exactly matching the four Qwen3.6 priors on the same cases, with one 75-call autosubmission and two recovered no-tool-call retries.
@@ -50,6 +51,7 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 
 | Tier | Model | Quant | VRAM (full ctx) | Native ctx | TTFT | Decode (CUDA) | Coding | SWE-bench Lite |
 |---|---|---|---|---|---|---|---|---|
+| **S** | **Qwen3.8-27B** | **FP8 + MTP-3** | 87,398 MiB reserved | 262K | 63 ms | **116.48 tok/s single / 633.58 warmed c8** | 18/22 first, 22/22 diagnostic best | **68.7% (206/300)** |
 | **S** | **Qwen3.6-27B (Unsloth)** | **dynamic NVFP4 + MTP-2** | ~96 GB reserved ◇ | 262K | n/a | **113.2 tok/s single / 179.8 aggregate** | 21/22 | **59.3% (178/300)** |
 | **S** | Gemma-4-31B-it | BF16 | 82.0 GB | 262K | 309 ms | **25.13 tok/s** | **22/22 (100%)** | — |
 | **S** | Gemma-4-31B-it | Q8_0 | 54.5 GB | 262K | 193 ms | 43.76 tok/s | **22/22 (100%)** | 23.0% (69/300) |
@@ -78,7 +80,7 @@ All throughput is CUDA backend (see Vulkan comparison below). VRAM at full nativ
 **Quick-pick guide:**
 - **Best coding quality at any speed:** Gemma-4-31B-it Q8_0 (22/22, 44 tok/s) — BF16 adds nothing at temp 0
 - **Best coding quality at high speed:** gpt-oss-120b Q8_0 (21/22, 264 tok/s) — 6× faster than Gemma, drops 1 test on A*
-- **Best agentic-coding result (SWE-bench Lite):** Unsloth Qwen3.6-27B NVFP4 + MTP-2 (59.3%, 113 tok/s single / 180 aggregate) — the production preset on this host
+- **Best agentic-coding result (SWE-bench Lite):** Qwen3.8-27B FP8 + MTP-3 (68.7%, 116 tok/s single / 634 warmed c8) - the production preset on this host
 - **Highest decode throughput period:** gpt-oss-120b Q8_0 (264 tok/s)
 - **Don't bother with:** Gemopus (base Gemma beats it), Qwen3.6 MoE for reliable coding (run-to-run variance)
 
@@ -127,9 +129,29 @@ Perfect score on our 4-benchmark coding suite at both quants. At temp 0, BF16 an
 
 ---
 
-### Qwen3.6-27B Unsloth NVFP4 + MTP-2 (the production preset)
+### Qwen3.8-27B FP8 + MTP-3 (the production preset)
 
-The July 2026 Unsloth dynamic-NVFP4 checkpoint is the new daily driver, routed as `qwen36-27b-nvfp4` in `opencode-config/hosts/rtxpro6000/llama-swap.yaml`. The production entry matches the measured vLLM 0.24 stack: calibrated FP8 KV, FlashInfer attention, 262K context, four concurrent sequences, prefix caching, Qwen tool/reasoning parsers, and native MTP-2.
+The official Qwen3.8 FP8 checkpoint is routed as `qwen38-27b-fp8` through the retained vLLM stack.
+It uses FP8 KV, native MTP-3, a 262K allocation, prefix caching, medium reasoning, and Qwen tool and reasoning parsers.
+
+| Metric | Value |
+|---|---|
+| SWE-bench Lite | **206 / 300 = 68.7%** |
+| Single-stream throughput | **116.48 tok/s** repeatable c1 mean |
+| Eight-stream throughput | **633.58 tok/s** warmed |
+| Coding score | 18/22 first pass, 22/22 diagnostic best |
+| Context | 262K allocation, exact 250K retrieval pass |
+
+The alternate SGLang + MTP-4 deployment scaled to 827.58 tok/s at 15 streams but resolved 196/300.
+That makes vLLM the production winner by 10 cases.
+See [QWEN38_RTXPRO6000.md](QWEN38_RTXPRO6000.md) for the full serving and benchmark evidence.
+
+---
+
+### Qwen3.6-27B Unsloth NVFP4 + MTP-2 (previous production preset / rollback)
+
+The July 2026 Unsloth dynamic-NVFP4 checkpoint remains available as `qwen36-27b-nvfp4` in `opencode-config/hosts/rtxpro6000/llama-swap.yaml`.
+The rollback entry matches the measured vLLM 0.24 stack: calibrated FP8 KV, FlashInfer attention, 262K context, four concurrent sequences, prefix caching, Qwen tool and reasoning parsers, and native MTP-2.
 
 | Metric | Value |
 |---|---|

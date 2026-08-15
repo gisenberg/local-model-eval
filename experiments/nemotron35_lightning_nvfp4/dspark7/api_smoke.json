@@ -1,0 +1,187 @@
+{
+  "base_url": "http://127.0.0.1:8092/v1",
+  "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-8aef1e1694ccb2cb",
+      "object": "chat.completion",
+      "created": 1786465192,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - User says: \"Reply with exactly MIMO_OK and no other text.\"\n   - Constraint: Output must be exactly \"MIMO_OK\" and nothing else.\n\n2.  **Identify the Required Output:**\n   - The exact string: `MIMO_OK`\n   - No additional characters, no newline (or maybe a newline is okay, but \"exactly\" and \"no other text\" suggests just the string), no quotes, no extra spaces.\n\n3.  **Formulate Response:**\n   - Just output: `MIMO_OK`\n\n4.  **Check Against Constraints:**\n   - \"exactly MIMO_OK\" \u2713\n   - \"and no other text\" \u2713\n\n   I'll output just `MIMO_OK`. I should be careful not to add a trailing newline if the system interprets that as \"other text\", but typically a single line with the word is fine. I'll just output the exact string.\n\n   Output: MIMO_OK\n   Done.\u2705"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-8d07cbec",
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 255,
+        "completion_tokens": 228,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.8257
+    },
+    "reasoning": {
+      "id": "chatcmpl-b700da1710de0fcc",
+      "object": "chat.completion",
+      "created": 1786465193,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 can be computed as 17 \u00d7 (20 + 4) = 340 + 68 = 408. \n\nA second way: 17 \u00d7 24 = 17 \u00d7 (25 \u2212 1) = 425 \u2212 17 = 408.\n\nBoth methods confirm the same result.\n\nFinal answer: **408**",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Understand the user's request**: \n   - Compute 17 * 24.\n   - Think briefly.\n   - Verify it a second way.\n   - Give the concise final answer.\n\n2.  **First method of computation**:\n   - 17 * 24\n   - I can break it down: 17 * 20 = 340, 17 * 4 = 68, so 340 + 68 = 408.\n   - Or: 24 * 10 = 240, 24 * 7 = 168, 240 + 168 = 408.\n   - Or: 17 * 24 = (10 + 7) * 24 = 240 + 168 = 408.\n   - All methods give 408.\n\n3.  **Second verification method**:\n   - Maybe use difference of squares or another identity?\n   - 17 * 24 = (20.5 - 3.5)(20.5 + 3.5)? That seems messy.\n   - Alternatively: 17 * 24 = 17 * (25 - 1) = 17*25 - 17 = 425 - 17 = 408. That's a clean verification.\n   - Or: 24 * 17 = (25 - 1) * 17 = 425 - 17 = 408. Same.\n   - Or just do the multiplication manually: \n       24\n     x 17\n     ----\n      168  (24*7)\n     240   (24*10)\n     ----\n     408\n   - Both methods confirm 408.\n\n4.  **Concise final answer format**: \n   - The user wants: \"Think briefly, verify it a second way, then give the concise final answer.\"\n   - I should output the reasoning steps briefly, then the final answer in the specified format, probably just the number or a short statement with the answer.\n   - The prompt says: \"Compute 17 * 24. Think briefly, verify it a second way, then give the concise final answer.\"\n   - I'll structure my response accordingly, but the final answer should be concise. I'll put the final answer as \"408\" or \"17 \u00d7 24 = 408\".\n\n   Let's keep it simple and direct. I'll show the two methods mentally, then give the final answer."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-8d07cbec",
+      "usage": {
+        "prompt_tokens": 41,
+        "total_tokens": 726,
+        "completion_tokens": 685,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.9545
+    },
+    "tool_call": {
+      "id": "chatcmpl-a4711424190d04ff",
+      "object": "chat.completion",
+      "created": 1786465193,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-931596226c2c3d41",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "We need to call lookup_record with record_id \"alpha-7\". Then after tool returns, report the value. So we need to call the function."
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-8d07cbec",
+      "usage": {
+        "prompt_tokens": 321,
+        "total_tokens": 381,
+        "completion_tokens": 60,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.1514
+    },
+    "tool_followup": {
+      "id": "chatcmpl-a579425329ba3eb5",
+      "object": "chat.completion",
+      "created": 1786465194,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The value for record\u202f`alpha-7` is **42**.",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The tool returned a JSON with record_id and value 42. We need to report the value. So answer: 42."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-8d07cbec",
+      "usage": {
+        "prompt_tokens": 410,
+        "total_tokens": 455,
+        "completion_tokens": 45,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.1614
+    }
+  }
+}

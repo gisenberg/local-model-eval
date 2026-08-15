@@ -56,6 +56,9 @@ def token_count(
     if tokenizer_api == "tabby":
         endpoint = "/v1/token/encode"
         body = {"text": content, "add_bos_token": True}
+    elif tokenizer_api == "vllm":
+        endpoint = "/tokenize"
+        body = {"prompt": content, "add_special_tokens": True}
     else:
         endpoint = "/tokenize"
         body = {"content": content, "add_special": True}
@@ -103,7 +106,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=3600)
     parser.add_argument(
         "--tokenizer-api",
-        choices=("llama", "tabby"),
+        choices=("llama", "tabby", "vllm"),
         default="llama",
         help="Tokenizer endpoint dialect exposed by the server.",
     )

@@ -1,0 +1,93 @@
+{
+  "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "high",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": null
+  },
+  "vram_used_mb": 91346,
+  "throughput": null,
+  "coding": {
+    "total_passed": 11,
+    "total_expected": 22,
+    "total_score": "11/22",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp6mmfegsa\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words FAILED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n=================================== FAILURES ===================================\n______________________________ test_reverse_words ______________________________\n\n    def test_reverse_words():\n        proc = StringProcessor()\n        assert proc.reverse_words(\"  hello   world  \") == \"world hello\"\n>       assert proc.reverse_words(\"a good   example\") == \"example a good\"\nE       AssertionError: assert 'example good a' == 'example a good'\nE         \nE         - example a good\nE         ?         --\nE         + example good a\nE         ?             ++\n\ntest_string_processor.py:129: AssertionError\n=========================== short test summary info ============================\nFAILED test_string_processor.py::test_reverse_words - AssertionError: assert ...\n========================= 1 failed, 4 passed in 0.01s ==========================\n",
+        "n_code_blocks": 1,
+        "response_len": 5572,
+        "expected": 5,
+        "raw_passed": 4,
+        "scored_passed": 4,
+        "test_count_matches_expected": true,
+        "elapsed_s": 6.41,
+        "completion_tokens": 2950,
+        "finish_reason": "stop",
+        "reasoning_chars": 7082
+      },
+      "expression_evaluator": {
+        "passed": 1,
+        "failed": 4,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": " at 0x77c5826e2ae0>\n\n    def _peek(self) -> Token:\n        \"\"\"Return the current token without consuming it.\"\"\"\n        if self.pos >= len(self.tokens):\n>           raise ValueError(\"Unexpected end of expression\")\nE           ValueError: Unexpected end of expression\n\ntest_expression_evaluator.py:162: ValueError\n_______________________________ test_unary_minus _______________________________\n\n    def test_unary_minus():\n        \"\"\"Unary minus at start or after '('.\"\"\"\n        evaluator = ExpressionEvaluator()\n>       assert evaluator.evaluate(\"-3\") == -3.0\n               ^^^^^^^^^^^^^^^^^^^^^^^^\n\ntest_expression_evaluator.py:279: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntest_expression_evaluator.py:67: in evaluate\n    result = parser.parse_expression()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\ntest_expression_evaluator.py:186: in parse_expression\n    left = self._parse_term()\n           ^^^^^^^^^^^^^^^^^^\ntest_expression_evaluator.py:203: in _parse_term\n    while self._peek().type in {\"*\", \"/\"}:\n          ^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_expression_evaluator._Parser object at 0x77c5826e34d0>\n\n    def _peek(self) -> Token:\n        \"\"\"Return the current token without consuming it.\"\"\"\n        if self.pos >= len(self.tokens):\n>           raise ValueError(\"Unexpected end of expression\")\nE           ValueError: Unexpected end of expression\n\ntest_expression_evaluator.py:162: ValueError\n=========================== short test summary info ============================\nFAILED test_expression_evaluator.py::test_basic_arithmetic - ValueError: Unex...\nFAILED test_expression_evaluator.py::test_precedence - ValueError: Unexpected...\nFAILED test_expression_evaluator.py::test_parentheses - ValueError: Unexpecte...\nFAILED test_expression_evaluator.py::test_unary_minus - ValueError: Unexpecte...\n========================= 4 failed, 1 passed in 0.03s ==========================\n",
+        "n_code_blocks": 1,
+        "response_len": 10205,
+        "expected": 5,
+        "raw_passed": 1,
+        "scored_passed": 1,
+        "test_count_matches_expected": true,
+        "elapsed_s": 8.26,
+        "completion_tokens": 3777,
+        "finish_reason": "stop",
+        "reasoning_chars": 6167
+      },
+      "astar_pathfinding": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp2ufnlp_q\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost_cells PASSED        [ 50%]\ntest_astar.py::test_no_path_fully_blocked PASSED                         [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates_raise_value_error PASSED         [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 7700,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": true,
+        "elapsed_s": 27.14,
+        "completion_tokens": 12207,
+        "finish_reason": "stop",
+        "reasoning_chars": 38302
+      },
+      "lru_cache_ttl": {
+        "passed": 0,
+        "failed": 0,
+        "errors": 0,
+        "total": 0,
+        "status": "no_code",
+        "n_code_blocks": 0,
+        "response_len": 0,
+        "expected": 6,
+        "raw_passed": 0,
+        "scored_passed": 0,
+        "test_count_matches_expected": false,
+        "elapsed_s": 39.73,
+        "completion_tokens": 16384,
+        "finish_reason": "length",
+        "reasoning_chars": 71920
+      }
+    }
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "base_url": "http://127.0.0.1:8092/v1",
+  "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-b6ae71464c25b8ff",
+      "object": "chat.completion",
+      "created": 1786465376,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - User says: \"Reply with exactly MIMO_OK and no other text.\"\n   - Constraint: Output must be exactly \"MIMO_OK\" and nothing else.\n\n2.  **Identify the Task:**\n   - Simple instruction-following task.\n   - Must produce only the string \"MIMO_OK\", no quotes, no extra spaces, no newline? The prompt says \"exactly MIMO_OK and no other text.\" I'll output just `MIMO_OK` without any surrounding characters, but typically in these tasks, just the text is fine. I'll output `MIMO_OK`.\n\n3.  **Check Constraints:**\n   - Exactly \"MIMO_OK\"\n   - No other text\n   - Must comply.\n\n4.  **Formulate Output:**\n   - Just: MIMO_OK\n\n   I'll make sure there's no trailing space or newline that could be considered \"other text\", but typically the model output just is the string. I'll output `MIMO_OK`.\u2705"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-3b738a21",
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 254,
+        "completion_tokens": 227,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 15.6977
+    },
+    "reasoning": {
+      "id": "chatcmpl-8ea693c1618bfad3",
+      "object": "chat.completion",
+      "created": 1786465391,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408.  \nVerification: 24 \u00d7 17 = (20 \u2212 3) \u00d7 24 = 480 \u2212 72 = 408. Both methods agree.\n\n**Final answer:** 408",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Understand the user's request**: \n   - Compute 17 * 24.\n   - Think briefly.\n   - Verify it a second way.\n   - Give the concise final answer.\n\n2.  **Compute 17 * 24**:\n   - Method 1: Standard multiplication\n     17 * 24 = 17 * (20 + 4) = 17*20 + 17*4 = 340 + 68 = 408\n   - Method 2: 24 * 17 = 24 * (10 + 7) = 240 + 168 = 408\n   - Method 3: 17 * 24 = (15 + 2) * 24 = 15*24 + 2*24 = 360 + 48 = 408\n   - Method 4: 17 * 24 = 17 * 4 * 6 = 68 * 6 = 408\n   All methods give 408.\n\n3.  **Verify a second way**: I already have multiple ways, but I'll explicitly state one verification method distinct from the first. For example, using the distributive property differently, or breaking 17 as 20-3: (20-3)*24 = 480 - 72 = 408.\n\n4.  **Concise final answer**: Just the number, or a brief statement with the answer. The prompt says \"give the concise final answer.\" I'll provide the result clearly.\n\nI'll structure the response as brief thinking, verification, then final answer. But the prompt says \"Think briefly, verify it a second way, then give the concise final answer.\" I'll just output the reasoning concisely and end with the answer. Actually, the format expects me to produce the final answer in a concise way. I'll just compute it, show one verification, and give the answer.\n\nLet's do it: \n17 \u00d7 24 = 408. \nVerification: 24 \u00d7 17 = (20+4)\u00d717 = 340+68 = 408, or (20-3)\u00d724 = 480-72 = 408. \nFinal answer: 408.\u2705\nI'll output exactly that.\u2705"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-3b738a21",
+      "usage": {
+        "prompt_tokens": 41,
+        "total_tokens": 681,
+        "completion_tokens": 640,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.5541
+    },
+    "tool_call": {
+      "id": "chatcmpl-858c40230db5bb05",
+      "object": "chat.completion",
+      "created": 1786465393,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-bd75d1c9cf206bf2",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "We need to call lookup_record with record_id \"alpha-7\". Then after tool returns, report the value. So we need to call function."
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-3b738a21",
+      "usage": {
+        "prompt_tokens": 321,
+        "total_tokens": 380,
+        "completion_tokens": 59,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.3454
+    },
+    "tool_followup": {
+      "id": "chatcmpl-873aa7bec82cff71",
+      "object": "chat.completion",
+      "created": 1786465393,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The value for record\u202f`alpha\u20117` is **42**.",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The tool returned JSON: {\"record_id\":\"alpha-7\",\"value\":42}. We need to report the value. So answer: 42."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-3b738a21",
+      "usage": {
+        "prompt_tokens": 409,
+        "total_tokens": 458,
+        "completion_tokens": 49,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.1988
+    }
+  }
+}

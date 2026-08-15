@@ -81,6 +81,11 @@ def run_wave(
     reasoning_strength: str,
     concurrency: int,
     max_tokens: int,
+    top_k: int | None,
+    reasoning_effort: str | None,
+    repetition_penalty: float,
+    reasoning_budget_tokens: int | None,
+    reasoning_budget_message: str | None,
 ) -> dict[str, Any]:
     barrier = threading.Barrier(concurrency + 1)
     stop_sampling = threading.Event()
@@ -88,7 +93,17 @@ def run_wave(
 
     def request() -> dict[str, Any]:
         barrier.wait()
-        return stream_once(endpoint, model, reasoning_strength, max_tokens)
+        return stream_once(
+            endpoint,
+            model,
+            reasoning_strength,
+            max_tokens,
+            top_k,
+            reasoning_effort,
+            repetition_penalty=repetition_penalty,
+            reasoning_budget_tokens=reasoning_budget_tokens,
+            reasoning_budget_message=reasoning_budget_message,
+        )
 
     def sample_gpu() -> None:
         while not stop_sampling.is_set():
@@ -148,9 +163,23 @@ def main() -> int:
     parser.add_argument("--base-url", default="http://127.0.0.1:8092/v1")
     parser.add_argument("--model", default="muse-glimmer-30b-fp8")
     parser.add_argument("--reasoning-strength", default="high")
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=("low", "medium", "xhigh"),
+        default=None,
+    )
     parser.add_argument("--concurrency", default="1,2,4,8,16")
     parser.add_argument("--trials", type=int, default=2)
     parser.add_argument("--max-tokens", type=int, default=512)
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=64,
+        help="Set a negative value to omit top_k from requests.",
+    )
+    parser.add_argument("--repetition-penalty", type=float, default=1.0)
+    parser.add_argument("--reasoning-budget-tokens", type=int, default=-1)
+    parser.add_argument("--reasoning-budget-message", default="")
     parser.add_argument(
         "--output",
         type=Path,
@@ -170,6 +199,13 @@ def main() -> int:
         args.reasoning_strength,
         1,
         args.max_tokens,
+        args.top_k,
+        args.reasoning_effort,
+        args.repetition_penalty,
+        args.reasoning_budget_tokens
+        if args.reasoning_budget_tokens >= 0
+        else None,
+        args.reasoning_budget_message or None,
     )
     print(json.dumps(warmup, indent=2), flush=True)
 
@@ -186,6 +222,13 @@ def main() -> int:
                 args.reasoning_strength,
                 concurrency,
                 args.max_tokens,
+                args.top_k,
+                args.reasoning_effort,
+                args.repetition_penalty,
+                args.reasoning_budget_tokens
+                if args.reasoning_budget_tokens >= 0
+                else None,
+                args.reasoning_budget_message or None,
             )
             result["trial"] = trial
             waves.append(result)
@@ -212,7 +255,16 @@ def main() -> int:
     output = {
         "model": args.model,
         "reasoning_strength": args.reasoning_strength,
+        "reasoning_effort": args.reasoning_effort,
         "max_tokens": args.max_tokens,
+        "top_k": args.top_k if args.top_k >= 0 else None,
+        "repetition_penalty": args.repetition_penalty,
+        "reasoning_budget_tokens": (
+            args.reasoning_budget_tokens
+            if args.reasoning_budget_tokens >= 0
+            else None
+        ),
+        "reasoning_budget_message": args.reasoning_budget_message or None,
         "trials": args.trials,
         "warmup": warmup,
         "waves": waves,

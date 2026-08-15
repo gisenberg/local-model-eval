@@ -1,0 +1,41 @@
+{
+  "model": "qwen38-27b-fp8-mtp3",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "xhigh",
+  "reasoning_effort": "xhigh",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "enable_thinking": true,
+    "presence_penalty": 0.5,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 87398,
+  "throughput": null,
+  "coding": {
+    "total_passed": 0,
+    "total_expected": 6,
+    "total_score": "0/6",
+    "benchmarks": {
+      "lru_cache_ttl": {
+        "passed": 0,
+        "failed": 0,
+        "errors": 0,
+        "total": 0,
+        "status": "no_code",
+        "n_code_blocks": 0,
+        "response_len": 0,
+        "expected": 6,
+        "raw_passed": 0,
+        "scored_passed": 0,
+        "test_count_matches_expected": false,
+        "elapsed_s": 409.07,
+        "completion_tokens": 32768,
+        "finish_reason": "length",
+        "reasoning_chars": 129854
+      }
+    }
+  }
+}

@@ -58,6 +58,12 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--max-tokens", type=int, default=2048)
     parser.add_argument(
+        "--reasoning-effort",
+        choices=("low", "medium", "xhigh"),
+        default=None,
+        help="Optional Qwen reasoning effort passed through chat-template kwargs.",
+    )
+    parser.add_argument(
         "--reasoning",
         choices=("required", "forbidden", "optional"),
         default="required",
@@ -74,6 +80,11 @@ def main() -> int:
         "chat_template_kwargs": {
             "enable_thinking": args.reasoning != "forbidden",
             "drop_thinking": False,
+            **(
+                {"reasoning_effort": args.reasoning_effort}
+                if args.reasoning_effort
+                else {}
+            ),
         },
     }
 

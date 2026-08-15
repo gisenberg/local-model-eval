@@ -1,0 +1,58 @@
+{
+  "model": "qwen38-27b-fp8-mtp3",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "xhigh",
+  "reasoning_effort": "xhigh",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "enable_thinking": true
+  },
+  "vram_used_mb": 87398,
+  "throughput": null,
+  "coding": {
+    "total_passed": 6,
+    "total_expected": 12,
+    "total_score": "6/12",
+    "benchmarks": {
+      "astar_pathfinding": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp7wrphwg4\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_uniform_grid PASSED                           [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_lower_cost_cells PASSED        [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates_raise_value_error PASSED         [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 7131,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": true,
+        "elapsed_s": 206.13,
+        "completion_tokens": 19680,
+        "finish_reason": "stop",
+        "reasoning_chars": 64575
+      },
+      "lru_cache_ttl": {
+        "passed": 0,
+        "failed": 0,
+        "errors": 0,
+        "total": 0,
+        "status": "no_code",
+        "n_code_blocks": 0,
+        "response_len": 0,
+        "expected": 6,
+        "raw_passed": 0,
+        "scored_passed": 0,
+        "test_count_matches_expected": false,
+        "elapsed_s": 390.19,
+        "completion_tokens": 32768,
+        "finish_reason": "length",
+        "reasoning_chars": 128122
+      }
+    }
+  }
+}

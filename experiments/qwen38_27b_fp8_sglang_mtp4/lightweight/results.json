@@ -1,0 +1,173 @@
+{
+  "model": "qwen38-27b-fp8-sglang-mtp4",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "medium",
+  "reasoning_effort": "medium",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "reasoning_budget_tokens": 4096,
+    "reasoning_budget_message": "\n\nWait, I'm overthinking this. Thinking budget complete. Let's answer now.",
+    "enable_thinking": true,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 82502,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test. Return the implementation in one python code block.",
+    "max_tokens": 512,
+    "warmups": [
+      {
+        "ttft_s": 0.0485,
+        "decode_s": 5.361,
+        "decode_tps": 95.32,
+        "completion_tokens": 512,
+        "content_events": 179,
+        "elapsed_s": 5.4095,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 575,
+          "completion_tokens": 512,
+          "prompt_tokens_details": null,
+          "reasoning_tokens": 426
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.0376,
+        "decode_s": 2.9076,
+        "decode_tps": 116.94,
+        "completion_tokens": 341,
+        "content_events": 100,
+        "elapsed_s": 2.9452,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 404,
+          "completion_tokens": 341,
+          "prompt_tokens_details": null,
+          "reasoning_tokens": 205
+        }
+      },
+      {
+        "ttft_s": 0.0401,
+        "decode_s": 3.5883,
+        "decode_tps": 109.52,
+        "completion_tokens": 394,
+        "content_events": 124,
+        "elapsed_s": 3.6285,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 457,
+          "completion_tokens": 394,
+          "prompt_tokens_details": null,
+          "reasoning_tokens": 252
+        }
+      },
+      {
+        "ttft_s": 0.0403,
+        "decode_s": 4.5345,
+        "decode_tps": 101.44,
+        "completion_tokens": 461,
+        "content_events": 157,
+        "elapsed_s": 4.5749,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 524,
+          "completion_tokens": 461,
+          "prompt_tokens_details": null,
+          "reasoning_tokens": 326
+        }
+      }
+    ],
+    "ttft_mean_s": 0.0393,
+    "ttft_median_s": 0.0401,
+    "decode_mean_tps": 109.3,
+    "decode_median_tps": 109.52
+  },
+  "coding": {
+    "total_passed": 22,
+    "total_expected": 22,
+    "total_score": "22/22",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpnomnek2k\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 1,
+        "response_len": 5514,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 22.58,
+        "completion_tokens": 2561,
+        "finish_reason": "stop",
+        "reasoning_chars": 4316
+      },
+      "expression_evaluator": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmprq4pxeda\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 9532,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 49.8,
+        "completion_tokens": 5707,
+        "finish_reason": "stop",
+        "reasoning_chars": 11833
+      },
+      "astar_pathfinding": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp__49dth9\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_uniform_grid PASSED                           [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_low_cost PASSED                [ 50%]\ntest_astar.py::test_no_path_exists PASSED                                [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates_raise_value_error PASSED         [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 11262,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": true,
+        "elapsed_s": 47.04,
+        "completion_tokens": 5468,
+        "finish_reason": "stop",
+        "reasoning_chars": 7492
+      },
+      "lru_cache_ttl": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpcs3eirvl\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_lru_cache.py::TestTTLCache::test_basic_get_put PASSED               [ 16%]\ntest_lru_cache.py::TestTTLCache::test_capacity_eviction_lru_order PASSED [ 33%]\ntest_lru_cache.py::TestTTLCache::test_ttl_expiry PASSED                  [ 50%]\ntest_lru_cache.py::TestTTLCache::test_custom_per_key_ttl PASSED          [ 66%]\ntest_lru_cache.py::TestTTLCache::test_delete PASSED                      [ 83%]\ntest_lru_cache.py::TestTTLCache::test_size_mixed_expired_valid PASSED    [100%]\n\n============================== 6 passed in 0.02s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 13617,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": true,
+        "elapsed_s": 84.13,
+        "completion_tokens": 9446,
+        "finish_reason": "stop",
+        "reasoning_chars": 23041
+      }
+    }
+  }
+}

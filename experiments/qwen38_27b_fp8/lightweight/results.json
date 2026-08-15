@@ -1,0 +1,156 @@
+{
+  "model": "qwen38-27b-fp8-mtp3",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "xhigh",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "enable_thinking": true
+  },
+  "vram_used_mb": 90524,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test. Return the implementation in one python code block.",
+    "max_tokens": 512,
+    "warmups": [
+      {
+        "ttft_s": 0.1102,
+        "decode_s": 3.6862,
+        "decode_tps": 112.04,
+        "completion_tokens": 414,
+        "content_events": 127,
+        "elapsed_s": 3.7965,
+        "usage": {
+          "prompt_tokens": 102,
+          "total_tokens": 516,
+          "completion_tokens": 414
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.0664,
+        "decode_s": 5.2598,
+        "decode_tps": 97.15,
+        "completion_tokens": 512,
+        "content_events": 182,
+        "elapsed_s": 5.3262,
+        "usage": {
+          "prompt_tokens": 102,
+          "total_tokens": 614,
+          "completion_tokens": 512
+        }
+      },
+      {
+        "ttft_s": 0.0668,
+        "decode_s": 4.3777,
+        "decode_tps": 95.03,
+        "completion_tokens": 417,
+        "content_events": 151,
+        "elapsed_s": 4.4445,
+        "usage": {
+          "prompt_tokens": 102,
+          "total_tokens": 519,
+          "completion_tokens": 417
+        }
+      },
+      {
+        "ttft_s": 0.0663,
+        "decode_s": 4.9935,
+        "decode_tps": 102.33,
+        "completion_tokens": 512,
+        "content_events": 172,
+        "elapsed_s": 5.0599,
+        "usage": {
+          "prompt_tokens": 102,
+          "total_tokens": 614,
+          "completion_tokens": 512
+        }
+      }
+    ],
+    "ttft_mean_s": 0.0665,
+    "ttft_median_s": 0.0664,
+    "decode_mean_tps": 98.17,
+    "decode_median_tps": 97.15
+  },
+  "coding": {
+    "total_passed": 10,
+    "total_expected": 22,
+    "total_score": "10/22",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpqcnivt53\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher PASSED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 1,
+        "response_len": 4344,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 47.45,
+        "completion_tokens": 4358,
+        "finish_reason": "stop",
+        "reasoning_chars": 13061
+      },
+      "expression_evaluator": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmp9kcpk7yq\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_expression_evaluator.py::test_basic_arithmetic PASSED               [ 20%]\ntest_expression_evaluator.py::test_precedence PASSED                     [ 40%]\ntest_expression_evaluator.py::test_parentheses PASSED                    [ 60%]\ntest_expression_evaluator.py::test_unary_minus PASSED                    [ 80%]\ntest_expression_evaluator.py::test_error_cases PASSED                    [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 10215,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 141.89,
+        "completion_tokens": 14432,
+        "finish_reason": "stop",
+        "reasoning_chars": 49659
+      },
+      "astar_pathfinding": {
+        "passed": 0,
+        "failed": 0,
+        "errors": 0,
+        "total": 0,
+        "status": "no_code",
+        "n_code_blocks": 0,
+        "response_len": 4411,
+        "expected": 6,
+        "raw_passed": 0,
+        "scored_passed": 0,
+        "test_count_matches_expected": false,
+        "elapsed_s": 176.99,
+        "completion_tokens": 16384,
+        "finish_reason": "length",
+        "reasoning_chars": 54446
+      },
+      "lru_cache_ttl": {
+        "passed": 0,
+        "failed": 0,
+        "errors": 0,
+        "total": 0,
+        "status": "no_code",
+        "n_code_blocks": 0,
+        "response_len": 0,
+        "expected": 6,
+        "raw_passed": 0,
+        "scored_passed": 0,
+        "test_count_matches_expected": false,
+        "elapsed_s": 192.12,
+        "completion_tokens": 16384,
+        "finish_reason": "length",
+        "reasoning_chars": 64241
+      }
+    }
+  }
+}

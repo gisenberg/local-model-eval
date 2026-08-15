@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-08-14T19:07:33-07:00",
+  "state": "complete",
+  "run_id": "qwen38-27b-fp8-mtp3-medium-c8-full300",
+  "expected_predictions": 300,
+  "instance_directories": 300,
+  "completed_predictions": 300,
+  "inflight_instances": 0,
+  "trajectory_bytes": 982938384,
+  "server_ready": true,
+  "runner_alive": false,
+  "seconds_since_progress": 2282
+}

@@ -1,0 +1,187 @@
+{
+  "base_url": "http://127.0.0.1:8092/v1",
+  "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-99732ec065caad81",
+      "object": "chat.completion",
+      "created": 1786464643,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - User says: \"Reply with exactly MIMO_OK and no other text.\"\n   - Constraint: Output must be exactly \"MIMO_OK\" and nothing else.\n\n2.  **Identify the Required Output:**\n   - The string \"MIMO_OK\" with no additional characters, no quotes, no newlines (or exactly as specified), no extra spaces.\n\n3.  **Formulate Response:**\n   - Just output: MIMO_OK\n\n4.  **Check Constraints:**\n   - Exactly \"MIMO_OK\" and no other text.\n   - I'll make sure there's no trailing newline or extra whitespace that could be considered \"other text\", but typically just the word is fine. I'll output exactly `MIMO_OK`.\n\n5.  **Final Output Generation:**\n   - MIMO_OK"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-bd35d896",
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 212,
+        "completion_tokens": 185,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.6647
+    },
+    "reasoning": {
+      "id": "chatcmpl-a070c73454688e4c",
+      "object": "chat.completion",
+      "created": 1786464644,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408  \nVerification: 24 \u00d7 17 = (20 + 4) \u00d7 17 = 340 + 68 = 408, or 17 \u00d7 24 = 17 \u00d7 6 \u00d7 4 = 102 \u00d7 4 = 408  \n\nFinal answer: **408**",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Here's a thinking process:\n\n1.  **Understand the user's request**: \n   - Compute 17 * 24.\n   - Think briefly.\n   - Verify it a second way.\n   - Give the concise final answer.\n\n2.  **Compute 17 * 24**:\n   - Method 1: Standard multiplication\n     17 * 24 = 17 * (20 + 4) = 17*20 + 17*4 = 340 + 68 = 408\n   - Method 2: 24 * 17 = 24 * (10 + 7) = 240 + 168 = 408\n   - Method 3: 17 * 24 = (15 + 2) * 24 = 15*24 + 2*24 = 360 + 48 = 408\n   - Method 4: 17 * 24 = 17 * 4 * 6 = 68 * 6 = 408\n   All methods give 408.\n\n3.  **Verify a second way**: I already have multiple methods. I'll explicitly state one verification method, e.g., breaking it down differently or using the distributive property in another arrangement.\n\n4.  **Formulate the response**: \n   - Briefly think/compute: 17 \u00d7 24 = 408\n   - Verify second way: e.g., 24 \u00d7 17 = (20 + 4) \u00d7 17 = 340 + 68 = 408, or 17 \u00d7 24 = 17 \u00d7 6 \u00d7 4 = 102 \u00d7 4 = 408\n   - Concise final answer: 408\n\n   The user wants: \"Think briefly, verify it a second way, then give the concise final answer.\" I'll structure it accordingly but keep it concise.\n\n   Draft:\n   - Compute: 17 \u00d7 24 = 408 (via 17 \u00d7 20 + 17 \u00d7 4 = 340 + 68).\n   - Verify second way: 24 \u00d7 17 = (20 + 4) \u00d7 17 = 340 + 68 = 408, or 17 \u00d7 24 = 17 \u00d7 6 \u00d7 4 = 102 \u00d7 4 = 408.\n   - Final answer: 408.\n\n   I'll make sure it's concise and follows the instruction.\u2705"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-bd35d896",
+      "usage": {
+        "prompt_tokens": 41,
+        "total_tokens": 748,
+        "completion_tokens": 707,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.9298
+    },
+    "tool_call": {
+      "id": "chatcmpl-9767d83baf1ebcb4",
+      "object": "chat.completion",
+      "created": 1786464645,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-84af4eccc05bd7dc",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "We need to call lookup_record with record_id \"alpha-7\". Then after tool returns, report the value. So we need to call the function."
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-bd35d896",
+      "usage": {
+        "prompt_tokens": 321,
+        "total_tokens": 381,
+        "completion_tokens": 60,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.3021
+    },
+    "tool_followup": {
+      "id": "chatcmpl-8727c4262d776d08",
+      "object": "chat.completion",
+      "created": 1786464646,
+      "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The value for record\u202f`alpha\u20117` is **42**.",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The tool returned a JSON with record_id and value 42. We need to report the value. So answer: 42."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.27.1-bd35d896",
+      "usage": {
+        "prompt_tokens": 410,
+        "total_tokens": 455,
+        "completion_tokens": 45,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.2018
+    }
+  }
+}

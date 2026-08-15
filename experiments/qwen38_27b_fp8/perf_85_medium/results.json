@@ -1,0 +1,79 @@
+{
+  "model": "qwen38-27b-fp8-mtp3",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "medium",
+  "reasoning_effort": "medium",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "enable_thinking": true
+  },
+  "vram_used_mb": 87398,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test. Return the implementation in one python code block.",
+    "max_tokens": 512,
+    "warmups": [
+      {
+        "ttft_s": 0.0854,
+        "decode_s": 4.3181,
+        "decode_tps": 95.88,
+        "completion_tokens": 415,
+        "content_events": 149,
+        "elapsed_s": 4.4036,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 478,
+          "completion_tokens": 415
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.0639,
+        "decode_s": 3.5331,
+        "decode_tps": 117.46,
+        "completion_tokens": 416,
+        "content_events": 122,
+        "elapsed_s": 3.5971,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 479,
+          "completion_tokens": 416
+        }
+      },
+      {
+        "ttft_s": 0.0621,
+        "decode_s": 3.711,
+        "decode_tps": 116.68,
+        "completion_tokens": 434,
+        "content_events": 128,
+        "elapsed_s": 3.7732,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 497,
+          "completion_tokens": 434
+        }
+      },
+      {
+        "ttft_s": 0.0624,
+        "decode_s": 4.13,
+        "decode_tps": 107.75,
+        "completion_tokens": 446,
+        "content_events": 142,
+        "elapsed_s": 4.1925,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 509,
+          "completion_tokens": 446
+        }
+      }
+    ],
+    "ttft_mean_s": 0.0628,
+    "ttft_median_s": 0.0624,
+    "decode_mean_tps": 113.96,
+    "decode_median_tps": 116.68
+  },
+  "coding": null
+}

@@ -1,0 +1,76 @@
+{
+  "model": "nemotron-3.5-lightning-30b-a3b-nvfp4",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "high",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": null
+  },
+  "vram_used_mb": 91180,
+  "throughput": {
+    "prompt": "Write a Python function to compute the factorial of n recursively. Include type hints, a docstring, and one pytest test. Return the implementation in one python code block.",
+    "max_tokens": 512,
+    "warmups": [
+      {
+        "ttft_s": 0.1247,
+        "decode_s": 1.219,
+        "decode_tps": 419.21,
+        "completion_tokens": 512,
+        "content_events": 198,
+        "elapsed_s": 1.3437,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 575,
+          "completion_tokens": 512
+        }
+      }
+    ],
+    "runs": [
+      {
+        "ttft_s": 0.0229,
+        "decode_s": 1.128,
+        "decode_tps": 453.0,
+        "completion_tokens": 512,
+        "content_events": 181,
+        "elapsed_s": 1.1509,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 575,
+          "completion_tokens": 512
+        }
+      },
+      {
+        "ttft_s": 0.0274,
+        "decode_s": 1.2076,
+        "decode_tps": 423.16,
+        "completion_tokens": 512,
+        "content_events": 181,
+        "elapsed_s": 1.235,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 575,
+          "completion_tokens": 512
+        }
+      },
+      {
+        "ttft_s": 0.0236,
+        "decode_s": 1.0415,
+        "decode_tps": 490.66,
+        "completion_tokens": 512,
+        "content_events": 163,
+        "elapsed_s": 1.0651,
+        "usage": {
+          "prompt_tokens": 63,
+          "total_tokens": 575,
+          "completion_tokens": 512
+        }
+      }
+    ],
+    "ttft_mean_s": 0.0246,
+    "ttft_median_s": 0.0236,
+    "decode_mean_tps": 455.61,
+    "decode_median_tps": 453.0
+  },
+  "coding": null
+}

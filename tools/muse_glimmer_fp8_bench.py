@@ -29,8 +29,18 @@ THROUGHPUT_PROMPT = (
 )
 
 
-def sampling(reasoning_strength: str) -> dict[str, Any]:
-    return {
+def sampling(
+    reasoning_strength: str,
+    top_k: int | None = 64,
+    thinking_token_budget: int | None = None,
+    reasoning_budget_tokens: int | None = None,
+    reasoning_budget_message: str | None = None,
+    enable_thinking: bool | None = None,
+    reasoning_effort: str | None = None,
+    presence_penalty: float = 0.0,
+    repetition_penalty: float = 1.0,
+) -> dict[str, Any]:
+    settings: dict[str, Any] = {
         "messages": [
             {
                 "role": "system",
@@ -42,8 +52,25 @@ def sampling(reasoning_strength: str) -> dict[str, Any]:
         ],
         "temperature": 1.0,
         "top_p": 0.95,
-        "top_k": 64,
+        "presence_penalty": presence_penalty,
+        "repetition_penalty": repetition_penalty,
     }
+    if top_k is not None and top_k >= 0:
+        settings["top_k"] = top_k
+    if thinking_token_budget is not None and thinking_token_budget >= 0:
+        settings["thinking_token_budget"] = thinking_token_budget
+    if reasoning_budget_tokens is not None and reasoning_budget_tokens >= 0:
+        settings["reasoning_budget_tokens"] = reasoning_budget_tokens
+    if reasoning_budget_message:
+        settings["reasoning_budget_message"] = reasoning_budget_message
+    chat_template_kwargs: dict[str, Any] = {}
+    if enable_thinking is not None:
+        chat_template_kwargs["enable_thinking"] = enable_thinking
+    if reasoning_effort is not None:
+        chat_template_kwargs["reasoning_effort"] = reasoning_effort
+    if chat_template_kwargs:
+        settings["chat_template_kwargs"] = chat_template_kwargs
+    return settings
 
 
 def request_json(url: str, body: dict[str, Any], timeout: int = 1800) -> dict[str, Any]:
@@ -77,8 +104,22 @@ def stream_once(
     model: str,
     reasoning_strength: str,
     max_tokens: int,
+    top_k: int | None = 64,
+    reasoning_effort: str | None = None,
+    presence_penalty: float = 0.0,
+    repetition_penalty: float = 1.0,
+    reasoning_budget_tokens: int | None = None,
+    reasoning_budget_message: str | None = None,
 ) -> dict[str, Any]:
-    settings = sampling(reasoning_strength)
+    settings = sampling(
+        reasoning_strength,
+        top_k,
+        reasoning_budget_tokens=reasoning_budget_tokens,
+        reasoning_budget_message=reasoning_budget_message,
+        reasoning_effort=reasoning_effort,
+        presence_penalty=presence_penalty,
+        repetition_penalty=repetition_penalty,
+    )
     body = {
         "model": model,
         "messages": settings.pop("messages")
@@ -144,16 +185,32 @@ def throughput(
     warmups: int,
     runs: int,
     max_tokens: int,
+    top_k: int | None,
+    reasoning_effort: str | None,
 ) -> dict[str, Any]:
     warmup_results = []
     for index in range(warmups):
-        result = stream_once(endpoint, model, reasoning_strength, max_tokens)
+        result = stream_once(
+            endpoint,
+            model,
+            reasoning_strength,
+            max_tokens,
+            top_k,
+            reasoning_effort,
+        )
         warmup_results.append(result)
         print(f"warmup {index + 1}/{warmups}: {result}", flush=True)
 
     timed_results = []
     for index in range(runs):
-        result = stream_once(endpoint, model, reasoning_strength, max_tokens)
+        result = stream_once(
+            endpoint,
+            model,
+            reasoning_strength,
+            max_tokens,
+            top_k,
+            reasoning_effort,
+        )
         timed_results.append(result)
         print(f"run {index + 1}/{runs}: {result}", flush=True)
 
@@ -177,12 +234,33 @@ def coding(
     reasoning_strength: str,
     max_tokens: int,
     artifacts_dir: Path,
+    top_k: int | None,
+    thinking_token_budget: int | None,
+    reasoning_budget_tokens: int | None,
+    reasoning_budget_message: str | None,
+    enable_thinking: bool | None,
+    reasoning_effort: str | None,
+    presence_penalty: float,
+    repetition_penalty: float,
+    selected_benchmarks: set[str] | None,
 ) -> dict[str, Any]:
     artifacts_dir.mkdir(parents=True, exist_ok=True)
     results: dict[str, Any] = {}
     for bench_name, expected, module_name in BENCHMARKS:
+        if selected_benchmarks is not None and bench_name not in selected_benchmarks:
+            continue
         print(f"coding: {bench_name}", flush=True)
-        settings = sampling(reasoning_strength)
+        settings = sampling(
+            reasoning_strength,
+            top_k,
+            thinking_token_budget,
+            reasoning_budget_tokens,
+            reasoning_budget_message,
+            enable_thinking,
+            reasoning_effort,
+            presence_penalty,
+            repetition_penalty,
+        )
         body = {
             "model": model,
             "messages": settings.pop("messages")
@@ -236,10 +314,64 @@ def main() -> int:
         choices=("low", "medium", "high", "xhigh"),
         default="high",
     )
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=("low", "medium", "xhigh"),
+        default=None,
+        help="Send a Qwen-style reasoning_effort chat-template argument.",
+    )
     parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--throughput-tokens", type=int, default=512)
     parser.add_argument("--coding-tokens", type=int, default=16384)
+    parser.add_argument("--skip-throughput", action="store_true")
+    parser.add_argument("--skip-coding", action="store_true")
+    parser.add_argument(
+        "--benchmarks",
+        default="",
+        help="Optional comma-separated subset of coding benchmarks.",
+    )
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=64,
+        help="Set a negative value to omit top_k from requests.",
+    )
+    parser.add_argument(
+        "--thinking-token-budget",
+        type=int,
+        default=-1,
+        help="Set a non-negative value to send vLLM's thinking_token_budget.",
+    )
+    parser.add_argument(
+        "--reasoning-budget-tokens",
+        type=int,
+        default=-1,
+        help="Set a non-negative llama.cpp reasoning token budget per request.",
+    )
+    parser.add_argument(
+        "--reasoning-budget-message",
+        default="",
+        help="Message llama.cpp injects when the reasoning budget is exhausted.",
+    )
+    parser.add_argument(
+        "--thinking-mode",
+        choices=("auto", "on", "off"),
+        default="auto",
+        help="Control the model chat template's enable_thinking setting.",
+    )
+    parser.add_argument(
+        "--presence-penalty",
+        type=float,
+        default=0.0,
+        help="OpenAI-compatible presence penalty used for coding requests.",
+    )
+    parser.add_argument(
+        "--repetition-penalty",
+        type=float,
+        default=1.0,
+        help="vLLM repetition penalty used for coding requests.",
+    )
     parser.add_argument(
         "--output",
         type=Path,
@@ -253,22 +385,69 @@ def main() -> int:
         "model": args.model,
         "endpoint": endpoint,
         "reasoning_strength": args.reasoning_strength,
-        "sampling": {"temperature": 1.0, "top_p": 0.95, "top_k": 64},
+        "reasoning_effort": args.reasoning_effort,
+        "sampling": {
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "top_k": args.top_k if args.top_k >= 0 else None,
+            "thinking_token_budget": (
+                args.thinking_token_budget
+                if args.thinking_token_budget >= 0
+                else None
+            ),
+            "reasoning_budget_tokens": (
+                args.reasoning_budget_tokens
+                if args.reasoning_budget_tokens >= 0
+                else None
+            ),
+            "reasoning_budget_message": args.reasoning_budget_message or None,
+            "enable_thinking": {
+                "auto": None,
+                "on": True,
+                "off": False,
+            }[args.thinking_mode],
+            "presence_penalty": args.presence_penalty,
+            "repetition_penalty": args.repetition_penalty,
+        },
         "vram_used_mb": vram_used_mb(),
-        "throughput": throughput(
+        "throughput": None
+        if args.skip_throughput
+        else throughput(
             endpoint,
             args.model,
             args.reasoning_strength,
             args.warmups,
             args.runs,
             args.throughput_tokens,
+            args.top_k,
+            args.reasoning_effort,
         ),
-        "coding": coding(
+        "coding": None
+        if args.skip_coding
+        else coding(
             endpoint,
             args.model,
             args.reasoning_strength,
             args.coding_tokens,
             args.output / "coding",
+            args.top_k,
+            args.thinking_token_budget
+            if args.thinking_token_budget >= 0
+            else None,
+            args.reasoning_budget_tokens
+            if args.reasoning_budget_tokens >= 0
+            else None,
+            args.reasoning_budget_message or None,
+            {
+                "auto": None,
+                "on": True,
+                "off": False,
+            }[args.thinking_mode],
+            args.reasoning_effort,
+            args.presence_penalty,
+            args.repetition_penalty,
+            {name.strip() for name in args.benchmarks.split(",") if name.strip()}
+            or None,
         ),
     }
     (args.output / "results.json").write_text(json.dumps(result, indent=2) + "\n")

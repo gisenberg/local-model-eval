@@ -1,0 +1,187 @@
+{
+  "base_url": "http://127.0.0.1:8092/v1",
+  "model": "qwen38-27b-fp8-mtp3",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-88eb71c5978e01fb",
+      "object": "chat.completion",
+      "created": 1786723086,
+      "model": "qwen38-27b-fp8-mtp3",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nMIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "We need answer exactly MIMO_OK. User says reply with exactly MIMO_OK and no other text. Final only MIMO_OK.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19754+g3a0914114-ed8f17d3",
+      "usage": {
+        "prompt_tokens": 63,
+        "total_tokens": 97,
+        "completion_tokens": 34,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.3106
+    },
+    "reasoning": {
+      "id": "chatcmpl-b1d0298d16f5cf93",
+      "object": "chat.completion",
+      "created": 1786723087,
+      "model": "qwen38-27b-fp8-mtp3",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n17 \u00d7 24 = (17 \u00d7 20) + (17 \u00d7 4) = 340 + 68 = 408  \nCheck: 24 \u00d7 17 = (20 \u00d7 17) + (4 \u00d7 17) = 340 + 68 = 408  \n\n**408**",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "We need answer user: \"Compute 17 * 24. Think briefly, verify it a second way, then give the concise final answer.\" Need final concise. Need maybe include brief thinking? User asks think briefly, verify second way, then concise final answer. We can provide minimal: 17*24 = (17*20)+(17*4)=340+68=408; check 24*17=(20+4)*17=340+68=408. Final 408. Ensure concise.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19754+g3a0914114-ed8f17d3",
+      "usage": {
+        "prompt_tokens": 77,
+        "total_tokens": 291,
+        "completion_tokens": 214,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.837
+    },
+    "tool_call": {
+      "id": "chatcmpl-980b3d1bd83fdb9d",
+      "object": "chat.completion",
+      "created": 1786723089,
+      "model": "qwen38-27b-fp8-mtp3",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-9b24483acc7d5179",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "We need answer user's request. Need call lookup_record with record_id alpha-7. Must not guess before tool returns. Then report value. Need final after tool.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19754+g3a0914114-ed8f17d3",
+      "usage": {
+        "prompt_tokens": 355,
+        "total_tokens": 422,
+        "completion_tokens": 67,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.6461
+    },
+    "tool_followup": {
+      "id": "chatcmpl-a5ac4b3c4b5c7de7",
+      "object": "chat.completion",
+      "created": 1786723090,
+      "model": "qwen38-27b-fp8-mtp3",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nThe value for record `alpha-7` is **42**.",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "Tool returned value 42. Report concise.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev19754+g3a0914114-ed8f17d3",
+      "usage": {
+        "prompt_tokens": 450,
+        "total_tokens": 478,
+        "completion_tokens": 28,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.3472
+    }
+  }
+}
