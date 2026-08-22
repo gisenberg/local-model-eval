@@ -1,0 +1,151 @@
+{
+  "base_url": "http://127.0.0.1:10013/v1",
+  "model": "qwen38-27b-fp8-1m-dflash2",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "fad9e12d82f94377953f31592573538d",
+      "object": "chat.completion",
+      "created": 1787362320,
+      "model": "qwen38-27b-fp8-1m-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nMIMO_OK",
+            "reasoning_content": "The user is asking me to reply with exactly \"MIMO_OK\" and no other text. This is a simple, straightforward request. I should comply and output only that text.\n",
+            "tool_calls": null
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 248046
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 21,
+        "total_tokens": 64,
+        "completion_tokens": 43,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 38
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.3189
+    },
+    "reasoning": {
+      "id": "b9cfb3bd928a463ca97e6304eb0a5101",
+      "object": "chat.completion",
+      "created": 1787362320,
+      "model": "qwen38-27b-fp8-1m-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n**Method 1:** 17 \u00d7 24 = 17 \u00d7 20 + 17 \u00d7 4 = 340 + 68 = **408**\n\n**Method 2 (check):** 17 \u00d7 24 = (20 \u2212 3) \u00d7 24 = 480 \u2212 72 = **408** \u2713\n\n**408**",
+            "reasoning_content": "The user wants me to compute 17 * 24, verify it a second way, then give a concise final answer.\n\nMethod 1: 17 * 24 = 17 * 20 + 17 * 4 = 340 + 68 = 408\n\nMethod 2: 17 * 24 = (20 - 3) * 24 = 20 * 24 - 3 * 24 = 480 - 72 = 408\n\nBoth give 408. Good.\n",
+            "tool_calls": null
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 248046
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 261,
+        "completion_tokens": 226,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 133
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.9017
+    },
+    "tool_call": {
+      "id": "1f63873d5d95476b8128d93c55aa1eb2",
+      "object": "chat.completion",
+      "created": 1787362321,
+      "model": "qwen38-27b-fp8-1m-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n",
+            "reasoning_content": "The user wants me to call lookup_record with record_id \"alpha-7\". Let me do that.\n",
+            "tool_calls": [
+              {
+                "id": "call_f7cb3b305d6f423ca3cb7823",
+                "index": 0,
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ]
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "matched_stop": null
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 328,
+        "total_tokens": 382,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 23
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.3148
+    },
+    "tool_followup": {
+      "id": "13a6a3f69ffe4e7fbd24944ad38f26dc",
+      "object": "chat.completion",
+      "created": 1787362321,
+      "model": "qwen38-27b-fp8-1m-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nThe record **alpha-7** has a value of **42**.",
+            "reasoning_content": "The tool returned the record. The value is 42.\n",
+            "tool_calls": null
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 248046
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 410,
+        "total_tokens": 442,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 15
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.218
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "base_url": "http://127.0.0.1:10013",
+  "model": "qwen38-27b-fp8-1m-dflash2",
+  "target_raw_tokens": 500000,
+  "raw_tokens": 499997,
+  "prompt_tokens": 500009,
+  "completion_tokens": 7,
+  "filler_repetitions": 21737,
+  "needle_depth": 0.75,
+  "expected": "739184",
+  "content": "739184",
+  "reasoning_content": null,
+  "elapsed_seconds": 385.731,
+  "passed": true,
+  "response": {
+    "id": "41d5ee5ff5d4410b88e1e9328c65f9d1",
+    "object": "chat.completion",
+    "created": 1787360728,
+    "model": "qwen38-27b-fp8-1m-dflash2",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "739184",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "matched_stop": 248046
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 500009,
+      "total_tokens": 500016,
+      "completion_tokens": 7,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  }
+}

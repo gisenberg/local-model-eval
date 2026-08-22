@@ -1,0 +1,151 @@
+{
+  "base_url": "http://127.0.0.1:8092/v1",
+  "model": "qwen38-27b-fp8-sglang-dflash2",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "a6d2346149ab4de4923648dd1adfbabc",
+      "object": "chat.completion",
+      "created": 1787169051,
+      "model": "qwen38-27b-fp8-sglang-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nMIMO_OK",
+            "reasoning_content": "The user is asking me to reply with exactly \"MIMO_OK\" and no other text. This is a straightforward request - I just need to output that exact string with nothing else.\n",
+            "tool_calls": null
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 248046
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 21,
+        "total_tokens": 65,
+        "completion_tokens": 44,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 39
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.3902
+    },
+    "reasoning": {
+      "id": "2f34abf8edd446b5bfd2d59084878162",
+      "object": "chat.completion",
+      "created": 1787169052,
+      "model": "qwen38-27b-fp8-sglang-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n**Method 1:** 17 \u00d7 24 = 17 \u00d7 20 + 17 \u00d7 4 = 340 + 68 = **408**\n\n**Method 2 (verify):** 17 \u00d7 24 = (20 \u2212 3) \u00d7 24 = 480 \u2212 72 = **408** \u2713\n\n**408**",
+            "reasoning_content": "The user wants me to compute 17 * 24, verify it a second way, and give a concise final answer.\n\nMethod 1: 17 * 24 = 17 * 20 + 17 * 4 = 340 + 68 = 408\n\nMethod 2: 17 * 24 = (20 - 3) * 24 = 480 - 72 = 408\n\nBoth give 408. Good.\n",
+            "tool_calls": null
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 248046
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 246,
+        "completion_tokens": 211,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 118
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.8683
+    },
+    "tool_call": {
+      "id": "4ce066da6ac747dc8244d5fc224928a9",
+      "object": "chat.completion",
+      "created": 1787169052,
+      "model": "qwen38-27b-fp8-sglang-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n",
+            "reasoning_content": "The user wants me to call lookup_record with record_id \"alpha-7\" and then report the value after the tool returns.\n",
+            "tool_calls": [
+              {
+                "id": "call_f25ab3a818c04108b0c4615b",
+                "index": 0,
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ]
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "matched_stop": null
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 328,
+        "total_tokens": 387,
+        "completion_tokens": 59,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 28
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.3323
+    },
+    "tool_followup": {
+      "id": "7d92dbbfde2f4281b504a5c667710fb2",
+      "object": "chat.completion",
+      "created": 1787169053,
+      "model": "qwen38-27b-fp8-sglang-dflash2",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nThe record **alpha-7** has a value of **42**.",
+            "reasoning_content": "The tool returned the record. The value is 42.\n",
+            "tool_calls": null
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 248046
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 415,
+        "total_tokens": 447,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 15
+      },
+      "metadata": {
+        "weight_version": "default"
+      },
+      "_client_elapsed_s": 0.5565
+    }
+  }
+}

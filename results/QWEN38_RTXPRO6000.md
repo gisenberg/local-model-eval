@@ -1,8 +1,10 @@
-# Qwen3.8-27B FP8 + MTP-3 on RTX Pro 6000
+# Qwen3.8-27B FP8 on RTX Pro 6000
 
 Qwen3.8-27B FP8 fits comfortably on one RTX Pro 6000 Blackwell at the full native 262,144-token allocation.
-The retained configuration uses the official FP8 checkpoint, the dedicated Qwen3.8 vLLM build, the checkpoint's native MTP head with three speculative tokens, FP8 KV cache, and text-only loading.
-It passes the API protocol suite, retrieves an exact needle from a 249,999-token chat prompt, reaches 114.0 tok/s isolated at medium reasoning effort, and reaches 633.6 tok/s on the warmed eight-stream trial.
+The retained quality run uses the dedicated Qwen3.8 vLLM build and the checkpoint's native MTP head with three speculative tokens.
+The production routes use SGLang, FP8 KV, and the lossless DFlash2 drafter at native 262K context or with the official static YaRN x4 extension at 1M context.
+The native SGLang route passes the API protocol suite, retrieves an exact needle from a 249,999-token chat prompt, reaches 228 tok/s isolated, and reaches 1,165 tok/s at 16 concurrent streams.
+The 1M route passes exact cold retrieval at 500,009 and 999,960 API prompt tokens.
 The retained vLLM deployment resolved 206/300 SWE-bench Lite instances, the best result measured on this host.
 
 ## Result summary
@@ -28,6 +30,33 @@ The retained vLLM deployment resolved 206/300 SWE-bench Lite instances, the best
 | Xhigh lightweight coding at 16K | 10/22 |
 | SWE-bench Lite, vLLM + MTP-3 | 206/300, 68.7% |
 | SWE-bench Lite, SGLang + MTP-4 | 196/300, 65.3% |
+
+## SGLang DFlash2 production routes
+
+The production runtime uses SGLang commit `1cf2b8c54d81802abc15dcf23a29b9cc687bc01e`, pinned by local image ID `sha256:8d142fea6c3bfeec477044c40051841ab0b9228ed9039203f2f741115eaad0e1`.
+The DFlash2 checkpoint is revision `50307d4c4cde6860d4eee73e2547cd786fe8e8a4`, and its single safetensors file has SHA-256 `67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c`.
+The upstream checkpoint revision and weight hash were unchanged when rechecked on 2026-08-21.
+
+The native 262K route uses FP8 KV, FlashInfer attention, 2K chunked prefill, BF16 Mamba state, the `extra_buffer_lazy` Mamba cache strategy, and DFlash2 block size 8.
+It retains the drafter's trained 2,048-token sliding window, passes 22/22 lightweight checks after the recorded rerun, and retrieves the exact 250K needle in 118.079 seconds.
+Measured throughput was 228 tok/s isolated, 846 tok/s at warmed concurrency 8, and 1,165 tok/s mean at concurrency 16.
+
+The dedicated 1M route applies the official static YaRN x4 scaling to config-only target and drafter shadows.
+The shadows use hard links, so they share the original checkpoint storage rather than duplicating weights.
+It admits one request, pins four lazy Mamba state slots, captures decode graphs only at batch size 1, and keeps the DFlash2 draft window at 2,048 tokens.
+The server allocated 1,117,830 FP8 KV tokens, reported 11.93 GB of internal GPU-memory headroom after graph capture, and reserved about 85.5 GB according to `nvidia-smi`.
+SGLang still sizes the draft KV pool against the full token pool even with compact draft caching, so the 2K window reduces live draft history but not the static draft-pool reservation.
+
+| Long-context probe | API prompt tokens | Cold elapsed | Result |
+|---|---:|---:|---:|
+| 500K | 500,009 | 385.731 s | Pass |
+| Near 1M | 999,960 | 1,409.342 s | Pass |
+
+Both probes placed the exact six-digit needle at 75% depth and returned only the expected value.
+The near-1M run followed an explicit radix-cache flush and had zero cached prompt tokens throughout prefill.
+The same route passed all 7 API and tool-protocol checks and returned correctly through the llama-swap proxy alias `qwen38-27b-fp8-1m-dflash2`.
+
+The artifacts are [`../experiments/qwen38_27b_fp8_sglang_dflash2/`](../experiments/qwen38_27b_fp8_sglang_dflash2/) and [`../experiments/qwen38_27b_fp8_sglang_dflash2_1m/`](../experiments/qwen38_27b_fp8_sglang_dflash2_1m/).
 
 ## Retained server configuration
 

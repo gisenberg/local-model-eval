@@ -1,0 +1,45 @@
+{
+  "model": "qwen38-27b-fp8-sglang-dflash2",
+  "endpoint": "http://127.0.0.1:8092/v1/chat/completions",
+  "reasoning_strength": "medium",
+  "reasoning_effort": "medium",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "reasoning_budget_tokens": 4096,
+    "reasoning_budget_message": "\\n\\nWait, I'm overthinking this. Thinking budget complete. Let's answer now.",
+    "enable_thinking": true,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 86534,
+  "throughput": null,
+  "coding": {
+    "total_passed": 5,
+    "total_expected": 5,
+    "total_score": "5/5",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpjblpo_h0\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::TestStringProcessor::test_reverse_words PASSED [ 20%]\ntest_string_processor.py::TestStringProcessor::test_count_vowels PASSED  [ 40%]\ntest_string_processor.py::TestStringProcessor::test_is_palindrome PASSED [ 60%]\ntest_string_processor.py::TestStringProcessor::test_caesar_cipher PASSED [ 80%]\ntest_string_processor.py::TestStringProcessor::test_most_common_word PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n",
+        "n_code_blocks": 1,
+        "response_len": 5174,
+        "expected": 5,
+        "raw_passed": 5,
+        "scored_passed": 5,
+        "test_count_matches_expected": true,
+        "elapsed_s": 14.34,
+        "completion_tokens": 3104,
+        "finish_reason": "stop",
+        "reasoning_chars": 6298
+      }
+    }
+  }
+}
