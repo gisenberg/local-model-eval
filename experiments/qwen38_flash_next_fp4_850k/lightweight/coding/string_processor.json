@@ -1,0 +1,46 @@
+{
+  "id": "chatcmpl-93e66858a65a3454",
+  "object": "chat.completion",
+  "created": 1793079038,
+  "model": "qwen38-flash-next-fp4-850k",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "\n\n```python\nfrom typing import Optional\nfrom collections import Counter\nimport re\n\n\nclass StringProcessor:\n    \"\"\"A utility class for common string manipulation operations.\"\"\"\n\n    @staticmethod\n    def reverse_words(s: str) -> str:\n        \"\"\"Reverse the order of words in a string, normalizing whitespace.\n\n        Args:\n            s: The input string potentially containing multiple spaces.\n\n        Returns:\n            A new string with words in reversed order and single spaces between them.\n        \"\"\"\n        words = s.split()\n        return \" \".join(reversed(words))\n\n    @staticmethod\n    def count_vowels(s: str) -> int:\n        \"\"\"Count the number of vowels (a, e, i, o, u) in a string, case-insensitive.\n\n        Args:\n            s: The input string.\n\n        Returns:\n            The total count of vowel characters.\n        \"\"\"\n        return sum(1 for char in s if char.lower() in \"aeiou\")\n\n    @staticmethod\n    def is_palindrome(s: str) -> bool:\n        \"\"\"Check if a string is a palindrome, ignoring case, spaces, and punctuation.\n\n        Args:\n            s: The input string.\n\n        Returns:\n            True if the string reads the same forwards and backwards, False otherwise.\n        \"\"\"\n        cleaned = re.sub(r\"[^a-zA-Z0-9]\", \"\", s).lower()\n        return cleaned == cleaned[::-1]\n\n    @staticmethod\n    def caesar_cipher(s: str, shift: int) -> str:\n        \"\"\"Apply a Caesar cipher to a string, shifting only alphabetic characters.\n\n        Non-alphabetic characters are left unchanged. Supports negative shifts\n        (which shift letters backwards in the alphabet).\n\n        Args:\n            s: The input string.\n            shift: The number of positions to shift each letter.\n\n        Returns:\n            The encoded string.\n        \"\"\"\n        result = []\n        for char in s:\n            if char.islower():\n                base = ord(\"a\")\n                result.append(chr((ord(char) - base + shift) % 26 + base))\n            elif char.isupper():\n                base = ord(\"A\")\n                result.append(chr((ord(char) - base + shift) % 26 + base))\n            else:\n                result.append(char)\n        return \"\".join(result)\n\n    @staticmethod\n    def most_common_word(s: str) -> Optional[str]:\n        \"\"\"Return the most frequently occurring word (case-insensitive).\n\n        If multiple words share the highest frequency, the one that appears\n        first in the original string is returned. Returns None for empty or\n        whitespace-only strings.\n\n        Args:\n            s: The input string.\n\n        Returns:\n            The most common word in lowercase, or None if no words exist.\n        \"\"\"\n        words = s.split()\n        if not words:\n            return None\n        lower_words = [w.lower() for w in words]\n        counter = Counter(lower_words)\n        # max() with key returns the first encountered item among ties\n        most_common = max(lower_words, key=counter.get)\n        return most_common\n\n\n# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n# Pytest tests\n# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nimport pytest\n\n\nclass TestReverseWords:\n    def test_multiple_and_leading_trailing_spaces(self):\n        sp = StringProcessor()\n        assert sp.reverse_words(\"  hello   world  from   Python \") == \"Python from world hello\"\n\n    def test_single_word(self):\n        sp = StringProcessor()\n        assert sp.reverse_words(\"onlyword\") == \"onlyword\"\n\n    def test_empty_string(self):\n        sp = StringProcessor()\n        assert sp.reverse_words(\"\") == \"\"\n\n\nclass TestCountVowels:\n    def test_mixed_case_and_consonants(self):\n        sp = StringProcessor()\n        assert sp.count_vowels(\"AEIOU aeiou bcdfg\") == 10\n\n    def test_no_vowels(self):\n        sp = StringProcessor()\n        assert sp.count_vowels(\"rhythm\") == 0\n\n    def test_only_vowels_and_non_alpha(self):\n        sp = StringProcessor()\n        assert sp.count_vowels(\"a!e@i#o$u\") == 5\n\n\nclass TestIsPalindrome:\n    def test_phrase_with_punctuation(self):\n        sp = StringProcessor()\n        assert sp.is_palindrome(\"A man, a plan, a canal: Panama\") is True\n\n    def test_not_palindrome(self):\n        sp = StringProcessor()\n        assert sp.is_palindrome(\"hello world\") is False\n\n    def test_empty_string_is_palindrome(self):\n        sp = StringProcessor()\n        assert sp.is_palindrome(\"\") is True\n\n\nclass TestCaesarCipher:\n    def test_positive_shift(self):\n        sp = StringProcessor()\n        assert sp.caesar_cipher(\"Hello, World!\", 3) == \"Khoor, Zruog!\"\n\n    def test_negative_shift(self):\n        sp = StringProcessor()\n        assert sp.caesar_cipher(\"Khoor, Zruog!\", -3) == \"Hello, World!\"\n\n    def test_wraparound(self):\n        sp = StringProcessor()\n        assert sp.caesar_cipher(\"xyz ABC\", 3) == \"abc DEF\"\n\n\nclass TestMostCommonWord:\n    def test_tie_returns_first_occurrence(self):\n        sp = StringProcessor()\n        assert sp.most_common_word(\"cat dog cat dog\") == \"cat\"\n\n    def test_case_insensitive(self):\n        sp = StringProcessor()\n        assert sp.most_common_word(\"Apple apple APPLE banana\") == \"apple\"\n\n    def test_empty_returns_none(self):\n        sp = StringProcessor()\n        assert sp.most_common_word(\"   \") is None\n```\n\n**Key design decisions:**\n\n| Method | Approach | Why |\n|---|---|---|\n| `reverse_words` | `str.split()` (no args) | Collapses all whitespace runs automatically, strips leading/trailing |\n| `count_vowels` | Generator + `sum()` | Concise, no temporary list allocation |\n| `is_palindrome` | `re.sub` to strip non-alphanumeric | Clean single-pass filtering, also handles digits for broader correctness |\n| `caesar_cipher` | `ord`/`chr` arithmetic with `% 26` | Handles negative shifts naturally via Python's modulo (always non-negative) |\n| `most_common_word` | `max(list, key=Counter.get)` | `max` iterates in original order, so the **first** tied element wins \u2014 exactly the spec |\n\nRun the tests with:\n\n```bash\npytest -v test_string_processor.py\n```",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": "The user wants me to write a Python class `StringProcessor` with 5 methods, each with type hints and docstrings, plus 5 pytest tests. Let me think through each method carefully:\n\n1. **reverse_words**: Split by whitespace (which handles multiple spaces, leading/trailing), reverse the list, join with single space.\n\n2. **count_vowels**: Iterate through string, check if char (lowercased) is in \"aeiou\", count.\n\n3. **is_palindrome**: Remove non-alphanumeric, lowercase, compare to reverse.\n\n4. **caesar_cipher**: For each char, if it's a-z or A-Z, shift it with wraparound. Leave others unchanged. Negative shifts work because of modulo.\n\n5. **most_common_word**: Split into words, lowercase, count frequencies, return the first one with max count. Need to handle ties by returning the first occurring one. Return None for empty/whitespace strings.\n\nFor pytest tests, I need 5 tests covering each method with good edge cases.\n\nLet me write clean, well-documented code.\n"
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.1.dev21830+g8244d1c44-2017e8ac",
+  "usage": {
+    "prompt_tokens": 250,
+    "total_tokens": 1955,
+    "completion_tokens": 1705,
+    "prompt_tokens_details": {
+      "cached_tokens": 21,
+      "created_cache_tokens": 0,
+      "multimodal_tokens": null
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 229
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

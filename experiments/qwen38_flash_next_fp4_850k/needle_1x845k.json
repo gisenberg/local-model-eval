@@ -1,0 +1,32 @@
+{
+  "base_url": "http://127.0.0.1:8093",
+  "model": "qwen38-flash-next-fp4-850k",
+  "sessions": 1,
+  "target_tokens": 845000,
+  "depth": 0.6,
+  "phase1_wall_s": 96.033,
+  "needles": [
+    {
+      "session": 0,
+      "project": "LANTERN",
+      "expected": "915117",
+      "got": "915117",
+      "passed": true,
+      "prompt_tokens": 845001,
+      "ttft_s": 96.025,
+      "elapsed_s": 96.028,
+      "error": null
+    }
+  ],
+  "decode_at_depth": [
+    {
+      "session": 0,
+      "cached_tokens": 845007,
+      "new_prompt_tokens": 46,
+      "ttft_s": 0.329,
+      "completion_tokens": 1024,
+      "decode_tok_s": 158.24,
+      "error": null
+    }
+  ]
+}

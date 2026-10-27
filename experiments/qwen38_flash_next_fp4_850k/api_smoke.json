@@ -1,0 +1,215 @@
+{
+  "base_url": "http://127.0.0.1:8093/v1",
+  "model": "qwen38-flash-next-fp4-850k",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_preserved": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-afbe1d9ecceb7aec",
+      "object": "chat.completion",
+      "created": 1793079032,
+      "model": "qwen38-flash-next-fp4-850k",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nMIMO_OK",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "We need to respond to user: \"Reply with exactly MIMO_OK and no other text.\" Need final exactly MIMO_OK. Ensure no extra.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev21830+g8244d1c44-2017e8ac",
+      "usage": {
+        "prompt_tokens": 63,
+        "total_tokens": 100,
+        "completion_tokens": 37,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 31
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.2033
+    },
+    "reasoning": {
+      "id": "chatcmpl-932ce6d45a1c5007",
+      "object": "chat.completion",
+      "created": 1793079032,
+      "model": "qwen38-flash-next-fp4-850k",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\n17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408  \nCheck: 24 \u00d7 (10 + 7) = 240 + 168 = 408  \n\n**408**",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "We need answer user: \"Compute 17 * 24. Think briefly, verify it a second way, then give the concise final answer.\" Need likely include brief thinking? They ask think briefly, verify second way, concise final answer. We can provide short verification and final. Need ensure final concise. Compute 17*24 = 17*(20+4)=340+68=408. Verify: 24*(10+7)=240+168=408. Final 408.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev21830+g8244d1c44-2017e8ac",
+      "usage": {
+        "prompt_tokens": 77,
+        "total_tokens": 268,
+        "completion_tokens": 191,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 121
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.9461
+    },
+    "tool_call": {
+      "id": "chatcmpl-ae5d61785fecad51",
+      "object": "chat.completion",
+      "created": 1793079033,
+      "model": "qwen38-flash-next-fp4-850k",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-8b4596eca230fec4",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "The user wants me to call lookup_record with record_id \"alpha-7\". I should not guess the value. Let me make the call.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev21830+g8244d1c44-2017e8ac",
+      "usage": {
+        "prompt_tokens": 355,
+        "total_tokens": 417,
+        "completion_tokens": 62,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 30
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.4094
+    },
+    "tool_followup": {
+      "id": "chatcmpl-b2585fb7b0ee7d1e",
+      "object": "chat.completion",
+      "created": 1793079033,
+      "model": "qwen38-flash-next-fp4-850k",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "\n\nThe record `alpha-7` has the value **42**.",
+            "refusal": null,
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The tool returned successfully. The value is 42. I should report this.\n"
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.1.dev21830+g8244d1c44-2017e8ac",
+      "usage": {
+        "prompt_tokens": 445,
+        "total_tokens": 480,
+        "completion_tokens": 35,
+        "prompt_tokens_details": {
+          "cached_tokens": 416,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 18
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.255
+    }
+  }
+}

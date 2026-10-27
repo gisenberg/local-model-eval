@@ -1,0 +1,45 @@
+{
+  "model": "qwen38-flash-next-fp4-850k",
+  "endpoint": "http://127.0.0.1:8093/v1/chat/completions",
+  "reasoning_strength": "high",
+  "reasoning_effort": "medium",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": null,
+    "reasoning_budget_tokens": null,
+    "reasoning_budget_message": null,
+    "enable_thinking": true,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 96953,
+  "throughput": null,
+  "coding": {
+    "total_passed": 6,
+    "total_expected": 6,
+    "total_score": "6/6",
+    "benchmarks": {
+      "lru_cache_ttl": {
+        "passed": 11,
+        "failed": 0,
+        "errors": 0,
+        "total": 11,
+        "status": "ok",
+        "single_file": true,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmponv2cv3u\nplugins: anyio-4.13.0\ncollecting ... collected 11 items\n\ntest_lru_cache.py::TestBasicGetPut::test_put_and_get_returns_value PASSED [  9%]\ntest_lru_cache.py::TestBasicGetPut::test_get_missing_key_returns_none PASSED [ 18%]\ntest_lru_cache.py::TestBasicGetPut::test_put_overwrites_existing_value PASSED [ 27%]\ntest_lru_cache.py::TestCapacityEviction::test_lru_eviction_order PASSED  [ 36%]\ntest_lru_cache.py::TestTTLExpiry::test_item_expires_after_ttl PASSED     [ 45%]\ntest_lru_cache.py::TestTTLExpiry::test_item_valid_before_ttl PASSED      [ 54%]\ntest_lru_cache.py::TestCustomTTL::test_custom_ttl_shorter_than_default PASSED [ 63%]\ntest_lru_cache.py::TestCustomTTL::test_custom_ttl_longer_than_default PASSED [ 72%]\ntest_lru_cache.py::TestDelete::test_delete_existing_returns_true_and_removes PASSED [ 81%]\ntest_lru_cache.py::TestDelete::test_delete_missing_returns_false PASSED  [ 90%]\ntest_lru_cache.py::TestSizeMixedExpiry::test_size_reflects_only_valid_items PASSED [100%]\n\n============================== 11 passed in 0.02s ==============================\n",
+        "n_code_blocks": 2,
+        "response_len": 14612,
+        "expected": 6,
+        "raw_passed": 11,
+        "scored_passed": 6,
+        "test_count_matches_expected": false,
+        "elapsed_s": 19.12,
+        "completion_tokens": 5079,
+        "finish_reason": "stop",
+        "reasoning_chars": 5486
+      }
+    }
+  }
+}
