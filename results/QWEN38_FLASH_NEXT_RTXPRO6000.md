@@ -17,7 +17,7 @@ It became the opencode default on 2026-10-26, replacing the two-agent Qwen3.8-27
 | Component | Pin |
 |---|---|
 | Model | `nvidia/Qwen3.8-Flash-Next-FP4-Local`, revision `b9ce18a6887e18c089fdea8509a33e63429a3300` |
-| Weights | 21 safetensors shards, 95.17 GiB, at `/mnt/extended/models/qwen38-flash-next-fp4-local-b9ce18a6` |
+| Weights | 21 safetensors shards, 95.17 GiB, at `/home/gisenberg/models-nvme/qwen38-flash-next-fp4-local-b9ce18a6` on the T705 NVMe (moved from the BX500 SATA SSD on 2026-11-02) |
 | Image | `ghcr.io/local-inference-lab/vllm:release-10152026` (`745feb916ee8`), vLLM `0.1.dev21830+g8244d1c44` |
 | Serve script | `../opencode-config/hosts/rtxpro6000/serve-qwen38-flash-next-vllm.sh` |
 | llama-swap route | `qwen38-flash-next-fp4-850k` |
@@ -54,7 +54,7 @@ The failed attempt is kept in `experiments/qwen38_flash_next_fp4_850k/server_att
 | LRU reruns, top_k 20 | 6/6 and 0/6 |
 | Needle, 845,001 prompt tokens, depth 0.6 | PASS, 96.03 s cold TTFT |
 | Decode at 845K depth, 1,024 tokens | 158.24 tok/s, 0.33 s TTFT on the cached prefix |
-| Cold start through llama-swap | 311 s with the checkpoint in page cache; about 9 minutes uncached from the SATA SSD |
+| Cold start through llama-swap | 235 s uncached from the T705 NVMe (78 s reading weights); 369 s uncached from the SATA SSD (228 s reading weights) |
 
 The thinking-off check returned no reasoning tokens.
 
