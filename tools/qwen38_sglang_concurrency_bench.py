@@ -58,6 +58,8 @@ def run_wave(
     reasoning_effort: str,
     reasoning_budget_tokens: int,
     reasoning_budget_message: str,
+    top_k: int = 20,
+    request_reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     barrier = threading.Barrier(concurrency + 1)
     stop_sampling = threading.Event()
@@ -70,11 +72,13 @@ def run_wave(
             model,
             reasoning_effort,
             max_tokens,
-            20,
-            reasoning_effort,
+            top_k if top_k >= 0 else None,
+            # A top-level effort replaces the Qwen chat-template argument.
+            None if request_reasoning_effort is not None else reasoning_effort,
             repetition_penalty=1.0,
             reasoning_budget_tokens=reasoning_budget_tokens,
             reasoning_budget_message=reasoning_budget_message,
+            request_reasoning_effort=request_reasoning_effort,
         )
 
     def sample_gpu() -> None:
@@ -129,6 +133,17 @@ def main() -> int:
         "--reasoning-budget-message",
         default="\n\nWait, I'm overthinking this. Thinking budget complete. Let's answer now.",
     )
+    parser.add_argument(
+        "--request-reasoning-effort",
+        default=None,
+        help="Send the OpenAI top-level reasoning_effort field instead of the Qwen template argument.",
+    )
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=20,
+        help="Set a negative value to omit top_k from requests.",
+    )
     parser.add_argument("--concurrency", default="1,2,4,8")
     parser.add_argument("--trials", type=int, default=2)
     parser.add_argument("--max-tokens", type=int, default=512)
@@ -152,6 +167,8 @@ def main() -> int:
         args.reasoning_effort,
         args.reasoning_budget_tokens,
         args.reasoning_budget_message,
+        args.top_k,
+        args.request_reasoning_effort,
     )
     print(json.dumps(warmup, indent=2), flush=True)
 
@@ -166,6 +183,8 @@ def main() -> int:
                 args.reasoning_effort,
                 args.reasoning_budget_tokens,
                 args.reasoning_budget_message,
+                args.top_k,
+                args.request_reasoning_effort,
             )
             result["trial"] = trial
             waves.append(result)
@@ -191,6 +210,8 @@ def main() -> int:
         "model": args.model,
         "reasoning_effort": args.reasoning_effort,
         "reasoning_budget_tokens": args.reasoning_budget_tokens,
+        "request_reasoning_effort": args.request_reasoning_effort,
+        "top_k": args.top_k,
         "max_tokens": args.max_tokens,
         "warmup": warmup,
         "waves": waves,

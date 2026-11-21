@@ -1,0 +1,373 @@
+{
+  "base_url": "http://127.0.0.1:8094/v1",
+  "model": "inkling-2-mini",
+  "reasoning_effort": "medium",
+  "reasoning_budget_tokens": -1,
+  "request_reasoning_effort": "high",
+  "top_k": -1,
+  "max_tokens": 1024,
+  "warmup": {
+    "concurrency": 1,
+    "elapsed_s": 2.5593,
+    "completion_tokens": 778,
+    "aggregate_tps": 303.99,
+    "per_agent_tps": 303.99,
+    "ttft_mean_s": 0.0506,
+    "ttft_median_s": 0.0506,
+    "request_elapsed_mean_s": 2.5591,
+    "request_completion_tokens": [
+      778
+    ],
+    "gpu": {
+      "gpu_utilization_pct_mean": 97.8,
+      "gpu_utilization_pct_max": 100.0,
+      "memory_utilization_pct_mean": 65.4,
+      "memory_utilization_pct_max": 68.0,
+      "power_w_mean": 348.23,
+      "power_w_max": 354.74,
+      "memory_used_mb_mean": 88864.0,
+      "memory_used_mb_max": 88864.0
+    }
+  },
+  "waves": [
+    {
+      "concurrency": 1,
+      "elapsed_s": 1.805,
+      "completion_tokens": 627,
+      "aggregate_tps": 347.37,
+      "per_agent_tps": 347.37,
+      "ttft_mean_s": 0.0448,
+      "ttft_median_s": 0.0448,
+      "request_elapsed_mean_s": 1.8048,
+      "request_completion_tokens": [
+        627
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 67.0,
+        "memory_utilization_pct_max": 68.0,
+        "power_w_mean": 350.57,
+        "power_w_max": 352.24,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 1,
+      "elapsed_s": 2.1596,
+      "completion_tokens": 675,
+      "aggregate_tps": 312.55,
+      "per_agent_tps": 312.55,
+      "ttft_mean_s": 0.0448,
+      "ttft_median_s": 0.0448,
+      "request_elapsed_mean_s": 2.1594,
+      "request_completion_tokens": [
+        675
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 67.25,
+        "memory_utilization_pct_max": 69.0,
+        "power_w_mean": 349.86,
+        "power_w_max": 350.42,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 2
+    },
+    {
+      "concurrency": 4,
+      "elapsed_s": 3.3218,
+      "completion_tokens": 2497,
+      "aggregate_tps": 751.7,
+      "per_agent_tps": 187.92,
+      "ttft_mean_s": 0.0643,
+      "ttft_median_s": 0.0643,
+      "request_elapsed_mean_s": 2.9738,
+      "request_completion_tokens": [
+        527,
+        667,
+        726,
+        577
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 72.38,
+        "memory_utilization_pct_max": 75.0,
+        "power_w_mean": 350.71,
+        "power_w_max": 353.34,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 4,
+      "elapsed_s": 4.812,
+      "completion_tokens": 2451,
+      "aggregate_tps": 509.35,
+      "per_agent_tps": 127.34,
+      "ttft_mean_s": 1.7274,
+      "ttft_median_s": 1.7308,
+      "request_elapsed_mean_s": 4.4341,
+      "request_completion_tokens": [
+        609,
+        575,
+        729,
+        538
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 66.67,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 48.72,
+        "memory_utilization_pct_max": 75.0,
+        "power_w_mean": 267.75,
+        "power_w_max": 355.14,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 2
+    },
+    {
+      "concurrency": 8,
+      "elapsed_s": 4.438,
+      "completion_tokens": 5318,
+      "aggregate_tps": 1198.29,
+      "per_agent_tps": 149.79,
+      "ttft_mean_s": 0.0911,
+      "ttft_median_s": 0.0927,
+      "request_elapsed_mean_s": 3.7632,
+      "request_completion_tokens": [
+        624,
+        774,
+        525,
+        854,
+        496,
+        526,
+        921,
+        598
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 74.31,
+        "memory_utilization_pct_max": 76.0,
+        "power_w_mean": 350.07,
+        "power_w_max": 351.95,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 8,
+      "elapsed_s": 7.3372,
+      "completion_tokens": 6094,
+      "aggregate_tps": 830.56,
+      "per_agent_tps": 103.82,
+      "ttft_mean_s": 2.2738,
+      "ttft_median_s": 2.277,
+      "request_elapsed_mean_s": 6.5114,
+      "request_completion_tokens": [
+        864,
+        695,
+        518,
+        715,
+        589,
+        943,
+        885,
+        885
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 70.67,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 52.56,
+        "memory_utilization_pct_max": 76.0,
+        "power_w_mean": 277.31,
+        "power_w_max": 352.47,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 2
+    },
+    {
+      "concurrency": 12,
+      "elapsed_s": 5.928,
+      "completion_tokens": 8847,
+      "aggregate_tps": 1492.4,
+      "per_agent_tps": 124.37,
+      "ttft_mean_s": 0.1039,
+      "ttft_median_s": 0.1054,
+      "request_elapsed_mean_s": 4.7697,
+      "request_completion_tokens": [
+        539,
+        516,
+        776,
+        902,
+        467,
+        748,
+        944,
+        934,
+        843,
+        630,
+        524,
+        1024
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 73.95,
+        "memory_utilization_pct_max": 77.0,
+        "power_w_mean": 349.99,
+        "power_w_max": 351.36,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 12,
+      "elapsed_s": 7.2477,
+      "completion_tokens": 8444,
+      "aggregate_tps": 1165.07,
+      "per_agent_tps": 97.09,
+      "ttft_mean_s": 1.8844,
+      "ttft_median_s": 1.8865,
+      "request_elapsed_mean_s": 6.1719,
+      "request_completion_tokens": [
+        510,
+        958,
+        623,
+        942,
+        764,
+        607,
+        886,
+        535,
+        578,
+        887,
+        485,
+        669
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 74.07,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 55.07,
+        "memory_utilization_pct_max": 76.0,
+        "power_w_mean": 292.61,
+        "power_w_max": 366.07,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 2
+    },
+    {
+      "concurrency": 16,
+      "elapsed_s": 6.5178,
+      "completion_tokens": 10726,
+      "aggregate_tps": 1645.64,
+      "per_agent_tps": 102.85,
+      "ttft_mean_s": 0.1216,
+      "ttft_median_s": 0.1228,
+      "request_elapsed_mean_s": 4.6086,
+      "request_completion_tokens": [
+        570,
+        486,
+        550,
+        1024,
+        502,
+        734,
+        636,
+        579,
+        624,
+        964,
+        654,
+        593,
+        508,
+        876,
+        628,
+        798
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 73.04,
+        "memory_utilization_pct_max": 76.0,
+        "power_w_mean": 349.81,
+        "power_w_max": 350.08,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 16,
+      "elapsed_s": 6.1868,
+      "completion_tokens": 11227,
+      "aggregate_tps": 1814.68,
+      "per_agent_tps": 113.42,
+      "ttft_mean_s": 0.1212,
+      "ttft_median_s": 0.1224,
+      "request_elapsed_mean_s": 4.8328,
+      "request_completion_tokens": [
+        658,
+        580,
+        730,
+        778,
+        1024,
+        580,
+        559,
+        616,
+        500,
+        861,
+        572,
+        752,
+        883,
+        670,
+        605,
+        859
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 73.87,
+        "memory_utilization_pct_max": 76.0,
+        "power_w_mean": 350.17,
+        "power_w_max": 352.09,
+        "memory_used_mb_mean": 88864.0,
+        "memory_used_mb_max": 88864.0
+      },
+      "trial": 2
+    }
+  ],
+  "summary": {
+    "1": {
+      "aggregate_tps_mean": 329.96,
+      "per_agent_tps_mean": 329.96,
+      "ttft_mean_s": 0.0448
+    },
+    "4": {
+      "aggregate_tps_mean": 630.53,
+      "per_agent_tps_mean": 157.63,
+      "ttft_mean_s": 0.8959
+    },
+    "8": {
+      "aggregate_tps_mean": 1014.42,
+      "per_agent_tps_mean": 126.8,
+      "ttft_mean_s": 1.1825
+    },
+    "12": {
+      "aggregate_tps_mean": 1328.74,
+      "per_agent_tps_mean": 110.73,
+      "ttft_mean_s": 0.9942
+    },
+    "16": {
+      "aggregate_tps_mean": 1730.16,
+      "per_agent_tps_mean": 108.13,
+      "ttft_mean_s": 0.1214
+    }
+  }
+}

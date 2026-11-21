@@ -1,0 +1,64 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 2,
+  "tokens": 100000,
+  "rounds": 2,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "events": [
+    {
+      "session": 0,
+      "round": 0,
+      "prompt_tokens": 138588,
+      "cached_tokens": 0,
+      "elapsed_s": 14.69,
+      "reply": ""
+    },
+    {
+      "session": 1,
+      "round": 0,
+      "prompt_tokens": 138583,
+      "cached_tokens": 0,
+      "elapsed_s": 14.79,
+      "reply": ""
+    },
+    {
+      "session": 0,
+      "round": 1,
+      "prompt_tokens": 138605,
+      "cached_tokens": 138496,
+      "elapsed_s": 0.19,
+      "reply": "",
+      "hit_ratio": 0.9992
+    },
+    {
+      "session": 1,
+      "round": 1,
+      "prompt_tokens": 138600,
+      "cached_tokens": 138496,
+      "elapsed_s": 0.2,
+      "reply": "",
+      "hit_ratio": 0.9992
+    },
+    {
+      "session": 0,
+      "round": 2,
+      "prompt_tokens": 138622,
+      "cached_tokens": 138496,
+      "elapsed_s": 0.16,
+      "reply": "",
+      "hit_ratio": 0.9991
+    },
+    {
+      "session": 1,
+      "round": 2,
+      "prompt_tokens": 138617,
+      "cached_tokens": 138496,
+      "elapsed_s": 0.18,
+      "reply": "",
+      "hit_ratio": 0.9991
+    }
+  ]
+}

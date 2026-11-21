@@ -1,0 +1,46 @@
+{
+  "model": "inkling-2-mini",
+  "endpoint": "http://127.0.0.1:8094/v1/chat/completions",
+  "reasoning_strength": "high",
+  "reasoning_effort": null,
+  "request_reasoning_effort": "high",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": null,
+    "thinking_token_budget": null,
+    "reasoning_budget_tokens": null,
+    "reasoning_budget_message": null,
+    "enable_thinking": null,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 90578,
+  "throughput": null,
+  "coding": {
+    "total_passed": 6,
+    "total_expected": 6,
+    "total_score": "6/6",
+    "benchmarks": {
+      "astar_pathfinding": {
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "total": 6,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpxjlq8o_k\nplugins: anyio-4.13.0\ncollecting ... collected 6 items\n\ntest_astar.py::test_simple_path_uniform_grid PASSED                      [ 16%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 33%]\ntest_astar.py::test_weighted_grid_prefers_cheaper_cells PASSED           [ 50%]\ntest_astar.py::test_no_path_exists_fully_blocked PASSED                  [ 66%]\ntest_astar.py::test_start_equals_end PASSED                              [ 83%]\ntest_astar.py::test_invalid_coordinates PASSED                           [100%]\n\n============================== 6 passed in 0.01s ===============================\n",
+        "n_code_blocks": 2,
+        "response_len": 9478,
+        "expected": 6,
+        "raw_passed": 6,
+        "scored_passed": 6,
+        "test_count_matches_expected": true,
+        "elapsed_s": 113.01,
+        "completion_tokens": 22177,
+        "finish_reason": "stop",
+        "reasoning_chars": 52677
+      }
+    }
+  }
+}

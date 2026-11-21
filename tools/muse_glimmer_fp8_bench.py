@@ -39,6 +39,7 @@ def sampling(
     reasoning_effort: str | None = None,
     presence_penalty: float = 0.0,
     repetition_penalty: float = 1.0,
+    request_reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     settings: dict[str, Any] = {
         "messages": [
@@ -70,6 +71,8 @@ def sampling(
         chat_template_kwargs["reasoning_effort"] = reasoning_effort
     if chat_template_kwargs:
         settings["chat_template_kwargs"] = chat_template_kwargs
+    if request_reasoning_effort is not None:
+        settings["reasoning_effort"] = request_reasoning_effort
     return settings
 
 
@@ -110,6 +113,7 @@ def stream_once(
     repetition_penalty: float = 1.0,
     reasoning_budget_tokens: int | None = None,
     reasoning_budget_message: str | None = None,
+    request_reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     settings = sampling(
         reasoning_strength,
@@ -119,6 +123,7 @@ def stream_once(
         reasoning_effort=reasoning_effort,
         presence_penalty=presence_penalty,
         repetition_penalty=repetition_penalty,
+        request_reasoning_effort=request_reasoning_effort,
     )
     body = {
         "model": model,
@@ -187,6 +192,7 @@ def throughput(
     max_tokens: int,
     top_k: int | None,
     reasoning_effort: str | None,
+    request_reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     warmup_results = []
     for index in range(warmups):
@@ -197,6 +203,7 @@ def throughput(
             max_tokens,
             top_k,
             reasoning_effort,
+            request_reasoning_effort=request_reasoning_effort,
         )
         warmup_results.append(result)
         print(f"warmup {index + 1}/{warmups}: {result}", flush=True)
@@ -210,6 +217,7 @@ def throughput(
             max_tokens,
             top_k,
             reasoning_effort,
+            request_reasoning_effort=request_reasoning_effort,
         )
         timed_results.append(result)
         print(f"run {index + 1}/{runs}: {result}", flush=True)
@@ -243,6 +251,7 @@ def coding(
     presence_penalty: float,
     repetition_penalty: float,
     selected_benchmarks: set[str] | None,
+    request_reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     artifacts_dir.mkdir(parents=True, exist_ok=True)
     results: dict[str, Any] = {}
@@ -260,6 +269,7 @@ def coding(
             reasoning_effort,
             presence_penalty,
             repetition_penalty,
+            request_reasoning_effort,
         )
         body = {
             "model": model,
@@ -319,6 +329,14 @@ def main() -> int:
         choices=("low", "medium", "xhigh"),
         default=None,
         help="Send a Qwen-style reasoning_effort chat-template argument.",
+    )
+    parser.add_argument(
+        "--request-reasoning-effort",
+        default=None,
+        help=(
+            "Send the OpenAI top-level reasoning_effort field "
+            "(for example Inkling's none/low/medium/high/xhigh or 0.0-0.99)."
+        ),
     )
     parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--runs", type=int, default=3)
@@ -386,6 +404,7 @@ def main() -> int:
         "endpoint": endpoint,
         "reasoning_strength": args.reasoning_strength,
         "reasoning_effort": args.reasoning_effort,
+        "request_reasoning_effort": args.request_reasoning_effort,
         "sampling": {
             "temperature": 1.0,
             "top_p": 0.95,
@@ -421,6 +440,7 @@ def main() -> int:
             args.throughput_tokens,
             args.top_k,
             args.reasoning_effort,
+            args.request_reasoning_effort,
         ),
         "coding": None
         if args.skip_coding
@@ -448,6 +468,7 @@ def main() -> int:
             args.repetition_penalty,
             {name.strip() for name in args.benchmarks.split(",") if name.strip()}
             or None,
+            args.request_reasoning_effort,
         ),
     }
     (args.output / "results.json").write_text(json.dumps(result, indent=2) + "\n")

@@ -1,0 +1,188 @@
+{
+  "base_url": "http://127.0.0.1:8094/v1",
+  "model": "inkling-2-mini",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "3d556e3a7df146bb8a63942faf248472",
+      "object": "chat.completion",
+      "created": 1795213732,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "reasoning_content": "The user asks to reply with exactly MIMO_OK and no other text. This is a simple formatting/instruction task. Need final exactly MIMO_OK. No extra text. Ensure no punctuation. Done."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 200006
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 82,
+        "completion_tokens": 55,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 47,
+        "completion_tokens_details": {
+          "reasoning_tokens": 47
+        }
+      },
+      "metadata": {
+        "weight_version": "default",
+        "weight_versions": [
+          {
+            "version": "default",
+            "start": 0,
+            "end": 55
+          }
+        ]
+      },
+      "_client_elapsed_s": 0.1992
+    },
+    "reasoning": {
+      "id": "f39dce5467014c4284656f2b174dfc35",
+      "object": "chat.completion",
+      "created": 1795213733,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 = 340 + 68 = 408; check: 240 + 168 = 408.\n\n**408**",
+            "reasoning_content": "The user wants compute 17*24, think briefly, verify second way, then concise final answer. Need compute accurately. 17*24 = 17*(6*4?) Let's do: 24*10=240, 24*7=168, sum=408. Or 17*20=340, 17*4=68, sum=408. Verify second way: 20*24=480 minus 3*24=72 =408. Or 17*24 = (18-1)*24 =432-24=408. Need final concise. We can include brief verification. Ensure no hidden CoT? User explicitly asks think briefly and verify; we can give concise explanation not detailed chain. Final answer with maybe one line. Need not expose internal reasoning. Provide: 17\u00d724 = 17\u00d720 + 17\u00d74 = 340+68=408; check: 24\u00d7(10+7)=240+168=408. Final 408."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 200006
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 39,
+        "total_tokens": 290,
+        "completion_tokens": 251,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 218,
+        "completion_tokens_details": {
+          "reasoning_tokens": 218
+        }
+      },
+      "metadata": {
+        "weight_version": "default",
+        "weight_versions": [
+          {
+            "version": "default",
+            "start": 0,
+            "end": 251
+          }
+        ]
+      },
+      "_client_elapsed_s": 0.9422
+    },
+    "tool_call": {
+      "id": "805aac81720d4ccbb076c74aec3c354d",
+      "object": "chat.completion",
+      "created": 1795213733,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "",
+            "reasoning_content": "The user wants me to call lookup_record with record_id alpha-7. I should not guess or report the value before the tool returns. Let me call the tool.",
+            "tool_calls": [
+              {
+                "id": "call_3841be194cc04d66adf7afc5",
+                "index": 0,
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\": \"alpha-7\"}"
+                }
+              }
+            ]
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "matched_stop": null
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 158,
+        "total_tokens": 233,
+        "completion_tokens": 75,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 39,
+        "completion_tokens_details": {
+          "reasoning_tokens": 39
+        }
+      },
+      "metadata": {
+        "weight_version": "default",
+        "weight_versions": [
+          {
+            "version": "default",
+            "start": 0,
+            "end": 75
+          }
+        ]
+      },
+      "_client_elapsed_s": 0.1964
+    },
+    "tool_followup": {
+      "id": "9994dcfe974f4c369f248501ea28976a",
+      "object": "chat.completion",
+      "created": 1795213733,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The value for record_id alpha-7 is 42.",
+            "reasoning_content": "The tool returned. Now I report the value."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "matched_stop": 200006
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 258,
+        "total_tokens": 288,
+        "completion_tokens": 30,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 13,
+        "completion_tokens_details": {
+          "reasoning_tokens": 13
+        }
+      },
+      "metadata": {
+        "weight_version": "default",
+        "weight_versions": [
+          {
+            "version": "default",
+            "start": 0,
+            "end": 30
+          }
+        ]
+      },
+      "_client_elapsed_s": 0.1409
+    }
+  }
+}

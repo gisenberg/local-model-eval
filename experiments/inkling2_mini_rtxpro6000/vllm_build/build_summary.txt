@@ -1,0 +1,16 @@
+vLLM Inkling-2-Mini image build for SM120
+date: 2026-11-20
+source: vllm-project/vllm#69028 at 4c616217b466d94c2dcce8fd2d0c346cc48a2bed
+command: docker buildx build --load -f docker/Dockerfile --target vllm-openai --build-arg torch_cuda_arch_list='12.0' --build-arg max_jobs=6 --build-arg nvcc_threads=2 -t local/vllm:inkling2-mini-4c616217-sm120 .
+result: local/vllm:inkling2-mini-4c616217-sm120 d2378737a5b8 36.4GB
+wall time: about 75 minutes (log started 16:50, finished 18:05 PST)
+CUDA objects compiled: [392/394] Building CUDA
+
+cuobjdump --list-elf of the built image:
+  _C_stable_libtorch.abi3.so:
+        59 sm_120
+         8 sm_80
+         1 sm_89
+         6 sm_90
+
+Published vllm/vllm-openai:inkling-2-mini (c2dc759f5984) _C_stable_libtorch.abi3.so for comparison: 70 sm_100, 8 sm_80, 1 sm_89, 6 sm_90, no sm_120

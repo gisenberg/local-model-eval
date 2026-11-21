@@ -1,0 +1,47 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 2,
+  "tokens": 180000,
+  "rounds": 1,
+  "seed_offset": 9700,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "events": [
+    {
+      "session": 0,
+      "round": 0,
+      "prompt_tokens": 249887,
+      "cached_tokens": 0,
+      "elapsed_s": 36.9,
+      "reply": ""
+    },
+    {
+      "session": 1,
+      "round": 0,
+      "prompt_tokens": 250309,
+      "cached_tokens": 0,
+      "elapsed_s": 37.46,
+      "reply": ""
+    },
+    {
+      "session": 0,
+      "round": 1,
+      "prompt_tokens": 249904,
+      "cached_tokens": 249856,
+      "elapsed_s": 0.21,
+      "reply": "",
+      "hit_ratio": 0.9998
+    },
+    {
+      "session": 1,
+      "round": 1,
+      "prompt_tokens": 250326,
+      "cached_tokens": 250240,
+      "elapsed_s": 0.23,
+      "reply": "",
+      "hit_ratio": 0.9997
+    }
+  ]
+}

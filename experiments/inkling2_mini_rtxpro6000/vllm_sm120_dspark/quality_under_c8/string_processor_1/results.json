@@ -1,0 +1,46 @@
+{
+  "model": "inkling-2-mini",
+  "endpoint": "http://127.0.0.1:8094/v1/chat/completions",
+  "reasoning_strength": "high",
+  "reasoning_effort": null,
+  "request_reasoning_effort": "high",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": null,
+    "thinking_token_budget": null,
+    "reasoning_budget_tokens": null,
+    "reasoning_budget_message": null,
+    "enable_thinking": null,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 90578,
+  "throughput": null,
+  "coding": {
+    "total_passed": 4,
+    "total_expected": 5,
+    "total_score": "4/5",
+    "benchmarks": {
+      "string_processor": {
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "total": 5,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmpn76bi0ce\nplugins: anyio-4.13.0\ncollecting ... collected 5 items\n\ntest_string_processor.py::test_reverse_words PASSED                      [ 20%]\ntest_string_processor.py::test_count_vowels PASSED                       [ 40%]\ntest_string_processor.py::test_is_palindrome PASSED                      [ 60%]\ntest_string_processor.py::test_caesar_cipher FAILED                      [ 80%]\ntest_string_processor.py::test_most_common_word PASSED                   [100%]\n\n=================================== FAILURES ===================================\n______________________________ test_caesar_cipher ______________________________\n\n    def test_caesar_cipher():\n        sp = StringProcessor()\n        assert sp.caesar_cipher(\"abc\", 3) == \"def\"\n        assert sp.caesar_cipher(\"xyz\", 3) == \"abc\"\n>       assert sp.caesar_cipher(\"Hello, World!\", -1) == \"Gdkkn, Vnqlc!\"\nE       AssertionError: assert 'Gdkkn, Vnqkc!' == 'Gdkkn, Vnqlc!'\nE         \nE         - Gdkkn, Vnqlc!\nE         ?           ^\nE         + Gdkkn, Vnqkc!\nE         ?           ^\n\ntest_string_processor.py:29: AssertionError\n=========================== short test summary info ============================\nFAILED test_string_processor.py::test_caesar_cipher - AssertionError: assert ...\n========================= 1 failed, 4 passed in 0.02s ==========================\n",
+        "n_code_blocks": 2,
+        "response_len": 4348,
+        "expected": 5,
+        "raw_passed": 4,
+        "scored_passed": 4,
+        "test_count_matches_expected": true,
+        "elapsed_s": 29.3,
+        "completion_tokens": 4513,
+        "finish_reason": "stop",
+        "reasoning_chars": 9099
+      }
+    }
+  }
+}

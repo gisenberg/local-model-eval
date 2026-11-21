@@ -1,0 +1,221 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 8,
+  "tokens": 187000,
+  "rounds": 2,
+  "seed_offset": 32456,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "events": [
+    {
+      "session": 0,
+      "round": 0,
+      "prompt_tokens": 259876,
+      "cached_tokens": 0,
+      "elapsed_s": 39.09,
+      "reply": ""
+    },
+    {
+      "session": 1,
+      "round": 0,
+      "prompt_tokens": 260159,
+      "cached_tokens": 0,
+      "elapsed_s": 39.11,
+      "reply": ""
+    },
+    {
+      "session": 2,
+      "round": 0,
+      "prompt_tokens": 259699,
+      "cached_tokens": 0,
+      "elapsed_s": 38.99,
+      "reply": ""
+    },
+    {
+      "session": 3,
+      "round": 0,
+      "prompt_tokens": 260227,
+      "cached_tokens": 0,
+      "elapsed_s": 39.62,
+      "reply": ""
+    },
+    {
+      "session": 4,
+      "round": 0,
+      "prompt_tokens": 260290,
+      "cached_tokens": 0,
+      "elapsed_s": 39.55,
+      "reply": ""
+    },
+    {
+      "session": 5,
+      "round": 0,
+      "prompt_tokens": 260260,
+      "cached_tokens": 0,
+      "elapsed_s": 37.84,
+      "reply": ""
+    },
+    {
+      "session": 6,
+      "round": 0,
+      "prompt_tokens": 260052,
+      "cached_tokens": 0,
+      "elapsed_s": 41.32,
+      "reply": ""
+    },
+    {
+      "session": 7,
+      "round": 0,
+      "prompt_tokens": 260303,
+      "cached_tokens": 0,
+      "elapsed_s": 37.89,
+      "reply": ""
+    },
+    {
+      "session": 0,
+      "round": 1,
+      "prompt_tokens": 259893,
+      "cached_tokens": 259840,
+      "elapsed_s": 2.73,
+      "reply": "",
+      "hit_ratio": 0.9998
+    },
+    {
+      "session": 1,
+      "round": 1,
+      "prompt_tokens": 260176,
+      "cached_tokens": 260096,
+      "elapsed_s": 2.48,
+      "reply": "",
+      "hit_ratio": 0.9997
+    },
+    {
+      "session": 2,
+      "round": 1,
+      "prompt_tokens": 259716,
+      "cached_tokens": 259648,
+      "elapsed_s": 0.54,
+      "reply": "",
+      "hit_ratio": 0.9997
+    },
+    {
+      "session": 3,
+      "round": 1,
+      "prompt_tokens": 260244,
+      "cached_tokens": 260224,
+      "elapsed_s": 0.44,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 4,
+      "round": 1,
+      "prompt_tokens": 260307,
+      "cached_tokens": 260288,
+      "elapsed_s": 2.4,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 5,
+      "round": 1,
+      "prompt_tokens": 260277,
+      "cached_tokens": 260224,
+      "elapsed_s": 0.56,
+      "reply": "",
+      "hit_ratio": 0.9998
+    },
+    {
+      "session": 6,
+      "round": 1,
+      "prompt_tokens": 260069,
+      "cached_tokens": 260032,
+      "elapsed_s": 2.54,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 7,
+      "round": 1,
+      "prompt_tokens": 260320,
+      "cached_tokens": 260288,
+      "elapsed_s": 2.64,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 0,
+      "round": 2,
+      "prompt_tokens": 259910,
+      "cached_tokens": 259840,
+      "elapsed_s": 3.05,
+      "reply": "",
+      "hit_ratio": 0.9997
+    },
+    {
+      "session": 1,
+      "round": 2,
+      "prompt_tokens": 260193,
+      "cached_tokens": 260160,
+      "elapsed_s": 1.38,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 2,
+      "round": 2,
+      "prompt_tokens": 259733,
+      "cached_tokens": 259712,
+      "elapsed_s": 0.47,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 3,
+      "round": 2,
+      "prompt_tokens": 260261,
+      "cached_tokens": 260224,
+      "elapsed_s": 0.56,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 4,
+      "round": 2,
+      "prompt_tokens": 260324,
+      "cached_tokens": 260288,
+      "elapsed_s": 0.58,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 5,
+      "round": 2,
+      "prompt_tokens": 260294,
+      "cached_tokens": 260224,
+      "elapsed_s": 0.57,
+      "reply": "",
+      "hit_ratio": 0.9997
+    },
+    {
+      "session": 6,
+      "round": 2,
+      "prompt_tokens": 260086,
+      "cached_tokens": 260032,
+      "elapsed_s": 0.56,
+      "reply": "",
+      "hit_ratio": 0.9998
+    },
+    {
+      "session": 7,
+      "round": 2,
+      "prompt_tokens": 260337,
+      "cached_tokens": 260288,
+      "elapsed_s": 1.39,
+      "reply": "",
+      "hit_ratio": 0.9998
+    }
+  ]
+}

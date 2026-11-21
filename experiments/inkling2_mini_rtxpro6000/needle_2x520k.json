@@ -1,0 +1,56 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 2,
+  "target_tokens": 520000,
+  "answer_tokens": 512,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "depth": 0.6,
+  "phase1_wall_s": 272.484,
+  "needles": [
+    {
+      "session": 0,
+      "project": "LANTERN",
+      "expected": "915117",
+      "got": "915117",
+      "passed": true,
+      "prompt_tokens": 519995,
+      "ttft_s": 135.273,
+      "elapsed_s": 136.42,
+      "error": null
+    },
+    {
+      "session": 1,
+      "project": "HARBOR",
+      "expected": "935349",
+      "got": "935349",
+      "passed": true,
+      "prompt_tokens": 520006,
+      "ttft_s": 271.856,
+      "elapsed_s": 272.477,
+      "error": null
+    }
+  ],
+  "decode_at_depth": [
+    {
+      "session": 0,
+      "cached_tokens": null,
+      "new_prompt_tokens": null,
+      "ttft_s": 148.047,
+      "completion_tokens": 1024,
+      "decode_tok_s": 87.94,
+      "error": null
+    },
+    {
+      "session": 1,
+      "cached_tokens": null,
+      "new_prompt_tokens": null,
+      "ttft_s": 0.21,
+      "completion_tokens": 1024,
+      "decode_tok_s": 22.14,
+      "error": null
+    }
+  ]
+}

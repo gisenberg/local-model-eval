@@ -155,7 +155,22 @@ def main() -> int:
     parser.add_argument("--skip-decode", action="store_true")
     parser.add_argument("--timeout", type=int, default=14400)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--answer-tokens",
+        type=int,
+        default=64,
+        help="Completion budget for the retrieval answer.",
+    )
+    parser.add_argument(
+        "--extra-body",
+        default='{"chat_template_kwargs": {"enable_thinking": false}}',
+        help=(
+            "JSON merged into every request to turn thinking off. The default is "
+            "Qwen's switch; Inkling uses '{\"reasoning_effort\": \"none\"}'."
+        ),
+    )
     args = parser.parse_args()
+    extra_body = json.loads(args.extra_body)
     base_url = args.base_url.rstrip("/")
 
     sessions = []
@@ -183,8 +198,8 @@ def main() -> int:
             "model": args.model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0,
-            "max_tokens": 64,
-            "chat_template_kwargs": {"enable_thinking": False},
+            "max_tokens": args.answer_tokens,
+            **extra_body,
         }, args.timeout)
 
     started = time.perf_counter()
@@ -225,7 +240,7 @@ def main() -> int:
                 "temperature": 0,
                 "max_tokens": args.decode_tokens,
                 "ignore_eos": True,
-                "chat_template_kwargs": {"enable_thinking": False},
+                **extra_body,
             }, args.timeout)
 
         for index, result in enumerate(run_parallel([decode_job(session) for session in sessions])):
@@ -260,6 +275,8 @@ def main() -> int:
         "model": args.model,
         "sessions": args.sessions,
         "target_tokens": args.target_tokens,
+        "answer_tokens": args.answer_tokens,
+        "extra_body": extra_body,
         "depth": args.depth,
         "phase1_wall_s": round(phase1_s, 3),
         "needles": records,

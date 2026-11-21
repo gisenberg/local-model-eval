@@ -1,0 +1,46 @@
+{
+  "model": "inkling-2-mini",
+  "endpoint": "http://127.0.0.1:8094/v1/chat/completions",
+  "reasoning_strength": "high",
+  "reasoning_effort": null,
+  "request_reasoning_effort": "high",
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": null,
+    "thinking_token_budget": null,
+    "reasoning_budget_tokens": null,
+    "reasoning_budget_message": null,
+    "enable_thinking": null,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0
+  },
+  "vram_used_mb": 89806,
+  "throughput": null,
+  "coding": {
+    "total_passed": 6,
+    "total_expected": 6,
+    "total_score": "6/6",
+    "benchmarks": {
+      "astar_pathfinding": {
+        "passed": 10,
+        "failed": 0,
+        "errors": 0,
+        "total": 10,
+        "status": "ok",
+        "single_file": false,
+        "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /home/gisenberg/.micromamba/envs/cuda/bin/python3.12\ncachedir: .pytest_cache\nrootdir: /tmp/tmppgl54ouf\nplugins: anyio-4.13.0\ncollecting ... collected 10 items\n\ntest_astar.py::test_simple_uniform_grid PASSED                           [ 10%]\ntest_astar.py::test_path_around_obstacles PASSED                         [ 20%]\ntest_astar.py::test_weighted_grid_prefers_low_cost PASSED                [ 30%]\ntest_astar.py::test_no_path_fully_blocked PASSED                         [ 40%]\ntest_astar.py::test_start_equals_end PASSED                              [ 50%]\ntest_astar.py::test_invalid_coordinates_raise[start0-end0] PASSED        [ 60%]\ntest_astar.py::test_invalid_coordinates_raise[start1-end1] PASSED        [ 70%]\ntest_astar.py::test_invalid_coordinates_raise[start2-end2] PASSED        [ 80%]\ntest_astar.py::test_invalid_coordinates_raise[start3-end3] PASSED        [ 90%]\ntest_astar.py::test_wall_start_or_end_returns_none PASSED                [100%]\n\n============================== 10 passed in 0.01s ==============================\n",
+        "n_code_blocks": 2,
+        "response_len": 9735,
+        "expected": 6,
+        "raw_passed": 10,
+        "scored_passed": 6,
+        "test_count_matches_expected": false,
+        "elapsed_s": 102.39,
+        "completion_tokens": 17647,
+        "finish_reason": "stop",
+        "reasoning_chars": 41408
+      }
+    }
+  }
+}

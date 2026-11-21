@@ -1,0 +1,36 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 1,
+  "target_tokens": 1040000,
+  "answer_tokens": 512,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "depth": 0.6,
+  "phase1_wall_s": 505.49,
+  "needles": [
+    {
+      "session": 0,
+      "project": "LANTERN",
+      "expected": "915117",
+      "got": "915117",
+      "passed": true,
+      "prompt_tokens": 1039992,
+      "ttft_s": 504.719,
+      "elapsed_s": 505.483,
+      "error": null
+    }
+  ],
+  "decode_at_depth": [
+    {
+      "session": 0,
+      "cached_tokens": null,
+      "new_prompt_tokens": null,
+      "ttft_s": 0.337,
+      "completion_tokens": 1024,
+      "decode_tok_s": 52.7,
+      "error": null
+    }
+  ]
+}

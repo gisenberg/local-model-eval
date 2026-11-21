@@ -1,0 +1,65 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 2,
+  "tokens": 650000,
+  "rounds": 2,
+  "seed_offset": 44431,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "events": [
+    {
+      "session": 0,
+      "round": 0,
+      "prompt_tokens": 906842,
+      "cached_tokens": 0,
+      "elapsed_s": 344.92,
+      "reply": ""
+    },
+    {
+      "session": 1,
+      "round": 0,
+      "prompt_tokens": 906473,
+      "cached_tokens": 0,
+      "elapsed_s": 345.72,
+      "reply": ""
+    },
+    {
+      "session": 0,
+      "round": 1,
+      "prompt_tokens": 906859,
+      "cached_tokens": 906752,
+      "elapsed_s": 1.69,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 1,
+      "round": 1,
+      "prompt_tokens": 906490,
+      "cached_tokens": 906368,
+      "elapsed_s": 1.7,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 0,
+      "round": 2,
+      "prompt_tokens": 906876,
+      "cached_tokens": 906752,
+      "elapsed_s": 1.7,
+      "reply": "",
+      "hit_ratio": 0.9999
+    },
+    {
+      "session": 1,
+      "round": 2,
+      "prompt_tokens": 906507,
+      "cached_tokens": 906368,
+      "elapsed_s": 1.72,
+      "reply": "",
+      "hit_ratio": 0.9998
+    }
+  ]
+}

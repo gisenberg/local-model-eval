@@ -1,0 +1,21 @@
+{
+  "base_url": "http://127.0.0.1:8094",
+  "model": "inkling-2-mini",
+  "sessions": 1,
+  "tokens": 290000,
+  "rounds": 0,
+  "seed_offset": 27465,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "events": [
+    {
+      "session": 0,
+      "round": 0,
+      "prompt_tokens": 403641,
+      "cached_tokens": 0,
+      "elapsed_s": 82.08,
+      "reply": ""
+    }
+  ]
+}
