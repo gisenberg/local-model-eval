@@ -1,15 +1,16 @@
 # Inkling-2-Mini on RTX Pro 6000
 
 Tested 2026-11-20 on the RTX PRO 6000 Blackwell workstation, the day the model was released.
+The image was rebuilt from vLLM main on 2026-11-22, see [Upstream main rebuild](#upstream-main-rebuild).
 
 ## Outcome
 
 `thinkingmachines/Inkling-2-Mini` serves as the opencode daily driver through vLLM with FP8 KV and DSpark speculative decoding.
-One 2,020,260-token FP8 pool is shared by up to 16 concurrent requests at up to 1,000,000 tokens each, so two full-window agents fit at once.
+One 2,020,200-token FP8 pool is shared by up to 16 concurrent requests at up to 1,000,000 tokens each, so two full-window agents fit at once.
 It scored 22/22 on the first lightweight pass at the model's default high effort, with every task ending on `stop`.
 The API smoke test passed 7/7, including tool calls, a tool follow-up with string arguments, and replayed reasoning.
 Two concurrent 985K-token needles passed on the deployed route, and both follow-up turns hit the prefix cache.
-Single-stream decode measured 327 tok/s, and aggregate decode reached 1,188 tok/s at 8 requests and 1,730 tok/s at 16.
+On the deployed main build, single-stream decode measured 344 tok/s, and aggregate decode reached 1,240 tok/s at 8 requests and 1,924 tok/s at 16.
 It replaced Qwen3.8-Flash-Next as the opencode default on 2026-11-20.
 
 SGLang was evaluated first and rejected.
@@ -21,7 +22,8 @@ Its RTX PRO 6000 attention path has no FP8 KV, and its hybrid radix cache droppe
 |---|---|
 | Model | `thinkingmachines/Inkling-2-Mini`, revision `1fb4134b9a74f9681054f4ef82e4bf1f458a2337` |
 | Weights | One 19.53 GB safetensors shard plus a 636 MB DSpark head, at `/home/gisenberg/models-nvme/inkling-2-mini-1fb4134b` on the T705 NVMe, SHA-256 verified against the hub |
-| Image | `local/vllm:inkling2-mini-4c616217-sm120`, vLLM `0.34.0rc1.dev1109+g4c616217b`, built from vllm-project/vllm#69028 for SM120 |
+| Image | `local/vllm:inkling2-mini-118d12f7-sm120`, vLLM `0.34.0rc1.dev1142+g118d12f72`, built from vLLM main for SM120 |
+| Previous image | `local/vllm:inkling2-mini-4c616217-sm120`, vLLM `0.34.0rc1.dev1109+g4c616217b`, built from vllm-project/vllm#69028 for SM120 |
 | Build script | `../opencode-config/hosts/rtxpro6000/build-inkling2-mini-vllm.sh` |
 | Serve script | `../opencode-config/hosts/rtxpro6000/serve-inkling2-mini-vllm.sh` |
 | llama-swap route | `inkling-2-mini` |
@@ -41,12 +43,13 @@ Each global visit has 8 KV heads of dimension 128, so the full-length cache cost
 | vLLM | FP8 | DSpark-7 (BF16 draft KV) | 8 | 2,040,228 |
 | vLLM | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,029,187 |
 | vLLM, 1,000,000 window, memory 0.94 | FP8 | DSpark-7 (BF16 draft KV) | 16 | 1,991,020 |
-| vLLM, 1,000,000 window, memory 0.95 (deployed) | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,260 |
+| vLLM, 1,000,000 window, memory 0.95, PR build | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,260 |
+| vLLM main build, 1,000,000 window, memory 0.95 (deployed) | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,200 |
 | SGLang | BF16 | DSpark-8, SWA ratio 0.10, static 0.94 | 4 | 1,157,248 |
 | SGLang | BF16 | DSpark-8, SWA ratio 0.05, static 0.94 | 4 | 1,335,296 |
 
 vLLM reserved 67.5 GiB for KV at a 0.94 memory fraction and 68.5 GiB at 0.95.
-The deployed pool measured 2,020,260 tokens on three consecutive launches with the card otherwise idle.
+The PR build's pool measured 2,020,260 tokens on three consecutive launches with the card otherwise idle, and the main build's measures 2,020,200.
 vLLM sizes its reservation as a fraction of total memory, so another resident GPU job makes it refuse to start rather than shrink the pool.
 The DSpark draft keeps its own KV in BF16 on SM12x, which costs about 350K tokens of pool.
 
@@ -76,7 +79,8 @@ Image input works through the same route.
 | Lightweight coding, high effort, 32K output | 22/22 first pass (string 5/5, expression 5/5, A* 6/6, LRU 6/6) |
 | Same suite, 8 concurrent requests | 5/8 runs full; two LRU runs reached the 32K cap mid-reasoning and one run wrote a wrong expected value in its own test |
 | Short decode, 512 tokens | 283 tok/s mean, 0.045 s TTFT |
-| Warm aggregate decode, 1,024 tokens | 327 (c1), 489 (c2), 695 (c4), 1,188 (c8), 1,730 (c16) tok/s |
+| Warm aggregate decode, 1,024 tokens, PR build | 327 (c1), 489 (c2), 695 (c4), 1,188 (c8), 1,730 (c16) tok/s |
+| Warm aggregate decode, 1,024 tokens, main build | 344 (c1), 696 (c4), 1,240 (c8), 1,460 (c12), 1,924 (c16) tok/s |
 | Needles, two concurrent 1.04M-token prompts, FP8 KV | both PASS; 565 and 868 s cold TTFT; follow-ups cached 1,039,936 tokens |
 | Decode at 1.04M depth, no speculation, two concurrent | 46 and 52 tok/s |
 | Needles, two concurrent 985K-token prompts, deployed DSpark route at a 1,000,000 window | both PASS; 427 and 802 s cold TTFT; follow-ups cached 984,960 tokens; decode at depth 50 and 60 tok/s |
@@ -86,6 +90,43 @@ Image input works through the same route.
 The eight-way LRU outputs were coherent edge-case reasoning that ran out of the bench's 32K budget, not degenerate text.
 The wrong test expected `"Vnqlc"` for "World" shifted by -1, while the implementation correctly returned `"Vnqkc"`.
 The first request at each new batch shape pays about 2 seconds of Triton compilation, which is then cached on the NVMe runtime cache.
+
+## Upstream main rebuild
+
+On 2026-11-22 the image was rebuilt from vLLM main at `118d12f7`.
+That commit adds the merged Inkling port (vllm-project/vllm#69028) and two SM12x speedups.
+vllm-project/vllm#69021 keeps the TMA k-group partials path on SM12x, and vllm-project/vllm#69168 tunes small-batch GEMMs for SM120.
+The build has 60 SM120 kernels in `_C`, and DSpark starts without patches.
+The fix for the original SM120 DSpark failure, vllm-project/vllm#69096, is still open, and the local SM120 build avoids it.
+
+Both images were measured back to back on the same day with the card otherwise idle.
+Each row is the mean of two trials of 1,024 output tokens after a warm-up pass at every batch shape.
+
+| Concurrent requests | PR build (`4c616217`) | Main build (`118d12f7`) |
+|---:|---:|---:|
+| 1 | 293 (290 to 296) | 344 (316 to 372) |
+| 4 | 624 (543 to 705) | 696 (660 to 731) |
+| 8 | 1,190 (1,112 to 1,267) | 1,240 (1,208 to 1,273) |
+| 12 | 1,451 (1,390 to 1,511) | 1,460 (1,386 to 1,535) |
+| 16 | 1,911 (1,831 to 1,991) | 1,924 (1,851 to 1,996) |
+
+The single-stream gain is outside trial noise, and at 8 or more requests the two builds overlap.
+Mean DSpark acceptance length was 3.4 to 3.9 tokens on both builds.
+The PR build measured 327 tok/s single and 1,730 tok/s at 16 on 2026-11-20, so day-to-day variation is about as large as the multi-request difference.
+
+Teacher-forced prompt logprobs over 16,586 positions from four fixed texts were bit-identical between the builds, with a perplexity of 2.969 on both.
+The probe is `tools/prompt_logprob_compare.py`.
+It exercises the prefill path, so the decode-path kernels were checked with repeated coding passes instead.
+Four concurrent lightweight passes scored 16, 21, 22, and 22 of 22 on the main build and 16, 21, 22, and 22 on the PR build.
+Each build's 16 was one LRU run that reached the 32K output cap mid-reasoning, and each 21 was one wrong expected value in the model's own test.
+
+On the deployed route the main build passed the API smoke test 7/7 and both concurrent 985K-token needles.
+Cold TTFT was 430 and 804 s, follow-ups cached 984,960 tokens, and decode at depth rose to 67 and 69 tok/s from 50 and 60.
+Cold start through llama-swap was 51 s.
+
+A community recipe for this card runs DSpark with 4 draft tokens, which it reports as about 7% faster per step at one request.
+Upstream vLLM rejects that with `Inkling2 DSpark requires num_speculative_tokens = 7 (the checkpoint's block size - 1)`, and the recipe patches the model code to allow it.
+The deployment keeps 7 rather than carry a model-code patch.
 
 ## Prefill
 
@@ -163,5 +204,6 @@ The usable multi-agent pool would have been about 1.05M BF16 tokens, roughly hal
 ## Artifacts
 
 All artifacts are in `experiments/inkling2_mini_rtxpro6000/`.
+The main rebuild A/B, quality checks, and route validation are in `vllm_main_ab/`.
 The vLLM DSpark runs are in `vllm_sm120_dspark/`, the vLLM no-speculation runs in `vllm_fp8_nospec/`, and the retention tests in `vllm_cache_worstcase/` and `cache_worstcase/`.
 The SGLang runs are at the top level of the directory and in `evict_ab/`, and the image build summary, including the SM120 kernel check, is in `vllm_build/build_summary.txt`.

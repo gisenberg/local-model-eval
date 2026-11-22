@@ -1,0 +1,8 @@
+{
+  "positions": 16586,
+  "top1_agreement": 1.0,
+  "mean_abs_logprob_diff": 0.0,
+  "max_abs_logprob_diff": 0.0,
+  "ppl_a": 2.9693888596574434,
+  "ppl_b": 2.9693888596574434
+}
