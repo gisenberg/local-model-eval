@@ -1,0 +1,4 @@
+ ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.34.0rc1.dev1142+g118d12f72
+non-default args: {'model_tag': '/model', 'enable_auto_tool_choice': True, 'tool_call_parser': 'inkling', 'enable_prompt_tokens_details': True, 'host': '127.0.0.1', 'port': 10003, 'model': '/model', 'max_model_len': 1000000, 'served_model_name': ['inkling-2-mini'], 'reasoning_parser': 'inkling', 'gpu_memory_utilization': 0.95, 'kv_cache_dtype': 'fp8', 'enable_prefix_caching': True, 'max_num_batched_tokens': 2048, 'max_num_seqs': 16, 'speculative_config': {'method': 'dspark', 'num_speculative_tokens': 7, 'draft_sample_method': 'probabilistic'}}
+Available KV cache memory: 69.96 GiB
+GPU KV cache size: 2,983,188 tokens, Maximum concurrency for 1,000,000 tokens per request: 2.98x

@@ -19,6 +19,8 @@ parser.add_argument("--model", required=True)
 parser.add_argument("--sizes", default="8192,32768,131072,262144,524288,786432")
 parser.add_argument("--append-tokens", type=int, default=16_384)
 parser.add_argument("--output", required=True)
+parser.add_argument("--seed-offset", type=int, default=0,
+                    help="shift the prompt seeds so a rerun on a warm server stays uncached")
 args = parser.parse_args()
 BASE = args.base_url.rstrip("/")
 MODEL = args.model
@@ -68,7 +70,7 @@ results = {"cold": [], "append": []}
 ttft([{"role": "user", "content": "hi"}])
 
 for i, size in enumerate(int(value) for value in args.sizes.split(",")):
-    content = text_of(100 + i, size) + "\nSummarize in one word."
+    content = text_of(args.seed_offset + 100 + i, size) + "\nSummarize in one word."
     dt, pt, cached = ttft([{"role": "user", "content": content}])
     rec = {"prompt_tokens": pt, "cached": cached, "ttft_s": round(dt, 2), "tok_s": round((pt - cached) / dt)}
     results["cold"].append(rec)
@@ -76,7 +78,7 @@ for i, size in enumerate(int(value) for value in args.sizes.split(",")):
 
     # Append a fresh 16K block on top of the now-cached prefix: the marginal cost at this depth.
     if size >= 32_768:
-        extra = text_of(900 + i, args.append_tokens)
+        extra = text_of(args.seed_offset + 900 + i, args.append_tokens)
         dt2, pt2, cached2 = ttft([{"role": "user", "content": content + "\n" + extra + "\nSummarize in one word."}])
         rec2 = {"depth": cached2, "new_tokens": pt2 - cached2, "ttft_s": round(dt2, 2), "tok_s": round((pt2 - cached2) / dt2)}
         results["append"].append(rec2)

@@ -2,11 +2,12 @@
 
 Tested 2026-11-20 on the RTX PRO 6000 Blackwell workstation, the day the model was released.
 The image was rebuilt from vLLM main on 2026-11-22, see [Upstream main rebuild](#upstream-main-rebuild).
+On 2026-11-24 the batched-token budget dropped to 2,048 and the image moved to main plus two open fixes, see [Live tuning](#live-tuning-on-2026-11-24).
 
 ## Outcome
 
 `thinkingmachines/Inkling-2-Mini` serves as the opencode daily driver through vLLM with FP8 KV and DSpark speculative decoding.
-One 2,020,200-token FP8 pool is shared by up to 16 concurrent requests at up to 1,000,000 tokens each, so two full-window agents fit at once.
+One 2,983,188-token FP8 pool is shared by up to 16 concurrent requests at up to 1,000,000 tokens each, so two full-window agents fit at once with about 983K tokens left for subagents.
 It scored 22/22 on the first lightweight pass at the model's default high effort, with every task ending on `stop`.
 The API smoke test passed 7/7, including tool calls, a tool follow-up with string arguments, and replayed reasoning.
 Two concurrent 985K-token needles passed on the deployed route, and both follow-up turns hit the prefix cache.
@@ -22,8 +23,8 @@ Its RTX PRO 6000 attention path has no FP8 KV, and its hybrid radix cache droppe
 |---|---|
 | Model | `thinkingmachines/Inkling-2-Mini`, revision `1fb4134b9a74f9681054f4ef82e4bf1f458a2337` |
 | Weights | One 19.53 GB safetensors shard plus a 636 MB DSpark head, at `/home/gisenberg/models-nvme/inkling-2-mini-1fb4134b` on the T705 NVMe, SHA-256 verified against the hub |
-| Image | `local/vllm:inkling2-mini-118d12f7-sm120`, vLLM `0.34.0rc1.dev1142+g118d12f72`, built from vLLM main for SM120 |
-| Previous image | `local/vllm:inkling2-mini-4c616217-sm120`, vLLM `0.34.0rc1.dev1109+g4c616217b`, built from vllm-project/vllm#69028 for SM120 |
+| Image | `local/vllm:inkling2-mini-65ada0c4-pr69297-pr69452-sm120`, vLLM `0.34.1rc1.dev53+g97a3f91f1`, vLLM main `65ada0c4` plus vllm-project/vllm#69297 and #69452, built for SM120 |
+| Previous images | `local/vllm:inkling2-mini-118d12f7-sm120` (vLLM main `118d12f7`) and `local/vllm:inkling2-mini-4c616217-sm120` (vllm-project/vllm#69028) |
 | Build script | `../opencode-config/hosts/rtxpro6000/build-inkling2-mini-vllm.sh` |
 | Serve script | `../opencode-config/hosts/rtxpro6000/serve-inkling2-mini-vllm.sh` |
 | llama-swap route | `inkling-2-mini` |
@@ -44,7 +45,9 @@ Each global visit has 8 KV heads of dimension 128, so the full-length cache cost
 | vLLM | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,029,187 |
 | vLLM, 1,000,000 window, memory 0.94 | FP8 | DSpark-7 (BF16 draft KV) | 16 | 1,991,020 |
 | vLLM, 1,000,000 window, memory 0.95, PR build | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,260 |
-| vLLM main build, 1,000,000 window, memory 0.95 (deployed) | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,200 |
+| vLLM main build, 1,000,000 window, memory 0.95, 8,192 batched tokens | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,200 |
+| Same, 4,096 batched tokens | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,577,440 |
+| Same, 2,048 batched tokens (deployed) | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,983,188 |
 | SGLang | BF16 | DSpark-8, SWA ratio 0.10, static 0.94 | 4 | 1,157,248 |
 | SGLang | BF16 | DSpark-8, SWA ratio 0.05, static 0.94 | 4 | 1,335,296 |
 
@@ -56,7 +59,7 @@ The DSpark draft keeps its own KV in BF16 on SM12x, which costs about 350K token
 ## Serving configuration
 
 The serve script follows the vLLM recipe: TP1, the `inkling` reasoning parser, and DSpark with 7 speculative tokens and probabilistic draft sampling.
-It adds the `inkling` tool parser, FP8 KV, `--enable-prompt-tokens-details`, a 1,000,000-token window, 16 sequences, 8,192 batched tokens, and a 0.95 memory fraction.
+It adds the `inkling` tool parser, FP8 KV, `--enable-prompt-tokens-details`, a 1,000,000-token window, 16 sequences, 2,048 batched tokens, and a 0.95 memory fraction.
 The window is 1,000,000 rather than the native 1,048,576 because two native windows need 2.10M tokens, more than the pool holds.
 
 The published `vllm/vllm-openai:inkling-2-mini` image (`c2dc759f5984`) compiles vLLM's CUDA ops for SM80, SM89, SM90, and SM100 only.
@@ -128,6 +131,52 @@ A community recipe for this card runs DSpark with 4 draft tokens, which it repor
 Upstream vLLM rejects that with `Inkling2 DSpark requires num_speculative_tokens = 7 (the checkpoint's block size - 1)`, and the recipe patches the model code to allow it.
 The deployment keeps 7 rather than carry a model-code patch.
 
+## Live tuning on 2026-11-24
+
+Two opencode agent lanes were using the route throughout, so every restart waited until vLLM reported no running and no waiting requests on two reads 5 seconds apart.
+The three restarts waited 3, 9, and 3 minutes for idle and took 183, 55, and 122 seconds, the longer ones because a new batch shape or image compiles its kernels on first launch.
+Each restart dropped the lanes' prefix cache.
+
+### Batched-token budget
+
+vLLM reserves short-convolution history in proportion to the batched-token budget, as vllm-project/vllm#69280 and #69444 describe, so a smaller budget leaves more of the same memory for KV.
+All three settings ran on the `118d12f7` image.
+
+| `--max-num-batched-tokens` | Pool tokens | Cold 32K / 131K / 262K | Append 16K at 262K depth |
+|---:|---:|---|---:|
+| 8,192 | 2,020,200 | 2.2 / 13.7 / 39.4 s | 4.9 s |
+| 4,096 | 2,577,440 | 73.7 / 14.4 / 41.5 s | 4.9 s |
+| 2,048 | 2,983,188 | 2.5 / 14.9 / 43.6 s | 5.0 s |
+
+The 4,096 row's 32K prompt was the first request at that batch shape and includes kernel compilation.
+The 2,048 row is a warm rerun with fresh prompts, and its 524K cold prompt took 142.5 s against 124 to 137 s at 8,192 on earlier runs.
+So 2,048 buys 48% more pool for 8 to 14% slower cold prefill, with appends to a cached prefix unchanged.
+Decode could not be compared cleanly because the lanes' traffic dominated every run.
+
+Prompt logprobs changed slightly with the budget, with 96.0% top-1 agreement between 8,192 and 2,048 and perplexity 3.000 against 2.996.
+At a fixed budget they were bit-identical across restarts and under load.
+At 8,192 each short test text fits in one chunk, while at 2,048 later chunks read earlier tokens through the FP8 KV cache, as every long agent context already does.
+
+### Main plus two open fixes
+
+The image moved to vLLM main `65ada0c4` with two open pull requests merged by `VLLM_PRS` in the build script.
+vllm-project/vllm#69297 stops the Inkling tool parser from re-parsing the whole argument on every streamed delta.
+vllm-project/vllm#69452 stops Triton recompiles of the prefill attention kernels after a cold start.
+The host had about 14 GB of free RAM next to the win-ci VM, so the build ran with 2 jobs and 1 nvcc thread and never dropped below 12 GB free.
+
+| Check | `118d12f7` | `65ada0c4` plus fixes |
+|---|---|---|
+| Long streamed `write_file` call | 28 KB valid, longest delta gap 11.1 s, `/health` worst 10.6 s | 37 KB valid, longest gap 0.77 s, `/health` worst 0.02 s |
+| Lightweight coding, four concurrent passes | 16, 21, 22, 22 of 22 (2026-11-22) | 22, 22, 22, 22 of 22 |
+| API smoke | 7/7 | 7/7 |
+| Single-stream decode, trials with no other request running | 327 and 281 tok/s | 313 and 248 tok/s |
+| Mean DSpark acceptance length | 3.66 | 4.09 |
+| Two concurrent 985K needles | pass | pass, follow-ups cached 984,960 tokens, decode at depth 39 and 49 tok/s with the lanes active |
+
+Prompt logprobs at 2,048 agreed on 99.5% of top-1 tokens with the previous image, and perplexity moved from 2.9960 to 2.9965.
+Single-stream trials that overlapped one lane request fell to 120 to 195 tok/s on the new image, which is why the trials above count only solo runs.
+The tool-stream probe is `tools/long_tool_stream_probe.py`.
+
 ## Prefill
 
 Each cold row is a distinct prompt with no cached prefix.
@@ -151,17 +200,18 @@ Qwen3.8-Flash-Next appended at 786K depth in 4.0 seconds, so it remains the fast
 
 The pool is shared at run time, so a single route covers every split of it.
 A request may use up to 1,000,000 tokens, and up to 16 requests run at once.
-Agents stay fast as long as the sum of their live contexts fits in the 2.02M-token pool.
+Agents stay fast as long as the sum of their live contexts fits in the 2.98M-token pool.
+The retention tests below ran at the earlier 2.02M pool and 8,192 batched tokens.
 
 | Agents resident at once | Context each | Pool used | Notes |
 |---:|---:|---:|---|
-| 1 | 1,000,000 | 1.00M | leaves about 1.02M for subagents |
-| 2 | 1,000,000 | 2.00M | the deployed configuration |
-| 3 | 666K | 2.00M | |
-| 4 | 500K | 2.00M | four at 481K were tested |
-| 6 | 333K | 2.00M | |
-| 8 | 250K | 2.00M | eight at 241K were tested |
-| 16 | 125K | 2.00M | the configured request ceiling |
+| 1 | 1,000,000 | 1.00M | leaves about 1.98M for subagents |
+| 2 | 1,000,000 | 2.00M | the deployed configuration, about 983K left for subagents |
+| 3 | 994K | 2.98M | three full 1,000,000-token windows need 17K more tokens than the pool |
+| 4 | 745K | 2.98M | |
+| 6 | 497K | 2.98M | |
+| 8 | 372K | 2.98M | |
+| 16 | 186K | 2.98M | the configured request ceiling |
 
 When live contexts exceed the pool, vLLM evicts the least recently used prefix and that agent pays a cold prefill on its next turn.
 
@@ -204,6 +254,6 @@ The usable multi-agent pool would have been about 1.05M BF16 tokens, roughly hal
 ## Artifacts
 
 All artifacts are in `experiments/inkling2_mini_rtxpro6000/`.
-The main rebuild A/B, quality checks, and route validation are in `vllm_main_ab/`.
+The main rebuild A/B, quality checks, and route validation are in `vllm_main_ab/`, and the 2026-11-24 live tuning and build validation are in `live_ab/`.
 The vLLM DSpark runs are in `vllm_sm120_dspark/`, the vLLM no-speculation runs in `vllm_fp8_nospec/`, and the retention tests in `vllm_cache_worstcase/` and `cache_worstcase/`.
 The SGLang runs are at the top level of the directory and in `evict_ab/`, and the image build summary, including the SM120 kernel check, is in `vllm_build/build_summary.txt`.

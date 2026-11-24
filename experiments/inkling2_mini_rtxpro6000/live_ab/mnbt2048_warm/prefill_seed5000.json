@@ -1,0 +1,54 @@
+{
+  "cold": [
+    {
+      "prompt_tokens": 32775,
+      "cached": 0,
+      "ttft_s": 2.45,
+      "tok_s": 13389
+    },
+    {
+      "prompt_tokens": 131087,
+      "cached": 0,
+      "ttft_s": 14.85,
+      "tok_s": 8827
+    },
+    {
+      "prompt_tokens": 262164,
+      "cached": 0,
+      "ttft_s": 43.6,
+      "tok_s": 6013
+    },
+    {
+      "prompt_tokens": 524299,
+      "cached": 0,
+      "ttft_s": 142.52,
+      "tok_s": 3679
+    }
+  ],
+  "append": [
+    {
+      "depth": 32768,
+      "new_tokens": 16389,
+      "ttft_s": 1.57,
+      "tok_s": 10414
+    },
+    {
+      "depth": 131072,
+      "new_tokens": 16397,
+      "ttft_s": 3.03,
+      "tok_s": 5416
+    },
+    {
+      "depth": 262144,
+      "new_tokens": 16405,
+      "ttft_s": 4.97,
+      "tok_s": 3298
+    },
+    {
+      "depth": 524288,
+      "new_tokens": 16399,
+      "ttft_s": 8.87,
+      "tok_s": 1849
+    }
+  ]
+}

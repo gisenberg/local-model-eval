@@ -1,0 +1,42 @@
+{
+  "cold": [
+    {
+      "prompt_tokens": 32780,
+      "cached": 32768,
+      "ttft_s": 0.07,
+      "tok_s": 178
+    },
+    {
+      "prompt_tokens": 131093,
+      "cached": 131072,
+      "ttft_s": 0.21,
+      "tok_s": 100
+    },
+    {
+      "prompt_tokens": 262155,
+      "cached": 262144,
+      "ttft_s": 0.42,
+      "tok_s": 26
+    }
+  ],
+  "append": [
+    {
+      "depth": 49152,
+      "new_tokens": 5,
+      "ttft_s": 0.09,
+      "tok_s": 58
+    },
+    {
+      "depth": 147456,
+      "new_tokens": 15,
+      "ttft_s": 0.24,
+      "tok_s": 63
+    },
+    {
+      "depth": 278400,
+      "new_tokens": 127,
+      "ttft_s": 0.55,
+      "tok_s": 232
+    }
+  ]
+}

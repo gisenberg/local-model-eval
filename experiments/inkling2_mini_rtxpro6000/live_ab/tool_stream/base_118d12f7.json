@@ -1,0 +1,15 @@
+{
+  "total_s": 46.44,
+  "first_argument_s": 24.16,
+  "argument_chars": 24393,
+  "content_chars": 0,
+  "arguments_valid_json": false,
+  "finish_reason": "length",
+  "argument_deltas": 535,
+  "max_gap_s": 6.366,
+  "p99_gap_s": 0.372,
+  "health_probes": 68,
+  "health_p50_s": 0.001,
+  "health_max_s": 8.75,
+  "argument_chars_per_s": 1094.6
+}

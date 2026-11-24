@@ -1,0 +1,177 @@
+{
+  "base_url": "http://localhost:10003/v1",
+  "model": "inkling-2-mini",
+  "reasoning_effort": "medium",
+  "reasoning_budget_tokens": -1,
+  "request_reasoning_effort": "high",
+  "top_k": -1,
+  "max_tokens": 1024,
+  "warmup": {
+    "concurrency": 1,
+    "elapsed_s": 2.7097,
+    "completion_tokens": 960,
+    "aggregate_tps": 354.28,
+    "per_agent_tps": 354.28,
+    "ttft_mean_s": 0.0589,
+    "ttft_median_s": 0.0589,
+    "request_elapsed_mean_s": 2.7093,
+    "request_completion_tokens": [
+      960
+    ],
+    "gpu": {
+      "gpu_utilization_pct_mean": 95.5,
+      "gpu_utilization_pct_max": 100.0,
+      "memory_utilization_pct_mean": 67.2,
+      "memory_utilization_pct_max": 75.0,
+      "power_w_mean": 295.54,
+      "power_w_max": 360.46,
+      "memory_used_mb_mean": 93116.0,
+      "memory_used_mb_max": 93116.0
+    }
+  },
+  "waves": [
+    {
+      "concurrency": 1,
+      "elapsed_s": 1.9436,
+      "completion_tokens": 671,
+      "aggregate_tps": 345.23,
+      "per_agent_tps": 345.23,
+      "ttft_mean_s": 0.047,
+      "ttft_median_s": 0.047,
+      "request_elapsed_mean_s": 1.9433,
+      "request_completion_tokens": [
+        671
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 73.71,
+        "memory_utilization_pct_max": 75.0,
+        "power_w_mean": 349.95,
+        "power_w_max": 350.16,
+        "memory_used_mb_mean": 93116.0,
+        "memory_used_mb_max": 93116.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 4,
+      "elapsed_s": 4.9165,
+      "completion_tokens": 3549,
+      "aggregate_tps": 721.86,
+      "per_agent_tps": 180.46,
+      "ttft_mean_s": 0.0893,
+      "ttft_median_s": 0.0892,
+      "request_elapsed_mean_s": 4.3381,
+      "request_completion_tokens": [
+        1024,
+        851,
+        840,
+        834
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 75.67,
+        "memory_utilization_pct_max": 79.0,
+        "power_w_mean": 350.01,
+        "power_w_max": 350.53,
+        "memory_used_mb_mean": 93116.0,
+        "memory_used_mb_max": 93116.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 8,
+      "elapsed_s": 4.4276,
+      "completion_tokens": 5109,
+      "aggregate_tps": 1153.9,
+      "per_agent_tps": 144.24,
+      "ttft_mean_s": 0.0932,
+      "ttft_median_s": 0.095,
+      "request_elapsed_mean_s": 3.466,
+      "request_completion_tokens": [
+        670,
+        425,
+        528,
+        552,
+        894,
+        605,
+        746,
+        689
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 76.56,
+        "memory_utilization_pct_max": 78.0,
+        "power_w_mean": 350.02,
+        "power_w_max": 350.54,
+        "memory_used_mb_mean": 93116.0,
+        "memory_used_mb_max": 93116.0
+      },
+      "trial": 1
+    },
+    {
+      "concurrency": 16,
+      "elapsed_s": 5.8486,
+      "completion_tokens": 11141,
+      "aggregate_tps": 1904.9,
+      "per_agent_tps": 119.06,
+      "ttft_mean_s": 0.1223,
+      "ttft_median_s": 0.1235,
+      "request_elapsed_mean_s": 4.8491,
+      "request_completion_tokens": [
+        636,
+        691,
+        575,
+        570,
+        794,
+        946,
+        898,
+        579,
+        486,
+        595,
+        798,
+        768,
+        508,
+        868,
+        818,
+        611
+      ],
+      "gpu": {
+        "gpu_utilization_pct_mean": 100.0,
+        "gpu_utilization_pct_max": 100.0,
+        "memory_utilization_pct_mean": 76.33,
+        "memory_utilization_pct_max": 78.0,
+        "power_w_mean": 350.02,
+        "power_w_max": 350.25,
+        "memory_used_mb_mean": 93116.0,
+        "memory_used_mb_max": 93116.0
+      },
+      "trial": 1
+    }
+  ],
+  "summary": {
+    "1": {
+      "aggregate_tps_mean": 345.23,
+      "per_agent_tps_mean": 345.23,
+      "ttft_mean_s": 0.047
+    },
+    "4": {
+      "aggregate_tps_mean": 721.86,
+      "per_agent_tps_mean": 180.46,
+      "ttft_mean_s": 0.0893
+    },
+    "8": {
+      "aggregate_tps_mean": 1153.9,
+      "per_agent_tps_mean": 144.24,
+      "ttft_mean_s": 0.0932
+    },
+    "16": {
+      "aggregate_tps_mean": 1904.9,
+      "per_agent_tps_mean": 119.06,
+      "ttft_mean_s": 0.1223
+    }
+  }
+}

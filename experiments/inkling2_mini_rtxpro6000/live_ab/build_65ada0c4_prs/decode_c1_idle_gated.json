@@ -1,0 +1,50 @@
+[
+ {
+  "tok_s": 189.3,
+  "tokens": 1024,
+  "max_running": 2,
+  "solo": false
+ },
+ {
+  "tok_s": 151.0,
+  "tokens": 1024,
+  "max_running": 2,
+  "solo": false
+ },
+ {
+  "tok_s": 312.9,
+  "tokens": 1024,
+  "max_running": 1,
+  "solo": true
+ },
+ {
+  "tok_s": 176.9,
+  "tokens": 1024,
+  "max_running": 2,
+  "solo": false
+ },
+ {
+  "tok_s": 121.1,
+  "tokens": 1024,
+  "max_running": 2,
+  "solo": false
+ },
+ {
+  "tok_s": 169.2,
+  "tokens": 1024,
+  "max_running": 2,
+  "solo": false
+ },
+ {
+  "tok_s": 195.0,
+  "tokens": 1024,
+  "max_running": 2,
+  "solo": false
+ },
+ {
+  "tok_s": 248.3,
+  "tokens": 1024,
+  "max_running": 1,
+  "solo": true
+ }
+]
