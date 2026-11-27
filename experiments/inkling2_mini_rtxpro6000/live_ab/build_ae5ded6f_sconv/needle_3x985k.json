@@ -1,0 +1,76 @@
+{
+  "base_url": "http://localhost:10003",
+  "model": "inkling-2-mini",
+  "sessions": 3,
+  "target_tokens": 985000,
+  "answer_tokens": 512,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "depth": 0.6,
+  "phase1_wall_s": 1234.573,
+  "needles": [
+    {
+      "session": 0,
+      "project": "LANTERN",
+      "expected": "915117",
+      "got": "915117",
+      "passed": true,
+      "prompt_tokens": 984993,
+      "ttft_s": 1232.872,
+      "elapsed_s": 1234.564,
+      "error": null
+    },
+    {
+      "session": 1,
+      "project": "HARBOR",
+      "expected": "935349",
+      "got": "935349",
+      "passed": true,
+      "prompt_tokens": 984983,
+      "ttft_s": 430.341,
+      "elapsed_s": 432.097,
+      "error": null
+    },
+    {
+      "session": 2,
+      "project": "QUARTZ",
+      "expected": "646253",
+      "got": "646253",
+      "passed": true,
+      "prompt_tokens": 984983,
+      "ttft_s": 832.309,
+      "elapsed_s": 834.055,
+      "error": null
+    }
+  ],
+  "decode_at_depth": [
+    {
+      "session": 0,
+      "cached_tokens": 0,
+      "new_prompt_tokens": 985035,
+      "ttft_s": 982.272,
+      "completion_tokens": 1024,
+      "decode_tok_s": null,
+      "error": null
+    },
+    {
+      "session": 1,
+      "cached_tokens": 0,
+      "new_prompt_tokens": 985025,
+      "ttft_s": 818.994,
+      "completion_tokens": 1024,
+      "decode_tok_s": 6.05,
+      "error": null
+    },
+    {
+      "session": 2,
+      "cached_tokens": 984960,
+      "new_prompt_tokens": 65,
+      "ttft_s": 882.869,
+      "completion_tokens": 1024,
+      "decode_tok_s": null,
+      "error": null
+    }
+  ]
+}

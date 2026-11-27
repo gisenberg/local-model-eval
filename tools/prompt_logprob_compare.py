@@ -60,13 +60,15 @@ def compare(args: argparse.Namespace) -> None:
     abs_diff = 0.0
     nll_a = nll_b = 0.0
     worst = 0.0
+    skipped = []
     for ta, tb in zip(a["texts"], b["texts"], strict=True):
         pa, pb = ta["positions"], tb["positions"]
-        if len(pa) != len(pb):
-            sys.exit(f"position count differs for {ta['path']}: {len(pa)} vs {len(pb)}")
+        # A text edited between captures tokenizes differently; skip it
+        # rather than compare logprobs of different tokens.
+        if [r["actual"] for r in pa] != [r["actual"] for r in pb]:
+            skipped.append(ta["path"])
+            continue
         for ra, rb in zip(pa, pb):
-            if ra["actual"] != rb["actual"]:
-                sys.exit(f"tokenization differs in {ta['path']}")
             total += 1
             agree += ra["top1"] == rb["top1"]
             d = abs(ra["lp"] - rb["lp"])
@@ -74,6 +76,8 @@ def compare(args: argparse.Namespace) -> None:
             worst = max(worst, d)
             nll_a -= ra["lp"]
             nll_b -= rb["lp"]
+    if total == 0:
+        sys.exit(f"no text has the same tokens in both captures; skipped {skipped}")
     result = {
         "positions": total,
         "top1_agreement": agree / total,
@@ -81,6 +85,7 @@ def compare(args: argparse.Namespace) -> None:
         "max_abs_logprob_diff": worst,
         "ppl_a": math.exp(nll_a / total),
         "ppl_b": math.exp(nll_b / total),
+        "skipped_texts": skipped,
     }
     print(json.dumps(result, indent=2))
 

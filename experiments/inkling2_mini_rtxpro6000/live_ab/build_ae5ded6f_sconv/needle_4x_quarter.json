@@ -1,0 +1,96 @@
+{
+  "base_url": "http://localhost:10003",
+  "model": "inkling-2-mini",
+  "sessions": 4,
+  "target_tokens": 775232,
+  "answer_tokens": 512,
+  "extra_body": {
+    "reasoning_effort": "none"
+  },
+  "depth": 0.6,
+  "phase1_wall_s": 1072.415,
+  "needles": [
+    {
+      "session": 0,
+      "project": "LANTERN",
+      "expected": "915117",
+      "got": "915117",
+      "passed": true,
+      "prompt_tokens": 775228,
+      "ttft_s": 800.289,
+      "elapsed_s": 801.961,
+      "error": null
+    },
+    {
+      "session": 1,
+      "project": "HARBOR",
+      "expected": "935349",
+      "got": "935349",
+      "passed": true,
+      "prompt_tokens": 775228,
+      "ttft_s": 1070.414,
+      "elapsed_s": 1072.396,
+      "error": null
+    },
+    {
+      "session": 2,
+      "project": "QUARTZ",
+      "expected": "646253",
+      "got": "646253",
+      "passed": true,
+      "prompt_tokens": 775232,
+      "ttft_s": 280.606,
+      "elapsed_s": 282.196,
+      "error": null
+    },
+    {
+      "session": 3,
+      "project": "MERIDIAN",
+      "expected": "621500",
+      "got": "621500",
+      "passed": true,
+      "prompt_tokens": 775241,
+      "ttft_s": 538.262,
+      "elapsed_s": 539.821,
+      "error": null
+    }
+  ],
+  "decode_at_depth": [
+    {
+      "session": 0,
+      "cached_tokens": 775168,
+      "new_prompt_tokens": 102,
+      "ttft_s": 17.264,
+      "completion_tokens": 1024,
+      "decode_tok_s": 6.3,
+      "error": null
+    },
+    {
+      "session": 1,
+      "cached_tokens": 775168,
+      "new_prompt_tokens": 102,
+      "ttft_s": 19.747,
+      "completion_tokens": 1024,
+      "decode_tok_s": 6.36,
+      "error": null
+    },
+    {
+      "session": 2,
+      "cached_tokens": 775168,
+      "new_prompt_tokens": 106,
+      "ttft_s": 21.047,
+      "completion_tokens": 1024,
+      "decode_tok_s": 7.02,
+      "error": null
+    },
+    {
+      "session": 3,
+      "cached_tokens": 775168,
+      "new_prompt_tokens": 115,
+      "ttft_s": 15.923,
+      "completion_tokens": 1024,
+      "decode_tok_s": 6.28,
+      "error": null
+    }
+  ]
+}

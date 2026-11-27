@@ -1,0 +1,2 @@
+Free memory on device (94.25/94.96 GiB) on startup. Desired GPU memory utilization is (0.97, 92.11 GiB). Actual usage is 19.69 GiB for consumed memory (weights + non-torch), 0.57 GiB for peak activation, and 0.59 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=76366570046` (71.12 GiB) to fit into requested memory, or `--kv-cache-memory=78656641024` (73.25 GiB) to fully utilize gpu memory. Current kv cache memory in use is 71.86 GiB.
+GPU KV cache size: 3,067,471 tokens, Maximum concurrency for 1,000,000 tokens per request: 3.07x

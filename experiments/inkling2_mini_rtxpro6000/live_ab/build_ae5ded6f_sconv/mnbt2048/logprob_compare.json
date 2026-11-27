@@ -1,0 +1,12 @@
+{
+  "positions": 6069,
+  "top1_agreement": 0.9970341077607514,
+  "mean_abs_logprob_diff": 0.010409684814150198,
+  "max_abs_logprob_diff": 1.4837474822998047,
+  "ppl_a": 2.031323433476086,
+  "ppl_b": 2.0288442334667427,
+  "skipped_texts": [
+    "results/INKLING2_MINI_RTXPRO6000.md",
+    "../opencode-config/README.md"
+  ]
+}

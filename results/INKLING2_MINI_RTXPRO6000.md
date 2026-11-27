@@ -3,15 +3,16 @@
 Tested 2026-11-20 on the RTX PRO 6000 Blackwell workstation, the day the model was released.
 The image was rebuilt from vLLM main on 2026-11-22, see [Upstream main rebuild](#upstream-main-rebuild).
 On 2026-11-24 the batched-token budget dropped to 2,048 and the image moved to main plus two open fixes, see [Live tuning](#live-tuning-on-2026-11-24).
+On 2026-11-27 the memory fraction rose to 0.97 and the image moved to main plus a conv-state fix, which made room for three full-window agents, see [Conv-state fix](#conv-state-fix-on-2026-11-27).
 
 ## Outcome
 
 `thinkingmachines/Inkling-2-Mini` serves as the opencode daily driver through vLLM with FP8 KV and DSpark speculative decoding.
-One 2,983,188-token FP8 pool is shared by up to 16 concurrent requests at up to 1,000,000 tokens each, so two full-window agents fit at once with about 983K tokens left for subagents.
+One 3,516,686-token FP8 pool is shared by up to 16 concurrent requests at up to 1,000,000 tokens each, so three full-window agents fit at once with about 517K tokens left for subagents.
 It scored 22/22 on the first lightweight pass at the model's default high effort, with every task ending on `stop`.
 The API smoke test passed 7/7, including tool calls, a tool follow-up with string arguments, and replayed reasoning.
-Two concurrent 985K-token needles passed on the deployed route, and both follow-up turns hit the prefix cache.
-On the deployed main build, single-stream decode measured 344 tok/s, and aggregate decode reached 1,240 tok/s at 8 requests and 1,924 tok/s at 16.
+Three concurrent 985K-token needles and four concurrent 775K-token needles passed on the deployed image.
+On the deployed image, single-stream decode measured 321 tok/s, and aggregate decode reached 1,148 tok/s at 8 requests and 1,854 tok/s at 16, with the agent lanes active.
 It replaced Qwen3.8-Flash-Next as the opencode default on 2026-11-20.
 
 SGLang was evaluated first and rejected.
@@ -23,8 +24,8 @@ Its RTX PRO 6000 attention path has no FP8 KV, and its hybrid radix cache droppe
 |---|---|
 | Model | `thinkingmachines/Inkling-2-Mini`, revision `1fb4134b9a74f9681054f4ef82e4bf1f458a2337` |
 | Weights | One 19.53 GB safetensors shard plus a 636 MB DSpark head, at `/home/gisenberg/models-nvme/inkling-2-mini-1fb4134b` on the T705 NVMe, SHA-256 verified against the hub |
-| Image | `local/vllm:inkling2-mini-65ada0c4-pr69297-pr69452-sm120`, vLLM `0.34.1rc1.dev53+g97a3f91f1`, vLLM main `65ada0c4` plus vllm-project/vllm#69297 and #69452, built for SM120 |
-| Previous images | `local/vllm:inkling2-mini-118d12f7-sm120` (vLLM main `118d12f7`) and `local/vllm:inkling2-mini-4c616217-sm120` (vllm-project/vllm#69028) |
+| Image | `local/vllm:inkling2-mini-ae5ded6f-pr69181-pr69288-pr70334-sm120`, vLLM main `ae5ded6f` plus vllm-project/vllm#69181, #69288, and #70334 (merged tree `e7ddacfe`), built for SM120 |
+| Previous images | `local/vllm:inkling2-mini-65ada0c4-pr69297-pr69452-sm120` (main `65ada0c4` plus #69297 and #69452), `local/vllm:inkling2-mini-118d12f7-sm120` (vLLM main `118d12f7`), and `local/vllm:inkling2-mini-4c616217-sm120` (vllm-project/vllm#69028) |
 | Build script | `../opencode-config/hosts/rtxpro6000/build-inkling2-mini-vllm.sh` |
 | Serve script | `../opencode-config/hosts/rtxpro6000/serve-inkling2-mini-vllm.sh` |
 | llama-swap route | `inkling-2-mini` |
@@ -47,7 +48,10 @@ Each global visit has 8 KV heads of dimension 128, so the full-length cache cost
 | vLLM, 1,000,000 window, memory 0.95, PR build | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,260 |
 | vLLM main build, 1,000,000 window, memory 0.95, 8,192 batched tokens | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,020,200 |
 | Same, 4,096 batched tokens | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,577,440 |
-| Same, 2,048 batched tokens (deployed) | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,983,188 |
+| Same, 2,048 batched tokens | FP8 | DSpark-7 (BF16 draft KV) | 16 | 2,983,188 |
+| Same, memory 0.97 | FP8 | DSpark-7 (BF16 draft KV) | 16 | 3,067,471 |
+| Main plus #69181, memory 0.97, 8,192 batched tokens | FP8 | DSpark-7 (BF16 draft KV) | 16 | 3,264,138 |
+| Same, 2,048 batched tokens (deployed) | FP8 | DSpark-7 (BF16 draft KV) | 16 | 3,516,686 |
 | SGLang | BF16 | DSpark-8, SWA ratio 0.10, static 0.94 | 4 | 1,157,248 |
 | SGLang | BF16 | DSpark-8, SWA ratio 0.05, static 0.94 | 4 | 1,335,296 |
 
@@ -59,8 +63,8 @@ The DSpark draft keeps its own KV in BF16 on SM12x, which costs about 350K token
 ## Serving configuration
 
 The serve script follows the vLLM recipe: TP1, the `inkling` reasoning parser, and DSpark with 7 speculative tokens and probabilistic draft sampling.
-It adds the `inkling` tool parser, FP8 KV, `--enable-prompt-tokens-details`, a 1,000,000-token window, 16 sequences, 2,048 batched tokens, and a 0.95 memory fraction.
-The window is 1,000,000 rather than the native 1,048,576 because two native windows need 2.10M tokens, more than the pool holds.
+It adds the `inkling` tool parser, FP8 KV, `--enable-prompt-tokens-details`, a 1,000,000-token window, 16 sequences, 2,048 batched tokens, and a 0.97 memory fraction.
+The window is 1,000,000 rather than the native 1,048,576 because the window was sized when two native windows needed more than the pool held, and three still need 3.15M.
 
 The published `vllm/vllm-openai:inkling-2-mini` image (`c2dc759f5984`) compiles vLLM's CUDA ops for SM80, SM89, SM90, and SM100 only.
 Inkling's target kernels are Triton or CuTe and run on SM120, so the image serves without speculation.
@@ -177,6 +181,43 @@ Prompt logprobs at 2,048 agreed on 99.5% of top-1 tokens with the previous image
 Single-stream trials that overlapped one lane request fell to 120 to 195 tok/s on the new image, which is why the trials above count only solo runs.
 The tool-stream probe is `tools/long_tool_stream_probe.py`.
 
+## Conv-state fix on 2026-11-27
+
+vllm-project/vllm#69181 backs only the short-convolution rows a later step can read, instead of reserving rows for every in-flight token.
+It is the single-GPU, SM12x form of the idea in #69444.
+The image also merges #69288, which stops the MoE kernels recompiling for nearly every new prompt length on GPUs without TRT-LLM-gen kernels, and #70334, which retiles the SM120 decode kernels and adds programmatic dependent launch.
+#69297 and #69452 from the previous image had merged into main by then.
+The build ran with 2 jobs and 1 nvcc thread next to the win-ci VM.
+
+Before the new image, the memory fraction rose from 0.95 to 0.97 on the previous image, which grew the pool from 2,983,188 to 3,067,471 tokens at 2,048 batched tokens.
+The API smoke test passed 7/7 at 0.97, and the card had about 4.5 GiB unused under a 16-request decode load.
+
+| Check | 2,048 batched tokens | 8,192 batched tokens |
+|---|---|---|
+| Pool tokens | 3,516,686 | 3,264,138 |
+| Cold 32K / 131K / 262K | 2.59 / 17.48 / 43.22 s | 2.12 / 13.60 / 38.83 s |
+| Append 16K at 32K / 131K / 262K depth | 1.67 / 3.11 / 4.92 s | 1.36 / 47.09 / 4.30 s |
+| Aggregate decode at 1 / 4 / 8 / 16 requests | 321 / 738 / 1,148 / 1,854 tok/s | 363 / 719 / 1,128 / 1,943 tok/s |
+| Prompt logprobs against the previous image at the same budget | 99.7% top-1 agreement, mean difference 0.010 | 100% top-1 agreement, maximum difference 1e-6 |
+| API smoke | 7/7 | 7/7 |
+
+The 8,192 append at 131K depth was the first request at a new batch shape and includes kernel compilation.
+The pool still shrinks with the batched-token budget, but by 7% between 2,048 and 8,192 rather than the 32% before the fix.
+2,048 was kept for the larger pool, since cold prefill is the only cost and agents mostly append to a cached prefix.
+
+The 8,192 logprobs were compared with the `118d12f7` capture at the same budget and are bit-identical to rounding.
+At 2,048 the agreement matches the noise between two captures on the previous image, 99.5% and a mean difference of 0.010.
+Two of the four reference texts had been edited since the earlier capture, so `tools/prompt_logprob_compare.py` now skips texts whose tokens differ and lists them, and both comparisons cover the remaining 6,069 positions.
+
+At 8,192 the long streamed `write_file` call produced 30 KB of valid arguments with a longest delta gap of 0.18 s, and `/health` answered within 0.03 s.
+Four concurrent lightweight passes scored 22, 22, 22, and 21 of 22, and the miss was one `caesar_cipher` assertion at temperature 1.0.
+
+Three concurrent 985K-token needles and four concurrent 775K-token needles, each 95% of a quarter of the pool, all passed retrieval at 8,192.
+The win-ci agent lanes sent 82 requests during the needle runs, so these show the pool under real load rather than its clean capacity.
+In the three-way run the lanes' contexts pushed the total past the pool, so two of the three follow-ups lost their prefix and re-prefilled 985K tokens, with no preemptions.
+In the four-way run every follow-up hit the cache at 775,168 tokens, but KV usage reached 97.9%, vLLM preempted 51 times, and decode at depth fell to 6 to 7 tok/s per request.
+Filling the pool to within a few percent while other agents are active is therefore not a usable operating point, and agent splits should leave room for subagents and the lanes.
+
 ## Prefill
 
 Each cold row is a distinct prompt with no cached prefix.
@@ -200,18 +241,20 @@ Qwen3.8-Flash-Next appended at 786K depth in 4.0 seconds, so it remains the fast
 
 The pool is shared at run time, so a single route covers every split of it.
 A request may use up to 1,000,000 tokens, and up to 16 requests run at once.
-Agents stay fast as long as the sum of their live contexts fits in the 2.98M-token pool.
+Agents stay fast as long as the sum of their live contexts fits in the 3.52M-token pool.
 The retention tests below ran at the earlier 2.02M pool and 8,192 batched tokens.
 
 | Agents resident at once | Context each | Pool used | Notes |
 |---:|---:|---:|---|
-| 1 | 1,000,000 | 1.00M | leaves about 1.98M for subagents |
-| 2 | 1,000,000 | 2.00M | the deployed configuration, about 983K left for subagents |
-| 3 | 994K | 2.98M | three full 1,000,000-token windows need 17K more tokens than the pool |
-| 4 | 745K | 2.98M | |
-| 6 | 497K | 2.98M | |
-| 8 | 372K | 2.98M | |
-| 16 | 186K | 2.98M | the configured request ceiling |
+| 1 | 1,000,000 | 1.00M | leaves about 2.52M for subagents |
+| 2 | 1,000,000 | 2.00M | about 1.52M left for subagents |
+| 3 | 1,000,000 | 3.00M | the deployed configuration, about 517K left for subagents |
+| 4 | 835K | 3.34M | about 180K left |
+| 6 | 556K | 3.34M | |
+| 8 | 415K | 3.32M | |
+| 16 | 208K | 3.33M | the configured request ceiling |
+
+The splits past three agents leave about 5% of the pool free, because the four-way needle run above preempted heavily with only 2% free.
 
 When live contexts exceed the pool, vLLM evicts the least recently used prefix and that agent pays a cold prefill on its next turn.
 
@@ -255,5 +298,6 @@ The usable multi-agent pool would have been about 1.05M BF16 tokens, roughly hal
 
 All artifacts are in `experiments/inkling2_mini_rtxpro6000/`.
 The main rebuild A/B, quality checks, and route validation are in `vllm_main_ab/`, and the 2026-11-24 live tuning and build validation are in `live_ab/`.
+The 2026-11-27 memory-fraction check is in `live_ab/gpu097/` and the conv-state build validation in `live_ab/build_ae5ded6f_sconv/`.
 The vLLM DSpark runs are in `vllm_sm120_dspark/`, the vLLM no-speculation runs in `vllm_fp8_nospec/`, and the retention tests in `vllm_cache_worstcase/` and `cache_worstcase/`.
 The SGLang runs are at the top level of the directory and in `evict_ab/`, and the image build summary, including the SM120 kernel check, is in `vllm_build/build_summary.txt`.

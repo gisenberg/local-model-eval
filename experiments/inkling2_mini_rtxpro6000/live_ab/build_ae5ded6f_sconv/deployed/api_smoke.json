@@ -1,0 +1,215 @@
+{
+  "base_url": "http://localhost:10003/v1",
+  "model": "inkling-2-mini",
+  "checks": {
+    "basic_generation": true,
+    "reasoning_answer": true,
+    "reasoning_accepted": true,
+    "single_tool_call": true,
+    "tool_name": true,
+    "tool_arguments": true,
+    "tool_followup": true
+  },
+  "passed": 7,
+  "total": 7,
+  "responses": {
+    "basic": {
+      "id": "chatcmpl-a34e0fb070430588",
+      "object": "chat.completion",
+      "created": 1795819976,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "MIMO_OK",
+            "refusal": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The user asks to reply with exactly MIMO_OK and no other text. Need final exactly that. Ensure no extra text. This is a simple formatting request. No safety issue. Final only MIMO_OK."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null,
+          "weight_versions": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.34.1rc1.dev304+ge7ddacfef-bf3924c0",
+      "usage": {
+        "prompt_tokens": 27,
+        "total_tokens": 82,
+        "completion_tokens": 55,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 44
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 11.1585
+    },
+    "reasoning": {
+      "id": "chatcmpl-bb68206b485e75c7",
+      "object": "chat.completion",
+      "created": 1795819987,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "17 \u00d7 24 = 17 \u00d7 (20 + 4) = 340 + 68 = 408.  \nCheck: 24 \u00d7 (10 + 7) = 240 + 168 = 408.\n\n**408**",
+            "refusal": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The user wants compute 17*24, think briefly, verify second way, then concise final answer. Need provide final answer. Let's compute: 17*24 = 17*(20+4)=340+68=408. Second way: 24*17 = 24*(10+7)=240+168=408. Or 20*17=340, 4*17=68 total 408. Need concise. Ensure no hidden CoT? User asks think briefly; we can give brief verification not detailed chain. Final answer concise."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null,
+          "weight_versions": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.34.1rc1.dev304+ge7ddacfef-bf3924c0",
+      "usage": {
+        "prompt_tokens": 39,
+        "total_tokens": 218,
+        "completion_tokens": 179,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 122
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 1.1613
+    },
+    "tool_call": {
+      "id": "chatcmpl-9e6009a4d488b230",
+      "object": "chat.completion",
+      "created": 1795819988,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": null,
+            "refusal": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [
+              {
+                "id": "chatcmpl-tool-86104b0fe550f95c",
+                "type": "function",
+                "function": {
+                  "name": "lookup_record",
+                  "arguments": "{\"record_id\":\"alpha-7\"}"
+                }
+              }
+            ],
+            "reasoning": "The user asks to call lookup_record with record_id alpha-7. Need to actually call the tool. Then report value after tool returns. Let's do it."
+          },
+          "logprobs": null,
+          "finish_reason": "tool_calls",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null,
+          "weight_versions": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.34.1rc1.dev304+ge7ddacfef-bf3924c0",
+      "usage": {
+        "prompt_tokens": 158,
+        "total_tokens": 233,
+        "completion_tokens": 75,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 128,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 36
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.4853
+    },
+    "tool_followup": {
+      "id": "chatcmpl-ad18f67f81927b48",
+      "object": "chat.completion",
+      "created": 1795819989,
+      "model": "inkling-2-mini",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "The record `alpha-7` has value **42**.",
+            "refusal": null,
+            "audio": null,
+            "function_call": null,
+            "reasoning": "The tool returned value 42. Report it."
+          },
+          "logprobs": null,
+          "finish_reason": "stop",
+          "stop_reason": null,
+          "token_ids": null,
+          "routed_experts": null,
+          "weight_versions": null
+        }
+      ],
+      "service_tier": null,
+      "system_fingerprint": "vllm-0.34.1rc1.dev304+ge7ddacfef-bf3924c0",
+      "usage": {
+        "prompt_tokens": 258,
+        "total_tokens": 288,
+        "completion_tokens": 30,
+        "prompt_tokens_details": {
+          "cached_tokens": 128,
+          "created_cache_tokens": 128,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 10
+        }
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "prompt_text": null,
+      "kv_transfer_params": null,
+      "ec_transfer_params": null,
+      "metrics": null,
+      "_client_elapsed_s": 0.2639
+    }
+  }
+}

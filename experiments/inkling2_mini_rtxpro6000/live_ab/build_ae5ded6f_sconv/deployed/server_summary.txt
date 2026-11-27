@@ -1,0 +1,3 @@
+ ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.34.1rc1.dev304+ge7ddacfef
+Available KV cache memory: 71.86 GiB
+GPU KV cache size: 3,516,686 tokens, Maximum concurrency for 1,000,000 tokens per request: 3.52x
